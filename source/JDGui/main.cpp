@@ -1,4 +1,4 @@
-#include "jdgui.h"
+#include "jdcore/jdgui.h"
 #include <QtWidgets/QApplication>
 
 int main(int argc, char *argv[])

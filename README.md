@@ -18,3 +18,7 @@ other physics engines(PhysX, Bullet3) but never really liked how the two were no
 
 The project uses premake5(https://premake.github.io/). just open the project in the project directory, and build. example: 'premake5 vs2022' for windows.
 The project ALSO Uses QT5.12.2(For GUI). the best option is to install QT Through aqt(UNOFFICIAL QT CLI INSTALLER, https://github.com/miurahr/aqtinstall). it's very easy and nice to work with and installs in seconds.
+
+# GUI Info
+
+The GUI Will Currently Use D3D11. Im Planning to add Vulkan Or OpenGL Support Later down the road, but we will see how it goes.

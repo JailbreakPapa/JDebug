@@ -1,3 +1,4 @@
+// Copyright (C) Mikael Aboagye All Rights Reserved. 
 #pragma once
 
 #include <QtWidgets/QMainWindow>

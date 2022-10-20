@@ -1,3 +1,5 @@
+// Copyright (C) Mikael Aboagye All Rights Reserved. 
+
 // dllmain.cpp : Defines the entry point for the DLL application.
 #include "pch.h"
 

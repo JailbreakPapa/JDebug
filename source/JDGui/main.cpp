@@ -1,3 +1,4 @@
+// Copyright (C) Mikael Aboagye All Rights Reserved. 
 #include "jdcore/jdgui.h"
 #include <QtWidgets/QApplication>
 

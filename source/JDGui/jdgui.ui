@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1362</width>
-    <height>845</height>
+    <width>1681</width>
+    <height>1006</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,13 +15,24 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>../../assets/LogoSmall.png</normaloff>../../assets/LogoSmall.png</iconset>
+    <normaloff>../../assets/LogoSmall_ico.ico</normaloff>../../assets/LogoSmall_ico.ico</iconset>
   </property>
   <property name="styleSheet">
    <string notr="true">background-color: rgb(77, 77, 77);
 color: rgb(90, 96, 184);</string>
   </property>
-  <widget class="QWidget" name="centralWidget"/>
+  <widget class="QWidget" name="centralWidget">
+   <widget class="JDRenderView" name="widget" native="true">
+    <property name="geometry">
+     <rect>
+      <x>-30</x>
+      <y>40</y>
+      <width>1021</width>
+      <height>601</height>
+     </rect>
+    </property>
+   </widget>
+  </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
@@ -36,7 +47,7 @@ color: rgb(90, 96, 184);</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1362</width>
+     <width>1681</width>
      <height>21</height>
     </rect>
    </property>
@@ -44,11 +55,13 @@ color: rgb(90, 96, 184);</string>
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="SaveJScene"/>
    </widget>
    <widget class="QMenu" name="menuJolt">
     <property name="title">
      <string>Jolt</string>
     </property>
+    <addaction name="RestartJolt"/>
    </widget>
    <widget class="QMenu" name="menuRender">
     <property name="title">
@@ -65,10 +78,48 @@ color: rgb(90, 96, 184);</string>
    <addaction name="menuRender"/>
    <addaction name="menuSettings"/>
   </widget>
+  <action name="RestartJolt">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>../../assets/GUI_icons/refresh-regular-24.png</normaloff>../../assets/GUI_icons/refresh-regular-24.png</iconset>
+   </property>
+   <property name="text">
+    <string>Restart Jolt</string>
+   </property>
+   <property name="toolTip">
+    <string>Restarts Jolt in the event of a crash.</string>
+   </property>
+   <property name="whatsThis">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Restarts Jolt if it crashed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </action>
+  <action name="SaveJScene">
+   <property name="icon">
+    <iconset>
+     <normaloff>../../assets/GUI_icons/save-solid-24.png</normaloff>../../assets/GUI_icons/save-solid-24.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save JScene</string>
+   </property>
+   <property name="statusTip">
+    <string>Saves the Physics Scene/World to a file.</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>JDRenderView</class>
+   <extends>QWidget</extends>
+   <header>jdrenderview.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources>
-  <include location="../JDebug/JDGui/jdgui.qrc"/>
+  <include location="jdgui.qrc"/>
  </resources>
  <connections/>
 </ui>

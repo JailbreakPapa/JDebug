@@ -1,3 +1,5 @@
+// Copyright (C) Mikael Aboagye All Rights Reserved. 
+
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
 // Used by JDGui.rc

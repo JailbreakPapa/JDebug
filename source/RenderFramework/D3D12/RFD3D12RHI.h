@@ -45,10 +45,52 @@ class RFD3D12RHI {
   // Summary: Checks if ALL Queues on all threads are ready to present.
   //************************************
   bool AllQueuesReady();
+  static uint16_t SwapIndex;
 
  protected:
+  //************************************
+  // Method:    BindResources
+  // FullName:  RenderFramework::D3D12::RFD3D12RHI::BindResources
+  // Access:    protected
+  // Returns:   void
+  // Qualifier:
+  // Summary: Binds All resources needed to present.
+  //************************************
+  void BindResources();
+
+  //************************************
+  // Method:    SetupRTV
+  // FullName:  RenderFramework::D3D12::RFD3D12RHI::SetupRTV
+  // Access:    protected
+  // Returns:   void
+  // Qualifier:
+  //************************************
+  void SetupRTV();
+  //************************************
+  // Method:    SetupDSV
+  // FullName:  RenderFramework::D3D12::RFD3D12RHI::SetupDSV
+  // Access:    protected
+  // Returns:   void
+  // Qualifier:
+  //************************************
+  void SetupDSV();
+
  private:
   ComPtr<ID3D12Device> DXDevice;
+  ComPtr<ID3D12Debug> DXDebug;
+  ComPtr<ID3D12DebugDevice1> DXDebugDevice;
+  ComPtr<IDXGIFactory> DXFactory;
+  ComPtr<IDXGISwapChain3> DXSwap;
+  ComPtr<ID3D12CommandAllocator> DrawAlloc;
+  ComPtr<ID3D12Resource> RTVResource;
+  ComPtr<ID3D12Resource> DSVResource;
+  ComPtr<ID3D12DescriptorHeap> RTVHeap;
+  ComPtr<ID3D12DescriptorHeap> DSVHeap;
+  ComPtr<ID3D12GraphicsCommandList> DrawList;
+  uint32_t RTVSize;
+  uint32_t DSVSize;
   RFCommandQueue DrawQueue;
+
+ private:
 };
 }  // namespace RenderFramework::D3D12

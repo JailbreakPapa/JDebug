@@ -1,21 +1,22 @@
 // Copyright (C) Mikael Aboagye All Rights Reserved.
 #pragma once
 
-#include <QWidget>
-#include <qpointer.h>
-#include "ui_jdrenderview.h"
+#include <RenderFramework/D3D12/RFD3D12RHI.h>
 #include <RenderFramework/RenderHelpers/RenderTypes.h>
+#include <qpointer.h>
 
-class JDRenderView : public QWidget
-{
-	Q_OBJECT
+#include <QWidget>
 
-public:
-	JDRenderView(QWidget *parent = nullptr);
-	~JDRenderView();
+#include "ui_jdrenderview.h"
+class JDRenderView : public QWidget {
+  Q_OBJECT
 
-       private:
-        SwapInfo P{60, 1, (HWND)this->winId(), (uint32_t)this->width(),
-                   (uint32_t)this->height()};
-	Ui::JDRenderViewClass ui;
+ public:
+  JDRenderView(QWidget *parent = nullptr);
+  ~JDRenderView();
+
+ private:
+  SwapInfo P{60, 1, (HWND)this->winId(), (uint32_t)this->width(),
+             (uint32_t)this->height()};
+  Ui::JDRenderViewClass ui;
 };

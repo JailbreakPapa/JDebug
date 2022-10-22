@@ -30,7 +30,7 @@ struct RFCommandQueue {
   // Qualifier:
   // Summary: Create synchronization objects.
   //************************************
-  void CreateSyncObjects();
+  void CreateSyncObjects(ID3D12Device* Device);
   //************************************
   // Method:    WaitForFrame
   // FullName:  RFCommandQueue::WaitForFrame
@@ -43,7 +43,7 @@ struct RFCommandQueue {
 
  public:
   Microsoft::WRL::ComPtr<ID3D12CommandQueue> Queue;
-  Microsoft::WRL::ComPtr<ID3D12Fence> Fence[FrameC];
+  Microsoft::WRL::ComPtr<ID3D12Fence> Fence;
   // Synchronization objects.
   UINT m_frameIndex;
   HANDLE m_fenceEvent;

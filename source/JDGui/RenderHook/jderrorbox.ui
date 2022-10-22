@@ -27,26 +27,6 @@
    <string notr="true">background-color: rgb(95, 95, 95);
 </string>
   </property>
-  <widget class="QLabel" name="CrashLabel">
-   <property name="geometry">
-    <rect>
-     <x>160</x>
-     <y>10</y>
-     <width>271</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>System</family>
-     <weight>75</weight>
-     <bold>true</bold>
-    </font>
-   </property>
-   <property name="text">
-    <string>Jolt Debugger Has Crashed.</string>
-   </property>
-  </widget>
   <widget class="QWidget" name="widget" native="true">
    <property name="geometry">
     <rect>
@@ -70,7 +50,7 @@
     </rect>
    </property>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>317</x>
@@ -116,6 +96,26 @@
      </widget>
     </item>
    </layout>
+  </widget>
+  <widget class="QLabel" name="CrashLabel">
+   <property name="geometry">
+    <rect>
+     <x>180</x>
+     <y>10</y>
+     <width>182</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>System</family>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>JDebugr Has Crashed.</string>
+   </property>
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>

@@ -64,10 +64,7 @@ void RenderFramework::D3D12::RFD3D12RHI::Present() {
   CD3DX12_CPU_DESCRIPTOR_HANDLE m_dsvhandle(
       DSVHeap->GetCPUDescriptorHandleForHeapStart(), SwapIndex, DSVSize);
   DrawList->OMSetRenderTargets(1, &m_rtvhandle, TRUE, &m_dsvhandle);
-  /// <summary>
-  /// The DebugLayer will scream at us currently due to not transitioning the RTV & DSV Resources accordingly.
-  /// We Should Do that....
-  /// </summary>
+
   DrawList->ClearRenderTargetView(m_rtvhandle, clear_color, NULL, nullptr);
   DrawList->ClearDepthStencilView(m_dsvhandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0,
                                   NULL, nullptr);

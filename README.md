@@ -21,4 +21,4 @@ The project ALSO Uses QT5.12.2(For GUI). the best option is to install QT Throug
 
 # GUI Info
 
-The GUI Will Currently Use D3D11. Im Planning to add Vulkan Or OpenGL Support Later down the road, but we will see how it goes.
+The GUI Will Currently Use D3D12. Im Planning to add Vulkan Or OpenGL Support Later down the road, but we will see how it goes.

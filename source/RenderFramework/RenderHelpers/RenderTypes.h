@@ -43,7 +43,7 @@ struct RFCommandQueue {
 
  public:
   Microsoft::WRL::ComPtr<ID3D12CommandQueue> Queue;
-  Microsoft::WRL::ComPtr<ID3D12Fence> Fence;
+  Microsoft::WRL::ComPtr<ID3D12Fence> Fence[FrameC];
   // Synchronization objects.
   UINT m_frameIndex;
   HANDLE m_fenceEvent;

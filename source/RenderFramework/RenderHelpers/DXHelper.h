@@ -42,7 +42,7 @@ void ReleaseComIU(const ComPtr<IUnknown>& Object);
 
 #pragma once
 #include <stdexcept>
-
+inline uint16_t SwapIndex;
 // Note that while ComPtr is used to manage the lifetime of resources on the
 // CPU, it has no understanding of the lifetime of resources on the GPU. Apps
 // must account for the GPU lifetime of resources to avoid destroying objects

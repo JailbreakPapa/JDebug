@@ -36,16 +36,7 @@ class RFD3D12RHI {
   //************************************
   void Present();
 
-  //************************************
-  // Method:    AllQueuesReady
-  // FullName:  RenderFramework::D3D12::RFD3D12RHI::AllQueuesReady
-  // Access:    public
-  // Returns:   bool
-  // Qualifier:
-  // Summary: Checks if ALL Queues on all threads are ready to present.
-  //************************************
-  bool AllQueuesReady();
-  uint16_t SwapIndex;
+
 
  protected:
   //************************************
@@ -64,12 +55,7 @@ class RFD3D12RHI {
   ComPtr<ID3D12DebugDevice1> DXDebugDevice;
   ComPtr<IDXGIFactory> DXFactory;
   ComPtr<IDXGISwapChain3> DXSwap;
-  ComPtr<ID3D12CommandAllocator> DrawAlloc;
-  ComPtr<ID3D12Resource> RTVResource[FrameC];
-  ComPtr<ID3D12Resource> DSVResource[FrameC];
-  ComPtr<ID3D12DescriptorHeap> RTVHeap;
-  ComPtr<ID3D12DescriptorHeap> DSVHeap;
-  ComPtr<ID3D12GraphicsCommandList> DrawList;
+
 
   uint32_t RTVSize;
   uint32_t DSVSize;

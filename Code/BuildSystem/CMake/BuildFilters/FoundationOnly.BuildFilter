@@ -1,0 +1,5 @@
+set_property(GLOBAL PROPERTY WD_BUILD_FILTER_FoundationOnly
+    Foundation
+    enet
+    zstd
+)

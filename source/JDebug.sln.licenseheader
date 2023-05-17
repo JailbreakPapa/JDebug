@@ -1,5 +1,0 @@
-﻿extensions: designer.cs generated.cs
-extensions: .cs .cpp .h .xaml.cs .hlsl .hlsli
-// Copyright (C) Mikael Aboagye All Rights Reserved. 
-extensions: .xaml
-<!-- Copyright (C) Mikael Aboagye All Rights Reserved.  -->

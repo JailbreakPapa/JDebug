@@ -1,0 +1,8 @@
+#pragma once
+
+#undef WD_SUPPORTS_GLFW
+#ifdef BUILDSYSTEM_ENABLE_GLFW_SUPPORT
+#  define WD_SUPPORTS_GLFW WD_ON
+#else
+#  define WD_SUPPORTS_GLFW WD_OFF
+#endif

@@ -8,7 +8,10 @@
 
 function(wd_nuget_init)
 	find_program(NUGET nuget
-		HINTS ${CMAKE_BINARY_DIR})
+	HINTS ${CMAKE_BINARY_DIR})
+
+    find_program(NUGET nuget
+	HINTS "${CMAKE_SOURCE_DIR}/Workspace")
 
 	if(NOT NUGET)
 		message(STATUS "Downloading Nuget...")
@@ -17,6 +20,9 @@ function(wd_nuget_init)
 			${CMAKE_BINARY_DIR}/nuget.exe
 			SHOW_PROGRESS
 		)
+        # Ensure that nuget is also in workspace, as visual studio will first look in there for requesting packages.
+        configure_file(${CMAKE_BINARY_DIR}/nuget.exe ${CMAKE_SOURCE_DIR}/Workspace/nuget.exe COPYONLY)
+
 		find_program(NUGET nuget
 			HINTS ${CMAKE_BINARY_DIR})
 	endif()

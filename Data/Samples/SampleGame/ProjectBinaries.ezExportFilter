@@ -1,0 +1,13 @@
+#include <CommonBinaries.wdExportFilter>
+
+
+[EXCLUDE]
+
+// TODO: add exclude patterns
+
+
+[INCLUDE]
+
+//TODO: add include patterns
+
+

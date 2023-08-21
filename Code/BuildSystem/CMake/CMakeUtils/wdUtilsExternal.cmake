@@ -1,19 +1,19 @@
 # #####################################
-# ## wd_include_ezExport()
+# ## wd_include_wdExport()
 # #####################################
 
-macro(wd_include_ezExport)
-	# Create a modified version of the ezExport.cmake file,
+macro(wd_include_wdExport)
+	# Create a modified version of the wdExport.cmake file,
 	# where the absolute paths to the original locations are replaced
 	# with the absolute paths to this installation
-	set(EXP_FILE "${WD_OUTPUT_DIRECTORY_DLL}/ezExport.cmake")
-	set(IMP_FILE "${CMAKE_BINARY_DIR}/ezExport.cmake")
-	set(EXPINFO_FILE "${WD_OUTPUT_DIRECTORY_DLL}/ezExportInfo.cmake")
+	set(EXP_FILE "${WD_OUTPUT_DIRECTORY_DLL}/wdExport.cmake")
+	set(IMP_FILE "${CMAKE_BINARY_DIR}/wdExport.cmake")
+	set(EXPINFO_FILE "${WD_OUTPUT_DIRECTORY_DLL}/wdExportInfo.cmake")
 
 	# read the file that contains the original paths
 	include(${EXPINFO_FILE})
 
-	# read the ezExport file into a string
+	# read the wdExport file into a string
 	file(READ ${EXP_FILE} IMP_CONTENT)
 
 	# replace the original paths with our paths
@@ -21,7 +21,7 @@ macro(wd_include_ezExport)
 	string(REPLACE ${EXPINP_OUTPUT_DIRECTORY_LIB} ${WD_OUTPUT_DIRECTORY_LIB} IMP_CONTENT "${IMP_CONTENT}")
 	string(REPLACE ${EXPINP_SOURCE_DIR} ${WD_SDK_DIR} IMP_CONTENT "${IMP_CONTENT}")
 
-	# write the modified ezExport file to disk
+	# write the modified wdExport file to disk
 	file(WRITE ${IMP_FILE} "${IMP_CONTENT}")
 
 	# include the modified file, so that the CMake targets become known
@@ -38,7 +38,7 @@ macro(wd_configure_external_project)
 	else()
 		set(WD_SUBMODULE_PREFIX_PATH "")
 	endif()
-	
+
 	set_property(GLOBAL PROPERTY WD_SUBMODULE_PREFIX_PATH ${WD_SUBMODULE_PREFIX_PATH})
 
 	if(WD_SUBMODULE_PREFIX_PATH STREQUAL "")

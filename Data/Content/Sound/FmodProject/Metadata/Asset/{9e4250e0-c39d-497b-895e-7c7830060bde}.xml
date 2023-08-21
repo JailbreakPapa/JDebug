@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.00.00">
+	<object class="EncodableAsset" id="{9e4250e0-c39d-497b-895e-7c7830060bde}">
+		<property name="assetPath">
+			<value>Sonnis/Breakage/</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{38395770-0db2-44d2-8ad3-1114e556ca7a}</destination>
+		</relationship>
+	</object>
+</objects>

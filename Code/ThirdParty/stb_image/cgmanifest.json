@@ -1,0 +1,14 @@
+{
+  "Registrations": [
+    {
+      "component": {
+        "type": "git",
+        "git": {
+          "repositoryUrl": "https://github.com/nothings/stb",
+          "commitHash": "b42009b3b9d4ca35bc703f5310eedc74f584be58"
+        }
+      }
+    }
+  ],
+  "$schema": "https://json.schemastore.org/component-detection-manifest.json"
+}

@@ -109,7 +109,7 @@ function(wd_uwp_add_default_content TARGET_NAME)
 	get_filename_component(SHORT_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME_WE)
 	set(IDENTITY_NAME "${SHORT_NAME}-${CONFIGURATION_DESC}")
 	set(PACKAGE_GUID 3370B74B-62B8-4009-828B-01A02CB4AB56)
-	string(UUID PACKAGE_GUID NAMESPACE ${PACKAGE_GUID} NAME "ezEngine" TYPE MD5) # Generate GUID
+	string(UUID PACKAGE_GUID NAMESPACE ${PACKAGE_GUID} NAME "wdEngine" TYPE MD5) # Generate GUID
 
 	# Add spatial perception to appx manifest if we're linking against WindowsMixedReality.
 	# if (WindowsMixedReality IN_LIST LINK_LIBRARIES)

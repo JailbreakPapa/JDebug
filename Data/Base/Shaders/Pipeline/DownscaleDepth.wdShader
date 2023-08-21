@@ -1,0 +1,63 @@
+[PLATFORMS]
+ALL
+
+[PERMUTATIONS]
+
+CAMERA_MODE
+VERTEX_SHADER_RENDER_TARGET_ARRAY_INDEX
+
+[RENDERSTATE]
+
+DepthTest = false
+DepthWrite = false
+CullMode = CullMode_None
+
+[VERTEXSHADER]
+
+#include <Shaders/Pipeline/FullscreenTriangleVertexShader.h>
+
+[GEOMETRYSHADER]
+
+#include <Shaders/Pipeline/FullscreenTriangleStereoGeometryShader.h>
+
+[PIXELSHADER]
+
+#include <Shaders/Pipeline/FullscreenTriangleInterpolator.h>
+#include <Shaders/Common/Common.h>
+#include <Shaders/Pipeline/Utils.h>
+#include "DownscaleDepthConstants.h"
+
+Texture2DArray DepthTexture;
+SamplerState DepthSampler;
+
+float4 main(PS_IN Input) : SV_Target
+{
+#if CAMERA_MODE == CAMERA_MODE_STEREO
+  s_ActiveCameraEyeIndex = Input.RenderTargetArrayIndex;
+#endif
+
+  const float2 offsets[] =
+  {
+    float2(0, 0),
+    float2(0, 1),
+    float2(1, 1),
+    float2(1, 0)
+  };
+
+  float2 screenPosition = Input.Position.xy * 2;
+  float depth = 0.0f;
+
+  [unroll]
+  for (int i = 0; i < 4; ++i)
+  {
+    float2 samplePos = (screenPosition.xy + offsets[i]) * PixelSize;
+    depth = max(depth, DepthTexture.SampleLevel(DepthSampler, float3(samplePos, s_ActiveCameraEyeIndex), 0).r);
+  }
+
+  if (LinearizeDepth)
+  {
+    depth = LinearizeZBufferDepth(depth);
+  }
+
+  return depth;
+}

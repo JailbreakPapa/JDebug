@@ -1,0 +1,216 @@
+HeaderV2
+{
+o
+{
+	Uuid %id{u4{8943816496716217988,5662064696208493913}}
+	s %t{"wdAssetDocumentInfo"}
+	u3 %v{2}
+	s %n{"Header"}
+	p
+	{
+		s %AssetType{"Animation Clip"}
+		VarArray %Dependencies
+		{
+			s{"Animations/Pete/Pete.glb"}
+		}
+		Uuid %DocumentID{u4{8943816496716217988,5662064696208493913}}
+		u4 %Hash{8496166793313703975}
+		VarArray %MetaInfo{}
+		VarArray %Outputs{}
+		VarArray %References
+		{
+			s{"{ 83b78284-22ab-43f2-b971-d44a838147f6 }"}
+		}
+	}
+}
+}
+Objects
+{
+o
+{
+	Uuid %id{u4{809977317834858380,6041188873887102900}}
+	s %t{"wdAnimationClipAssetProperties"}
+	u3 %v{3}
+	p
+	{
+		b %Additive{0}
+		VarArray %AvailableClips
+		{
+			s{"Gun Hold Pose"}
+			s{"Gun Point Pose"}
+			s{"Gun Shoot"}
+			s{"Idle Breath"}
+			s{"Idle_Pose"}
+			s{"Jump"}
+			s{"Rest Pose"}
+			s{"Run"}
+			s{"Step Backwards"}
+			s{"Step Left"}
+			s{"Step Right"}
+			s{"Walk"}
+			s{"Wave"}
+		}
+		Vec3 %ConstantRootMotion{f{0x0000803F,0,0}}
+		Uuid %EventTrack{u4{3303301624724567856,13701934299477078088}}
+		s %File{"Animations/Pete/Pete.glb"}
+		u3 %FirstFrame{0}
+		u3 %NumFrames{0}
+		s %PreviewMesh{"{ 83b78284-22ab-43f2-b971-d44a838147f6 }"}
+		s %RootMotion{"wdRootMotionSource::None"}
+		s %UseAnimationClip{"Wave"}
+	}
+}
+o
+{
+	Uuid %id{u4{18096612296587978288,6449934965513159559}}
+	s %t{"wdDocumentRoot"}
+	u3 %v{1}
+	s %n{"ObjectTree"}
+	p
+	{
+		VarArray %Children
+		{
+			Uuid{u4{809977317834858380,6041188873887102900}}
+		}
+	}
+}
+o
+{
+	Uuid %id{u4{3303301624724567856,13701934299477078088}}
+	s %t{"wdEventTrackData"}
+	u3 %v{3}
+	p
+	{
+		VarArray %ControlPoints{}
+	}
+}
+}
+Types
+{
+o
+{
+	Uuid %id{u4{6089094783765586323,8705960867921430659}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdReflectedClass"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdDocumentRoot"}
+		u3 %TypeSize{72}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{11015610706821488674,9052215883761519321}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdReflectedClass"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdEventTrackData"}
+		u3 %TypeSize{40}
+		u3 %TypeVersion{3}
+	}
+}
+o
+{
+	Uuid %id{u4{16147564638840122555,14075669034321763640}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::IsEnum|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdEnumBase"}
+		s %PluginName{"wdEditorPluginAssets"}
+		VarArray %Properties{}
+		s %TypeName{"wdRootMotionSource"}
+		u3 %TypeSize{1}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{11235755960658565766,14374470961055231674}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdReflectedClass"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdEventTrackControlPointData"}
+		u3 %TypeSize{24}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{2947336711354777548,15013008608905564043}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdEnumBase"}
+		u3 %TypeSize{1}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{919881006902949434,15110225034563490820}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdReflectedClass"}
+		s %PluginName{"wdEditorPluginAssets"}
+		VarArray %Properties{}
+		s %TypeName{"wdAnimationClipAssetProperties"}
+		u3 %TypeSize{296}
+		u3 %TypeVersion{3}
+	}
+}
+o
+{
+	Uuid %id{u4{983387834180907111,17935407260904399048}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdReflectedClass"}
+		u3 %TypeSize{8}
+		u3 %TypeVersion{1}
+	}
+}
+}

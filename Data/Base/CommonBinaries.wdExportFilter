@@ -1,0 +1,36 @@
+[EXCLUDE]
+
+*.exe
+*.dll
+*.pdb
+*.loaded
+*.wdPluginBundle
+*/iconengines/*
+*/imageformats/*
+*/platforms/*
+
+// failed shader compilations
+*/_Failed_*
+
+
+[INCLUDE]
+
+#if PLATFORM_PROFILE_PC
+/Player.exe
+/Foundation.dll
+/Core.dll
+/GameEngine.dll
+/RendererCore.dll
+/RendererDX11.dll
+/RendererFoundation.dll
+/ShaderCompilerHLSL.dll
+/Texture.dll
+/Utilities.dll
+/Imgui.dll
+/Lua.dll
+/ozz.dll
+/zstd.dll
+/Duktape.dll
+/stb_image.dll
+/enet.dll
+#endif

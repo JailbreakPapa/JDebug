@@ -1,0 +1,11 @@
+# Asset Types
+
+Collection;Collection
+
+# Component Types
+
+wdCollectionComponent;Collection;;https://wdengine.net/pages/docs/performance/collection-component.html
+
+# Properties
+
+wdCollectionAssetEntry::Name;Lookup Name

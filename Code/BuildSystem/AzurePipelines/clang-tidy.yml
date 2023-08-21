@@ -26,7 +26,7 @@ jobs:
       $rcExe = "C:\Program Files (x86)\Windows Kits\10\bin\$WindowsSdkVersion\x64\rc.exe" -replace "\\","/"
       $clangCppExe = "$pwd\llvm\bin\clang++.exe" -replace "\\","/"
       $clangExe = "$pwd\llvm\bin\clang.exe" -replace "\\","/"
-      .\Data\Tools\Precompiled\cmake\bin\cmake.exe -G Ninja -B workspace-clang -S . "-DCMAKE_CXX_COMPILER=$clangCppExe" "-DCMAKE_C_COMPILER=$clangExe" "-DCMAKE_RC_COMPILER=$rcExe" -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DEZ_USE_PCH=OFF -DEZ_ENABLE_FOLDER_UNITY_FILES=OFF
+      .\Data\Tools\Precompiled\cmake\bin\cmake.exe -G Ninja -B workspace-clang -S . "-DCMAKE_CXX_COMPILER=$clangCppExe" "-DCMAKE_C_COMPILER=$clangExe" "-DCMAKE_RC_COMPILER=$rcExe" -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DWD_USE_PCH=OFF -DWD_ENABLE_FOLDER_UNITY_FILES=OFF
     displayName: 'Download LLVM & CMake'
   - task: PowerShell@2
     displayName: 'Run clang-tidy'
@@ -43,7 +43,7 @@ jobs:
         Write-Host "##vso[task.logissue type=error]clang-tidy suggested changes. Clang tidy check failed! See artifact 'clang-tidy.patch' for suggested changes. Apply patch with: git apply clang-tidy.patch" -foreground red
         git diff | Out-File -Encoding utf8NoBOM -FilePath "$(Build.ArtifactStagingDirectory)\clang-tidy.patch"
       }
-    displayName: 'Fetch suggested changes' 
+    displayName: 'Fetch suggested changes'
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: Suggested Changes'
     inputs:

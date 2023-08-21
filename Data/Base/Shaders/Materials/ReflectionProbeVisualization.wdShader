@@ -1,0 +1,86 @@
+[PLATFORMS]
+ALL
+
+[PERMUTATIONS]
+
+BLEND_MODE = BLEND_MODE_OPAQUE
+RENDER_PASS
+TWO_SIDED = FALSE
+FLIP_WINDING = FALSE
+SHADING_MODE = SHADING_MODE_FULLBRIGHT
+SHADING_QUALITY = SHADING_QUALITY_NORMAL
+CAMERA_MODE
+VERTEX_SHADER_RENDER_TARGET_ARRAY_INDEX
+
+[MATERIALPARAMETER]
+
+int MipLevel @Default(0);
+int ReflectionProbeIndex @Default(0);
+
+[RENDERSTATE]
+
+#include <Shaders/Materials/MaterialState.h>
+
+[SHADER]
+
+#define USE_NORMAL
+#include <Shaders/Common/GlobalConstants.h>
+
+CONSTANT_BUFFER(wdMaterialConstants, 1)
+{
+  INT1(MipLevel);
+  INT1(ReflectionProbeIndex);
+};
+
+[VERTEXSHADER]
+
+#include <Shaders/Materials/MaterialVertexShader.h>
+
+VS_OUT main(VS_IN Input)
+{
+  return FillVertexData(Input);
+}
+
+[GEOMETRYSHADER]
+
+#include <Shaders/Materials/MaterialStereoGeometryShader.h>
+
+[PIXELSHADER]
+
+#include <Shaders/Materials/MaterialPixelShader.h>
+
+float3 GetNormal()
+{
+  return G.Input.Normal;
+}
+
+float3 GetDiffuseColor()
+{
+  wdPerInstanceData data = GetInstanceData();
+  float3x3 objectToWorld = TransformToRotation(data.ObjectToWorldNormal);
+
+  float3 normal = normalize(G.Input.Normal);
+  float3 viewDir = normalize(G.Input.WorldPosition - GetCameraPosition());
+
+  float3 ReflDirectionWS = reflect(viewDir, normal);
+  ReflDirectionWS = mul(ReflDirectionWS, objectToWorld).xyz;
+
+  float3 reflectionDir = CubeMapDirection(ReflDirectionWS);
+
+  return ReflectionSpecularTexture.SampleLevel(LinearSampler, float4(reflectionDir, ReflectionProbeIndex), MipLevel).rgb;
+}
+
+float3 GetSpecularColor()
+{
+  return 0.0f;
+}
+
+float GetRoughness()
+{
+  return 1.0f;
+}
+
+float GetOpacity()
+{
+  return 1.0f;
+}

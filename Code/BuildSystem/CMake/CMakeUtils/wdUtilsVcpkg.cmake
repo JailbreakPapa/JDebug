@@ -62,7 +62,7 @@ function(wd_vcpkg_install PACKAGES)
 	endif()
 
 	foreach(PACKAGE ${PACKAGES})
-		message("Vcpgk: Installing '${PACKAGE}', this may take a while.")
+		message("Vcpkg: Installing '${PACKAGE}', this may take a while.")
 		execute_process(COMMAND "${WD_VCPKG_ROOT}/vcpkg.exe" install "${PACKAGE}:${VCPKG_TARGET_TRIPLET}" WORKING_DIRECTORY "${WD_VCPKG_ROOT}")
 	endforeach()
 endfunction()

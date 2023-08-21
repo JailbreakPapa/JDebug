@@ -1,0 +1,6 @@
+Processing succeeded
+
+
+
+
+struct wdImageConversionFlags      {        static const wdUInt32 Count = 3;        typedef wdUInt8 StorageType;     enum Enum        {          None = (1U << (0)), InPlace = (1U << (1)), Lossy = (1U << (2)),        };        struct Bits        {          StorageType None : 1; StorageType InPlace : 1; StorageType Lossy : 1;        };        const char* ToString(wdUInt32 value)   {     switch (value)     {       case None: return "None"; case InPlace: return "InPlace"; case Lossy: return "Lossy";       default: return nullptr;     }   }   };      inline wdBitflags<wdImageConversionFlags> operator|(wdImageConversionFlags::Enum lhs, wdImageConversionFlags::Enum rhs)      {        return (wdBitflags<wdImageConversionFlags>(lhs) | wdBitflags<wdImageConversionFlags>(rhs));      }     inline wdBitflags<wdImageConversionFlags> operator&(wdImageConversionFlags::Enum lhs, wdImageConversionFlags::Enum rhs)      {        return (wdBitflags<wdImageConversionFlags>(lhs) & wdBitflags<wdImageConversionFlags>(rhs));      };

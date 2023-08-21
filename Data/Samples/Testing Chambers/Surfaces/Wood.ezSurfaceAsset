@@ -1,0 +1,186 @@
+HeaderV2
+{
+o
+{
+	Uuid %id{u4{10443522772994204319,5520629884345664304}}
+	s %t{"wdAssetDocumentInfo"}
+	u3 %v{2}
+	s %n{"Header"}
+	p
+	{
+		s %AssetType{"Surface"}
+		VarArray %Dependencies{}
+		Uuid %DocumentID{u4{10443522772994204319,5520629884345664304}}
+		u4 %Hash{12098074565445944733}
+		VarArray %MetaInfo{}
+		VarArray %Outputs{}
+		VarArray %PackageDeps
+		{
+			s{"{ 0a105955-e069-4523-80ce-7b9867bde687 }"}
+			s{"{ 715107e7-1f35-4bd4-9c46-a93dad63d14b }"}
+			s{"{ c2d8d66d-b123-4cf1-b123-4d015fc69fb0 }"}
+		}
+		VarArray %References
+		{
+			s{"{ 0a105955-e069-4523-80ce-7b9867bde687 }"}
+		}
+	}
+}
+}
+Objects
+{
+o
+{
+	Uuid %id{u4{10526326111370374036,4788818136901464359}}
+	s %t{"wdSurfaceInteraction"}
+	u3 %v{1}
+	p
+	{
+		s %Alignment{"wdSurfaceInteractionAlignment::SurfaceNormal"}
+		Angle %Deviation{f{0xC2B8B23D}}
+		f %ImpulseScale{0x0000803F}
+		f %ImpulseThreshold{0}
+		s %Prefab{"{ 715107e7-1f35-4bd4-9c46-a93dad63d14b }"}
+		s %Type{"BulletImpact"}
+	}
+}
+o
+{
+	Uuid %id{u4{4280903650760852916,5318024670694204982}}
+	s %t{"wdSurfaceResourceDescriptor"}
+	u3 %v{2}
+	p
+	{
+		s %BaseSurface{"{ 0a105955-e069-4523-80ce-7b9867bde687 }"}
+		f %DynamicFriction{0xCDCCCC3E}
+		VarArray %Interactions
+		{
+			Uuid{u4{10526326111370374036,4788818136901464359}}
+		}
+		s %OnCollideInteraction{"Bump_Wood"}
+		f %Restitution{0xCDCCCC3D}
+		s %RollReaction{""}
+		s %SlideReaction{"{ c2d8d66d-b123-4cf1-b123-4d015fc69fb0 }"}
+		f %StaticFriction{0x9A99193F}
+	}
+}
+o
+{
+	Uuid %id{u4{18096612296587978288,6449934965513159559}}
+	s %t{"wdDocumentRoot"}
+	u3 %v{1}
+	s %n{"ObjectTree"}
+	p
+	{
+		VarArray %Children
+		{
+			Uuid{u4{4280903650760852916,5318024670694204982}}
+		}
+	}
+}
+}
+Types
+{
+o
+{
+	Uuid %id{u4{7592906110150947185,2202778047974526134}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdReflectedClass"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdSurfaceResourceDescriptor"}
+		u3 %TypeVersion{2}
+	}
+}
+o
+{
+	Uuid %id{u4{6089094783765586323,8705960867921430659}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdReflectedClass"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdDocumentRoot"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{6857712172019910339,8941382314076304129}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::IsEnum|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdEnumBase"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdSurfaceInteractionAlignment"}
+		u3 %TypeVersion{2}
+	}
+}
+o
+{
+	Uuid %id{u4{2947336711354777548,15013008608905564043}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdEnumBase"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{12823836157803586197,16251170174194673526}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdSurfaceInteraction"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{983387834180907111,17935407260904399048}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdReflectedClass"}
+		u3 %TypeVersion{1}
+	}
+}
+}

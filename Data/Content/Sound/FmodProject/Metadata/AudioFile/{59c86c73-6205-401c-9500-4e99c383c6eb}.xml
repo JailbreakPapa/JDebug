@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.00.00">
+	<object class="AudioFile" id="{59c86c73-6205-401c-9500-4e99c383c6eb}">
+		<property name="assetPath">
+			<value>Sonnis/UI/dark-ui-03.ogg</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>96</value>
+		</property>
+		<property name="channelCount">
+			<value>1</value>
+		</property>
+		<property name="length">
+			<value>1.8435104166666667</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{38395770-0db2-44d2-8ad3-1114e556ca7a}</destination>
+		</relationship>
+	</object>
+</objects>

@@ -1,0 +1,285 @@
+HeaderV2
+{
+o
+{
+	Uuid %id{u4{9132907039025431446,4850155600327151795}}
+	s %t{"wdAssetDocumentInfo"}
+	u3 %v{2}
+	s %n{"Header"}
+	p
+	{
+		s %AssetType{"Texture 2D"}
+		VarArray %Dependencies
+		{
+			s{"Textures/Vignetting.tga"}
+		}
+		Uuid %DocumentID{u4{9132907039025431446,4850155600327151795}}
+		u4 %Hash{8913383847545292959}
+		VarArray %MetaInfo{}
+		VarArray %Outputs
+		{
+			s{"LOWRES"}
+		}
+		VarArray %PackageDeps{}
+		VarArray %References
+		{
+			s{"Textures/Vignetting.tga"}
+		}
+	}
+}
+}
+Objects
+{
+o
+{
+	Uuid %id{u4{5887559413610401680,4928357936092764478}}
+	s %t{"wdTextureAssetProperties"}
+	u3 %v{5}
+	p
+	{
+		s %AddressModeU{"wdImageAddressMode::Repeat"}
+		s %AddressModeV{"wdImageAddressMode::Repeat"}
+		s %AddressModeW{"wdImageAddressMode::Repeat"}
+		f %AlphaThreshold{0x0000003F}
+		f %CVarResScale{0x0000803F}
+		s %ChannelMapping{"wdTexture2DChannelMappingEnum::RGBA1"}
+		s %CompressionMode{"wdTexConvCompressionMode::None"}
+		b %DilateColor{0}
+		b %FlipHorizontal{0}
+		s %Format{"wdRenderTargetFormat::RGBA8sRgb"}
+		f %HdrExposureBias{0}
+		s %Input1{"Textures/Vignetting.tga"}
+		s %Input2{""}
+		s %Input3{""}
+		s %Input4{""}
+		b %IsRenderTarget{0}
+		s %MipmapMode{"wdTexConvMipmapMode::None"}
+		b %PremultipliedAlpha{0}
+		b %PreserveAlphaCoverage{0}
+		s %Resolution{"wdTexture2DResolution::Fixed256x256"}
+		s %TextureFilter{"wdTextureFilterSetting::DefaultQuality"}
+		s %Usage{"wdTexConvUsage::Linear"}
+	}
+}
+o
+{
+	Uuid %id{u4{18096612296587978288,6449934965513159559}}
+	s %t{"wdDocumentRoot"}
+	u3 %v{1}
+	s %n{"ObjectTree"}
+	p
+	{
+		VarArray %Children
+		{
+			Uuid{u4{5887559413610401680,4928357936092764478}}
+		}
+	}
+}
+}
+Types
+{
+o
+{
+	Uuid %id{u4{12203372038544747648,1304846957001536306}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::IsEnum|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdEnumBase"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdTexConvCompressionMode"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{8056413000846340440,3023450138914009177}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdReflectedClass"}
+		s %PluginName{"wdEditorPluginAssets"}
+		VarArray %Properties{}
+		s %TypeName{"wdTextureAssetProperties"}
+		u3 %TypeVersion{5}
+	}
+}
+o
+{
+	Uuid %id{u4{6606822328587505351,4158023727683023298}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::IsEnum|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdEnumBase"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdTexConvUsage"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{8978639096379244608,5602414126398036750}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::IsEnum|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdEnumBase"}
+		s %PluginName{"wdEditorPluginAssets"}
+		VarArray %Properties{}
+		s %TypeName{"wdRenderTargetFormat"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{10141898220652821643,7992438720797374380}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::IsEnum|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdEnumBase"}
+		s %PluginName{"wdEditorPluginAssets"}
+		VarArray %Properties{}
+		s %TypeName{"wdTexture2DResolution"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{6089094783765586323,8705960867921430659}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdReflectedClass"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdDocumentRoot"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{15250044141338656666,8993131727605744715}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::IsEnum|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdEnumBase"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdTextureFilterSetting"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{9760759588213427989,10521812630174686177}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::IsEnum|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdEnumBase"}
+		s %PluginName{"wdEditorPluginAssets"}
+		VarArray %Properties{}
+		s %TypeName{"wdTexture2DChannelMappingEnum"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{14746541170062030859,14911800878971067818}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::IsEnum|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdEnumBase"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdImageAddressMode"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{2947336711354777548,15013008608905564043}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdEnumBase"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{2647008765262101666,17105863286049156560}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::IsEnum|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdEnumBase"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdTexConvMipmapMode"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{983387834180907111,17935407260904399048}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdReflectedClass"}
+		u3 %TypeVersion{1}
+	}
+}
+}

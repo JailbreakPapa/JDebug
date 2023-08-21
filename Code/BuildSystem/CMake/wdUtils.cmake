@@ -230,7 +230,7 @@ function(wd_set_project_ide_folder TARGET_NAME PROJECT_SOURCE_DIR)
 	get_property(WD_SUBMODULE_MODE GLOBAL PROPERTY WD_SUBMODULE_MODE)
 
 	if(WD_SUBMODULE_MODE)
-		set_property(TARGET ${TARGET_NAME} PROPERTY FOLDER "ezEngine/${IDE_FOLDER}")
+		set_property(TARGET ${TARGET_NAME} PROPERTY FOLDER "wdEngine/${IDE_FOLDER}")
 	else()
 		set_property(TARGET ${TARGET_NAME} PROPERTY FOLDER ${IDE_FOLDER})
 	endif()
@@ -240,8 +240,8 @@ endfunction()
 # ## wd_add_output_wd_prefix(<target>)
 # #####################################
 function(wd_add_output_wd_prefix TARGET_NAME)
-	set_target_properties(${TARGET_NAME} PROPERTIES IMPORT_PREFIX "wd")
-	set_target_properties(${TARGET_NAME} PROPERTIES PREFIX "wd")
+	set_target_properties(${TARGET_NAME} PROPERTIES IMPORT_PREFIX "")
+	set_target_properties(${TARGET_NAME} PROPERTIES PREFIX "")
 endfunction()
 
 # #####################################
@@ -307,14 +307,14 @@ endfunction()
 # ## wd_glob_source_files(<path-to-folder> <out-files>)
 # #####################################
 function(wd_glob_source_files ROOT_DIR RESULT_ALL_SOURCES)
-	file(GLOB_RECURSE RELEVANT_FILES 
-		"${ROOT_DIR}/*.cpp" 
-		"${ROOT_DIR}/*.cc" 
-		"${ROOT_DIR}/*.h" 
-		"${ROOT_DIR}/*.hpp" 
-		"${ROOT_DIR}/*.inl" 
-		"${ROOT_DIR}/*.c" 
-		"${ROOT_DIR}/*.cs" 
+	file(GLOB_RECURSE RELEVANT_FILES
+		"${ROOT_DIR}/*.cpp"
+		"${ROOT_DIR}/*.cc"
+		"${ROOT_DIR}/*.h"
+		"${ROOT_DIR}/*.hpp"
+		"${ROOT_DIR}/*.inl"
+		"${ROOT_DIR}/*.c"
+		"${ROOT_DIR}/*.cs"
 		"${ROOT_DIR}/*.ui"
 		"${ROOT_DIR}/*.qrc"
 		"${ROOT_DIR}/*.def"
@@ -421,7 +421,7 @@ endmacro()
 function(wd_add_external_projects_folder PROJECT_NUMBER)
 	set(CACHE_VAR_NAME "WD_EXTERNAL_PROJECT${PROJECT_NUMBER}")
 
-	set(${CACHE_VAR_NAME} "" CACHE PATH "A folder outside the ez repository that should be parsed for CMakeLists.txt files to include projects into the ez solution.")
+	set(${CACHE_VAR_NAME} "" CACHE PATH "A folder outside the engine repository that should be parsed for CMakeLists.txt files to include projects into the engine solution.")
 
 	set(CACHE_VAR_VALUE ${${CACHE_VAR_NAME}})
 
@@ -477,7 +477,7 @@ endfunction()
 # ## wd_build_filter_init()
 # #####################################
 
-# The build filter is intended to only build a subset of ezEngine.
+# The build filter is intended to only build a subset of wdEngine.
 # The build filters are configured through cmake files in the 'BuildFilters' directory.
 function(wd_build_filter_init)
 	file(GLOB_RECURSE FILTER_FILES "${CMAKE_SOURCE_DIR}/${WD_SUBMODULE_PREFIX_PATH}/Code/BuildSystem/CMake/BuildFilters/*.BuildFilter")

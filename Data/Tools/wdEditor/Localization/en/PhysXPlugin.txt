@@ -1,0 +1,64 @@
+PhysX.Settings.Project;PhysX Project Settings...
+Physics;Physics
+Joints;Joints
+Shapes;Shapes
+wdPxCenterOfMassComponent;Center of Mass (PhysX);;https://wdengine.net/pages/docs/physics/collision-shapes/physx-center-of-mass-component.html
+wdPxCharacterControllerComponent;Character Controller (PhysX);;https://wdengine.net/pages/docs/physics/special/physx-character-controller.html
+wdPxDynamicActorComponent;Dynamic Actor (PhysX);;https://wdengine.net/pages/docs/physics/actors/physx-dynamic-actor-component.html
+wdPxStaticActorComponent;Static Actor (PhysX);;https://wdengine.net/pages/docs/physics/actors/physx-static-actor-component.html
+wdPx6DOFJointComponent;6DOF Joint (PhysX);;https://wdengine.net/pages/docs/physics/joints/physx-6dof-joint-component.html
+wdPxDistanceJointComponent;Distance Joint (PhysX);;https://wdengine.net/pages/docs/physics/joints/physx-distance-joint-component.html
+wdPxFixedJointComponent;Fixed Joint (PhysX);;https://wdengine.net/pages/docs/physics/joints/physx-fixed-joint-component.html
+wdPxShapeBoxComponent;Box Shape (PhysX);;https://wdengine.net/pages/docs/physics/collision-shapes/physx-box-shape-component.html
+wdPxShapeSphereComponent;Sphere Shape (PhysX);;https://wdengine.net/pages/docs/physics/collision-shapes/physx-sphere-shape-component.html
+wdPxShapeCapsuleComponent;Capsule Shape (PhysX);;https://wdengine.net/pages/docs/physics/collision-shapes/physx-capsule-shape-component.html
+wdPxShapeConvexComponent;Convex Hull Shape (PhysX);;https://wdengine.net/pages/docs/physics/collision-shapes/physx-convex-shape-component.html
+wdPxSettingsComponent;Physics Settings (PhysX);;https://wdengine.net/pages/docs/physics/physx-settings-component.html
+wdPxSteppingMode::Variable;Variable
+wdPxSteppingMode::Fixed;Fixed
+wdPxSteppingMode::SemiFixed;SemiFixed
+wdPxTriggerComponent;Physics Trigger (PhysX);;https://wdengine.net/pages/docs/physics/actors/physx-trigger-component.html
+wdPxVisColMeshComponent;Collision Mesh Visualizer (PhysX)
+wdBreakableSheetComponent;Breakable Sheet (PhysX);;https://wdengine.net/pages/docs/physics/actors/physx-breakable-sheet-component.html
+wdPxAxis::X;X
+wdPxAxis::Y;Y
+wdPxAxis::Z;Z
+wdConvexCollisionMeshType::ConvexHull;Convex Hull
+wdConvexCollisionMeshType::Cylinder;Cylinder
+wdConvexCollisionMeshType::ConvexDecomposition;Convex Decomposition
+wdOnPhysXContact::SendReportMsg;Send Contact Reports
+wdOnPhysXContact::ImpactReactions;Impact Reactions
+wdOnPhysXContact::SlideReactions;Slide Reactions
+wdOnPhysXContact::RollXReactions;Roll X Reactions
+wdOnPhysXContact::RollYReactions;Roll Y Reactions
+wdOnPhysXContact::RollZReactions;Roll Z Reactions
+wdPxPrismaticJointComponent;PhysX Prismatic Joint;;https://wdengine.net/pages/docs/physics/joints/physx-prismatic-joint-component.html
+wdPxRevoluteJointComponent;PhysX Revolute Joint;;https://wdengine.net/pages/docs/physics/joints/physx-revolute-joint-component.html
+wdPxSphericalJointComponent;PhysX Spherical Joint;;https://wdengine.net/pages/docs/physics/joints/physx-spherical-joint-component.html
+wdPxJointLimitMode::NoLimit; No Limit
+wdPxJointLimitMode::HardLimit; Hard Limit
+wdPxJointLimitMode::SoftLimit; Soft Limit
+wdPxJointDriveMode::NoDrive;No Drive
+wdPxJointDriveMode::DriveAndSpin; Drive and Spin
+wdPxJointDriveMode::DriveAndBrake; Drive and Brake
+wdPxGrabObjectComponent;Grab Object (PhysX);;https://wdengine.net/pages/docs/physics/special/physx-grab-object-component.html
+wdPxCharacterCapsuleShapeComponent;Character Capsule Shape (PhysX);;https://wdengine.net/pages/docs/physics/special/physx-character-controller.html
+wdPxBoneColliderComponent;Bone Collider (PhysX);;https://wdengine.net/pages/docs/physics/ragdolls/physx-bone-collider-component.html
+wdPxRopeComponent;Physical Rope (PhysX);;https://wdengine.net/pages/docs/physics/special/physx-rope-component.html
+wdPxQueryShapeActorComponent;Query Shape Actor (PhysX);;https://wdengine.net/pages/docs/physics/actors/physx-queryshape-actor-component.html
+wdPxRagdollComponent;Ragdoll (PhysX);;https://wdengine.net/pages/docs/physics/ragdolls/physx-ragdoll-component.html
+wdPxActorLockingFlags::FrewdePositionX;Frewde Position X
+wdPxActorLockingFlags::FrewdePositionY;Frewde Position Y
+wdPxActorLockingFlags::FrewdePositionZ;Frewde Position Z
+wdPxActorLockingFlags::FrewdeRotationX;Frewde Rotation X
+wdPxActorLockingFlags::FrewdeRotationY;Frewde Rotation Y
+wdPxActorLockingFlags::FrewdeRotationZ;Frewde Rotation Z
+wdPxControlledRagdollComponent;Controlled Ragdoll (PhysX);;https://wdengine.net/pages/docs/physics/ragdolls/physx-ragdoll-component.html
+wdPxSimulatedRagdollComponent;Simulated Ragdoll (PhysX);;https://wdengine.net/pages/docs/physics/ragdolls/physx-ragdoll-component.html
+wdPxRagdollStart::BindPose;Bind Pose
+wdPxRagdollStart::WaitForPose;Wait for Pose
+wdPxRagdollStart::Wait;Wait
+Constraints;Constraints
+wdPxRagdollConstraint;Constraint
+Collision Mesh;PhysX Triangle Collision Mesh
+Collision Mesh (Convex);PhysX Convex Collision Mesh

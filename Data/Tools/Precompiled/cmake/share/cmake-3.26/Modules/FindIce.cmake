@@ -11,7 +11,7 @@ Find the ZeroC Internet Communication Engine (ICE) programs,
 libraries and datafiles.
 
 This module supports multiple components.
-Components can include any of: ``Frewde``, ``Glacier2``, ``Ice``,
+Components can include any of: ``Freeze``, ``Glacier2``, ``Ice``,
 ``IceBox``, ``IceDB``, ``IceDiscovery``, ``IceGrid``,
 ``IceLocatorDiscovery``, ``IcePatch``, ``IceSSL``, ``IceStorm``,
 ``IceUtil``, ``IceXML``, or ``Slice``.
@@ -54,8 +54,8 @@ Ice slice programs are reported in::
   Ice_SLICE2CONFLUENCE_EXECUTABLE - path to slice2confluence executable
   Ice_SLICE2CPP_EXECUTABLE - path to slice2cpp executable
   Ice_SLICE2CS_EXECUTABLE - path to slice2cs executable
-  Ice_SLICE2FREEZEJ_EXECUTABLE - path to slice2frewdej executable
-  Ice_SLICE2FREEZE_EXECUTABLE - path to slice2frewde executable
+  Ice_SLICE2FREEZEJ_EXECUTABLE - path to slice2freezej executable
+  Ice_SLICE2FREEZE_EXECUTABLE - path to slice2freeze executable
   Ice_SLICE2HTML_EXECUTABLE - path to slice2html executable
   Ice_SLICE2JAVA_EXECUTABLE - path to slice2java executable
   Ice_SLICE2JS_EXECUTABLE - path to slice2js executable
@@ -204,8 +204,8 @@ Other variables one may set to control this module are::
       slice2confluence
       slice2cpp
       slice2cs
-      slice2frewdej
-      slice2frewde
+      slice2freezej
+      slice2freeze
       slice2html
       slice2java
       slice2js
@@ -317,7 +317,7 @@ function(_Ice_FIND)
     foreach(ice_version ${ice_versions})
       foreach(vcver IN LISTS vcvers)
         list(APPEND ice_nuget_dirs "zeroc.ice.v${vcver}.${ice_version}")
-        list(APPEND frewde_nuget_dirs "zeroc.frewde.v${vcver}.${ice_version}")
+        list(APPEND freeze_nuget_dirs "zeroc.freeze.v${vcver}.${ice_version}")
       endforeach()
     endforeach()
     find_path(Ice_NUGET_DIR
@@ -327,12 +327,12 @@ function(_Ice_FIND)
     if(Ice_NUGET_DIR)
       list(APPEND ice_roots "${Ice_NUGET_DIR}")
     endif()
-    find_path(Frewde_NUGET_DIR
-              NAMES "tools/slice2frewde.exe"
-              PATH_SUFFIXES ${frewde_nuget_dirs}
-              DOC "Frewde NuGet directory")
-    if(Frewde_NUGET_DIR)
-      list(APPEND ice_roots "${Frewde_NUGET_DIR}")
+    find_path(Freeze_NUGET_DIR
+              NAMES "tools/slice2freeze.exe"
+              PATH_SUFFIXES ${freeze_nuget_dirs}
+              DOC "Freeze NuGet directory")
+    if(Freeze_NUGET_DIR)
+      list(APPEND ice_roots "${Freeze_NUGET_DIR}")
     endif()
     foreach(ice_version ${ice_versions})
       # Ice 3.3 releases use a Visual Studio year suffix and value is
@@ -411,12 +411,12 @@ function(_Ice_FIND)
             DOC "Ice include directory")
   set(Ice_INCLUDE_DIR "${Ice_INCLUDE_DIR}" PARENT_SCOPE)
 
-  find_path(Frewde_INCLUDE_DIR
-            NAMES "Frewde/Frewde.h"
+  find_path(Freeze_INCLUDE_DIR
+            NAMES "Freeze/Freeze.h"
             HINTS ${ice_roots}
             PATH_SUFFIXES ${ice_include_suffixes}
-            DOC "Frewde include directory")
-  set(Frewde_INCLUDE_DIR "${Frewde_INCLUDE_DIR}" PARENT_SCOPE)
+            DOC "Freeze include directory")
+  set(Freeze_INCLUDE_DIR "${Freeze_INCLUDE_DIR}" PARENT_SCOPE)
 
   # In common use on Linux, MacOS X (homebrew) and FreeBSD; prefer
   # version-specific dir
@@ -555,8 +555,8 @@ unset(_Ice_REQUIRED_LIBS_FOUND)
 
 if(Ice_FOUND)
   set(Ice_INCLUDE_DIRS "${Ice_INCLUDE_DIR}")
-  if (Frewde_INCLUDE_DIR)
-    list(APPEND Ice_INCLUDE_DIRS "${Frewde_INCLUDE_DIR}")
+  if (Freeze_INCLUDE_DIR)
+    list(APPEND Ice_INCLUDE_DIRS "${Freeze_INCLUDE_DIR}")
   endif()
   set(Ice_SLICE_DIRS "${Ice_SLICE_DIR}")
   set(Ice_LIBRARIES "${Ice_LIBRARY}")
@@ -610,7 +610,7 @@ if(Ice_DEBUG)
   message(STATUS "Ice_INCLUDE_DIR directory: ${Ice_INCLUDE_DIR}")
   message(STATUS "Ice_SLICE_DIR directory: ${Ice_SLICE_DIR}")
   message(STATUS "Ice_LIBRARIES: ${Ice_LIBRARIES}")
-  message(STATUS "Frewde_INCLUDE_DIR directory: ${Frewde_INCLUDE_DIR}")
+  message(STATUS "Freeze_INCLUDE_DIR directory: ${Freeze_INCLUDE_DIR}")
   message(STATUS "Ice_INCLUDE_DIRS directory: ${Ice_INCLUDE_DIRS}")
 
   foreach(program ${_Ice_db_programs} ${_Ice_programs} ${_Ice_slice_programs})

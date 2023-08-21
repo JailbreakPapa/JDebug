@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.01.10.00">
+    <object class="AudioFile" id="{8a0efba7-1d09-4a49-8fc5-a665508de541}">
+        <property name="assetPath">
+            <value>FreeSound.org/Bumps/77525__superex1110__door-bump-1.wav</value>
+        </property>
+        <property name="frequencyInKHz">
+            <value>48</value>
+        </property>
+        <property name="channelCount">
+            <value>1</value>
+        </property>
+        <property name="length">
+            <value>0.65406249999999999</value>
+        </property>
+        <relationship name="masterAssetFolder">
+            <destination>{38395770-0db2-44d2-8ad3-1114e556ca7a}</destination>
+        </relationship>
+    </object>
+</objects>

@@ -1,0 +1,573 @@
+HeaderV2
+{
+o
+{
+	Uuid %id{u4{13295438652935290752,4631807439575839777}}
+	s %t{"wdAssetDocumentInfo"}
+	u3 %v{2}
+	s %n{"Header"}
+	p
+	{
+		s %AssetType{"Prefab"}
+		VarArray %Dependencies{}
+		Uuid %DocumentID{u4{13295438652935290752,4631807439575839777}}
+		u4 %Hash{16813256099029076319}
+		VarArray %MetaInfo
+		{
+			Uuid{u4{1023796350628063107,16245155239895918461}}
+		}
+		VarArray %Outputs{}
+		VarArray %PackageDeps
+		{
+			s{"{ 32e7555a-7df6-4607-8605-c319dc43c467 }"}
+			s{"{ 59752386-0bc7-4afc-ae77-699ffd868a15 }"}
+			s{"{ 9db69eaf-518a-4832-97b0-dd8233df1b74 }"}
+			s{"{ aa1fc14c-cf99-4ae1-a9e6-f1fe042695c9 }"}
+		}
+		VarArray %References
+		{
+			s{"{ 59752386-0bc7-4afc-ae77-699ffd868a15 }"}
+		}
+	}
+}
+o
+{
+	Uuid %id{u4{1023796350628063107,16245155239895918461}}
+	s %t{"wdExposedParameters"}
+	u3 %v{3}
+	p
+	{
+		VarArray %Parameters{}
+	}
+}
+}
+Objects
+{
+o
+{
+	Uuid %id{u4{9219030056354882698,4821278659557444936}}
+	s %t{"wdPrefabDocumentSettings"}
+	u3 %v{1}
+	p
+	{
+		VarArray %ExposedProperties{}
+	}
+}
+o
+{
+	Uuid %id{u4{8666480064589678483,5127808351306422259}}
+	s %t{"wdGameObject"}
+	u3 %v{1}
+	p
+	{
+		b %Active{1}
+		VarArray %Children{}
+		VarArray %Components
+		{
+			Uuid{u4{18167941287382555050,5154481506601184267}}
+		}
+		s %GlobalKey{""}
+		Vec3 %LocalPosition{f{0,0,0}}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
+		f %LocalUniformScaling{0x0000803F}
+		s %Mode{"wdObjectMode::Automatic"}
+		s %Name{"Spawn"}
+		VarArray %Tags
+		{
+			s{"CastShadow"}
+			s{"AutoColMesh"}
+		}
+	}
+}
+o
+{
+	Uuid %id{u4{18167941287382555050,5154481506601184267}}
+	s %t{"wdSpawnComponent"}
+	u3 %v{3}
+	p
+	{
+		b %Active{1}
+		b %AttachAsChild{0}
+		Time %DelayRange{d{0}}
+		Angle %Deviation{f{0xC2B8B23D}}
+		Time %MinDelay{d{0x000000000000F03F}}
+		VarDict %Parameters{}
+		s %Prefab{"{ aa1fc14c-cf99-4ae1-a9e6-f1fe042695c9 }"}
+		b %SpawnAtStart{0}
+		b %SpawnContinuously{0}
+	}
+}
+o
+{
+	Uuid %id{u4{11310968622072014773,5370704508267725264}}
+	s %t{"wdGameObject"}
+	u3 %v{1}
+	p
+	{
+		b %Active{1}
+		VarArray %Children
+		{
+			Uuid{u4{8666480064589678483,5127808351306422259}}
+			Uuid{u4{16990817084680357979,9613569079412342107}}
+			Uuid{u4{2413507035309091364,10624336845407605446}}
+		}
+		VarArray %Components
+		{
+			Uuid{u4{12823216946411260599,5406109143694418929}}
+		}
+		s %GlobalKey{""}
+		Vec3 %LocalPosition{f{0,0,0}}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
+		f %LocalUniformScaling{0x0000803F}
+		s %Mode{"wdObjectMode::Automatic"}
+		s %Name{"ShotgunRoot"}
+		VarArray %Tags
+		{
+			s{"CastShadow"}
+			s{"AutoColMesh"}
+		}
+	}
+}
+o
+{
+	Uuid %id{u4{12823216946411260599,5406109143694418929}}
+	s %t{"wdTypeScriptComponent"}
+	u3 %v{4}
+	p
+	{
+		b %Active{1}
+		b %HandleGlobalEvents{0}
+		VarDict %Parameters{}
+		b %PassThroughUnhandledEvents{0}
+		s %Script{"{ 32e7555a-7df6-4607-8605-c319dc43c467 }"}
+	}
+}
+o
+{
+	Uuid %id{u4{18096612296587978288,6449934965513159559}}
+	s %t{"wdSceneDocumentRoot"}
+	u3 %v{2}
+	s %n{"ObjectTree"}
+	p
+	{
+		VarArray %Children
+		{
+			Uuid{u4{11310968622072014773,5370704508267725264}}
+		}
+		Uuid %Settings{u4{9219030056354882698,4821278659557444936}}
+	}
+}
+o
+{
+	Uuid %id{u4{16990817084680357979,9613569079412342107}}
+	s %t{"wdGameObject"}
+	u3 %v{1}
+	p
+	{
+		b %Active{1}
+		VarArray %Children{}
+		VarArray %Components
+		{
+			Uuid{u4{15717013169626342747,10157802832136829792}}
+		}
+		s %GlobalKey{""}
+		Vec3 %LocalPosition{f{0,0,0}}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
+		f %LocalUniformScaling{0x0000803F}
+		s %Mode{"wdObjectMode::Automatic"}
+		s %Name{"ShootSound"}
+		VarArray %Tags
+		{
+			s{"CastShadow"}
+			s{"AutoColMesh"}
+		}
+	}
+}
+o
+{
+	Uuid %id{u4{15717013169626342747,10157802832136829792}}
+	s %t{"wdFmodEventComponent"}
+	u3 %v{4}
+	p
+	{
+		b %Active{1}
+		u1 %OcclusionCollisionLayer{0}
+		f %OcclusionThreshold{0x0000003F}
+		s %OnFinishedAction{"wdOnComponentFinishedAction::None"}
+		b %Paused{1}
+		f %Pitch{0x0000803F}
+		b %ShowDebugInfo{0}
+		s %SoundEvent{"{ 9db69eaf-518a-4832-97b0-dd8233df1b74 }"}
+		b %UseOcclusion{0}
+		f %Volume{0xCDCC4C3E}
+	}
+}
+o
+{
+	Uuid %id{u4{7627386173724517154,10285003023826458981}}
+	s %t{"wdMeshComponent"}
+	u3 %v{3}
+	p
+	{
+		b %Active{1}
+		Color %Color{f{0x543C0B3D,0x8423333D,0x631B073D,0x0000803F}}
+		VarArray %Materials{}
+		s %Mesh{"{ 59752386-0bc7-4afc-ae77-699ffd868a15 }"}
+	}
+}
+o
+{
+	Uuid %id{u4{2413507035309091364,10624336845407605446}}
+	s %t{"wdGameObject"}
+	u3 %v{1}
+	p
+	{
+		b %Active{1}
+		VarArray %Children{}
+		VarArray %Components
+		{
+			Uuid{u4{7627386173724517154,10285003023826458981}}
+		}
+		s %GlobalKey{""}
+		Vec3 %LocalPosition{f{0x3A8C613E,0x913DC13D,0x463A80BE}}
+		Quat %LocalRotation{f{0,0,0x090E7ABD,0xC3857F3F}}
+		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
+		f %LocalUniformScaling{0x0000803F}
+		s %Mode{"wdObjectMode::Automatic"}
+		s %Name{"Graphics"}
+		VarArray %Tags
+		{
+			s{"AutoColMesh"}
+		}
+	}
+}
+}
+Types
+{
+o
+{
+	Uuid %id{u4{6914292285925798136,1108246313736053318}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Abstract|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdReflectedClass"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdComponent"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{7306866003362116324,1480773640113041639}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdFmodComponent"}
+		s %PluginName{"wdEditorPluginFmod"}
+		VarArray %Properties{}
+		s %TypeName{"wdFmodEventComponent"}
+		u3 %TypeVersion{4}
+	}
+}
+o
+{
+	Uuid %id{u4{11638255232360359673,3108610646416571142}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdReflectedClass"}
+		s %PluginName{"wdEditorPluginScene"}
+		VarArray %Properties{}
+		s %TypeName{"wdExposedSceneProperty"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{14332645745114734426,3197497487504472660}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdSceneDocumentSettingsBase"}
+		s %PluginName{"wdEditorPluginScene"}
+		VarArray %Properties{}
+		s %TypeName{"wdPrefabDocumentSettings"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{14633628111157529947,3328384510238863063}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdMeshComponentBase"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdMeshComponent"}
+		u3 %TypeVersion{3}
+	}
+}
+o
+{
+	Uuid %id{u4{9274987833270370026,4800691691683468795}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdComponent"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdSpawnComponent"}
+		u3 %TypeVersion{3}
+	}
+}
+o
+{
+	Uuid %id{u4{5109955776826617296,6026817826851389185}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Abstract|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdComponent"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdEventMessageHandlerComponent"}
+		u3 %TypeVersion{3}
+	}
+}
+o
+{
+	Uuid %id{u4{7605758958972330253,6687734095884105025}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Abstract|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdRenderComponent"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdMeshComponentBase"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{13649880205026559927,7297274558339895637}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdGameObject"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{6089094783765586323,8705960867921430659}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdReflectedClass"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdDocumentRoot"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{3251891958765718680,9159887340540620231}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdDocumentRoot"}
+		s %PluginName{"wdEditorPluginScene"}
+		VarArray %Properties{}
+		s %TypeName{"wdSceneDocumentRoot"}
+		u3 %TypeVersion{2}
+	}
+}
+o
+{
+	Uuid %id{u4{14543630447052729839,9459039542380974471}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::IsEnum|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdEnumBase"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdObjectMode"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{1059777785414581172,10096107093115669027}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Abstract|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdComponent"}
+		s %PluginName{"wdEditorPluginFmod"}
+		VarArray %Properties{}
+		s %TypeName{"wdFmodComponent"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{11568452837770943362,10420668725217181016}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdEventMessageHandlerComponent"}
+		s %PluginName{"wdEditorPluginTypeScript"}
+		VarArray %Properties{}
+		s %TypeName{"wdTypeScriptComponent"}
+		u3 %TypeVersion{4}
+	}
+}
+o
+{
+	Uuid %id{u4{14700230518358869173,11472901527618371423}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdReflectedClass"}
+		s %PluginName{"wdEditorPluginScene"}
+		VarArray %Properties{}
+		s %TypeName{"wdSceneDocumentSettingsBase"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{2869469983493172804,11764438314605031013}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::IsEnum|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdEnumBase"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdOnComponentFinishedAction"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{16777871838542487558,12116962178824346014}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Abstract|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdComponent"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdRenderComponent"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{2947336711354777548,15013008608905564043}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdEnumBase"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{983387834180907111,17935407260904399048}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdReflectedClass"}
+		u3 %TypeVersion{1}
+	}
+}
+}

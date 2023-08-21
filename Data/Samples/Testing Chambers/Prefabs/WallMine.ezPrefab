@@ -1,0 +1,1280 @@
+HeaderV2
+{
+o
+{
+	Uuid %id{u4{6139313669192595336,4990238963837827516}}
+	s %t{"wdAssetDocumentInfo"}
+	u3 %v{2}
+	s %n{"Header"}
+	p
+	{
+		s %AssetType{"Prefab"}
+		VarArray %Dependencies{}
+		Uuid %DocumentID{u4{6139313669192595336,4990238963837827516}}
+		u4 %Hash{8016298798466826946}
+		VarArray %MetaInfo
+		{
+			Uuid{u4{2176436717384189321,10260509994267096342}}
+		}
+		VarArray %Outputs{}
+		VarArray %PackageDeps
+		{
+			s{"{ 0ff17408-ff78-4ad3-bbac-0f2bc5da7612 }"}
+			s{"{ 6742f1c2-bd06-45e4-9126-8a3ce7ecb4dc }"}
+			s{"{ 6b97823d-206c-45c2-9b3e-566efb9a69f4 }"}
+			s{"{ 9bd6d5f2-c682-451b-91a0-8b719e3e29c1 }"}
+			s{"{ 9c30aec4-9d5b-4a58-86cb-bc354330899e }"}
+		}
+		VarArray %References
+		{
+			s{"{ 0ff17408-ff78-4ad3-bbac-0f2bc5da7612 }"}
+			s{"{ 6742f1c2-bd06-45e4-9126-8a3ce7ecb4dc }"}
+			s{"{ 9c30aec4-9d5b-4a58-86cb-bc354330899e }"}
+		}
+	}
+}
+o
+{
+	Uuid %id{u4{2176436717384189321,10260509994267096342}}
+	s %t{"wdExposedParameters"}
+	u3 %v{3}
+	p
+	{
+		VarArray %Parameters{}
+	}
+}
+}
+Objects
+{
+o
+{
+	Uuid %id{u4{149827118127633536,4888237110960889622}}
+	s %t{"wdTypeScriptComponent"}
+	u3 %v{4}
+	p
+	{
+		b %Active{1}
+		b %HandleGlobalEvents{0}
+		VarDict %Parameters{}
+		b %PassThroughUnhandledEvents{0}
+		s %Script{"{ 6b97823d-206c-45c2-9b3e-566efb9a69f4 }"}
+	}
+}
+o
+{
+	Uuid %id{u4{15137874565383769514,4958061899013656978}}
+	s %t{"wdPrefabDocumentSettings"}
+	u3 %v{1}
+	p
+	{
+		VarArray %ExposedProperties{}
+	}
+}
+o
+{
+	Uuid %id{u4{12949761291423379120,5105533768794747020}}
+	s %t{"wdGameObject"}
+	u3 %v{1}
+	p
+	{
+		b %Active{1}
+		VarArray %Children{}
+		VarArray %Components
+		{
+			Uuid{u4{12639563811996490377,5690611128474675844}}
+		}
+		s %GlobalKey{""}
+		Vec3 %LocalPosition{f{0x0000403F,0,0}}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
+		f %LocalUniformScaling{0x0000803F}
+		s %Mode{"wdObjectMode::Automatic"}
+		s %Name{"BeamEnd"}
+		VarArray %Tags
+		{
+			s{"CastShadow"}
+			s{"AutoColMesh"}
+		}
+	}
+}
+o
+{
+	Uuid %id{u4{11444758359994080170,5111114084680607557}}
+	s %t{"wdBeamComponent"}
+	u3 %v{1}
+	p
+	{
+		b %Active{1}
+		Color %Color{f{0,0x0000803F,0xBEF5763F,0x0000803F}}
+		s %Material{"{ 6742f1c2-bd06-45e4-9126-8a3ce7ecb4dc }"}
+		s %TargetObject{"{ 95c5b08c-7fe9-46da-b0ee-64a548cbb6b3 }"}
+		f %UVUnitsPerWorldUnit{0x0000803F}
+		f %Width{0x8FC2F53C}
+	}
+}
+o
+{
+	Uuid %id{u4{17117110876356793778,5165705557168485943}}
+	s %t{"wdJoltShapeSphereComponent"}
+	u3 %v{1}
+	p
+	{
+		b %Active{1}
+		f %Radius{0x9A99193E}
+	}
+}
+o
+{
+	Uuid %id{u4{782809491721065390,5166040384476716229}}
+	s %t{"wdGameObject"}
+	u3 %v{1}
+	p
+	{
+		b %Active{1}
+		VarArray %Children{}
+		VarArray %Components
+		{
+			Uuid{u4{12901650910132305319,5505842477214554988}}
+		}
+		s %GlobalKey{""}
+		Vec3 %LocalPosition{f{0x6A4CDD31,0,0xE8FC033C}}
+		Quat %LocalRotation{f{0xFEFFFF3E,0xFEFFFF3E,0xFEFFFF3E,0x0000003F}}
+		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
+		f %LocalUniformScaling{0xCDCC4C3E}
+		s %Mode{"wdObjectMode::Automatic"}
+		s %Name{""}
+		VarArray %Tags{}
+	}
+}
+o
+{
+	Uuid %id{u4{13444449700750971542,5268845668517775398}}
+	s %t{"wdRaycastComponent"}
+	u3 %v{3}
+	p
+	{
+		b %Active{1}
+		u1 %CollisionLayerEndPoint{0}
+		u1 %CollisionLayerTrigger{0}
+		b %DisableTargetObjectOnNoHit{0}
+		b %ForceTargetParentless{0}
+		f %MaxDistance{0x00002041}
+		s %RaycastEndObject{"{ 95c5b08c-7fe9-46da-b0ee-64a548cbb6b3 }"}
+		s %ShapeTypesToHit{"wdPhysicsShapeType::Static|wdPhysicsShapeType::Dynamic|wdPhysicsShapeType::Query|wdPhysicsShapeType::Character|wdPhysicsShapeType::Ragdoll|wdPhysicsShapeType::Rope"}
+		s %TriggerMessage{""}
+	}
+}
+o
+{
+	Uuid %id{u4{11711513148535805616,5413588136600003061}}
+	s %t{"wdGameObject"}
+	u3 %v{1}
+	p
+	{
+		b %Active{1}
+		VarArray %Children
+		{
+			Uuid{u4{782809491721065390,5166040384476716229}}
+			Uuid{u4{9097494308613479599,5735630283704754873}}
+			Uuid{u4{12949761291423379120,5105533768794747020}}
+			Uuid{u4{1814314605007123885,5461114339868175847}}
+		}
+		VarArray %Components
+		{
+			Uuid{u4{149827118127633536,4888237110960889622}}
+			Uuid{u4{15529041610348742066,5720442254322789986}}
+			Uuid{u4{17117110876356793778,5165705557168485943}}
+		}
+		s %GlobalKey{""}
+		Vec3 %LocalPosition{f{0,0,0}}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
+		f %LocalUniformScaling{0x0000803F}
+		s %Mode{"wdObjectMode::Automatic"}
+		s %Name{"WallMine"}
+		VarArray %Tags{}
+	}
+}
+o
+{
+	Uuid %id{u4{1814314605007123885,5461114339868175847}}
+	s %t{"wdGameObject"}
+	u3 %v{1}
+	p
+	{
+		b %Active{1}
+		VarArray %Children{}
+		VarArray %Components
+		{
+			Uuid{u4{11444758359994080170,5111114084680607557}}
+			Uuid{u4{13444449700750971542,5268845668517775398}}
+		}
+		s %GlobalKey{""}
+		Vec3 %LocalPosition{f{0xEA38243E,0,0}}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
+		f %LocalUniformScaling{0x0000803F}
+		s %Mode{"wdObjectMode::Automatic"}
+		s %Name{"Beam"}
+		VarArray %Tags
+		{
+			s{"CastShadow"}
+			s{"AutoColMesh"}
+		}
+	}
+}
+o
+{
+	Uuid %id{u4{12901650910132305319,5505842477214554988}}
+	s %t{"wdMeshComponent"}
+	u3 %v{3}
+	p
+	{
+		b %Active{1}
+		Color %Color{f{0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		VarArray %Materials
+		{
+			s{"{ 0ff17408-ff78-4ad3-bbac-0f2bc5da7612 }"}
+		}
+		s %Mesh{"{ 9c30aec4-9d5b-4a58-86cb-bc354330899e }"}
+	}
+}
+o
+{
+	Uuid %id{u4{12639563811996490377,5690611128474675844}}
+	s %t{"wdShapeIconComponent"}
+	u3 %v{1}
+	p
+	{
+		b %Active{1}
+	}
+}
+o
+{
+	Uuid %id{u4{15529041610348742066,5720442254322789986}}
+	s %t{"wdJoltStaticActorComponent"}
+	u3 %v{1}
+	p
+	{
+		b %Active{1}
+		u1 %CollisionLayer{10}
+		s %CollisionMesh{""}
+		b %IncludeInNavmesh{0}
+		b %PullSurfacesFromGraphicsMesh{0}
+		s %Surface{""}
+	}
+}
+o
+{
+	Uuid %id{u4{9097494308613479599,5735630283704754873}}
+	s %t{"wdGameObject"}
+	u3 %v{1}
+	p
+	{
+		b %Active{1}
+		VarArray %Children{}
+		VarArray %Components
+		{
+			Uuid{u4{5996158140775873664,5756419581997195701}}
+		}
+		s %GlobalKey{""}
+		Vec3 %LocalPosition{f{0x3E1F9B3E,0,0}}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
+		f %LocalUniformScaling{0x0000803F}
+		s %Mode{"wdObjectMode::Automatic"}
+		s %Name{"Explosion"}
+		VarArray %Tags{}
+	}
+}
+o
+{
+	Uuid %id{u4{5996158140775873664,5756419581997195701}}
+	s %t{"wdSpawnComponent"}
+	u3 %v{3}
+	p
+	{
+		b %Active{1}
+		b %AttachAsChild{0}
+		Time %DelayRange{d{0}}
+		Angle %Deviation{f{0}}
+		Time %MinDelay{d{0x000000000000F03F}}
+		VarDict %Parameters{}
+		s %Prefab{"{ 9bd6d5f2-c682-451b-91a0-8b719e3e29c1 }"}
+		b %SpawnAtStart{0}
+		b %SpawnContinuously{0}
+	}
+}
+o
+{
+	Uuid %id{u4{18096612296587978288,6449934965513159559}}
+	s %t{"wdSceneDocumentRoot"}
+	u3 %v{2}
+	s %n{"ObjectTree"}
+	p
+	{
+		VarArray %Children
+		{
+			Uuid{u4{11711513148535805616,5413588136600003061}}
+		}
+		Uuid %Settings{u4{15137874565383769514,4958061899013656978}}
+	}
+}
+}
+Types
+{
+o
+{
+	Uuid %id{u4{5718272066365183534,168166218017990600}}
+	s %t{"wdDirectionVisualizerAttribute"}
+	u3 %v{1}
+	p
+	{
+		s %Anchor{""}
+		s %Axis{"wdBasisAxis::PositiveX"}
+		Color %Color{f{0x0873A53E,0x73491C3F,0x6CA5023D,0x0000803F}}
+		s %Property1{""}
+		s %Property2{""}
+		s %Property3{""}
+		s %Property4{""}
+		s %Property5{""}
+		f %Scale{0x0000003F}
+	}
+}
+o
+{
+	Uuid %id{u4{9700792999123614529,620916848704846779}}
+	s %t{"wdReflectedPropertyDescriptor"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes
+		{
+			Uuid{u4{8187175378985812446,14074895076772299678}}
+		}
+		s %Category{"wdPropertyCategory::Member"}
+		s %Flags{"wdPropertyFlags::StandardType|wdPropertyFlags::Phantom"}
+		s %Name{"CollisionLayerTrigger"}
+		s %Type{"wdUInt8"}
+	}
+}
+o
+{
+	Uuid %id{u4{6914292285925798136,1108246313736053318}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Abstract|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdReflectedClass"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdComponent"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{1421301365544915085,1412605750390658959}}
+	s %t{"wdReflectedPropertyDescriptor"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes
+		{
+			Uuid{u4{7205848659335305938,12929639479763655777}}
+		}
+		s %Category{"wdPropertyCategory::Member"}
+		s %Flags{"wdPropertyFlags::StandardType|wdPropertyFlags::Phantom"}
+		s %Name{"IncludeInNavmesh"}
+		s %Type{"bool"}
+	}
+}
+o
+{
+	Uuid %id{u4{17284100253513852955,1917307892241393057}}
+	s %t{"wdDefaultValueAttribute"}
+	u3 %v{1}
+	p
+	{
+		i3 %Value{-9}
+	}
+}
+o
+{
+	Uuid %id{u4{11638255232360359673,3108610646416571142}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdReflectedClass"}
+		s %PluginName{"wdEditorPluginScene"}
+		VarArray %Properties{}
+		s %TypeName{"wdExposedSceneProperty"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{14332645745114734426,3197497487504472660}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdSceneDocumentSettingsBase"}
+		s %PluginName{"wdEditorPluginScene"}
+		VarArray %Properties{}
+		s %TypeName{"wdPrefabDocumentSettings"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{14633628111157529947,3328384510238863063}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdMeshComponentBase"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdMeshComponent"}
+		u3 %TypeVersion{3}
+	}
+}
+o
+{
+	Uuid %id{u4{3770525073184711362,3385628004825845344}}
+	s %t{"wdClampValueAttribute"}
+	u3 %v{1}
+	p
+	{
+		f %Min{0}
+	}
+}
+o
+{
+	Uuid %id{u4{10748177233999174324,3557138243746197705}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes
+		{
+			Uuid{u4{332770216676690207,9811877866925304636}}
+			Uuid{u4{5718272066365183534,168166218017990600}}
+		}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Phantom"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdComponent"}
+		s %PluginName{"wdGameComponentsPlugin"}
+		VarArray %Properties
+		{
+			Uuid{u4{1548825957357131811,18235747264172755789}}
+			Uuid{u4{15704731092738131391,13147435301458297030}}
+			Uuid{u4{10678165861779724505,8864070787064901405}}
+			Uuid{u4{10540985588001979949,4245637372087678822}}
+			Uuid{u4{5180518040311484311,7248787768246693689}}
+			Uuid{u4{7065988123532511694,11837217063703247592}}
+			Uuid{u4{9700792999123614529,620916848704846779}}
+			Uuid{u4{254894209837159906,13016670626618143051}}
+		}
+		s %TypeName{"wdRaycastComponent"}
+		u3 %TypeVersion{3}
+	}
+}
+o
+{
+	Uuid %id{u4{11087913065038976946,3847468020869122127}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdRenderComponent"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdBeamComponent"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{10540985588001979949,4245637372087678822}}
+	s %t{"wdReflectedPropertyDescriptor"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		s %Category{"wdPropertyCategory::Member"}
+		s %Flags{"wdPropertyFlags::StandardType|wdPropertyFlags::Phantom"}
+		s %Name{"ForceTargetParentless"}
+		s %Type{"bool"}
+	}
+}
+o
+{
+	Uuid %id{u4{2651483327968716324,4703718889491836073}}
+	s %t{"wdAssetBrowserAttribute"}
+	u3 %v{1}
+	p
+	{
+		s %DependencyFlags{"wdDependencyFlags::Package"}
+		s %Filter{";CompatibleAsset_Jolt_Colmesh_Triangle;"}
+	}
+}
+o
+{
+	Uuid %id{u4{9274987833270370026,4800691691683468795}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdComponent"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdSpawnComponent"}
+		u3 %TypeVersion{3}
+	}
+}
+o
+{
+	Uuid %id{u4{11135730192525964575,4819325472927372842}}
+	s %t{"wdCategoryAttribute"}
+	u3 %v{1}
+	p
+	{
+		s %Category{"Editing Utilities"}
+	}
+}
+o
+{
+	Uuid %id{u4{15911470964782105249,5599265681763992237}}
+	s %t{"wdSphereVisualizerAttribute"}
+	u3 %v{1}
+	p
+	{
+		s %Anchor{""}
+		Color %Color{f{0x71941A3F,0x782DE03D,0x70944E3F,0x0000803F}}
+		Vec3 %OffsetOrScale{f{0,0,0}}
+		s %Property1{"Radius"}
+		s %Property2{""}
+		s %Property3{""}
+		s %Property4{""}
+		s %Property5{""}
+	}
+}
+o
+{
+	Uuid %id{u4{5109955776826617296,6026817826851389185}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Abstract|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdComponent"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdEventMessageHandlerComponent"}
+		u3 %TypeVersion{3}
+	}
+}
+o
+{
+	Uuid %id{u4{15867454462698209426,6174537143043166581}}
+	s %t{"wdReflectedPropertyDescriptor"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		s %Category{"wdPropertyCategory::Member"}
+		s %Flags{"wdPropertyFlags::StandardType|wdPropertyFlags::Phantom"}
+		s %Name{"PullSurfacesFromGraphicsMesh"}
+		s %Type{"bool"}
+	}
+}
+o
+{
+	Uuid %id{u4{11949321329899225443,6280821367752645242}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes
+		{
+			Uuid{u4{16482253353730222246,16315441255946855876}}
+		}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Abstract|wdTypeFlags::Phantom"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdComponent"}
+		s %PluginName{"wdJoltPlugin"}
+		VarArray %Properties{}
+		s %TypeName{"wdJoltShapeComponent"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{2701106930476894837,6314441675298202430}}
+	s %t{"wdDynamicEnumAttribute"}
+	u3 %v{1}
+	p
+	{
+		s %DynamicEnum{"PhysicsCollisionLayer"}
+	}
+}
+o
+{
+	Uuid %id{u4{6916421691460421263,6517784942153784783}}
+	s %t{"wdReflectedPropertyDescriptor"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes
+		{
+			Uuid{u4{5517296636975087105,15177664328615910206}}
+			Uuid{u4{14959600739992083939,7823142109229508990}}
+		}
+		s %Category{"wdPropertyCategory::Member"}
+		s %Flags{"wdPropertyFlags::StandardType|wdPropertyFlags::Phantom"}
+		s %Name{"Radius"}
+		s %Type{"float"}
+	}
+}
+o
+{
+	Uuid %id{u4{7605758958972330253,6687734095884105025}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Abstract|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdRenderComponent"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdMeshComponentBase"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{5180518040311484311,7248787768246693689}}
+	s %t{"wdReflectedPropertyDescriptor"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes
+		{
+			Uuid{u4{17284100253513852955,1917307892241393057}}
+		}
+		s %Category{"wdPropertyCategory::Member"}
+		s %Flags{"wdPropertyFlags::Bitflags|wdPropertyFlags::Phantom"}
+		s %Name{"ShapeTypesToHit"}
+		s %Type{"wdPhysicsShapeType"}
+	}
+}
+o
+{
+	Uuid %id{u4{13649880205026559927,7297274558339895637}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdGameObject"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{11005437603101136476,7368533338987833088}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdBitflagsBase"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{14959600739992083939,7823142109229508990}}
+	s %t{"wdClampValueAttribute"}
+	u3 %v{1}
+	p
+	{
+		f %Min{0}
+	}
+}
+o
+{
+	Uuid %id{u4{14538573732623829394,8132504581476750103}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Phantom"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdJoltActorComponent"}
+		s %PluginName{"wdJoltPlugin"}
+		VarArray %Properties
+		{
+			Uuid{u4{17661515250471146716,10175496299122695455}}
+			Uuid{u4{1421301365544915085,1412605750390658959}}
+			Uuid{u4{15867454462698209426,6174537143043166581}}
+			Uuid{u4{34915219510096863,12469644347367624567}}
+		}
+		s %TypeName{"wdJoltStaticActorComponent"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{6089094783765586323,8705960867921430659}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdReflectedClass"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdDocumentRoot"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{6455811171020428811,8830539819506900889}}
+	s %t{"wdReflectedFunctionDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Arguments{}
+		VarArray %Attributes
+		{
+			Uuid{u4{69518745894662297,10990922075697539529}}
+		}
+		s %Flags{"wdPropertyFlags::Phantom"}
+		s %Name{"GetObjectFilterID"}
+		Uuid %ReturnValue{u4{2797605736284022243,11870783614192411682}}
+		s %Type{"wdFunctionType::Member"}
+	}
+}
+o
+{
+	Uuid %id{u4{10678165861779724505,8864070787064901405}}
+	s %t{"wdReflectedPropertyDescriptor"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes
+		{
+			Uuid{u4{14591788948851537490,9057807195452191332}}
+		}
+		s %Category{"wdPropertyCategory::Member"}
+		s %Flags{"wdPropertyFlags::StandardType|wdPropertyFlags::Const|wdPropertyFlags::Phantom"}
+		s %Name{"RaycastEndObject"}
+		s %Type{"wdConstCharPtr"}
+	}
+}
+o
+{
+	Uuid %id{u4{14591788948851537490,9057807195452191332}}
+	s %t{"wdGameObjectReferenceAttribute"}
+	u3 %v{1}
+	p{}
+}
+o
+{
+	Uuid %id{u4{3251891958765718680,9159887340540620231}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdDocumentRoot"}
+		s %PluginName{"wdEditorPluginScene"}
+		VarArray %Properties{}
+		s %TypeName{"wdSceneDocumentRoot"}
+		u3 %TypeVersion{2}
+	}
+}
+o
+{
+	Uuid %id{u4{14543630447052729839,9459039542380974471}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::IsEnum|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdEnumBase"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdObjectMode"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{332770216676690207,9811877866925304636}}
+	s %t{"wdCategoryAttribute"}
+	u3 %v{1}
+	p
+	{
+		s %Category{"Gameplay"}
+	}
+}
+o
+{
+	Uuid %id{u4{1169733456550287353,10163373658405488592}}
+	s %t{"wdReflectedPropertyDescriptor"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes
+		{
+			Uuid{u4{10630366608556099574,15734649419491018854}}
+		}
+		s %Category{"wdPropertyCategory::Member"}
+		s %Flags{"wdPropertyFlags::StandardType|wdPropertyFlags::Phantom"}
+		s %Name{"CollisionLayer"}
+		s %Type{"wdUInt8"}
+	}
+}
+o
+{
+	Uuid %id{u4{17661515250471146716,10175496299122695455}}
+	s %t{"wdReflectedPropertyDescriptor"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes
+		{
+			Uuid{u4{2651483327968716324,4703718889491836073}}
+		}
+		s %Category{"wdPropertyCategory::Member"}
+		s %Flags{"wdPropertyFlags::StandardType|wdPropertyFlags::Const|wdPropertyFlags::Phantom"}
+		s %Name{"CollisionMesh"}
+		s %Type{"wdConstCharPtr"}
+	}
+}
+o
+{
+	Uuid %id{u4{11568452837770943362,10420668725217181016}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdEventMessageHandlerComponent"}
+		s %PluginName{"wdEditorPluginTypeScript"}
+		VarArray %Properties{}
+		s %TypeName{"wdTypeScriptComponent"}
+		u3 %TypeVersion{4}
+	}
+}
+o
+{
+	Uuid %id{u4{7585678339610765090,10824635046145399990}}
+	s %t{"wdCategoryAttribute"}
+	u3 %v{1}
+	p
+	{
+		s %Category{"Physics/Jolt/Actors"}
+	}
+}
+o
+{
+	Uuid %id{u4{69518745894662297,10990922075697539529}}
+	s %t{"wdScriptableFunctionAttribute"}
+	u3 %v{1}
+	p
+	{
+		s %Arg1{""}
+		s %Arg2{""}
+		s %Arg3{""}
+		s %Arg4{""}
+		s %Arg5{""}
+		s %Arg6{""}
+		u1 %ArgType1{0}
+		u1 %ArgType2{0}
+		u1 %ArgType3{0}
+		u1 %ArgType4{0}
+		u1 %ArgType5{0}
+		u1 %ArgType6{0}
+	}
+}
+o
+{
+	Uuid %id{u4{14700230518358869173,11472901527618371423}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdReflectedClass"}
+		s %PluginName{"wdEditorPluginScene"}
+		VarArray %Properties{}
+		s %TypeName{"wdSceneDocumentSettingsBase"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{1437521466418797355,11653301487602574059}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes
+		{
+			Uuid{u4{3718828775820470108,12106779719480930284}}
+			Uuid{u4{15911470964782105249,5599265681763992237}}
+		}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Phantom"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdJoltShapeComponent"}
+		s %PluginName{"wdJoltPlugin"}
+		VarArray %Properties
+		{
+			Uuid{u4{6916421691460421263,6517784942153784783}}
+		}
+		s %TypeName{"wdJoltShapeSphereComponent"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{7065988123532511694,11837217063703247592}}
+	s %t{"wdReflectedPropertyDescriptor"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes
+		{
+			Uuid{u4{2701106930476894837,6314441675298202430}}
+		}
+		s %Category{"wdPropertyCategory::Member"}
+		s %Flags{"wdPropertyFlags::StandardType|wdPropertyFlags::Phantom"}
+		s %Name{"CollisionLayerEndPoint"}
+		s %Type{"wdUInt8"}
+	}
+}
+o
+{
+	Uuid %id{u4{2797605736284022243,11870783614192411682}}
+	s %t{"wdFunctionArgumentDescriptor"}
+	u3 %v{1}
+	p
+	{
+		s %Flags{"wdPropertyFlags::StandardType"}
+		s %Type{"wdUInt32"}
+	}
+}
+o
+{
+	Uuid %id{u4{12720411701456363350,12092040746312908394}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Bitflags|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdBitflagsBase"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdPhysicsShapeType"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{3718828775820470108,12106779719480930284}}
+	s %t{"wdSphereManipulatorAttribute"}
+	u3 %v{1}
+	p
+	{
+		s %Property1{"Radius"}
+		s %Property2{""}
+		s %Property3{""}
+		s %Property4{""}
+		s %Property5{""}
+		s %Property6{""}
+	}
+}
+o
+{
+	Uuid %id{u4{16777871838542487558,12116962178824346014}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Abstract|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdComponent"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdRenderComponent"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{12548802506357991701,12127202460150289855}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes
+		{
+			Uuid{u4{11135730192525964575,4819325472927372842}}
+		}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Phantom"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdComponent"}
+		s %PluginName{"wdEnginePluginScene"}
+		VarArray %Properties{}
+		s %TypeName{"wdShapeIconComponent"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{6839391121561780669,12349512622905798822}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes
+		{
+			Uuid{u4{7585678339610765090,10824635046145399990}}
+		}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Abstract|wdTypeFlags::Phantom"}
+		VarArray %Functions
+		{
+			Uuid{u4{6455811171020428811,8830539819506900889}}
+		}
+		s %ParentTypeName{"wdComponent"}
+		s %PluginName{"wdJoltPlugin"}
+		VarArray %Properties
+		{
+			Uuid{u4{1169733456550287353,10163373658405488592}}
+		}
+		s %TypeName{"wdJoltActorComponent"}
+		u3 %TypeVersion{2}
+	}
+}
+o
+{
+	Uuid %id{u4{34915219510096863,12469644347367624567}}
+	s %t{"wdReflectedPropertyDescriptor"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes
+		{
+			Uuid{u4{10927490727309097628,15033734827699253395}}
+		}
+		s %Category{"wdPropertyCategory::Member"}
+		s %Flags{"wdPropertyFlags::StandardType|wdPropertyFlags::Const|wdPropertyFlags::Phantom"}
+		s %Name{"Surface"}
+		s %Type{"wdConstCharPtr"}
+	}
+}
+o
+{
+	Uuid %id{u4{7205848659335305938,12929639479763655777}}
+	s %t{"wdDefaultValueAttribute"}
+	u3 %v{1}
+	p
+	{
+		b %Value{1}
+	}
+}
+o
+{
+	Uuid %id{u4{254894209837159906,13016670626618143051}}
+	s %t{"wdReflectedPropertyDescriptor"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		s %Category{"wdPropertyCategory::Member"}
+		s %Flags{"wdPropertyFlags::StandardType|wdPropertyFlags::Const|wdPropertyFlags::Phantom"}
+		s %Name{"TriggerMessage"}
+		s %Type{"wdConstCharPtr"}
+	}
+}
+o
+{
+	Uuid %id{u4{15704731092738131391,13147435301458297030}}
+	s %t{"wdReflectedPropertyDescriptor"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		s %Category{"wdPropertyCategory::Member"}
+		s %Flags{"wdPropertyFlags::StandardType|wdPropertyFlags::Phantom"}
+		s %Name{"DisableTargetObjectOnNoHit"}
+		s %Type{"bool"}
+	}
+}
+o
+{
+	Uuid %id{u4{18439902295819364062,13458338885217277971}}
+	s %t{"wdDefaultValueAttribute"}
+	u3 %v{1}
+	p
+	{
+		f %Value{0x0000C842}
+	}
+}
+o
+{
+	Uuid %id{u4{8187175378985812446,14074895076772299678}}
+	s %t{"wdDynamicEnumAttribute"}
+	u3 %v{1}
+	p
+	{
+		s %DynamicEnum{"PhysicsCollisionLayer"}
+	}
+}
+o
+{
+	Uuid %id{u4{2947336711354777548,15013008608905564043}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdEnumBase"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{10927490727309097628,15033734827699253395}}
+	s %t{"wdAssetBrowserAttribute"}
+	u3 %v{1}
+	p
+	{
+		s %DependencyFlags{"wdDependencyFlags::Package"}
+		s %Filter{";CompatibleAsset_Surface;"}
+	}
+}
+o
+{
+	Uuid %id{u4{5517296636975087105,15177664328615910206}}
+	s %t{"wdDefaultValueAttribute"}
+	u3 %v{1}
+	p
+	{
+		f %Value{0x0000003F}
+	}
+}
+o
+{
+	Uuid %id{u4{10630366608556099574,15734649419491018854}}
+	s %t{"wdDynamicEnumAttribute"}
+	u3 %v{1}
+	p
+	{
+		s %DynamicEnum{"PhysicsCollisionLayer"}
+	}
+}
+o
+{
+	Uuid %id{u4{16482253353730222246,16315441255946855876}}
+	s %t{"wdCategoryAttribute"}
+	u3 %v{1}
+	p
+	{
+		s %Category{"Physics/Jolt/Shapes"}
+	}
+}
+o
+{
+	Uuid %id{u4{983387834180907111,17935407260904399048}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdReflectedClass"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{1548825957357131811,18235747264172755789}}
+	s %t{"wdReflectedPropertyDescriptor"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes
+		{
+			Uuid{u4{18439902295819364062,13458338885217277971}}
+			Uuid{u4{3770525073184711362,3385628004825845344}}
+		}
+		s %Category{"wdPropertyCategory::Member"}
+		s %Flags{"wdPropertyFlags::StandardType|wdPropertyFlags::Phantom"}
+		s %Name{"MaxDistance"}
+		s %Type{"float"}
+	}
+}
+}

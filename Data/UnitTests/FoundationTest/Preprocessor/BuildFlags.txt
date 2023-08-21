@@ -1,0 +1,43 @@
+#include "Includes\BlackMagic.txt"
+
+#define WD_ENUM_VALUE_TO_STRING(name) \
+  case name: return WD_STRINGIZE(name);
+#define WD_ENUM_TO_STRING(...) \
+  const char* ToString(wdUInt32 value) \
+  { \
+    switch (value) \
+    { \
+      WD_EXPAND_ARGS(WD_ENUM_VALUE_TO_STRING, ##__VA_ARGS__) \
+      default: return nullptr; \
+    } \
+  }
+#define WD_DECLARE_FLAGS_OPERATORS(FlagsType) \
+  inline wdBitflags<FlagsType> operator|(FlagsType::Enum lhs, FlagsType::Enum rhs)    \
+  {    \
+    return (wdBitflags<FlagsType>(lhs) | wdBitflags<FlagsType>(rhs));    \
+  } \
+  \
+  inline wdBitflags<FlagsType> operator&(FlagsType::Enum lhs, FlagsType::Enum rhs)    \
+  {    \
+    return (wdBitflags<FlagsType>(lhs) & wdBitflags<FlagsType>(rhs));    \
+  }
+#define WD_DECLARE_FLAGS(InternalStorageType, BitflagsTypeName, ...)    \
+struct BitflagsTypeName    \
+  {    \
+    static const wdUInt32 Count = WD_VA_NUM_ARGS(__VA_ARGS__);    \
+    typedef InternalStorageType StorageType; \
+    enum Enum    \
+    {    \
+      WD_EXPAND_ARGS_WITH_INDEX(WD_DECLARE_FLAGS_ENUM, ##__VA_ARGS__)    \
+    };    \
+    struct Bits    \
+    {    \
+      WD_EXPAND_ARGS(WD_DECLARE_FLAGS_BITS, ##__VA_ARGS__)    \
+    };    \
+    WD_ENUM_TO_STRING(__VA_ARGS__) \
+  };    \
+  WD_DECLARE_FLAGS_OPERATORS(BitflagsTypeName)
+#define WD_DECLARE_FLAGS_ENUM(name, n)    name = WD_BIT(n),
+#define WD_DECLARE_FLAGS_BITS(name)       StorageType name : 1;  
+
+WD_DECLARE_FLAGS(wdUInt8, wdImageConversionFlags, None, InPlace, Lossy);

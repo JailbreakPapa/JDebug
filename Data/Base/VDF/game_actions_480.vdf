@@ -1,0 +1,98 @@
+"In Game Actions"
+{
+    "actions"
+    {
+        "GameControls"
+        {
+            "title"                 "#Set_GameControls"
+            "StickPadGyro"
+            {
+                "Move"
+                {
+                    "title"         "#Action_Move"
+                    "input_mode"    "joystick_move"
+                }
+                "Look"
+                {
+                    "title"         "#Action_Look"
+                    "input_mode"    "absolute_mouse"
+                }
+            }
+            "Button"
+            {
+                // The Developer Menu will be active in workshop only.
+                "DeveloperMenu"     "#Action_DevMenu"
+                "Attack"            "#Action_Attack"
+                "AltAttack"         "#Action_AltAttack"
+                "Jump"              "#Action_Jump"
+                "Crouch"            "#Action_Crouch"
+                "Sprint"            "#Action_Sprint"
+                "StrafeLeft"        "#Action_StrafeLeft"
+                "StrafeRight"       "#Action_StrafeRight"
+                "Interact"          "#Action_Interact"
+                "Menu"              "#Action_Menu"
+                "Item1"             "#Action_Item1"
+                "Item2"             "#Action_Item2"
+                "Item3"             "#Action_Item3"
+                "Item4"             "#Action_Item4"
+                "Item5"             "#Action_Item5"
+                "PrevItem"          "#Action_PrevItem"
+                "NextItem"          "#Action_NextItem"
+            }
+        }
+        "MenuControls"
+        {
+            "title"                 "#Set_MenuControls"
+            "Button"
+            {
+                "MenuUp"            "#Menu_Up"
+                "MenuDown"          "#Menu_Down"
+                "MenuLeft"          "#Menu_Left"
+                "MenuRight"         "#Menu_Right"
+                "Affirm"            "#Menu_Affirm"
+                "Cancel"            "#Menu_Cancel"
+                "Other"             "#Menu_Other"
+                "ScrollUp"          "#Menu_ScrollUp"
+                "ScrollDown"        "#Menu_ScrollDown"
+                "DismissMenu"       "#Menu_DismissMenu"
+            }
+        }
+    }
+    "localization"
+    {
+        "english"
+        {
+            "Set_GameControls"      "Game Controls"
+            "Set_MenuControls"      "Menu Controls"
+            "Action_DevMenu"        "DeveloperMenu"
+            "Action_Move"           "Move"
+            "Action_Look"           "Look"
+            "Action_Attack"         "Attack"
+            "Action_AltAttack"      "Alternate Attack"
+            "Action_Jump"           "Jump"
+            "Action_Crouch"         "Crouch"
+            "Action_Sprint"         "Sprint"
+            "Action_StrafeLeft"     "Strafe Left"
+            "Action_StrafeRight"    "Strafe Right"
+            "Action_Interact"       "Interact"
+            "Action_Menu"           "Menu"
+            "Action_Item1"          "Item 1"
+            "Action_Item2"          "Item 2"
+            "Action_Item3"          "Item 3"
+            "Action_Item4"          "Item 4"
+            "Action_Item5"          "Item 5"
+            "Action_PrevItem"       "Previous Item"
+            "Action_NextItem"       "Next Item"
+            "Menu_Up"               "Up"
+            "Menu_Down"             "Down"
+            "Menu_Left"             "Left"
+            "Menu_Right"            "Right"
+            "Menu_Affirm"           "Affirm"
+            "Menu_Cancel"           "Cancel"
+            "Menu_Other"            "Other"
+            "Menu_ScrollUp"         "Scroll Up"
+            "Menu_ScrollDown"       "Scroll Down"
+            "Menu_DismissMenu"      "Dismiss Menu"
+        }
+    }
+}

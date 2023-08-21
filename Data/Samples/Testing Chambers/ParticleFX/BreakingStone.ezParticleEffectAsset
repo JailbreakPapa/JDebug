@@ -1,0 +1,622 @@
+HeaderV2
+{
+o
+{
+	Uuid %id{u4{12907113733222061238,5577365460626278697}}
+	s %t{"wdAssetDocumentInfo"}
+	u3 %v{2}
+	s %n{"Header"}
+	p
+	{
+		s %AssetType{"Particle Effect"}
+		VarArray %Dependencies{}
+		Uuid %DocumentID{u4{12907113733222061238,5577365460626278697}}
+		u4 %Hash{16123929406577128129}
+		VarArray %MetaInfo
+		{
+			Uuid{u4{6765826213476026374,12337321247186771883}}
+		}
+		VarArray %Outputs{}
+		VarArray %PackageDeps
+		{
+			s{"{ 356ae27b-729d-48e7-9bf3-3aaefa239628 }"}
+		}
+		VarArray %References
+		{
+			s{"{ 356ae27b-729d-48e7-9bf3-3aaefa239628 }"}
+		}
+	}
+}
+o
+{
+	Uuid %id{u4{6765826213476026374,12337321247186771883}}
+	s %t{"wdExposedParameters"}
+	u3 %v{3}
+	p
+	{
+		VarArray %Parameters
+		{
+			Uuid{u4{18184649823918133605,15991694410865606567}}
+		}
+	}
+}
+o
+{
+	Uuid %id{u4{18184649823918133605,15991694410865606567}}
+	s %t{"wdExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		Color %DefaultValue{f{0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		s %Name{"Color"}
+		s %Type{""}
+	}
+}
+}
+Objects
+{
+o
+{
+	Uuid %id{u4{13767392846486821266,4625535790078929270}}
+	s %t{"wdParticleBehaviorFactory_Raycast"}
+	u3 %v{1}
+	p
+	{
+		f %BounceFactor{0x0000003F}
+		u1 %CollisionLayer{0}
+		s %OnCollideEvent{""}
+		s %Reaction{"wdParticleRaycastHitReaction::Bounce"}
+	}
+}
+o
+{
+	Uuid %id{u4{13943468011956230331,4773669181983843787}}
+	s %t{"wdParticleSystemDescriptor"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Behaviors
+		{
+			Uuid{u4{15661034410086131634,5469666344162327757}}
+			Uuid{u4{13767392846486821266,4625535790078929270}}
+		}
+		VarArray %Emitters
+		{
+			Uuid{u4{4065985036424682136,4849623415372120343}}
+		}
+		VarArray %Initializers
+		{
+			Uuid{u4{13283509629709213354,5501683823378082727}}
+			Uuid{u4{10192201461062335874,5547236477099215653}}
+			Uuid{u4{11390910229117236411,5327141722244153016}}
+		}
+		s %LifeScaleParam{""}
+		wdVarianceTypeTime %LifeTime
+		{
+			f %Variance{0}
+			Time %Value{d{0x0000000000000040}}
+		}
+		s %Name{"Stones"}
+		s %OnDeathEvent{""}
+		VarArray %Types
+		{
+			Uuid{u4{10502081662530247296,5130982257866324589}}
+		}
+		b %Visible{1}
+	}
+}
+o
+{
+	Uuid %id{u4{4065985036424682136,4849623415372120343}}
+	s %t{"wdParticleEmitterFactory_Burst"}
+	u3 %v{1}
+	p
+	{
+		Time %Duration{d{0}}
+		u3 %MinSpawnCount{10}
+		u3 %SpawnCountRange{0}
+		s %SpawnCountScaleParam{""}
+		Time %StartDelay{d{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{10502081662530247296,5130982257866324589}}
+	s %t{"wdParticleTypeMeshFactory"}
+	u3 %v{1}
+	p
+	{
+		s %Material{""}
+		s %Mesh{"{ 356ae27b-729d-48e7-9bf3-3aaefa239628 }"}
+		s %TintColorParam{"Color"}
+	}
+}
+o
+{
+	Uuid %id{u4{3445984508961882515,5184430533701563993}}
+	s %t{"wdParticleEffectDescriptor"}
+	u3 %v{2}
+	p
+	{
+		b %AlwaysShared{0}
+		f %ApplyOwnerVelocity{0}
+		VarDict %ColorParameters
+		{
+			Color %Color{f{0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		}
+		VarArray %EventReactions{}
+		VarDict %FloatParameters{}
+		VarArray %ParticleSystems
+		{
+			Uuid{u4{13943468011956230331,4773669181983843787}}
+		}
+		Time %PreSimulateDuration{d{0}}
+		b %SimulateInLocalSpace{0}
+		s %WhenInvisible{"wdEffectInvisibleUpdateRate::Max5fps"}
+	}
+}
+o
+{
+	Uuid %id{u4{11390910229117236411,5327141722244153016}}
+	s %t{"wdParticleInitializerFactory_RandomRotationSpeed"}
+	u3 %v{2}
+	p
+	{
+		wdVarianceTypeAngle %DegreesPerSecond
+		{
+			f %Variance{0x713D0A3F}
+			Angle %Value{f{0xDB0F4941}}
+		}
+		b %RandomStartAngle{0}
+	}
+}
+o
+{
+	Uuid %id{u4{15661034410086131634,5469666344162327757}}
+	s %t{"wdParticleBehaviorFactory_Gravity"}
+	u3 %v{1}
+	p
+	{
+		f %GravityFactor{0x0000803F}
+	}
+}
+o
+{
+	Uuid %id{u4{13283509629709213354,5501683823378082727}}
+	s %t{"wdParticleInitializerFactory_VelocityCone"}
+	u3 %v{2}
+	p
+	{
+		Angle %Angle{f{0xDB0F493F}}
+		wdVarianceTypeFloat %Speed
+		{
+			f %Variance{0xAE47613E}
+			f %Value{0x00000040}
+		}
+	}
+}
+o
+{
+	Uuid %id{u4{10192201461062335874,5547236477099215653}}
+	s %t{"wdParticleInitializerFactory_RandomSize"}
+	u3 %v{2}
+	p
+	{
+		wdVarianceTypeFloat %Size
+		{
+			f %Variance{0x6666E63E}
+			f %Value{0xCDCC4C3D}
+		}
+		s %SizeCurve{""}
+	}
+}
+o
+{
+	Uuid %id{u4{18096612296587978288,6449934965513159559}}
+	s %t{"wdDocumentRoot"}
+	u3 %v{1}
+	s %n{"ObjectTree"}
+	p
+	{
+		VarArray %Children
+		{
+			Uuid{u4{3445984508961882515,5184430533701563993}}
+		}
+	}
+}
+}
+Types
+{
+o
+{
+	Uuid %id{u4{15180187659938862929,104513982319920955}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdParticleBehaviorFactory"}
+		s %PluginName{"wdEditorPluginParticle"}
+		VarArray %Properties{}
+		s %TypeName{"wdParticleBehaviorFactory_Gravity"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{13560116007119282322,433790909840599328}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdVarianceTypeBase"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdVarianceTypeAngle"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{10783692042173239332,1960037438422466979}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdParticleInitializerFactory"}
+		s %PluginName{"wdEditorPluginParticle"}
+		VarArray %Properties{}
+		s %TypeName{"wdParticleInitializerFactory_VelocityCone"}
+		u3 %TypeVersion{2}
+	}
+}
+o
+{
+	Uuid %id{u4{3168673866823338768,4696335111295142345}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Abstract|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdReflectedClass"}
+		s %PluginName{"wdEditorPluginParticle"}
+		VarArray %Properties{}
+		s %TypeName{"wdParticleBehaviorFactory"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{14006718927935415587,6034394683520582586}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdVarianceTypeBase"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdVarianceTypeTime"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{17853239083303459813,6311346648076434393}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdVarianceTypeBase"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{6089094783765586323,8705960867921430659}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdReflectedClass"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdDocumentRoot"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{10573817996783288085,10146871902693530054}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdParticleBehaviorFactory"}
+		s %PluginName{"wdEditorPluginParticle"}
+		VarArray %Properties{}
+		s %TypeName{"wdParticleBehaviorFactory_Raycast"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{13880744943763730395,10489507546417127904}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdReflectedClass"}
+		s %PluginName{"wdEditorPluginParticle"}
+		VarArray %Properties{}
+		s %TypeName{"wdParticleSystemDescriptor"}
+		u3 %TypeVersion{2}
+	}
+}
+o
+{
+	Uuid %id{u4{16660938348529471992,10500790505855736748}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdParticleInitializerFactory"}
+		s %PluginName{"wdEditorPluginParticle"}
+		VarArray %Properties{}
+		s %TypeName{"wdParticleInitializerFactory_RandomSize"}
+		u3 %TypeVersion{2}
+	}
+}
+o
+{
+	Uuid %id{u4{9943376671518205184,11426659331305637883}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::IsEnum|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdEnumBase"}
+		s %PluginName{"wdEditorPluginParticle"}
+		VarArray %Properties{}
+		s %TypeName{"wdParticleRaycastHitReaction"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{1070262090948389858,12253486614951860342}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdParticleTypeFactory"}
+		s %PluginName{"wdEditorPluginParticle"}
+		VarArray %Properties{}
+		s %TypeName{"wdParticleTypeMeshFactory"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{7645929985005038759,12736932236042017252}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Abstract|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdReflectedClass"}
+		s %PluginName{"wdEditorPluginParticle"}
+		VarArray %Properties{}
+		s %TypeName{"wdParticleEventReactionFactory"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{7290268724788430682,13976679973837627887}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Abstract|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdReflectedClass"}
+		s %PluginName{"wdEditorPluginParticle"}
+		VarArray %Properties{}
+		s %TypeName{"wdParticleEmitterFactory"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{2947336711354777548,15013008608905564043}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdEnumBase"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{16364962939148342792,15354168731974951378}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdReflectedClass"}
+		s %PluginName{"wdEditorPluginParticle"}
+		VarArray %Properties{}
+		s %TypeName{"wdParticleEffectDescriptor"}
+		u3 %TypeVersion{2}
+	}
+}
+o
+{
+	Uuid %id{u4{10442177899906164197,15426190023256028560}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Abstract|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdReflectedClass"}
+		s %PluginName{"wdEditorPluginParticle"}
+		VarArray %Properties{}
+		s %TypeName{"wdParticleTypeFactory"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{14844053051207064143,16008871343450362328}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdVarianceTypeBase"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdVarianceTypeFloat"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{16123967399592514850,16775841465275602152}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdParticleInitializerFactory"}
+		s %PluginName{"wdEditorPluginParticle"}
+		VarArray %Properties{}
+		s %TypeName{"wdParticleInitializerFactory_RandomRotationSpeed"}
+		u3 %TypeVersion{2}
+	}
+}
+o
+{
+	Uuid %id{u4{6121878669319425493,17675545937103933914}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Abstract|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdReflectedClass"}
+		s %PluginName{"wdEditorPluginParticle"}
+		VarArray %Properties{}
+		s %TypeName{"wdParticleInitializerFactory"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{17397308719877967719,17925748165545161913}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdParticleEmitterFactory"}
+		s %PluginName{"wdEditorPluginParticle"}
+		VarArray %Properties{}
+		s %TypeName{"wdParticleEmitterFactory_Burst"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{983387834180907111,17935407260904399048}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdReflectedClass"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{15851140878563963282,17985324240662489411}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::IsEnum|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdEnumBase"}
+		s %PluginName{"wdEditorPluginParticle"}
+		VarArray %Properties{}
+		s %TypeName{"wdEffectInvisibleUpdateRate"}
+		u3 %TypeVersion{1}
+	}
+}
+}

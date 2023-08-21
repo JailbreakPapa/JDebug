@@ -1,0 +1,258 @@
+HeaderV2
+{
+o
+{
+	Uuid %id{u4{8507047225007805994,2130097493042254715}}
+	s %t{"wdExposedParameters"}
+	u3 %v{3}
+	p
+	{
+		VarArray %Parameters
+		{
+			Uuid{u4{5578993911098873628,17691975362063753042}}
+		}
+	}
+}
+o
+{
+	Uuid %id{u4{15925295526450137016,4931846925447715486}}
+	s %t{"wdAssetDocumentInfo"}
+	u3 %v{2}
+	s %n{"Header"}
+	p
+	{
+		s %AssetType{"TypeScript"}
+		VarArray %Dependencies
+		{
+			s{"Scripts/JointMotorFlip.ts"}
+		}
+		Uuid %DocumentID{u4{15925295526450137016,4931846925447715486}}
+		u4 %Hash{1187933842446700041}
+		VarArray %MetaInfo
+		{
+			Uuid{u4{8507047225007805994,2130097493042254715}}
+		}
+		VarArray %Outputs{}
+		VarArray %PackageDeps{}
+		VarArray %References
+		{
+			s{"Scripts/JointMotorFlip.ts"}
+		}
+	}
+}
+o
+{
+	Uuid %id{u4{5578993911098873628,17691975362063753042}}
+	s %t{"wdExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		d %DefaultValue{0x0000000000002440}
+		s %Name{"Seconds"}
+		s %Type{""}
+	}
+}
+}
+Objects
+{
+o
+{
+	Uuid %id{u4{3672306904093288844,5693717916485138267}}
+	s %t{"wdTypeScriptParameterNumber"}
+	u3 %v{1}
+	p
+	{
+		d %Default{0x0000000000002440}
+		s %Name{"Seconds"}
+	}
+}
+o
+{
+	Uuid %id{u4{10394196902829954224,5747010347793503675}}
+	s %t{"wdTypeScriptAssetProperties"}
+	u3 %v{1}
+	p
+	{
+		VarArray %BoolParameters{}
+		VarArray %ColorParameters{}
+		VarArray %NumberParameters
+		{
+			Uuid{u4{3672306904093288844,5693717916485138267}}
+		}
+		s %ScriptFile{"Scripts/JointMotorFlip.ts"}
+		VarArray %StringParameters{}
+		VarArray %Vec3Parameters{}
+	}
+}
+o
+{
+	Uuid %id{u4{18096612296587978288,6449934965513159559}}
+	s %t{"wdDocumentRoot"}
+	u3 %v{1}
+	s %n{"ObjectTree"}
+	p
+	{
+		VarArray %Children
+		{
+			Uuid{u4{10394196902829954224,5747010347793503675}}
+		}
+	}
+}
+}
+Types
+{
+o
+{
+	Uuid %id{u4{2240511302173689179,2703173325265816714}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdTypeScriptParameter"}
+		s %PluginName{"wdEditorPluginTypeScript"}
+		VarArray %Properties{}
+		s %TypeName{"wdTypeScriptParameterString"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{2210350094203572486,5399788602566693581}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdReflectedClass"}
+		s %PluginName{"wdEditorPluginTypeScript"}
+		VarArray %Properties{}
+		s %TypeName{"wdTypeScriptAssetProperties"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{15173286799798070773,6138599035276477466}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdTypeScriptParameter"}
+		s %PluginName{"wdEditorPluginTypeScript"}
+		VarArray %Properties{}
+		s %TypeName{"wdTypeScriptParameterColor"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{6089094783765586323,8705960867921430659}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdReflectedClass"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdDocumentRoot"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{12150617948573266325,14322766287966293674}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdReflectedClass"}
+		s %PluginName{"wdEditorPluginTypeScript"}
+		VarArray %Properties{}
+		s %TypeName{"wdTypeScriptParameter"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{17374214829508657989,14417081421920061278}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdTypeScriptParameter"}
+		s %PluginName{"wdEditorPluginTypeScript"}
+		VarArray %Properties{}
+		s %TypeName{"wdTypeScriptParameterVec3"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{1906593913559848105,14475620603728329546}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdTypeScriptParameter"}
+		s %PluginName{"wdEditorPluginTypeScript"}
+		VarArray %Properties{}
+		s %TypeName{"wdTypeScriptParameterNumber"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{983387834180907111,17935407260904399048}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdReflectedClass"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{4125384624966386702,18426699712145839704}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdTypeScriptParameter"}
+		s %PluginName{"wdEditorPluginTypeScript"}
+		VarArray %Properties{}
+		s %TypeName{"wdTypeScriptParameterBool"}
+		u3 %TypeVersion{1}
+	}
+}
+}

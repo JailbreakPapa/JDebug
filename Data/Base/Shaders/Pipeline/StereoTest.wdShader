@@ -1,0 +1,62 @@
+[PLATFORMS]
+ALL
+
+[PERMUTATIONS]
+CAMERA_MODE
+VERTEX_SHADER_RENDER_TARGET_ARRAY_INDEX
+
+[RENDERSTATE]
+DepthTest = false
+DepthWrite = false
+CullMode = CullMode_None
+
+[VERTEXSHADER]
+
+#include <Shaders/Pipeline/FullscreenTriangleVertexShader.h>
+
+[GEOMETRYSHADER]
+
+#include <Shaders/Pipeline/FullscreenTriangleStereoGeometryShader.h>
+
+[PIXELSHADER]
+
+#include <Shaders/Common/Common.h>
+#include <Shaders/Common/GlobalConstants.h>
+
+struct PS_IN
+{
+  float4 Position : SV_Position;
+  float2 TexCoord0 : TEXCOORD0;
+#if CAMERA_MODE == CAMERA_MODE_STEREO
+  uint RenderTargetArrayIndex : SV_RenderTargetArrayIndex;
+#endif
+};
+
+float4 GetCameraOverlayColor()
+{
+#if CAMERA_MODE == CAMERA_MODE_STEREO
+  if (s_ActiveCameraEyeIndex == 0)
+    return float4(0.0f, 1.0f, 0.0f, 1.0f);
+  else
+    return float4(0.0f, 0.0f, 1.0f, 1.0f);
+#else
+  return float4(1.0f, 0.0f, 0.0f, 1.0f);
+#endif
+}
+
+float4 main(PS_IN Input) : SV_Target
+{
+#if CAMERA_MODE == CAMERA_MODE_STEREO
+  s_ActiveCameraEyeIndex = Input.RenderTargetArrayIndex;
+#endif
+
+  float4 coordFar_screen = float4(Input.TexCoord0.x * 2.0f - 1.0f, 1.0f - Input.TexCoord0.y * 2.0f, 0.5f, 1.0f);
+  float4 coordFar_world = mul(GetScreenToWorldMatrix(), coordFar_screen);
+  coordFar_world.xyz /= coordFar_world.w;
+  // Per pixel ray. Could be used for raytracing/marching
+  float3 cameraRayDir = normalize(coordFar_world.xyz - GetCameraPosition());
+
+  //float4 overlayColor = GetCameraOverlayColor();
+  //return overlayColor * 0.1f + float4(GetCameraPosition(), 1.0f);
+  return float4(abs(cameraRayDir.xyz), 1.0f);
+}

@@ -1,0 +1,187 @@
+HeaderV2
+{
+o
+{
+	Uuid %id{u4{10735177727750644884,4887717215577949974}}
+	s %t{"wdAssetDocumentInfo"}
+	u3 %v{2}
+	s %n{"Header"}
+	p
+	{
+		s %AssetType{"Material"}
+		VarArray %Dependencies
+		{
+			s{"Shaders/Materials/IrradianceProbeVisualization.wdShader"}
+		}
+		Uuid %DocumentID{u4{10735177727750644884,4887717215577949974}}
+		u4 %Hash{16020794930718866227}
+		VarArray %MetaInfo{}
+		VarArray %Outputs{}
+		VarArray %PackageDeps{}
+		VarArray %References
+		{
+			s{"Shaders/Materials/IrradianceProbeVisualization.wdShader"}
+		}
+	}
+}
+}
+Objects
+{
+o
+{
+	Uuid %id{u4{6700249208903928512,5005317258816749031}}
+	s %t{"Shaders/Materials/IrradianceProbeVisualization.wdShader"}
+	u3 %v{2}
+	p{}
+}
+o
+{
+	Uuid %id{u4{1312417465463424880,5372281583714906202}}
+	s %t{"wdMaterialAssetProperties"}
+	u3 %v{4}
+	p
+	{
+		s %BaseMaterial{""}
+		s %Shader{"Shaders/Materials/IrradianceProbeVisualization.wdShader"}
+		s %ShaderMode{"wdMaterialShaderMode::File"}
+		Uuid %ShaderProperties{u4{6700249208903928512,5005317258816749031}}
+		s %Surface{""}
+	}
+}
+o
+{
+	Uuid %id{u4{18096612296587978288,6449934965513159559}}
+	s %t{"wdDocumentRoot"}
+	u3 %v{1}
+	s %n{"ObjectTree"}
+	p
+	{
+		VarArray %Children
+		{
+			Uuid{u4{1312417465463424880,5372281583714906202}}
+		}
+	}
+}
+}
+Types
+{
+o
+{
+	Uuid %id{u4{11972112915775852071,3921050886574945540}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Phantom"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdShaderTypeBase"}
+		s %PluginName{"ShaderTypes"}
+		VarArray %Properties{}
+		s %TypeName{"Shaders/Materials/IrradianceProbeVisualization.wdShader"}
+		u3 %TypeVersion{2}
+	}
+}
+o
+{
+	Uuid %id{u4{6089094783765586323,8705960867921430659}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdReflectedClass"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdDocumentRoot"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{17717897218099796308,9033184167245688007}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Abstract|wdTypeFlags::Phantom"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdReflectedClass"}
+		s %PluginName{"ShaderTypes"}
+		VarArray %Properties{}
+		s %TypeName{"wdShaderTypeBase"}
+		u3 %TypeVersion{2}
+	}
+}
+o
+{
+	Uuid %id{u4{2947336711354777548,15013008608905564043}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdEnumBase"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{8721322561248882817,17579066505604714242}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::IsEnum|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdEnumBase"}
+		s %PluginName{"wdEditorPluginAssets"}
+		VarArray %Properties{}
+		s %TypeName{"wdMaterialShaderMode"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{983387834180907111,17935407260904399048}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdReflectedClass"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{5030680158680079231,18410952876772242771}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdReflectedClass"}
+		s %PluginName{"wdEditorPluginAssets"}
+		VarArray %Properties{}
+		s %TypeName{"wdMaterialAssetProperties"}
+		u3 %TypeVersion{4}
+	}
+}
+}

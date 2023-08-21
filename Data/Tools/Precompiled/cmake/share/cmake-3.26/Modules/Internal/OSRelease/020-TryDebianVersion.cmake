@@ -16,7 +16,7 @@ file(
 #
 # Example:
 #   6.0.10          # Old debian
-#   whewdy/sid      # Ubuntu
+#   wheezy/sid      # Ubuntu
 #
 if(CMAKE_GET_OS_RELEASE_FALLBACK_CONTENT MATCHES "[0-9]+(\.[0-9]+)*")
 

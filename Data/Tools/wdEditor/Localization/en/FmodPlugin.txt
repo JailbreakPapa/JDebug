@@ -1,0 +1,17 @@
+# Asset Types
+
+Sound Bank;Fmod Sound Bank
+Sound Event;Fmod Sound Event
+
+# Component Types
+
+wdFmodEventComponent;Fmod Sound Event;;https://wdengine.net/pages/docs/sound/fmod-event-component.html
+wdFmodListenerComponent;Fmod Listener;;https://wdengine.net/pages/docs/sound/fmod-listener-component.html
+
+# UI
+
+Fmod.Settings.Project;Fmod Project Settings...
+Fmod.Mute;Mute Sounds
+Fmod.MasterVolume;Volume
+
+# Properties

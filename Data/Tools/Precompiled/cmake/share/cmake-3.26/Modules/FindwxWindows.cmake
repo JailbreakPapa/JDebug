@@ -550,7 +550,7 @@ if(WIN32_STYLE_FIND)
 
   ## not necessary in wxWindows 2.4.1 and 2.6.2
   ## but it may fix a previous bug, see
-  ## http://lists.wxwindows.org/cgi-bin/wdmlm-cgi?8:mss:37574:200305:mpdioeneabobmgjenoap
+  ## http://lists.wxwindows.org/cgi-bin/ezmlm-cgi?8:mss:37574:200305:mpdioeneabobmgjenoap
   option(WXWINDOWS_SET_DEFINITIONS "Set additional defines for wxWindows" OFF)
   mark_as_advanced(WXWINDOWS_SET_DEFINITIONS)
   if (WXWINDOWS_SET_DEFINITIONS)

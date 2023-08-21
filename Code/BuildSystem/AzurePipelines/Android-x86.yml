@@ -50,7 +50,7 @@ jobs:
     enabled: False
     inputs:
       cwd: build\x64
-      cmakeArgs: -DCMAKE_PREFIX_PATH=$(System.DefaultWorkingDirectory)\ThirdPartyUWPx86\vs141x64 -DEZ_QT_DIR="$(System.DefaultWorkingDirectory)\ThirdPartyUWPx86\vs141x64" -DEZ_BUILD_PHYSX=0 -DEZ_BUILD_FMOD=0 -DEZ_BUILD_GAMES=0 -DEZ_COMPILE_ENGINE_AS_DLL=1 -DEZ_ENABLE_QT_SUPPORT=1 -DCMAKE_SYSTEM_VERSION=10.0.18362.0 -DCMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION=10.0.18362.0 -G "Visual Studio 16 2019 Win64" ../../
+      cmakeArgs: -DCMAKE_PREFIX_PATH=$(System.DefaultWorkingDirectory)\ThirdPartyUWPx86\vs141x64 -DWD_QT_DIR="$(System.DefaultWorkingDirectory)\ThirdPartyUWPx86\vs141x64" -DWD_BUILD_PHYSX=0 -DWD_BUILD_FMOD=0 -DWD_BUILD_GAMES=0 -DWD_COMPILE_ENGINE_AS_DLL=1 -DWD_ENABLE_QT_SUPPORT=1 -DCMAKE_SYSTEM_VERSION=10.0.18362.0 -DCMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION=10.0.18362.0 -G "Visual Studio 16 2019 Win64" ../../
   - task: CMake@1
     displayName: CMake build RemoteTestHarness
     enabled: False
@@ -61,7 +61,7 @@ jobs:
     displayName: CMake Android Ninja
     inputs:
       cwd: build\Android-x86-Dev
-      cmakeArgs: -G "Ninja" -DCMAKE_INSTALL_PREFIX:PATH="$(System.DefaultWorkingDirectory)\install\Android-x86-Dev"  -DCMAKE_TOOLCHAIN_FILE="$(ANDROID_NDK_HOME)\build\cmake\android.toolchain.cmake"  -DANDROID_ABI="x86"  -DANDROID_PLATFORM="23"  -DEZ_ENABLE_QT_SUPPORT="0"  -DEZ_BUILD_SAMPLES="0"  -DCMAKE_BUILD_TYPE="Dev" -DCMAKE_MAKE_PROGRAM="C:\Program Files\CMake\bin\ninja.exe" ../../
+      cmakeArgs: -G "Ninja" -DCMAKE_INSTALL_PREFIX:PATH="$(System.DefaultWorkingDirectory)\install\Android-x86-Dev"  -DCMAKE_TOOLCHAIN_FILE="$(ANDROID_NDK_HOME)\build\cmake\android.toolchain.cmake"  -DANDROID_ABI="x86"  -DANDROID_PLATFORM="23"  -DWD_ENABLE_QT_SUPPORT="0"  -DWD_BUILD_SAMPLES="0"  -DCMAKE_BUILD_TYPE="Dev" -DCMAKE_MAKE_PROGRAM="C:\Program Files\CMake\bin\ninja.exe" ../../
   - task: CmdLine@2
     displayName: Build
     inputs:

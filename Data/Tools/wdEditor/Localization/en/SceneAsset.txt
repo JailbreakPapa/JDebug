@@ -1,0 +1,198 @@
+# Asset Types
+
+Layer;Scene Layer
+Prefab;Prefab
+Scene;Scene
+
+# Component Types
+
+wdAlwaysVisibleComponent;Always Visible;;https://wdengine.net/pages/docs/graphics/always-visible-component.html
+wdAmbientLightComponent;Ambient Light;;https://wdengine.net/pages/docs/graphics/lighting/ambient-light-component.html
+wdAreaDamageComponent;Area Damage;;https://wdengine.net/pages/docs/gameplay/area-damage-component.html
+wdBeamComponent;Beam;;https://wdengine.net/pages/docs/effects/beam-component.html
+wdBlackboardComponent;Blackboard;;https://wdengine.net/pages/docs/Miscellaneous/blackboard-component.html
+wdBoxReflectionProbeComponent;Box Reflection Probe;;https://wdengine.net/pages/docs/graphics/lighting/reflection-probe-components.html
+wdCameraComponent;Camera;;https://wdengine.net/pages/docs/graphics/camera-component.html
+wdClothSheetComponent;Cloth Sheet;;http://wdengine.net/pages/docs/effects/cloth-sheet-component.html
+wdColorAnimationComponent;Color Animation;;https://wdengine.net/pages/docs/animation/property-animation/color-animation-component.html
+wdCommentComponent;Comment
+wdDebugTextComponent;Debug Text;;https://wdengine.net/pages/docs/debugging/components/debug-text-component.html
+wdDirectionalLightComponent;Directional Light;;https://wdengine.net/pages/docs/graphics/lighting/directional-light-component.html
+wdFakeRopeComponent;Fake Rope Simulation;;https://wdengine.net/pages/docs/effects/fake-rope-component.html
+wdFogComponent;Fog;;https://wdengine.net/pages/docs/effects/fog.html
+wdForwardEventsToGameStateComponent;Forward Events To GameState
+wdGrabbableItemComponent;Grabbable Item;;https://wdengine.net/pages/docs/gameplay/grabbable-item-component.html
+wdGreyBoxComponent;Grey Boxing;;https://wdengine.net/pages/docs/scenes/greyboxing.html
+wdHeadBoneComponent;Head Bone;;https://wdengine.net/pages/docs/gameplay/headbone-component.html
+wdHeightfieldComponent;Heightfield;;https://wdengine.net/pages/docs/terrain/heightfield-component.html
+wdInputComponent;Input;;https://wdengine.net/pages/docs/input/input-component.html
+wdInstancedMeshComponent;Instanced Mesh;;https://wdengine.net/pages/docs/graphics/meshes/instanced-mesh-component.html
+wdJointAttachmentComponent;Joint Attachment;;https://wdengine.net/pages/docs/animation/skeletal-animation/joint-attachment-component.html
+wdJointOverrideComponent;Joint Override;;https://wdengine.net/pages/docs/animation/skeletal-animation/joint-override-component.html
+wdLineToComponent;Draw Line To Object;;https://wdengine.net/pages/docs/debugging/components/draw-line-component.html
+wdMarkerComponent;Marker;;https://wdengine.net/pages/docs/gameplay/marker-component.html
+wdMeshComponent;Mesh;;https://wdengine.net/pages/docs/graphics/meshes/mesh-component.html
+wdMoveToComponent;Move To;;https://wdengine.net/pages/docs/animation/property-animation/move-to-component.html
+wdOccluderComponent;Occluder Component;;https://wdengine.net/pages/docs/graphics/occluder-component.html
+wdPlayerStartPointComponent;Player Start Point;;https://wdengine.net/pages/docs/gameplay/player-start-point.html
+wdPointLightComponent;Point Light;;https://wdengine.net/pages/docs/graphics/lighting/point-light-component.html
+wdPrefabReferenceComponent;Prefab Reference;;https://wdengine.net/pages/docs/prefabs/prefabs-overview.html
+wdProjectileComponent;Projectile;;https://wdengine.net/pages/docs/gameplay/projectile-component.html
+wdPropertyAnimComponent;Property Animation;;https://wdengine.net/pages/docs/animation/property-animation/property-animation-component.html
+wdRaycastComponent;Raycast Placement;;https://wdengine.net/pages/docs/gameplay/raycast-placement-component.html
+wdRenderTargetActivatorComponent;Render Target Activator;;https://wdengine.net/pages/docs/graphics/render-to-texture/render-target-activator-component.html
+wdRopeRenderComponent;Rope Renderer;;https://wdengine.net/pages/docs/effects/rope-render-component.html
+wdRotorComponent;Rotor;;https://wdengine.net/pages/docs/animation/property-animation/rotor-component.html
+wdSensorConeComponent;Cone Sensor;;https://wdengine.net/pages/docs/ai/sensor-components.html
+wdSensorCylinderComponent;Cylinder Sensor;;https://wdengine.net/pages/docs/ai/sensor-components.html
+wdSensorSphereComponent;Sphere Sensor;;https://wdengine.net/pages/docs/ai/sensor-components.html
+wdSimpleAnimationComponent;Simple Animation;;https://wdengine.net/pages/docs/animation/skeletal-animation/simple-animation-component.html
+wdSimpleWindComponent;Simple Wind;;https://wdengine.net/pages/docs/effects/simple-wind-component.html
+wdSkeletonPoseComponent;Skeleton Pose;;https://wdengine.net/pages/docs/animation/skeletal-animation/skeleton-pose-component.html
+wdSkyBoxComponent;Sky Box;;https://wdengine.net/pages/docs/effects/sky.html
+wdSkyLightComponent;Sky Light;;https://wdengine.net/pages/docs/graphics/lighting/sky-light-component.html
+wdSliderComponent;Slider;;https://wdengine.net/pages/docs/animation/property-animation/slider-component.html
+wdSpawnComponent;Spawn;;https://wdengine.net/pages/docs/gameplay/spawn-component.html
+wdSphereReflectionProbeComponent;Sphere Reflection Probe;;https://wdengine.net/pages/docs/graphics/lighting/reflection-probe-components.html
+wdSpotLightComponent;Spot Light;;https://wdengine.net/pages/docs/graphics/lighting/spot-light-component.html
+wdSpriteComponent;Sprite;;https://wdengine.net/pages/docs/graphics/sprite-component.html
+wdTimedDeathComponent;Timed Death;;https://wdengine.net/pages/docs/gameplay/timed-death-component.html
+wdTriggerDelayModifierComponent;Trigger Delay Modifier
+wdWindVolumeConeComponent;Cone Wind Volume;;https://wdengine.net/pages/docs/effects/wind-volume-components.html
+wdWindVolumeCylinderComponent;Cylinder Wind Volume;;https://wdengine.net/pages/docs/effects/wind-volume-components.html
+wdWindVolumeSphereComponent;Sphere Wind Volume;;https://wdengine.net/pages/docs/effects/wind-volume-components.html
+wdPathComponent;Path Shape;;https://wdengine.net/pages/docs/animation/paths/path-component.html
+wdPathNodeComponent;Path Node;;https://wdengine.net/pages/docs/animation/paths/path-node-component.html
+wdFollowPathComponent;Follow Path;;https://wdengine.net/pages/docs/animation/paths/follow-path-component.html
+wdPowerConnectorComponent;Power Connector;;https://wdengine.net/pages/docs/gameplay/power-connector-component.html
+wdTriggerDelayModifierComponent;Trigger Delay Modifier;;https://wdengine.net/pages/docs/custom-code/game-logic/trigger-delay-modifier-component.html
+wdCommentComponent;Comment;;https://wdengine.net/pages/docs/Miscellaneous/components/comment-component.html
+wdForwardEventsToGameStateComponent;Forward Events To Game State;;https://wdengine.net/pages/docs/custom-code/game-logic/forward-events-to-game-state-component.html
+
+# Properties
+
+EditorShortcut;Editor Shortcut;Press ALT+Number to jump to this camera.
+Scene.CreateThumbnail;Create Scene Thumbnail
+Scene.GameMode.PlayFromHere;Play From Here
+Scene.GameObject.CreateEmptyHere;Create Empty Object Here
+Scene.Camera.Create.0;Create Level Camera 0;Creates a camera node at the current editor camera position and configures its shortcut
+Scene.Camera.Create.1;Create Level Camera 1;Creates a camera node at the current editor camera position and configures its shortcut
+Scene.Camera.Create.2;Create Level Camera 2;Creates a camera node at the current editor camera position and configures its shortcut
+Scene.Camera.Create.3;Create Level Camera 3;Creates a camera node at the current editor camera position and configures its shortcut
+Scene.Camera.Create.4;Create Level Camera 4;Creates a camera node at the current editor camera position and configures its shortcut
+Scene.Camera.Create.5;Create Level Camera 5;Creates a camera node at the current editor camera position and configures its shortcut
+Scene.Camera.Create.6;Create Level Camera 6;Creates a camera node at the current editor camera position and configures its shortcut
+Scene.Camera.Create.7;Create Level Camera 7;Creates a camera node at the current editor camera position and configures its shortcut
+Scene.Camera.Create.8;Create Level Camera 8;Creates a camera node at the current editor camera position and configures its shortcut
+Scene.Camera.Create.9;Create Level Camera 9;Creates a camera node at the current editor camera position and configures its shortcut
+Scene.Camera.JumpTo.0;Jump to Level Camera 0;Moves the editor camera to a camera position that is stored in the level file
+Scene.Camera.JumpTo.1;Jump to Level Camera 1;Moves the editor camera to a camera position that is stored in the level file
+Scene.Camera.JumpTo.2;Jump to Level Camera 2;Moves the editor camera to a camera position that is stored in the level file
+Scene.Camera.JumpTo.3;Jump to Level Camera 3;Moves the editor camera to a camera position that is stored in the level file
+Scene.Camera.JumpTo.4;Jump to Level Camera 4;Moves the editor camera to a camera position that is stored in the level file
+Scene.Camera.JumpTo.5;Jump to Level Camera 5;Moves the editor camera to a camera position that is stored in the level file
+Scene.Camera.JumpTo.6;Jump to Level Camera 6;Moves the editor camera to a camera position that is stored in the level file
+Scene.Camera.JumpTo.7;Jump to Level Camera 7;Moves the editor camera to a camera position that is stored in the level file
+Scene.Camera.JumpTo.8;Jump to Level Camera 8;Moves the editor camera to a camera position that is stored in the level file
+Scene.Camera.JumpTo.9;Jump to Level Camera 9;Moves the editor camera to a camera position that is stored in the level file
+Scene.Camera.MoveCameraHere;Move Camera Here;Moves the camera close to the point that the mouse points at.
+Scene.Camera.Restore.0;Go to Favorite Position 0;Moves the editor camera to a previously saved favorite position
+Scene.Camera.Restore.1;Go to Favorite Position 1;Moves the editor camera to a previously saved favorite position
+Scene.Camera.Restore.2;Go to Favorite Position 2;Moves the editor camera to a previously saved favorite position
+Scene.Camera.Restore.3;Go to Favorite Position 3;Moves the editor camera to a previously saved favorite position
+Scene.Camera.Restore.4;Go to Favorite Position 4;Moves the editor camera to a previously saved favorite position
+Scene.Camera.Restore.5;Go to Favorite Position 5;Moves the editor camera to a previously saved favorite position
+Scene.Camera.Restore.6;Go to Favorite Position 6;Moves the editor camera to a previously saved favorite position
+Scene.Camera.Restore.7;Go to Favorite Position 7;Moves the editor camera to a previously saved favorite position
+Scene.Camera.Restore.8;Go to Favorite Position 8;Moves the editor camera to a previously saved favorite position
+Scene.Camera.Restore.9;Go to Favorite Position 9;Moves the editor camera to a previously saved favorite position
+Scene.Camera.SnapCameraToObject;Align Camera with Object;Moves the camera to be at the exact location of the selected object.
+Scene.Camera.SnapObjectToCamera;Align Object with Camera;Moves the object to be at the current location of the camera.
+Scene.Camera.Speed;Camera Speed;Camera Speed: CTRL+Mousewheel to change
+Scene.Camera.Store.0;Save Favorite Position 0;Saves the current position as a favorite user position
+Scene.Camera.Store.1;Save Favorite Position 1;Saves the current position as a favorite user position
+Scene.Camera.Store.2;Save Favorite Position 2;Saves the current position as a favorite user position
+Scene.Camera.Store.3;Save Favorite Position 3;Saves the current position as a favorite user position
+Scene.Camera.Store.4;Save Favorite Position 4;Saves the current position as a favorite user position
+Scene.Camera.Store.5;Save Favorite Position 5;Saves the current position as a favorite user position
+Scene.Camera.Store.6;Save Favorite Position 6;Saves the current position as a favorite user position
+Scene.Camera.Store.7;Save Favorite Position 7;Saves the current position as a favorite user position
+Scene.Camera.Store.8;Save Favorite Position 8;Saves the current position as a favorite user position
+Scene.Camera.Store.9;Save Favorite Position 9;Saves the current position as a favorite user position
+Scene.ExportAndRun;Export and Run...
+Scene.ExportSceneToOBJ;Export Scene Geometry to OBJ...
+Scene.FavoriteCams.Menu;Favorite Cameras
+Scene.GameMode.Play;Play the Game
+Scene.GameMode.Simulate;Simulate World
+Scene.GameMode.Stop;Reset World
+Scene.KeepSimulationChanges;Keep Simulation Changes;Only possible during simulation. Synchronizes the position of selected objects back to the editor.
+Scene.Render.AddAmbient;Add Ambient Light
+Scene.Render.Grid;Show Grid
+Scene.Render.SelectionOverlay;Visualize Selection
+Scene.Render.ShapeIcons;Render Shape Icons
+Scene.Render.Visualizers;Render Visualizers
+Scene.Simulation.Speed.01;10%
+Scene.Simulation.Speed.025;25%
+Scene.Simulation.Speed.05;50%
+Scene.Simulation.Speed.1;100%
+Scene.Simulation.Speed.10;1000%
+Scene.Simulation.Speed.15;150%
+Scene.Simulation.Speed.2;200%
+Scene.Simulation.Speed.3;300%
+Scene.Simulation.Speed.4;400%
+Scene.Simulation.Speed.5;500%
+Scene.Simulation.Speed.Menu;Simulation Speed
+Scene.Utils.Menu;Utilities
+Scene.View.Span;Spawn View
+Scene.View.Toggle;Toggle Views
+Scene.Render.PickTransparent;Select Transparent
+
+Layer.CreateLayer;Create Layer...
+Layer.DeleteLayer;Delete Layer
+Layer.SaveLayer;Save Layer
+Layer.SaveActiveLayer;Save Active Layer
+Layer.LayerLoaded;Layer Loaded
+Layer.LayerVisible;Layer Visible
+
+wdLogicOperator::Equal;=
+wdLogicOperator::Unequal;<>
+wdLogicOperator::Less;<
+wdLogicOperator::LessEqual;<=
+wdLogicOperator::Greater;>
+wdLogicOperator::GreaterEqual;>=
+
+wdExposedSceneProperty;Exposed Property
+
+wdCameraMode::PerspectiveFixedFovX;Perspective Fixed X
+wdCameraMode::PerspectiveFixedFovY;Perspective Fixed Y
+wdCameraMode::OrthoFixedWidth;Ortho Fixed Width
+wdCameraMode::OrthoFixedHeight;Ortho Fixed Height
+
+wdCameraUsageHint::RenderTarget;Render to Texture
+
+wdInputMessageGranularity::PressOnly;Only Key Pressed
+wdInputMessageGranularity::PressAndRelease;Key Pressed and Released
+wdInputMessageGranularity::PressReleaseAndDown;Key Pressed, Released and Down
+wdInputMessageGranularity::PressReleaseDownAndUp;All, even Key Up
+
+wdClothSheetFlags::FixedCornerTopLeft;Corner: Top Left
+wdClothSheetFlags::FixedCornerTopRight;Corner: Top Right
+wdClothSheetFlags::FixedCornerBottomRight;Corner: Bottom Right
+wdClothSheetFlags::FixedCornerBottomLeft;Corner: Bottom Left
+wdClothSheetFlags::FixedEdgeTop;Edge: Top
+wdClothSheetFlags::FixedEdgeRight;Edge: Right
+wdClothSheetFlags::FixedEdgeBottom;Edge: Bottom
+wdClothSheetFlags::FixedEdgeLeft;Edge: Left
+wdClothSheetFlags::FixedEdgeLeft;Edge: Left
+
+wdUpdateRate::EveryFrame;Every Frame
+wdUpdateRate::Max30fps;Max 30 FPS
+wdUpdateRate::Max20fps;Max 20 FPS
+wdUpdateRate::Max10fps;Max 10 FPS
+wdUpdateRate::Max5fps;Max 5 FPS
+wdUpdateRate::Max2fps;Max 2 FPS
+wdUpdateRate::Max1fps;Max 1 FPS
+
+wdRootMotionMode::SendMoveCharacterMsg;Send MoveCharacterMsg
+
+Prefab.NameLabel;Proxy For;When this is set to '<Prefab-Root>' the node represents the game object in a scene on which the prefab gets instantiated. In this case you cannot edit its name, transform, etc, but you can attach additional components.

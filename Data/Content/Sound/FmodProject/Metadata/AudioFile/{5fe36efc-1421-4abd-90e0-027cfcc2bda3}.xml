@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.00.00">
+	<object class="AudioFile" id="{5fe36efc-1421-4abd-90e0-027cfcc2bda3}">
+		<property name="assetPath">
+			<value>Sonnis/Misc/Acid,Drop,Harsh,Sizzle,Burn,Melt,Corrosion_03.ogg</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>192</value>
+		</property>
+		<property name="channelCount">
+			<value>1</value>
+		</property>
+		<property name="length">
+			<value>3.7809270833333333</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{38395770-0db2-44d2-8ad3-1114e556ca7a}</destination>
+		</relationship>
+	</object>
+</objects>

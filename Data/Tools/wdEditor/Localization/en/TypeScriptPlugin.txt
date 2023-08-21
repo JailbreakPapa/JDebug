@@ -1,0 +1,21 @@
+# Asset Types
+
+TypeScript;TypeScript
+
+# Component Types
+
+wdTypeScriptComponent;TypeScript Component;;https://wdengine.net/pages/docs/custom-code/typescript/ts-component.html
+
+# UI
+
+TypeScript.Edit;Edit Script;Edit Script - Creates the script file if necessary
+
+# Properties
+
+wdTypeScriptParameterBool;Boolean
+wdTypeScriptParameterColor;Color
+wdTypeScriptParameterNumber;Number
+wdTypeScriptParameterString;String
+wdTypeScriptParameterVec3;Vec3
+
+wdTypeScriptAssetProperties::Vec3Parameters;Vec3 Parameters

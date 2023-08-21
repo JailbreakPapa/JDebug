@@ -1,0 +1,38 @@
+# Asset Types
+
+StateMachine;State Machine
+
+# Component Types
+
+wdStateMachineComponent;State Machine;;https://wdengine.net/pages/docs/ai/state-machine-component.html
+
+# Properties
+
+wdComparisonOperator::Equal;==
+wdComparisonOperator::NotEqual;<>
+wdComparisonOperator::Less;<
+wdComparisonOperator::LessEqual;<=
+wdComparisonOperator::Greater;>
+wdComparisonOperator::GreaterEqual;>=
+
+wdStateMachineLogicOperator::And;AND
+wdStateMachineLogicOperator::Or;OR
+
+wdStateMachineNodeAny;New Any State
+
+wdStateMachineTransition_Timeout;Timeout Transition
+
+wdStateMachineTransition_Compound;Compound Transition
+
+
+wdStateMachineNode;New State
+
+wdStateMachineTransition_BlackboardConditions;Blackboard Conditions
+
+wdStateMachineState_NestedStateMachine;Nested State Machine
+
+wdStateMachineState_Compound;Compound State
+
+wdStateMachineState_SendMsg;Send Message
+
+wdStateMachineState_SwitchObject;Switch Object

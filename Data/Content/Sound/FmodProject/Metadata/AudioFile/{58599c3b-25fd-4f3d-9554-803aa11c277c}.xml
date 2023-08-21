@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.00.00">
+	<object class="AudioFile" id="{58599c3b-25fd-4f3d-9554-803aa11c277c}">
+		<property name="assetPath">
+			<value>Sonnis/Impacts/Gravitas,bridge,stomp,small,flat,wood,gully,streamlet,dry,ruralpark,strong,rattle,gritty,top.ogg</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>96</value>
+		</property>
+		<property name="channelCount">
+			<value>1</value>
+		</property>
+		<property name="length">
+			<value>0.60399999999999998</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{38395770-0db2-44d2-8ad3-1114e556ca7a}</destination>
+		</relationship>
+	</object>
+</objects>

@@ -54,7 +54,7 @@ function(wd_set_build_flags_msvc TARGET_NAME)
 	target_compile_options(${TARGET_NAME} PRIVATE "/utf-8")
 
 	# set high warning level
-	# target_compile_options(${TARGET_NAME} PRIVATE "/W4") # too much work to fix all warnings in ez
+	# target_compile_options(${TARGET_NAME} PRIVATE "/W4") # too much work to fix all warnings in wd
 
 	# /WX: treat warnings as errors
 	if(NOT ${ARG_NO_WARNINGS_AS_ERRORS} AND NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -147,7 +147,7 @@ function(wd_set_build_flags_msvc TARGET_NAME)
 
 	# 'nodiscard': attribute is ignored in this syntactic position
 	target_compile_options(${TARGET_NAME} PRIVATE /wd5240)
-    
+
     # Disable deprecation warnings (qt, etc)
     target_compile_options(${TARGET_NAME} PRIVATE /wd4996)
 
@@ -260,9 +260,9 @@ function(wd_set_build_flags_gcc TARGET_NAME)
 	target_compile_options(${TARGET_NAME} PRIVATE -Wno-multichar)
 
 	if(NOT(CMAKE_CURRENT_SOURCE_DIR MATCHES "Code/ThirdParty"))
-		# Warning / Error settings for ez code
+		# Warning / Error settings for wd code
 		# attributes = error if a attribute is placed incorrectly (e.g. WD_FOUNDATION_DLL)
-		# unused-result = error if [[nodiscard]] return value is not handeled (ezResult)
+		# unused-result = error if [[nodiscard]] return value is not handeled (wdResult)
 		target_compile_options(${TARGET_NAME} PRIVATE -Werror=attributes -Werror=unused-result -Wno-ignored-attributes -Werror=return-type)
 	else()
 		# Ignore all warnings in third party code.

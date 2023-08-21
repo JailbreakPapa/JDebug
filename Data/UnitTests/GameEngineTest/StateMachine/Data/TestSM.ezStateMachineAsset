@@ -1,0 +1,588 @@
+HeaderV2
+{
+o
+{
+	Uuid %id{u4{2391545697630743727,4670014653287619337}}
+	s %t{"wdAssetDocumentInfo"}
+	u3 %v{2}
+	s %n{"Header"}
+	p
+	{
+		s %AssetType{"StateMachine"}
+		VarArray %Dependencies{}
+		Uuid %DocumentID{u4{2391545697630743727,4670014653287619337}}
+		u4 %Hash{6000266420870669119}
+		VarArray %MetaInfo{}
+		VarArray %Outputs{}
+		VarArray %References{}
+	}
+}
+}
+Objects
+{
+o
+{
+	Uuid %id{u4{13426048419111303813,4772684099436873381}}
+	s %t{"wdStateMachineState_SendMsg"}
+	u3 %v{1}
+	p
+	{
+		b %LogOnEnter{0}
+		b %LogOnExit{0}
+		Time %MessageDelay{d{0}}
+		b %SendMessageOnEnter{1}
+		b %SendMessageOnExit{0}
+	}
+}
+o
+{
+	Uuid %id{u4{6879367562142937791,4803109892030128720}}
+	s %t{"wdStateMachineState_SendMsg"}
+	u3 %v{1}
+	p
+	{
+		b %LogOnEnter{0}
+		b %LogOnExit{0}
+		Time %MessageDelay{d{0}}
+		b %SendMessageOnEnter{1}
+		b %SendMessageOnExit{0}
+	}
+}
+o
+{
+	Uuid %id{u4{8507376996489491381,4834210225930572887}}
+	s %t{"wdStateMachineState_SendMsg"}
+	u3 %v{1}
+	p
+	{
+		b %LogOnEnter{0}
+		b %LogOnExit{0}
+		Time %MessageDelay{d{0}}
+		b %SendMessageOnEnter{1}
+		b %SendMessageOnExit{0}
+	}
+}
+o
+{
+	Uuid %id{u4{7609907640736102310,4900984310189008775}}
+	s %t{"wdStateMachineConnection"}
+	u3 %v{1}
+	p
+	{
+		Uuid %Connection::Source{u4{13018519291707928641,10361897080146564366}}
+		s %Connection::SourcePin{"Exit"}
+		Uuid %Connection::Target{u4{9755372732137878227,15957139531769019622}}
+		s %Connection::TargetPin{"Enter"}
+		Uuid %Type{u4{7923390778993120907,5130025846531972969}}
+	}
+}
+o
+{
+	Uuid %id{u4{8545254313768413109,4933728443905610081}}
+	s %t{"wdStateMachineTransition_BlackboardConditions"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Conditions
+		{
+			Uuid{u4{7744901689422833076,5206041067717757334}}
+		}
+		s %Operator{"wdStateMachineLogicOperator::And"}
+	}
+}
+o
+{
+	Uuid %id{u4{7923390778993120907,5130025846531972969}}
+	s %t{"wdStateMachineTransition_Timeout"}
+	u3 %v{1}
+	p
+	{
+		Time %Timeout{d{0x0000000000002440}}
+	}
+}
+o
+{
+	Uuid %id{u4{14612061814937599619,5151596761145082221}}
+	s %t{"wdStateMachineTransition_Timeout"}
+	u3 %v{1}
+	p
+	{
+		Time %Timeout{d{0x000000000000E03F}}
+	}
+}
+o
+{
+	Uuid %id{u4{2194385157358626181,5193916183898117324}}
+	s %t{"wdStateMachineConnection"}
+	u3 %v{1}
+	p
+	{
+		Uuid %Connection::Source{u4{18390827156452484999,5762224206194630632}}
+		s %Connection::SourcePin{"Exit"}
+		Uuid %Connection::Target{u4{9755372732137878227,15957139531769019622}}
+		s %Connection::TargetPin{"Enter"}
+		Uuid %Type{u4{8545254313768413109,4933728443905610081}}
+	}
+}
+o
+{
+	Uuid %id{u4{6462526739779681447,5205361735945797358}}
+	s %t{"wdStateMachineNode"}
+	u3 %v{1}
+	p
+	{
+		b %IsInitialState{1}
+		s %Name{"INIT"}
+		Vec2 %Node::Pos{f{0x3D0EAF42,0x59C80143}}
+		Uuid %Type{u4{13426048419111303813,4772684099436873381}}
+	}
+}
+o
+{
+	Uuid %id{u4{7744901689422833076,5206041067717757334}}
+	s %t{"wdBlackboardCondition"}
+	u3 %v{1}
+	p
+	{
+		d %ComparisonValue{0x000000000000F03F}
+		s %EntryName{"final"}
+		s %Operator{"wdComparisonOperator::Equal"}
+	}
+}
+o
+{
+	Uuid %id{u4{13043292597095701888,5268653100224312386}}
+	s %t{"wdStateMachineTransition_Timeout"}
+	u3 %v{1}
+	p
+	{
+		Time %Timeout{d{0x0000000000002440}}
+	}
+}
+o
+{
+	Uuid %id{u4{2303060153106864037,5282554930236992566}}
+	s %t{"wdStateMachineTransition_Compound"}
+	u3 %v{1}
+	p
+	{
+		s %Operator{"wdStateMachineLogicOperator::Or"}
+		VarArray %SubTransitions
+		{
+			Uuid{u4{18333993329669798555,5296754982108897979}}
+			Uuid{u4{13043292597095701888,5268653100224312386}}
+		}
+	}
+}
+o
+{
+	Uuid %id{u4{18333993329669798555,5296754982108897979}}
+	s %t{"wdStateMachineTransition_BlackboardConditions"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Conditions
+		{
+			Uuid{u4{3166556039978992830,5618487820508571858}}
+		}
+		s %Operator{"wdStateMachineLogicOperator::And"}
+	}
+}
+o
+{
+	Uuid %id{u4{9843399298920749993,5402879480182200298}}
+	s %t{"wdStateMachineConnection"}
+	u3 %v{1}
+	p
+	{
+		Uuid %Connection::Source{u4{555491968486977467,5577118816820601818}}
+		s %Connection::SourcePin{"Exit"}
+		Uuid %Connection::Target{u4{13018519291707928641,10361897080146564366}}
+		s %Connection::TargetPin{"Enter"}
+		Uuid %Type{u4{2303060153106864037,5282554930236992566}}
+	}
+}
+o
+{
+	Uuid %id{u4{3359297952540090240,5420362112664507257}}
+	s %t{"wdStateMachineState_SendMsg"}
+	u3 %v{1}
+	p
+	{
+		b %LogOnEnter{0}
+		b %LogOnExit{0}
+		Time %MessageDelay{d{0}}
+		b %SendMessageOnEnter{1}
+		b %SendMessageOnExit{0}
+	}
+}
+o
+{
+	Uuid %id{u4{8036052584081751469,5464363028387062114}}
+	s %t{"wdStateMachineConnection"}
+	u3 %v{1}
+	p
+	{
+		Uuid %Connection::Source{u4{6462526739779681447,5205361735945797358}}
+		s %Connection::SourcePin{"Exit"}
+		Uuid %Connection::Target{u4{555491968486977467,5577118816820601818}}
+		s %Connection::TargetPin{"Enter"}
+		Uuid %Type{u4{14612061814937599619,5151596761145082221}}
+	}
+}
+o
+{
+	Uuid %id{u4{555491968486977467,5577118816820601818}}
+	s %t{"wdStateMachineNode"}
+	u3 %v{1}
+	p
+	{
+		s %Name{"A"}
+		Vec2 %Node::Pos{f{0x0F739D43,0xCBC60043}}
+		Uuid %Type{u4{6879367562142937791,4803109892030128720}}
+	}
+}
+o
+{
+	Uuid %id{u4{3166556039978992830,5618487820508571858}}
+	s %t{"wdBlackboardCondition"}
+	u3 %v{1}
+	p
+	{
+		d %ComparisonValue{0x0000000000003440}
+		s %EntryName{"B"}
+		s %Operator{"wdComparisonOperator::Greater"}
+	}
+}
+o
+{
+	Uuid %id{u4{18390827156452484999,5762224206194630632}}
+	s %t{"wdStateMachineNodeAny"}
+	u3 %v{1}
+	p
+	{
+		Vec2 %Node::Pos{f{0x7EF82044,0x4200A643}}
+	}
+}
+o
+{
+	Uuid %id{u4{18096612296587978288,6449934965513159559}}
+	s %t{"wdDocumentRoot"}
+	u3 %v{1}
+	s %n{"ObjectTree"}
+	p
+	{
+		VarArray %Children
+		{
+			Uuid{u4{6462526739779681447,5205361735945797358}}
+			Uuid{u4{555491968486977467,5577118816820601818}}
+			Uuid{u4{13018519291707928641,10361897080146564366}}
+			Uuid{u4{9755372732137878227,15957139531769019622}}
+			Uuid{u4{8036052584081751469,5464363028387062114}}
+			Uuid{u4{9843399298920749993,5402879480182200298}}
+			Uuid{u4{18390827156452484999,5762224206194630632}}
+			Uuid{u4{2194385157358626181,5193916183898117324}}
+			Uuid{u4{7609907640736102310,4900984310189008775}}
+		}
+	}
+}
+o
+{
+	Uuid %id{u4{13018519291707928641,10361897080146564366}}
+	s %t{"wdStateMachineNode"}
+	u3 %v{1}
+	p
+	{
+		s %Name{"B"}
+		Vec2 %Node::Pos{f{0xDCF0EE43,0x1DD00643}}
+		Uuid %Type{u4{8507376996489491381,4834210225930572887}}
+	}
+}
+o
+{
+	Uuid %id{u4{9755372732137878227,15957139531769019622}}
+	s %t{"wdStateMachineNode"}
+	u3 %v{1}
+	p
+	{
+		s %Name{"FINAL"}
+		Vec2 %Node::Pos{f{0xFD3B2344,0xAAD10743}}
+		Uuid %Type{u4{3359297952540090240,5420362112664507257}}
+	}
+}
+}
+Types
+{
+o
+{
+	Uuid %id{u4{4386162569440016191,1104149438506664309}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdBlackboardCondition"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{17002059552588153903,2200493120366670264}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Abstract|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdReflectedClass"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdStateMachineTransition"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{219779765415136218,3256450268205370147}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdStateMachineTransition"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdStateMachineTransition_Timeout"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{12784242696559934155,4722041660435468027}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::IsEnum|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdEnumBase"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdStateMachineLogicOperator"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{17086856891275395679,4821075556122048195}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdStateMachineNodeBase"}
+		s %PluginName{"wdEditorPluginAssets"}
+		VarArray %Properties{}
+		s %TypeName{"wdStateMachineNode"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{9263597182322130894,7673976854917387298}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::IsEnum|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdEnumBase"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdComparisonOperator"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{1272814175510547916,7899237949773246016}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Abstract|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdReflectedClass"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdStateMachineState"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{6089094783765586323,8705960867921430659}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdReflectedClass"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdDocumentRoot"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{10847420876450425172,9973933036859540926}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdReflectedClass"}
+		s %PluginName{"wdEditorPluginAssets"}
+		VarArray %Properties{}
+		s %TypeName{"wdStateMachineConnection"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{16516004019531558907,10984102612824967774}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdStateMachineTransition"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdStateMachineTransition_BlackboardConditions"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{4091127404087176962,12316384328150243321}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdStateMachineNodeBase"}
+		s %PluginName{"wdEditorPluginAssets"}
+		VarArray %Properties{}
+		s %TypeName{"wdStateMachineNodeAny"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{7221023124933570664,14175982573820959709}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdStateMachineState"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdStateMachineState_SendMsg"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{13343460939675617904,14220125077447103969}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdReflectedClass"}
+		s %PluginName{"wdEditorPluginAssets"}
+		VarArray %Properties{}
+		s %TypeName{"wdStateMachineNodeBase"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{2947336711354777548,15013008608905564043}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdEnumBase"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{6749735196937192528,17387544071479029423}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdStateMachineTransition"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdStateMachineTransition_Compound"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{983387834180907111,17935407260904399048}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdReflectedClass"}
+		u3 %TypeVersion{1}
+	}
+}
+}

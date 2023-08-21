@@ -1,0 +1,203 @@
+HeaderV2
+{
+o
+{
+	Uuid %id{u4{85153831524228785,4896476241313511951}}
+	s %t{"wdAssetDocumentInfo"}
+	u3 %v{2}
+	s %n{"Header"}
+	p
+	{
+		s %AssetType{"Animated Mesh"}
+		VarArray %Dependencies
+		{
+			s{"Animations/Mattress/Mattress.glb"}
+		}
+		Uuid %DocumentID{u4{85153831524228785,4896476241313511951}}
+		u4 %Hash{1152767020759977699}
+		VarArray %MetaInfo{}
+		VarArray %Outputs{}
+		VarArray %PackageDeps
+		{
+			s{"{ ba807654-635f-462a-9113-4f3d262d57cc }"}
+			s{"{ d9628d95-9475-4ec7-b0dd-b64b52b9d2e9 }"}
+		}
+		VarArray %References
+		{
+			s{"Animations/Mattress/Mattress.glb"}
+			s{"{ ba807654-635f-462a-9113-4f3d262d57cc }"}
+			s{"{ d9628d95-9475-4ec7-b0dd-b64b52b9d2e9 }"}
+		}
+	}
+}
+}
+Objects
+{
+o
+{
+	Uuid %id{u4{737644387007793320,5023125410429531495}}
+	s %t{"wdAnimatedMeshAssetProperties"}
+	u3 %v{2}
+	p
+	{
+		s %DefaultSkeleton{"{ ba807654-635f-462a-9113-4f3d262d57cc }"}
+		b %ImportMaterials{0}
+		VarArray %Materials
+		{
+			Uuid{u4{292248676611588998,5458871623945809914}}
+		}
+		s %MeshFile{"Animations/Mattress/Mattress.glb"}
+		s %NormalPrecision{"wdMeshNormalPrecision::_10Bit"}
+		b %RecalculateNormals{0}
+		b %RecalculateTangents{1}
+		s %TexCoordPrecision{"wdMeshTexCoordPrecision::_16Bit"}
+	}
+}
+o
+{
+	Uuid %id{u4{292248676611588998,5458871623945809914}}
+	s %t{"wdMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"Mat-0"}
+		s %Resource{"{ d9628d95-9475-4ec7-b0dd-b64b52b9d2e9 }"}
+	}
+}
+o
+{
+	Uuid %id{u4{18096612296587978288,6449934965513159559}}
+	s %t{"wdDocumentRoot"}
+	u3 %v{1}
+	s %n{"ObjectTree"}
+	p
+	{
+		VarArray %Children
+		{
+			Uuid{u4{737644387007793320,5023125410429531495}}
+		}
+	}
+}
+}
+Types
+{
+o
+{
+	Uuid %id{u4{9735983355844992176,7654398404563011307}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdReflectedClass"}
+		s %PluginName{"wdEditorPluginAssets"}
+		VarArray %Properties{}
+		s %TypeName{"wdAnimatedMeshAssetProperties"}
+		u3 %TypeVersion{2}
+	}
+}
+o
+{
+	Uuid %id{u4{6089094783765586323,8705960867921430659}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdReflectedClass"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdDocumentRoot"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{7523378465055293707,11345788873737253128}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"wdEditorPluginAssets"}
+		VarArray %Properties{}
+		s %TypeName{"wdMaterialResourceSlot"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{3437852327385397451,11533535376753039907}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::IsEnum|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdEnumBase"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdMeshTexCoordPrecision"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{3566230308987241816,14467924040829974905}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::IsEnum|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdEnumBase"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdMeshNormalPrecision"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{2947336711354777548,15013008608905564043}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdEnumBase"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{983387834180907111,17935407260904399048}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdReflectedClass"}
+		u3 %TypeVersion{1}
+	}
+}
+}

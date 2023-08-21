@@ -1,7 +1,7 @@
 
 # Based on GNU 4.8.2
 # https://docs.oracle.com/cd/E37069_01/html/E37071/gncix.html
-# https://docs.oracle.com/cd/E77782_01/html/E77784/gkwda.html
+# https://docs.oracle.com/cd/E77782_01/html/E77784/gkeza.html
 # Reference: http://gcc.gnu.org/projects/cxx0x.html
 
 set(_cmake_oldestSupported "__SUNPRO_CC >= 0x5130")

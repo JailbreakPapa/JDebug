@@ -26,6 +26,7 @@ macro(wd_create_target_cs TYPE TARGET_NAME)
 			add_library(${TARGET_NAME} SHARED ${ALL_SOURCE_FILES})
 
 		else()
+            # C# Static Support will soon be removed by cmake!
 			message(STATUS "Static Library (C#): ${TARGET_NAME}")
 			add_library(${TARGET_NAME} ${ALL_SOURCE_FILES})
 		endif()

@@ -4,8 +4,7 @@
 # ## General settings
 # #####################################
 if(WD_CMAKE_PLATFORM_WINDOWS OR WD_CMAKE_PLATFORM_LINUX)
-	set(WD_COMPILE_ENGINE_AS_DLL ON CACHE BOOL "Whether to compile the code as a shared libraries (DLL).")
-	mark_as_advanced(FORCE WD_COMPILE_ENGINE_AS_DLL)
+	set(WD_COMPILE_ENGINE_AS_DLL OFF BOOL "Whether to compile the code as a shared libraries (DLL).")
 else()
 	unset(WD_COMPILE_ENGINE_AS_DLL CACHE)
 endif()

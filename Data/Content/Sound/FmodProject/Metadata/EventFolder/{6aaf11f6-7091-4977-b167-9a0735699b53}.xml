@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.01.10.00">
+    <object class="EventFolder" id="{6aaf11f6-7091-4977-b167-9a0735699b53}">
+        <property name="name">
+            <value>FreeSound.org</value>
+        </property>
+        <relationship name="folder">
+            <destination>{43abbac7-fccb-4597-bca3-869ad1bb8bf1}</destination>
+        </relationship>
+    </object>
+</objects>

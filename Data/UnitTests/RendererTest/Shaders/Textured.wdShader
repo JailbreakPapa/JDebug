@@ -1,0 +1,32 @@
+[PLATFORMS]
+ALL
+
+[PERMUTATIONS]
+
+[RENDERSTATE]
+
+[VERTEXSHADER]
+
+#include "Common.h"
+
+VS_OUT main(VS_IN Input)
+{
+  VS_OUT RetVal;
+  RetVal.pos = mul(mvp, float4(Input.pos, 1.0));
+  RetVal.texcoord0 = float2(-Input.pos.x, Input.pos.y) + float2(0.5, 0.5);
+
+  return RetVal;
+}
+
+[PIXELSHADER]
+
+#include "Common.h"
+
+Texture2D DiffuseTexture;
+SamplerState DiffuseTexture_AutoSampler;
+
+float4 main(PS_IN Input) : SV_Target
+{
+  return DiffuseTexture.Sample(DiffuseTexture_AutoSampler, Input.texcoord0 * 4);
+}
+

@@ -1,0 +1,103 @@
+[PLATFORMS]
+ALL
+
+[PERMUTATIONS]
+
+CAMERA_MODE = CAMERA_MODE_PERSPECTIVE
+
+[MATERIALPARAMETER]
+
+int ShowChannelMode;
+
+[RENDERSTATE]
+
+CullMode = CullMode_None
+
+[VERTEXSHADER]
+
+#include <Shaders/Common/GlobalConstants.h>
+
+#define USE_NORMAL
+#include <Shaders/Materials/MaterialVertexShader.h>
+
+VS_OUT main(VS_IN Input)
+{
+  return FillVertexData(Input);
+}
+
+[PIXELSHADER]
+
+#include <Shaders/Common/GlobalConstants.h>
+
+CONSTANT_BUFFER(wdMaterialConstants, 1)
+{
+	INT1(ShowChannelMode);
+  FLOAT1(LodLevel);
+  BOOL1(IsLinear);
+};
+
+#define USE_WORLDPOS
+#define USE_NORMAL
+#include <Shaders/Common/GlobalConstants.h>
+#include <Shaders/Materials/MaterialInterpolator.h>
+
+TextureCube BaseTexture;
+SamplerState BaseTexture_AutoSampler;
+
+float4 SampleTexture(PS_IN Input)
+{
+  float3 normal = normalize(Input.Normal);
+  float3 viewDir = normalize(Input.WorldPosition - GetCameraPosition());
+  
+  // I find this simple lookup way more useful than the reflected, distorted thing below
+  // especially with alpha cut-outs, the reflected thing is completely unusable
+  float3 dir = CubeMapDirection(normal);
+  //float3 dir = CubeMapDirection(reflect(viewDir, normal));
+
+  if (LodLevel < 0)
+  {
+    return BaseTexture.Sample(BaseTexture_AutoSampler, dir);
+  }
+  return BaseTexture.SampleLevel(BaseTexture_AutoSampler, dir, LodLevel);
+}
+
+float4 main(PS_IN Input) : SV_Target
+{
+  float3 color = float3(1, 1, 1);
+  float4 texel = SampleTexture(Input).rgba;
+  float alpha = 1.0;
+
+  if (ShowChannelMode == 0)
+  {
+    color = texel.rgb;
+    alpha = texel.a;
+  }
+  else if (ShowChannelMode == 1)
+  {
+    color = texel.rgb;
+  }
+  else if (ShowChannelMode == 2)
+  {
+    color = texel.r;
+  }
+  else if (ShowChannelMode == 3)
+  {
+    color = texel.g;
+  }
+  else if (ShowChannelMode == 4)
+  {
+    color = texel.b;
+  }
+  else if (ShowChannelMode == 5)
+  {
+    color = SrgbToLinear(texel.a); // alpha is always linear
+  }
+
+  if (IsLinear && ShowChannelMode < 5)
+  {
+    color = SrgbToLinear(color);
+  }
+
+  clip(alpha - 0.5);
+  return float4(color, alpha);
+}

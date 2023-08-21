@@ -1,0 +1,98 @@
+[PLATFORMS]
+ALL
+
+[PERMUTATIONS]
+
+CAMERA_MODE = CAMERA_MODE_PERSPECTIVE
+
+[MATERIALPARAMETER]
+
+int ShowChannelMode;
+
+[RENDERSTATE]
+
+CullMode = CullMode_None
+
+[VERTEXSHADER]
+
+#include <Shaders/Common/GlobalConstants.h>
+
+#define USE_TEXCOORD0
+#include <Shaders/Materials/MaterialVertexShader.h>
+
+VS_OUT main(VS_IN Input)
+{
+  return FillVertexData(Input);
+}
+
+[PIXELSHADER]
+
+#include <Shaders/Common/GlobalConstants.h>
+
+CONSTANT_BUFFER(wdMaterialConstants, 1)
+{
+	INT1(ShowChannelMode);
+  FLOAT1(LodLevel);
+  BOOL1(IsLinear);
+};
+
+#define USE_WORLDPOS
+#define USE_TEXCOORD0
+#include <Shaders/Common/GlobalConstants.h>
+#include <Shaders/Materials/MaterialInterpolator.h>
+
+Texture2D BaseTexture;
+SamplerState BaseTexture_AutoSampler;
+
+float4 SampleTexture(PS_IN Input)
+{
+  if (LodLevel < 0)
+    return BaseTexture.Sample(BaseTexture_AutoSampler, Input.TexCoord0.xy);
+
+  return BaseTexture.SampleLevel(BaseTexture_AutoSampler, Input.TexCoord0.xy, LodLevel);
+}
+
+float4 main(PS_IN Input) : SV_Target
+{
+  float3 color = float3(1, 1, 1);
+  float4 texel = SampleTexture(Input).rgba;
+
+  if (ShowChannelMode == 0)
+  {
+    float3 background[2];
+    background[0] = float3(0.66, 0.66, 0.66);
+    background[1] = float3(0.82, 0.82, 0.82);
+
+    int bgIdx = (int)
+    (floor(Input.TexCoord0.x * 16.0) + floor(Input.TexCoord0.y * 16.0)) & 1;
+
+    color = lerp(background[bgIdx], texel.rgb, texel.a);
+  }
+  else if (ShowChannelMode == 1)
+  {
+    color = texel.rgb;
+  }
+  else if (ShowChannelMode == 2)
+  {
+    color = texel.r;
+  }
+  else if (ShowChannelMode == 3)
+  {
+    color = texel.g;
+  }
+  else if (ShowChannelMode == 4)
+  {
+    color = texel.b;
+  }
+  else if (ShowChannelMode == 5)
+  {
+    color = SrgbToLinear(texel.a); // alpha is always linear
+  }
+
+  if (IsLinear && ShowChannelMode < 5)
+  {
+    color = SrgbToLinear(color);
+  }
+
+  return float4(color, 1);
+}

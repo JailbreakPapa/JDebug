@@ -1,0 +1,956 @@
+HeaderV2
+{
+o
+{
+	Uuid %id{u4{12772758285650494116,5193603208228074049}}
+	s %t{"wdAssetDocumentInfo"}
+	u3 %v{2}
+	s %n{"Header"}
+	p
+	{
+		s %AssetType{"Scene"}
+		VarArray %Dependencies{}
+		Uuid %DocumentID{u4{12772758285650494116,5193603208228074049}}
+		u4 %Hash{9537210891238180154}
+		VarArray %MetaInfo{}
+		VarArray %Outputs{}
+		VarArray %References
+		{
+			s{"{ 08b3e790-2832-4083-93ec-133a93054c4c }"}
+			s{"{ 1dd7dbfb-f712-0acc-d78b-cd7f36eddea1 }"}
+			s{"{ 6d619c33-6611-432b-a924-27b1b9bfd8db }"}
+			s{"{ 9fc549fc-8c68-4e48-848d-170ca279f323 }"}
+		}
+	}
+}
+}
+Objects
+{
+o
+{
+	Uuid %id{u4{4670640654688944270,4663784356031660529}}
+	s %t{"wdGameObject"}
+	u3 %v{1}
+	p
+	{
+		b %Active{1}
+		VarArray %Children{}
+		VarArray %Components
+		{
+			Uuid{u4{10243366733957895578,5725658841109771156}}
+		}
+		s %GlobalKey{""}
+		Vec3 %LocalPosition{f{0,0,0}}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
+		f %LocalUniformScaling{0x0000803F}
+		s %Mode{"wdObjectMode::Automatic"}
+		s %Name{""}
+		VarArray %Tags
+		{
+			s{"CastShadow"}
+			s{"AutoColMesh"}
+		}
+	}
+}
+o
+{
+	Uuid %id{u4{2847897624144362128,4710780509808409773}}
+	s %t{"wdMeshComponent"}
+	u3 %v{3}
+	p
+	{
+		b %Active{1}
+		Color %Color{f{0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		VarArray %Materials
+		{
+			s{"{ 1dd7dbfb-f712-0acc-d78b-cd7f36eddea1 }"}
+		}
+		s %Mesh{"{ 6d619c33-6611-432b-a924-27b1b9bfd8db }"}
+	}
+}
+o
+{
+	Uuid %id{u4{5271129704516276604,4752570908208950772}}
+	s %t{"wdSceneDocumentSettings"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Layers
+		{
+			Uuid{u4{9023792968102742445,5523252104195527662}}
+		}
+	}
+}
+o
+{
+	Uuid %id{u4{10983274891401502106,4889093406945851034}}
+	s %t{"wdParticleComponent"}
+	u3 %v{5}
+	p
+	{
+		b %Active{1}
+		s %Effect{"{ 08b3e790-2832-4083-93ec-133a93054c4c }"}
+		b %IgnoreOwnerRotation{0}
+		Time %MinRestartDelay{d{0x9A9999999999B93F}}
+		s %OnFinishedAction{"wdOnComponentFinishedAction2::Restart"}
+		VarDict %Parameters{}
+		u4 %RandomSeed{42}
+		Time %RestartDelayRange{d{0x9A9999999999B93F}}
+		s %SharedInstanceName{"a"}
+		b %SpawnAtStart{1}
+		s %SpawnDirection{"wdBasisAxis::PositiveZ"}
+	}
+}
+o
+{
+	Uuid %id{u4{2298870465945494643,5275088386618561063}}
+	s %t{"wdGameObject"}
+	u3 %v{1}
+	p
+	{
+		b %Active{1}
+		VarArray %Children{}
+		VarArray %Components
+		{
+			Uuid{u4{2847897624144362128,4710780509808409773}}
+		}
+		s %GlobalKey{""}
+		Vec3 %LocalPosition{f{0,0,0}}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		Vec3 %LocalScaling{f{0x00002041,0x00002041,0xCDCCCC3D}}
+		f %LocalUniformScaling{0x0000803F}
+		s %Mode{"wdObjectMode::Automatic"}
+		s %Name{""}
+		VarArray %Tags
+		{
+			s{"CastShadow"}
+			s{"AutoColMesh"}
+		}
+	}
+}
+o
+{
+	Uuid %id{u4{10702337822884972458,5490387990757250863}}
+	s %t{"wdSliderComponent"}
+	u3 %v{3}
+	p
+	{
+		f %Acceleration{0x00008040}
+		b %Active{1}
+		s %Axis{"wdBasisAxis::PositiveY"}
+		f %Deceleration{0x00008040}
+		f %Distance{0x00008040}
+		Time %RandomStart{d{0}}
+		b %ReverseAtEnd{1}
+		b %ReverseAtStart{1}
+		b %Running{1}
+		f %Speed{0x00008040}
+	}
+}
+o
+{
+	Uuid %id{u4{9023792968102742445,5523252104195527662}}
+	s %t{"wdSceneLayer"}
+	u3 %v{1}
+	p
+	{
+		Uuid %Layer{u4{12772758285650494116,5193603208228074049}}
+	}
+}
+o
+{
+	Uuid %id{u4{1862519869757265860,5599212268672221754}}
+	s %t{"wdGameObject"}
+	u3 %v{1}
+	p
+	{
+		b %Active{1}
+		VarArray %Children{}
+		VarArray %Components
+		{
+			Uuid{u4{10983274891401502106,4889093406945851034}}
+		}
+		s %GlobalKey{""}
+		Vec3 %LocalPosition{f{0,0x000080BE,0}}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
+		f %LocalUniformScaling{0x0000803F}
+		s %Mode{"wdObjectMode::Automatic"}
+		s %Name{""}
+		VarArray %Tags
+		{
+			s{"CastShadow"}
+			s{"AutoColMesh"}
+		}
+	}
+}
+o
+{
+	Uuid %id{u4{10243366733957895578,5725658841109771156}}
+	s %t{"wdPrefabReferenceComponent"}
+	u3 %v{4}
+	p
+	{
+		b %Active{1}
+		VarDict %Parameters{}
+		s %Prefab{"{ 9fc549fc-8c68-4e48-848d-170ca279f323 }"}
+	}
+}
+o
+{
+	Uuid %id{u4{8340267952824578737,5876519639217185860}}
+	s %t{"wdGameObject"}
+	u3 %v{1}
+	p
+	{
+		b %Active{1}
+		VarArray %Children
+		{
+			Uuid{u4{1862519869757265860,5599212268672221754}}
+		}
+		VarArray %Components
+		{
+			Uuid{u4{10702337822884972458,5490387990757250863}}
+		}
+		s %GlobalKey{"Effect"}
+		Vec3 %LocalPosition{f{0,0x000000C0,0x0000C03F}}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
+		f %LocalUniformScaling{0x0000803F}
+		s %Mode{"wdObjectMode::ForceDynamic"}
+		s %Name{"Effect"}
+		VarArray %Tags
+		{
+			s{"CastShadow"}
+			s{"AutoColMesh"}
+		}
+	}
+}
+o
+{
+	Uuid %id{u4{18096612296587978288,6449934965513159559}}
+	s %t{"wdSceneDocumentRoot"}
+	u3 %v{2}
+	s %n{"ObjectTree"}
+	p
+	{
+		VarArray %Children
+		{
+			Uuid{u4{2298870465945494643,5275088386618561063}}
+			Uuid{u4{4670640654688944270,4663784356031660529}}
+			Uuid{u4{9664409850614728241,10327675723021301612}}
+			Uuid{u4{8340267952824578737,5876519639217185860}}
+			Uuid{u4{9406033744566431500,10432619235311644149}}
+			Uuid{u4{11513168505910820445,11304936523899835139}}
+			Uuid{u4{9126800086445496172,11097026033598345302}}
+			Uuid{u4{11411077480250864127,16270608390504515875}}
+		}
+		Uuid %Settings{u4{5271129704516276604,4752570908208950772}}
+	}
+}
+o
+{
+	Uuid %id{u4{9955060902765298985,9868311358501492859}}
+	s %t{"wdMeshComponent"}
+	u3 %v{3}
+	p
+	{
+		b %Active{1}
+		Color %Color{f{0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		VarArray %Materials
+		{
+			s{"{ 1dd7dbfb-f712-0acc-d78b-cd7f36eddea1 }"}
+		}
+		s %Mesh{"{ 6d619c33-6611-432b-a924-27b1b9bfd8db }"}
+	}
+}
+o
+{
+	Uuid %id{u4{14156175444487743814,10317510291628500313}}
+	s %t{"wdParticleComponent"}
+	u3 %v{5}
+	p
+	{
+		b %Active{1}
+		s %Effect{"{ 08b3e790-2832-4083-93ec-133a93054c4c }"}
+		b %IgnoreOwnerRotation{0}
+		Time %MinRestartDelay{d{0x9A9999999999C93F}}
+		s %OnFinishedAction{"wdOnComponentFinishedAction2::Restart"}
+		VarDict %Parameters{}
+		u4 %RandomSeed{42}
+		Time %RestartDelayRange{d{0x9A9999999999C93F}}
+		s %SharedInstanceName{"a"}
+		b %SpawnAtStart{1}
+		s %SpawnDirection{"wdBasisAxis::PositiveZ"}
+	}
+}
+o
+{
+	Uuid %id{u4{9664409850614728241,10327675723021301612}}
+	s %t{"wdGameObject"}
+	u3 %v{1}
+	p
+	{
+		b %Active{1}
+		VarArray %Children{}
+		VarArray %Components
+		{
+			Uuid{u4{11437288266203240986,10342328692810562792}}
+		}
+		s %GlobalKey{""}
+		Vec3 %LocalPosition{f{0x7A0284C0,0x0C54CE40,0x0D818540}}
+		Quat %LocalRotation{f{0x8743DD3D,0xA444473E,0x504AF2BE,0x53345A3F}}
+		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
+		f %LocalUniformScaling{0x0000803F}
+		s %Mode{"wdObjectMode::Automatic"}
+		s %Name{""}
+		VarArray %Tags
+		{
+			s{"CastShadow"}
+		}
+	}
+}
+o
+{
+	Uuid %id{u4{11437288266203240986,10342328692810562792}}
+	s %t{"wdCameraComponent"}
+	u3 %v{10}
+	p
+	{
+		b %Active{1}
+		f %Aperture{0x0000803F}
+		s %CameraRenderPipeline{""}
+		f %Dimensions{0x00002041}
+		i1 %EditorShortcut{-1}
+		VarArray %ExcludeTags{}
+		f %ExposureCompensation{0}
+		f %FOV{0x00007042}
+		f %FarPlane{0x00007A44}
+		f %ISO{0x0000C842}
+		VarArray %IncludeTags{}
+		s %Mode{"wdCameraMode::PerspectiveFixedFovY"}
+		f %NearPlane{0x0000803E}
+		s %RenderTarget{""}
+		Vec2 %RenderTargetOffset{f{0,0}}
+		Vec2 %RenderTargetSize{f{0x0000803F,0x0000803F}}
+		b %ShowStats{0}
+		Time %ShutterTime{d{0x000000000000F03F}}
+		s %UsageHint{"wdCameraUsageHint::MainView"}
+	}
+}
+o
+{
+	Uuid %id{u4{18247555108089732418,10386907171871974582}}
+	s %t{"wdParticleComponent"}
+	u3 %v{5}
+	p
+	{
+		b %Active{1}
+		s %Effect{"{ 08b3e790-2832-4083-93ec-133a93054c4c }"}
+		b %IgnoreOwnerRotation{0}
+		Time %MinRestartDelay{d{0x9A9999999999B93F}}
+		s %OnFinishedAction{"wdOnComponentFinishedAction2::Restart"}
+		VarDict %Parameters{}
+		u4 %RandomSeed{43}
+		Time %RestartDelayRange{d{0x9A9999999999B93F}}
+		s %SharedInstanceName{"b"}
+		b %SpawnAtStart{1}
+		s %SpawnDirection{"wdBasisAxis::PositiveZ"}
+	}
+}
+o
+{
+	Uuid %id{u4{9406033744566431500,10432619235311644149}}
+	s %t{"wdGameObject"}
+	u3 %v{1}
+	p
+	{
+		b %Active{1}
+		VarArray %Children{}
+		VarArray %Components
+		{
+			Uuid{u4{9955060902765298985,9868311358501492859}}
+		}
+		s %GlobalKey{""}
+		Vec3 %LocalPosition{f{0x00002040,0,0}}
+		Quat %LocalRotation{f{0,0xF20435BF,0xF3043533,0xF304353F}}
+		Vec3 %LocalScaling{f{0x00002041,0x00002041,0xCDCCCC3D}}
+		f %LocalUniformScaling{0x0000803F}
+		s %Mode{"wdObjectMode::Automatic"}
+		s %Name{""}
+		VarArray %Tags
+		{
+			s{"CastShadow"}
+			s{"AutoColMesh"}
+		}
+	}
+}
+o
+{
+	Uuid %id{u4{13875238375971214166,10918804875439900142}}
+	s %t{"wdSliderComponent"}
+	u3 %v{3}
+	p
+	{
+		f %Acceleration{0x00008040}
+		b %Active{1}
+		s %Axis{"wdBasisAxis::PositiveY"}
+		f %Deceleration{0x00008040}
+		f %Distance{0x00008040}
+		Time %RandomStart{d{0}}
+		b %ReverseAtEnd{1}
+		b %ReverseAtStart{1}
+		b %Running{1}
+		f %Speed{0x00008040}
+	}
+}
+o
+{
+	Uuid %id{u4{5035420422843507568,11027629153354871033}}
+	s %t{"wdGameObject"}
+	u3 %v{1}
+	p
+	{
+		b %Active{1}
+		VarArray %Children{}
+		VarArray %Components
+		{
+			Uuid{u4{14156175444487743814,10317510291628500313}}
+		}
+		s %GlobalKey{""}
+		Vec3 %LocalPosition{f{0,0x000080BE,0}}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
+		f %LocalUniformScaling{0x0000803F}
+		s %Mode{"wdObjectMode::Automatic"}
+		s %Name{""}
+		VarArray %Tags
+		{
+			s{"CastShadow"}
+			s{"AutoColMesh"}
+		}
+	}
+}
+o
+{
+	Uuid %id{u4{9126800086445496172,11097026033598345302}}
+	s %t{"wdGameObject"}
+	u3 %v{1}
+	p
+	{
+		b %Active{1}
+		VarArray %Children{}
+		VarArray %Components
+		{
+			Uuid{u4{18247555108089732418,10386907171871974582}}
+		}
+		s %GlobalKey{""}
+		Vec3 %LocalPosition{f{0x00002040,0x00000040,0x0000403F}}
+		Quat %LocalRotation{f{0xE042003F,0xB81200BF,0x3B7AFFBE,0x4ADAFF3E}}
+		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
+		f %LocalUniformScaling{0x0000803F}
+		s %Mode{"wdObjectMode::Automatic"}
+		s %Name{""}
+		VarArray %Tags
+		{
+			s{"CastShadow"}
+			s{"AutoColMesh"}
+		}
+	}
+}
+o
+{
+	Uuid %id{u4{11513168505910820445,11304936523899835139}}
+	s %t{"wdGameObject"}
+	u3 %v{1}
+	p
+	{
+		b %Active{1}
+		VarArray %Children
+		{
+			Uuid{u4{5035420422843507568,11027629153354871033}}
+		}
+		VarArray %Components
+		{
+			Uuid{u4{13875238375971214166,10918804875439900142}}
+		}
+		s %GlobalKey{"Effect"}
+		Vec3 %LocalPosition{f{0x0000E0BF,0x000000C0,0x0000C03F}}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
+		f %LocalUniformScaling{0x0000803F}
+		s %Mode{"wdObjectMode::ForceDynamic"}
+		s %Name{"Effect"}
+		VarArray %Tags
+		{
+			s{"CastShadow"}
+			s{"AutoColMesh"}
+		}
+	}
+}
+o
+{
+	Uuid %id{u4{2085088428185548757,15560489528778145155}}
+	s %t{"wdParticleComponent"}
+	u3 %v{5}
+	p
+	{
+		b %Active{1}
+		s %Effect{"{ 08b3e790-2832-4083-93ec-133a93054c4c }"}
+		b %IgnoreOwnerRotation{0}
+		Time %MinRestartDelay{d{0x9A9999999999B93F}}
+		s %OnFinishedAction{"wdOnComponentFinishedAction2::Restart"}
+		VarDict %Parameters{}
+		u4 %RandomSeed{43}
+		Time %RestartDelayRange{d{0x333333333333D33F}}
+		s %SharedInstanceName{"b"}
+		b %SpawnAtStart{1}
+		s %SpawnDirection{"wdBasisAxis::PositiveZ"}
+	}
+}
+o
+{
+	Uuid %id{u4{11411077480250864127,16270608390504515875}}
+	s %t{"wdGameObject"}
+	u3 %v{1}
+	p
+	{
+		b %Active{1}
+		VarArray %Children{}
+		VarArray %Components
+		{
+			Uuid{u4{2085088428185548757,15560489528778145155}}
+		}
+		s %GlobalKey{""}
+		Vec3 %LocalPosition{f{0x00002040,0x0000E03F,0x00001040}}
+		Quat %LocalRotation{f{0xE042003F,0xB81200BF,0x3B7AFFBE,0x4ADAFF3E}}
+		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
+		f %LocalUniformScaling{0x0000803F}
+		s %Mode{"wdObjectMode::Automatic"}
+		s %Name{""}
+		VarArray %Tags
+		{
+			s{"CastShadow"}
+			s{"AutoColMesh"}
+		}
+	}
+}
+}
+Types
+{
+o
+{
+	Uuid %id{u4{6914292285925798136,1108246313736053318}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Abstract|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdReflectedClass"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdComponent"}
+		u3 %TypeSize{48}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{15272284220582915620,3290797833852729302}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::IsEnum|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdEnumBase"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdCameraMode"}
+		u3 %TypeSize{1}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{14633628111157529947,3328384510238863063}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdMeshComponentBase"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdMeshComponent"}
+		u3 %TypeSize{104}
+		u3 %TypeVersion{3}
+	}
+}
+o
+{
+	Uuid %id{u4{1168477127324465164,3417260966341483024}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdComponent"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdPrefabReferenceComponent"}
+		u3 %TypeSize{96}
+		u3 %TypeVersion{4}
+	}
+}
+o
+{
+	Uuid %id{u4{12988416931910697783,3614107907594852236}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdTransformComponent"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdSliderComponent"}
+		u3 %TypeSize{96}
+		u3 %TypeVersion{3}
+	}
+}
+o
+{
+	Uuid %id{u4{5195345338716098525,5056385137718360950}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdReflectedClass"}
+		s %PluginName{"wdEditorPluginScene"}
+		VarArray %Properties{}
+		s %TypeName{"wdSceneLayerBase"}
+		u3 %TypeSize{16}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{5837165590562654431,6019321076980052009}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdSceneLayerBase"}
+		s %PluginName{"wdEditorPluginScene"}
+		VarArray %Properties{}
+		s %TypeName{"wdSceneLayer"}
+		u3 %TypeSize{32}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{7605758958972330253,6687734095884105025}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Abstract|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdRenderComponent"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdMeshComponentBase"}
+		u3 %TypeSize{104}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{13649880205026559927,7297274558339895637}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdGameObject"}
+		u3 %TypeSize{128}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{450943844669591006,7318511461061204347}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdSceneDocumentSettingsBase"}
+		s %PluginName{"wdEditorPluginScene"}
+		VarArray %Properties{}
+		s %TypeName{"wdSceneDocumentSettings"}
+		u3 %TypeSize{40}
+		u3 %TypeVersion{2}
+	}
+}
+o
+{
+	Uuid %id{u4{6089094783765586323,8705960867921430659}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdReflectedClass"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdDocumentRoot"}
+		u3 %TypeSize{72}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{2313163756843389160,8849215390612252591}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::IsEnum|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdEnumBase"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdOnComponentFinishedAction2"}
+		u3 %TypeSize{1}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{5020032394718308778,9029474187781723681}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdRenderComponent"}
+		s %PluginName{"wdEditorPluginParticle"}
+		VarArray %Properties{}
+		s %TypeName{"wdParticleComponent"}
+		u3 %TypeSize{328}
+		u3 %TypeVersion{5}
+	}
+}
+o
+{
+	Uuid %id{u4{3251891958765718680,9159887340540620231}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdDocumentRoot"}
+		s %PluginName{"wdEditorPluginScene"}
+		VarArray %Properties{}
+		s %TypeName{"wdSceneDocumentRoot"}
+		u3 %TypeSize{80}
+		u3 %TypeVersion{2}
+	}
+}
+o
+{
+	Uuid %id{u4{14543630447052729839,9459039542380974471}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::IsEnum|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdEnumBase"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdObjectMode"}
+		u3 %TypeSize{1}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{16508388108942581257,9601460247128054931}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdComponent"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdCameraComponent"}
+		u3 %TypeSize{504}
+		u3 %TypeVersion{10}
+	}
+}
+o
+{
+	Uuid %id{u4{14700230518358869173,11472901527618371423}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdReflectedClass"}
+		s %PluginName{"wdEditorPluginScene"}
+		VarArray %Properties{}
+		s %TypeName{"wdSceneDocumentSettingsBase"}
+		u3 %TypeSize{8}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{16777871838542487558,12116962178824346014}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Abstract|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdComponent"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdRenderComponent"}
+		u3 %TypeSize{48}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{10519138687914176703,14437890910412567776}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Abstract|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdComponent"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdTransformComponent"}
+		u3 %TypeSize{64}
+		u3 %TypeVersion{3}
+	}
+}
+o
+{
+	Uuid %id{u4{2947336711354777548,15013008608905564043}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdEnumBase"}
+		u3 %TypeSize{1}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{14469700887475489738,16951777026318265606}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::IsEnum|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdEnumBase"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdBasisAxis"}
+		u3 %TypeSize{1}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{17965579125706971693,17079293274319994058}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::IsEnum|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"wdEnumBase"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdCameraUsageHint"}
+		u3 %TypeSize{1}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{983387834180907111,17935407260904399048}}
+	s %t{"wdReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"wdReflectedClass"}
+		u3 %TypeSize{8}
+		u3 %TypeVersion{1}
+	}
+}
+}

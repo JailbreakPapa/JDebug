@@ -1,13 +1,15 @@
 #pragma once
 
-#if WD_DISABLED(WD_COMPILE_FOR_DEVELOPMENT)
+#if NS_DISABLED(NS_COMPILE_FOR_DEVELOPMENT)
 
-inline void wdLog::Dev(wdLogInterface* /*pInterface*/, const wdFormatString& /*string*/) {}
+inline void nsLog::Dev(nsLogInterface* /*pInterface*/, const nsFormatString& /*string*/) {}
 
 #endif
 
-#if WD_DISABLED(WD_COMPILE_FOR_DEBUG)
+#if NS_DISABLED(NS_COMPILE_FOR_DEBUG)
 
-inline void wdLog::Debug(wdLogInterface* /*pInterface*/, const wdFormatString& /*string*/) {}
+inline void nsLog::Debug(nsLogInterface* /*pInterface*/, const nsFormatString& /*string*/)
+{
+}
 
 #endif

@@ -1,12 +1,12 @@
 #pragma once
 
 #include <Foundation/CodeUtils/Expression/ExpressionDeclarations.h>
-#include <Foundation/Containers/DynamicArray.h>
+#include <Foundation/Containers/Blob.h>
 
-class wdStreamWriter;
-class wdStreamReader;
+class nsStreamWriter;
+class nsStreamReader;
 
-class WD_FOUNDATION_DLL wdExpressionByteCode
+class NS_FOUNDATION_DLL nsExpressionByteCode
 {
 public:
   struct OpCode
@@ -178,47 +178,69 @@ public:
     static const char* GetName(Enum code);
   };
 
-  using StorageType = wdUInt32;
+  using StorageType = nsUInt32;
 
-  wdExpressionByteCode();
-  ~wdExpressionByteCode();
+  nsExpressionByteCode();
+  nsExpressionByteCode(const nsExpressionByteCode& other);
+  ~nsExpressionByteCode();
 
-  bool operator==(const wdExpressionByteCode& other) const;
-  bool operator!=(const wdExpressionByteCode& other) const { return !(*this == other); }
+  void operator=(const nsExpressionByteCode& other);
+
+  bool operator==(const nsExpressionByteCode& other) const;
+  bool operator!=(const nsExpressionByteCode& other) const { return !(*this == other); }
 
   void Clear();
-  bool IsEmpty() const { return m_ByteCode.IsEmpty(); }
+  bool IsEmpty() const { return m_uiByteCodeCount == 0; }
 
-  const StorageType* GetByteCode() const;
+  const StorageType* GetByteCodeStart() const;
   const StorageType* GetByteCodeEnd() const;
+  nsArrayPtr<const StorageType> GetByteCode() const;
 
-  wdUInt32 GetNumInstructions() const;
-  wdUInt32 GetNumTempRegisters() const;
-  wdArrayPtr<const wdExpression::StreamDesc> GetInputs() const;
-  wdArrayPtr<const wdExpression::StreamDesc> GetOutputs() const;
-  wdArrayPtr<const wdExpression::FunctionDesc> GetFunctions() const;
+  nsUInt32 GetNumInstructions() const;
+  nsUInt32 GetNumTempRegisters() const;
+  nsArrayPtr<const nsExpression::StreamDesc> GetInputs() const;
+  nsArrayPtr<const nsExpression::StreamDesc> GetOutputs() const;
+  nsArrayPtr<const nsExpression::FunctionDesc> GetFunctions() const;
 
   static OpCode::Enum GetOpCode(const StorageType*& ref_pByteCode);
-  static wdUInt32 GetRegisterIndex(const StorageType*& ref_pByteCode);
-  static wdExpression::Register GetConstant(const StorageType*& ref_pByteCode);
-  static wdUInt32 GetFunctionIndex(const StorageType*& ref_pByteCode);
-  static wdUInt32 GetFunctionArgCount(const StorageType*& ref_pByteCode);
+  static nsUInt32 GetRegisterIndex(const StorageType*& ref_pByteCode);
+  static nsExpression::Register GetConstant(const StorageType*& ref_pByteCode);
+  static nsUInt32 GetFunctionIndex(const StorageType*& ref_pByteCode);
+  static nsUInt32 GetFunctionArgCount(const StorageType*& ref_pByteCode);
 
-  void Disassemble(wdStringBuilder& out_sDisassembly) const;
+  void Disassemble(nsStringBuilder& out_sDisassembly) const;
 
-  void Save(wdStreamWriter& inout_stream) const;
-  wdResult Load(wdStreamReader& inout_stream);
+  nsResult Save(nsStreamWriter& inout_stream) const;
+  nsResult Load(nsStreamReader& inout_stream, nsByteArrayPtr externalMemory = nsByteArrayPtr());
+
+  nsConstByteBlobPtr GetDataBlob() const { return m_Data.GetByteBlobPtr(); }
 
 private:
-  friend class wdExpressionCompiler;
+  friend class nsExpressionCompiler;
 
-  wdDynamicArray<StorageType> m_ByteCode;
-  wdDynamicArray<wdExpression::StreamDesc> m_Inputs;
-  wdDynamicArray<wdExpression::StreamDesc> m_Outputs;
-  wdDynamicArray<wdExpression::FunctionDesc> m_Functions;
+  void Init(nsArrayPtr<const StorageType> byteCode, nsArrayPtr<const nsExpression::StreamDesc> inputs, nsArrayPtr<const nsExpression::StreamDesc> outputs, nsArrayPtr<const nsExpression::FunctionDesc> functions, nsUInt32 uiNumTempRegisters, nsUInt32 uiNumInstructions);
 
-  wdUInt32 m_uiNumInstructions = 0;
-  wdUInt32 m_uiNumTempRegisters = 0;
+  nsBlob m_Data;
+
+  nsExpression::StreamDesc* m_pInputs = nullptr;
+  nsExpression::StreamDesc* m_pOutputs = nullptr;
+  nsExpression::FunctionDesc* m_pFunctions = nullptr;
+  StorageType* m_pByteCode = nullptr;
+
+  nsUInt32 m_uiByteCodeCount = 0;
+  nsUInt16 m_uiNumInputs = 0;
+  nsUInt16 m_uiNumOutputs = 0;
+  nsUInt16 m_uiNumFunctions = 0;
+
+  nsUInt16 m_uiNumTempRegisters = 0;
+  nsUInt32 m_uiNumInstructions = 0;
 };
+
+#if NS_ENABLED(NS_PLATFORM_64BIT)
+static_assert(sizeof(nsExpressionByteCode) == 64);
+#endif
+
+NS_DECLARE_REFLECTABLE_TYPE(NS_FOUNDATION_DLL, nsExpressionByteCode);
+NS_DECLARE_CUSTOM_VARIANT_TYPE(nsExpressionByteCode);
 
 #include <Foundation/CodeUtils/Expression/Implementation/ExpressionByteCode_inl.h>

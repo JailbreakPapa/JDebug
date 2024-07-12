@@ -88,10 +88,10 @@ RECENT REVISION HISTORY:
                                            socks-the-fox (16-bit PNG)
                                            Jeremy Sawicki (handle all ImageNet JPGs)
  Optimizations & bugfixes                  Mikhail Morozov (1-bit BMP)
-    Fabian "ryg" Giesen                    Anael Seghwdzi (is-16-bit query)
+    Fabian "ryg" Giesen                    Anael Seghnszi (is-16-bit query)
     Arseny Kapoulkine
     John-Mark Allen
-    Carmelo J Fdwd-Aguera
+    Carmelo J Fdns-Aguera
 
  Bug & warning fixes
     Marc LeBlanc            David Woo          Guillaume George     Martins Mozeiko
@@ -100,10 +100,10 @@ RECENT REVISION HISTORY:
     Hayaki Saito            Nathan Reed        Won Chun
     Luke Graham             Johan Duparc       Nick Verigakis       the Horde3D community
     Thomas Ruf              Ronny Chevalier                         github:rlyeh
-    Janwd Zemva             John Bartholomew   Michal Cichon        github:romigrou
+    Janns Zemva             John Bartholomew   Michal Cichon        github:romigrou
     Jonathan Blow           Ken Hamada         Tero Hanninen        github:svdijk
                             Laurent Gomila     Cort Stratton        github:snagar
-    Aruelien Pocheville     Sergio Gonzalwd    Thibault Reuille     github:Zelex
+    Aruelien Pocheville     Sergio Gonzalns    Thibault Reuille     github:Zelex
     Cass Everitt            Ryamond Barbiero                        github:grim210
     Paul Du Bois            Engin Manap        Aldo Culquicondor    github:sammyhw
     Philipp Wiesemann       Dale Weiler        Oriol Ferrer Mesia   github:phprus
@@ -369,11 +369,11 @@ extern "C" {
 #endif
 
 //////////////////////////////////////////////////////////////////////////
-// Start wdEngine edit
+// Start nsEngine edit
 // Configure the DLL Import/Export Define
 #undef STBIDEF
 #ifdef BUILDSYSTEM_COMPILE_ENGINE_AS_DLL
-#  ifdef _WIN32
+#  if defined(_WIN32) || defined(__PROSPERO__)
 #    ifdef BUILDSYSTEM_BUILDING_STB_IMAGE_LIB
 #      define STBIDEF __declspec(dllexport)
 #    else
@@ -385,7 +385,7 @@ extern "C" {
 #else
 #  define STBIDEF
 #endif
-// End wdEngine edit
+// End nsEngine edit
 //////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////
@@ -2143,7 +2143,7 @@ stbi_inline static int stbi__jpeg_get_bit(stbi__jpeg *j)
 
 // given a value that's at position X in the zigzag stream,
 // where does it appear in the 8x8 matrix coded as row-major?
-static const stbi_uc stbi__jpeg_dwdigzag[64+15] =
+static const stbi_uc stbi__jpeg_dnsigzag[64+15] =
 {
     0,  1,  8, 16,  9,  2,  3, 10,
    17, 24, 32, 25, 18, 11,  4,  5,
@@ -2190,7 +2190,7 @@ static int stbi__jpeg_decode_block(stbi__jpeg *j, short data[64], stbi__huffman 
          j->code_buffer <<= s;
          j->code_bits -= s;
          // decode into unzigzag'd location
-         zig = stbi__jpeg_dwdigzag[k++];
+         zig = stbi__jpeg_dnsigzag[k++];
          data[zig] = (short) ((r >> 8) * dequant[zig]);
       } else {
          int rs = stbi__jpeg_huff_decode(j, hac);
@@ -2203,7 +2203,7 @@ static int stbi__jpeg_decode_block(stbi__jpeg *j, short data[64], stbi__huffman 
          } else {
             k += r;
             // decode into unzigzag'd location
-            zig = stbi__jpeg_dwdigzag[k++];
+            zig = stbi__jpeg_dnsigzag[k++];
             data[zig] = (short) (stbi__extend_receive(j,s) * dequant[zig]);
          }
       }
@@ -2264,7 +2264,7 @@ static int stbi__jpeg_decode_block_prog_ac(stbi__jpeg *j, short data[64], stbi__
             s = r & 15; // combined length
             j->code_buffer <<= s;
             j->code_bits -= s;
-            zig = stbi__jpeg_dwdigzag[k++];
+            zig = stbi__jpeg_dnsigzag[k++];
             data[zig] = (short) ((r >> 8) << shift);
          } else {
             int rs = stbi__jpeg_huff_decode(j, hac);
@@ -2282,7 +2282,7 @@ static int stbi__jpeg_decode_block_prog_ac(stbi__jpeg *j, short data[64], stbi__
                k += 16;
             } else {
                k += r;
-               zig = stbi__jpeg_dwdigzag[k++];
+               zig = stbi__jpeg_dnsigzag[k++];
                data[zig] = (short) (stbi__extend_receive(j,s) << shift);
             }
          }
@@ -2295,7 +2295,7 @@ static int stbi__jpeg_decode_block_prog_ac(stbi__jpeg *j, short data[64], stbi__
       if (j->eob_run) {
          --j->eob_run;
          for (k = j->spec_start; k <= j->spec_end; ++k) {
-            short *p = &data[stbi__jpeg_dwdigzag[k]];
+            short *p = &data[stbi__jpeg_dnsigzag[k]];
             if (*p != 0)
                if (stbi__jpeg_get_bit(j))
                   if ((*p & bit)==0) {
@@ -2335,7 +2335,7 @@ static int stbi__jpeg_decode_block_prog_ac(stbi__jpeg *j, short data[64], stbi__
 
             // advance by r
             while (k <= j->spec_end) {
-               short *p = &data[stbi__jpeg_dwdigzag[k++]];
+               short *p = &data[stbi__jpeg_dnsigzag[k++]];
                if (*p != 0) {
                   if (stbi__jpeg_get_bit(j))
                      if ((*p & bit)==0) {
@@ -3064,7 +3064,7 @@ static int stbi__process_marker(stbi__jpeg *z, int m)
             if (t > 3) return stbi__err("bad DQT table","Corrupt JPEG");
 
             for (i=0; i < 64; ++i)
-               z->dequant[t][stbi__jpeg_dwdigzag[i]] = (stbi__uint16)(sixteen ? stbi__get16be(z->s) : stbi__get8(z->s));
+               z->dequant[t][stbi__jpeg_dnsigzag[i]] = (stbi__uint16)(sixteen ? stbi__get16be(z->s) : stbi__get8(z->s));
             L -= (sixteen ? 129 : 65);
          }
          return L==0;
@@ -4246,7 +4246,7 @@ static int stbi__parse_huffman_block(stbi__zbuf *a)
 
 static int stbi__compute_huffman_codes(stbi__zbuf *a)
 {
-   static const stbi_uc length_dwdigzag[19] = { 16,17,18,0,8,7,9,6,10,5,11,4,12,3,13,2,14,1,15 };
+   static const stbi_uc length_dnsigzag[19] = { 16,17,18,0,8,7,9,6,10,5,11,4,12,3,13,2,14,1,15 };
    stbi__zhuffman z_codelength;
    stbi_uc lencodes[286+32+137];//padding for maximum single op
    stbi_uc codelength_sizes[19];
@@ -4260,7 +4260,7 @@ static int stbi__compute_huffman_codes(stbi__zbuf *a)
    memset(codelength_sizes, 0, sizeof(codelength_sizes));
    for (i=0; i < hclen; ++i) {
       int s = stbi__zreceive(a,3);
-      codelength_sizes[length_dwdigzag[i]] = (stbi_uc) s;
+      codelength_sizes[length_dnsigzag[i]] = (stbi_uc) s;
    }
    if (!stbi__zbuild_huffman(&z_codelength, codelength_sizes, 19)) return 0;
 
@@ -7685,7 +7685,7 @@ STBIDEF int stbi_is_16_bit_from_callbacks(stbi_io_callbacks const *c, void *user
               stbi_info support from Jetro Lauha
               GIF support from Jean-Marc Lienher
               iPhone PNG-extensions from James Brown
-              warning-fixes from Nicolas Schulz and Janwd Zemva (i.stbi__err. Janwd (U+017D)emva)
+              warning-fixes from Nicolas Schulz and Janns Zemva (i.stbi__err. Janns (U+017D)emva)
       1.21    fix use of 'stbi_uc' in header (reported by jon blow)
       1.20    added support for Softimage PIC, by Tom Seddon
       1.19    bug in interlaced PNG corruption check (found by ryg)

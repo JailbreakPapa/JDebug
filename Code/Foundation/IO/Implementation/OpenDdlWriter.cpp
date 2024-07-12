@@ -4,7 +4,7 @@
 #include <Foundation/Logging/Log.h>
 #include <Foundation/Utilities/ConversionUtils.h>
 
-void wdOpenDdlWriter::OutputEscapedString(const wdStringView& string)
+void nsOpenDdlWriter::OutputEscapedString(const nsStringView& string)
 {
   m_sTemp = string;
   m_sTemp.ReplaceAll("\\", "\\\\");
@@ -20,12 +20,12 @@ void wdOpenDdlWriter::OutputEscapedString(const wdStringView& string)
   OutputString("\"", 1);
 }
 
-void wdOpenDdlWriter::OutputIndentation()
+void nsOpenDdlWriter::OutputIndentation()
 {
   if (m_bCompactMode)
     return;
 
-  wdInt32 iIndentation = m_iIndentation;
+  nsInt32 iIndentation = m_iIndentation;
 
   // I need my space!
   const char* szIndentation = "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t";
@@ -42,168 +42,163 @@ void wdOpenDdlWriter::OutputIndentation()
   }
 }
 
-void wdOpenDdlWriter::OutputPrimitiveTypeNameCompliant(wdOpenDdlPrimitiveType type)
+void nsOpenDdlWriter::OutputPrimitiveTypeNameCompliant(nsOpenDdlPrimitiveType type)
 {
   switch (type)
   {
-    case wdOpenDdlPrimitiveType::Bool:
+    case nsOpenDdlPrimitiveType::Bool:
       OutputString("bool", 4);
       break;
-    case wdOpenDdlPrimitiveType::Int8:
+    case nsOpenDdlPrimitiveType::Int8:
       OutputString("int8", 4);
       break;
-    case wdOpenDdlPrimitiveType::Int16:
+    case nsOpenDdlPrimitiveType::Int16:
       OutputString("int16", 5);
       break;
-    case wdOpenDdlPrimitiveType::Int32:
+    case nsOpenDdlPrimitiveType::Int32:
       OutputString("int32", 5);
       break;
-    case wdOpenDdlPrimitiveType::Int64:
+    case nsOpenDdlPrimitiveType::Int64:
       OutputString("int64", 5);
       break;
-    case wdOpenDdlPrimitiveType::UInt8:
+    case nsOpenDdlPrimitiveType::UInt8:
       OutputString("unsigned_int8", 13);
       break;
-    case wdOpenDdlPrimitiveType::UInt16:
+    case nsOpenDdlPrimitiveType::UInt16:
       OutputString("unsigned_int16", 14);
       break;
-    case wdOpenDdlPrimitiveType::UInt32:
+    case nsOpenDdlPrimitiveType::UInt32:
       OutputString("unsigned_int32", 14);
       break;
-    case wdOpenDdlPrimitiveType::UInt64:
+    case nsOpenDdlPrimitiveType::UInt64:
       OutputString("unsigned_int64", 14);
       break;
-    case wdOpenDdlPrimitiveType::Float:
+    case nsOpenDdlPrimitiveType::Float:
       OutputString("float", 5);
       break;
-    case wdOpenDdlPrimitiveType::Double:
+    case nsOpenDdlPrimitiveType::Double:
       OutputString("double", 6);
       break;
-    case wdOpenDdlPrimitiveType::String:
+    case nsOpenDdlPrimitiveType::String:
       OutputString("string", 6);
       break;
 
     default:
-      WD_REPORT_FAILURE("Unknown DDL primitive type {0}", (wdUInt32)type);
+      NS_REPORT_FAILURE("Unknown DDL primitive type {0}", (nsUInt32)type);
       break;
   }
 }
-void wdOpenDdlWriter::OutputPrimitiveTypeNameShort(wdOpenDdlPrimitiveType type)
+void nsOpenDdlWriter::OutputPrimitiveTypeNameShort(nsOpenDdlPrimitiveType type)
 {
   // Change to OpenDDL: We write uint8 etc. instead of unsigned_int
 
   switch (type)
   {
-    case wdOpenDdlPrimitiveType::Bool:
+    case nsOpenDdlPrimitiveType::Bool:
       OutputString("bool", 4);
       break;
-    case wdOpenDdlPrimitiveType::Int8:
+    case nsOpenDdlPrimitiveType::Int8:
       OutputString("int8", 4);
       break;
-    case wdOpenDdlPrimitiveType::Int16:
+    case nsOpenDdlPrimitiveType::Int16:
       OutputString("int16", 5);
       break;
-    case wdOpenDdlPrimitiveType::Int32:
+    case nsOpenDdlPrimitiveType::Int32:
       OutputString("int32", 5);
       break;
-    case wdOpenDdlPrimitiveType::Int64:
+    case nsOpenDdlPrimitiveType::Int64:
       OutputString("int64", 5);
       break;
-    case wdOpenDdlPrimitiveType::UInt8:
+    case nsOpenDdlPrimitiveType::UInt8:
       OutputString("uint8", 5);
       break;
-    case wdOpenDdlPrimitiveType::UInt16:
+    case nsOpenDdlPrimitiveType::UInt16:
       OutputString("uint16", 6);
       break;
-    case wdOpenDdlPrimitiveType::UInt32:
+    case nsOpenDdlPrimitiveType::UInt32:
       OutputString("uint32", 6);
       break;
-    case wdOpenDdlPrimitiveType::UInt64:
+    case nsOpenDdlPrimitiveType::UInt64:
       OutputString("uint64", 6);
       break;
-    case wdOpenDdlPrimitiveType::Float:
+    case nsOpenDdlPrimitiveType::Float:
       OutputString("float", 5);
       break;
-    case wdOpenDdlPrimitiveType::Double:
+    case nsOpenDdlPrimitiveType::Double:
       OutputString("double", 6);
       break;
-    case wdOpenDdlPrimitiveType::String:
+    case nsOpenDdlPrimitiveType::String:
       OutputString("string", 6);
       break;
 
     default:
-      WD_REPORT_FAILURE("Unknown DDL primitive type {0}", (wdUInt32)type);
+      NS_REPORT_FAILURE("Unknown DDL primitive type {0}", (nsUInt32)type);
       break;
   }
 }
 
-void wdOpenDdlWriter::OutputPrimitiveTypeNameShortest(wdOpenDdlPrimitiveType type)
+void nsOpenDdlWriter::OutputPrimitiveTypeNameShortest(nsOpenDdlPrimitiveType type)
 {
   // Change to OpenDDL: We write super short type strings
 
   switch (type)
   {
-    case wdOpenDdlPrimitiveType::Bool:
+    case nsOpenDdlPrimitiveType::Bool:
       OutputString("b", 1);
       break;
-    case wdOpenDdlPrimitiveType::Int8:
+    case nsOpenDdlPrimitiveType::Int8:
       OutputString("i1", 2);
       break;
-    case wdOpenDdlPrimitiveType::Int16:
+    case nsOpenDdlPrimitiveType::Int16:
       OutputString("i2", 2);
       break;
-    case wdOpenDdlPrimitiveType::Int32:
+    case nsOpenDdlPrimitiveType::Int32:
       OutputString("i3", 2);
       break;
-    case wdOpenDdlPrimitiveType::Int64:
+    case nsOpenDdlPrimitiveType::Int64:
       OutputString("i4", 2);
       break;
-    case wdOpenDdlPrimitiveType::UInt8:
+    case nsOpenDdlPrimitiveType::UInt8:
       OutputString("u1", 2);
       break;
-    case wdOpenDdlPrimitiveType::UInt16:
+    case nsOpenDdlPrimitiveType::UInt16:
       OutputString("u2", 2);
       break;
-    case wdOpenDdlPrimitiveType::UInt32:
+    case nsOpenDdlPrimitiveType::UInt32:
       OutputString("u3", 2);
       break;
-    case wdOpenDdlPrimitiveType::UInt64:
+    case nsOpenDdlPrimitiveType::UInt64:
       OutputString("u4", 2);
       break;
-    case wdOpenDdlPrimitiveType::Float:
+    case nsOpenDdlPrimitiveType::Float:
       OutputString("f", 1);
       break;
-    case wdOpenDdlPrimitiveType::Double:
+    case nsOpenDdlPrimitiveType::Double:
       OutputString("d", 1);
       break;
-    case wdOpenDdlPrimitiveType::String:
+    case nsOpenDdlPrimitiveType::String:
       OutputString("s", 1);
       break;
 
     default:
-      WD_REPORT_FAILURE("Unknown DDL primitive type {0}", (wdUInt32)type);
+      NS_REPORT_FAILURE("Unknown DDL primitive type {0}", (nsUInt32)type);
       break;
   }
 }
 
-wdOpenDdlWriter::wdOpenDdlWriter()
+nsOpenDdlWriter::nsOpenDdlWriter()
 {
-  WD_CHECK_AT_COMPILETIME((int)wdOpenDdlWriter::State::PrimitivesBool == (int)wdOpenDdlPrimitiveType::Bool);
-  WD_CHECK_AT_COMPILETIME((int)wdOpenDdlWriter::State::PrimitivesInt8 == (int)wdOpenDdlPrimitiveType::Int8);
-  WD_CHECK_AT_COMPILETIME((int)wdOpenDdlWriter::State::PrimitivesInt16 == (int)wdOpenDdlPrimitiveType::Int16);
-  WD_CHECK_AT_COMPILETIME((int)wdOpenDdlWriter::State::PrimitivesInt32 == (int)wdOpenDdlPrimitiveType::Int32);
-  WD_CHECK_AT_COMPILETIME((int)wdOpenDdlWriter::State::PrimitivesInt64 == (int)wdOpenDdlPrimitiveType::Int64);
-  WD_CHECK_AT_COMPILETIME((int)wdOpenDdlWriter::State::PrimitivesUInt8 == (int)wdOpenDdlPrimitiveType::UInt8);
-  WD_CHECK_AT_COMPILETIME((int)wdOpenDdlWriter::State::PrimitivesUInt16 == (int)wdOpenDdlPrimitiveType::UInt16);
-  WD_CHECK_AT_COMPILETIME((int)wdOpenDdlWriter::State::PrimitivesUInt32 == (int)wdOpenDdlPrimitiveType::UInt32);
-  WD_CHECK_AT_COMPILETIME((int)wdOpenDdlWriter::State::PrimitivesUInt64 == (int)wdOpenDdlPrimitiveType::UInt64);
-  WD_CHECK_AT_COMPILETIME((int)wdOpenDdlWriter::State::PrimitivesFloat == (int)wdOpenDdlPrimitiveType::Float);
-  WD_CHECK_AT_COMPILETIME((int)wdOpenDdlWriter::State::PrimitivesString == (int)wdOpenDdlPrimitiveType::String);
-
-  m_bCompactMode = false;
-  m_TypeStringMode = TypeStringMode::ShortenedUnsignedInt;
-  m_FloatPrecisionMode = FloatPrecisionMode::Exact;
-  m_iIndentation = 0;
+  NS_CHECK_AT_COMPILETIME((int)nsOpenDdlWriter::State::PrimitivesBool == (int)nsOpenDdlPrimitiveType::Bool);
+  NS_CHECK_AT_COMPILETIME((int)nsOpenDdlWriter::State::PrimitivesInt8 == (int)nsOpenDdlPrimitiveType::Int8);
+  NS_CHECK_AT_COMPILETIME((int)nsOpenDdlWriter::State::PrimitivesInt16 == (int)nsOpenDdlPrimitiveType::Int16);
+  NS_CHECK_AT_COMPILETIME((int)nsOpenDdlWriter::State::PrimitivesInt32 == (int)nsOpenDdlPrimitiveType::Int32);
+  NS_CHECK_AT_COMPILETIME((int)nsOpenDdlWriter::State::PrimitivesInt64 == (int)nsOpenDdlPrimitiveType::Int64);
+  NS_CHECK_AT_COMPILETIME((int)nsOpenDdlWriter::State::PrimitivesUInt8 == (int)nsOpenDdlPrimitiveType::UInt8);
+  NS_CHECK_AT_COMPILETIME((int)nsOpenDdlWriter::State::PrimitivesUInt16 == (int)nsOpenDdlPrimitiveType::UInt16);
+  NS_CHECK_AT_COMPILETIME((int)nsOpenDdlWriter::State::PrimitivesUInt32 == (int)nsOpenDdlPrimitiveType::UInt32);
+  NS_CHECK_AT_COMPILETIME((int)nsOpenDdlWriter::State::PrimitivesUInt64 == (int)nsOpenDdlPrimitiveType::UInt64);
+  NS_CHECK_AT_COMPILETIME((int)nsOpenDdlWriter::State::PrimitivesFloat == (int)nsOpenDdlPrimitiveType::Float);
+  NS_CHECK_AT_COMPILETIME((int)nsOpenDdlWriter::State::PrimitivesString == (int)nsOpenDdlPrimitiveType::String);
 
   m_StateStack.ExpandAndGetRef().m_State = State::Invalid;
   m_StateStack.ExpandAndGetRef().m_State = State::Empty;
@@ -216,12 +211,12 @@ wdOpenDdlWriter::wdOpenDdlWriter()
 // None,             ///< No whitespace, not even newlines, is output. This should be used when DDL is used for data exchange, but probably not read
 // by humans.
 
-void wdOpenDdlWriter::BeginObject(const char* szType, const char* szName /*= nullptr*/, bool bGlobalName /*= false*/, bool bSingleLine /*= false*/)
+void nsOpenDdlWriter::BeginObject(nsStringView sType, nsStringView sName /*= {}*/, bool bGlobalName /*= false*/, bool bSingleLine /*= false*/)
 {
   {
     const auto state = m_StateStack.PeekBack().m_State;
-    WD_IGNORE_UNUSED(state);
-    WD_ASSERT_DEBUG(state == State::Empty || state == State::ObjectMultiLine || state == State::ObjectStart,
+    NS_IGNORE_UNUSED(state);
+    NS_ASSERT_DEBUG(state == State::Empty || state == State::ObjectMultiLine || state == State::ObjectStart,
       "DDL Writer is in a state where no further objects may be created");
   }
 
@@ -229,15 +224,15 @@ void wdOpenDdlWriter::BeginObject(const char* szType, const char* szName /*= nul
 
   {
     const auto state = m_StateStack.PeekBack().m_State;
-    WD_IGNORE_UNUSED(state);
-    WD_ASSERT_DEBUG(state != State::ObjectSingleLine, "Cannot put an object into another single-line object");
-    WD_ASSERT_DEBUG(state != State::ObjectStart, "Object beginning should have been written");
+    NS_IGNORE_UNUSED(state);
+    NS_ASSERT_DEBUG(state != State::ObjectSingleLine, "Cannot put an object into another single-line object");
+    NS_ASSERT_DEBUG(state != State::ObjectStart, "Object beginning should have been written");
   }
 
   OutputIndentation();
-  OutputString(szType);
+  OutputString(sType);
 
-  OutputObjectName(szName, bGlobalName);
+  OutputObjectName(sName, bGlobalName);
 
   if (bSingleLine)
   {
@@ -252,7 +247,7 @@ void wdOpenDdlWriter::BeginObject(const char* szType, const char* szName /*= nul
 }
 
 
-void wdOpenDdlWriter::OutputObjectBeginning()
+void nsOpenDdlWriter::OutputObjectBeginning()
 {
   if (m_StateStack.PeekBack().m_State != State::ObjectStart)
     return;
@@ -285,20 +280,20 @@ void wdOpenDdlWriter::OutputObjectBeginning()
   m_iIndentation++;
 }
 
-bool IsDdlIdentifierCharacter(wdUInt8 uiByte);
+bool IsDdlIdentifierCharacter(nsUInt32 uiByte);
 
-void wdOpenDdlWriter::OutputObjectName(const char* szName, bool bGlobalName)
+void nsOpenDdlWriter::OutputObjectName(nsStringView sName, bool bGlobalName)
 {
-  if (!wdStringUtils::IsNullOrEmpty(szName))
+  if (!sName.IsEmpty())
   {
-    // WD_ASSERT_DEBUG(wdStringUtils::FindSubString(szName, " ") == nullptr, "Spaces are not allowed in DDL object names: '{0}'", szName);
+    // NS_ASSERT_DEBUG(nsStringUtils::FindSubString(szName, " ") == nullptr, "Spaces are not allowed in DDL object names: '{0}'", szName);
 
 
     /// \test This code path is untested
     bool bEscape = false;
-    for (const char* szNameCpy = szName; *szNameCpy != '\0'; ++szNameCpy)
+    for (auto nameIt = sName.GetIteratorFront(); nameIt.IsValid(); ++nameIt)
     {
-      if (!IsDdlIdentifierCharacter(*szNameCpy))
+      if (!IsDdlIdentifierCharacter(nameIt.GetCharacter()))
       {
         bEscape = true;
         break;
@@ -325,17 +320,17 @@ void wdOpenDdlWriter::OutputObjectName(const char* szName, bool bGlobalName)
     if (bEscape)
       OutputString("\'", 1);
 
-    OutputString(szName);
+    OutputString(sName);
 
     if (bEscape)
       OutputString("\'", 1);
   }
 }
 
-void wdOpenDdlWriter::EndObject()
+void nsOpenDdlWriter::EndObject()
 {
   const auto state = m_StateStack.PeekBack().m_State;
-  WD_ASSERT_DEBUG(state == State::ObjectSingleLine || state == State::ObjectMultiLine || state == State::ObjectStart, "No object is open");
+  NS_ASSERT_DEBUG(state == State::ObjectSingleLine || state == State::ObjectMultiLine || state == State::ObjectStart, "No object is open");
 
   if (state == State::ObjectStart)
   {
@@ -345,8 +340,8 @@ void wdOpenDdlWriter::EndObject()
     m_StateStack.PopBack();
 
     const auto newState = m_StateStack.PeekBack().m_State;
-    WD_IGNORE_UNUSED(newState);
-    WD_ASSERT_DEBUG(newState == State::ObjectSingleLine || newState == State::ObjectMultiLine, "No object is open");
+    NS_IGNORE_UNUSED(newState);
+    NS_ASSERT_DEBUG(newState == State::ObjectSingleLine || newState == State::ObjectMultiLine, "No object is open");
   }
   else
   {
@@ -372,12 +367,12 @@ void wdOpenDdlWriter::EndObject()
   m_StateStack.PopBack();
 }
 
-void wdOpenDdlWriter::BeginPrimitiveList(wdOpenDdlPrimitiveType type, const char* szName /*= nullptr*/, bool bGlobalName /*= false*/)
+void nsOpenDdlWriter::BeginPrimitiveList(nsOpenDdlPrimitiveType type, nsStringView sName /*= {}*/, bool bGlobalName /*= false*/)
 {
   OutputObjectBeginning();
 
   const auto state = m_StateStack.PeekBack().m_State;
-  WD_ASSERT_DEBUG(state == State::Empty || state == State::ObjectSingleLine || state == State::ObjectMultiLine,
+  NS_ASSERT_DEBUG(state == State::Empty || state == State::ObjectSingleLine || state == State::ObjectMultiLine,
     "DDL Writer is in a state where no primitive list may be created");
 
   if (state == State::ObjectMultiLine)
@@ -392,7 +387,7 @@ void wdOpenDdlWriter::BeginPrimitiveList(wdOpenDdlPrimitiveType type, const char
   else
     OutputPrimitiveTypeNameCompliant(type);
 
-  OutputObjectName(szName, bGlobalName);
+  OutputObjectName(sName, bGlobalName);
 
   // more compact
   // if (m_bCompactMode)
@@ -403,11 +398,11 @@ void wdOpenDdlWriter::BeginPrimitiveList(wdOpenDdlPrimitiveType type, const char
   m_StateStack.ExpandAndGetRef().m_State = static_cast<State>(type);
 }
 
-void wdOpenDdlWriter::EndPrimitiveList()
+void nsOpenDdlWriter::EndPrimitiveList()
 {
   const auto state = m_StateStack.PeekBack().m_State;
-  WD_IGNORE_UNUSED(state);
-  WD_ASSERT_DEBUG(state >= State::PrimitivesBool && state <= State::PrimitivesString, "No primitive list is open");
+  NS_IGNORE_UNUSED(state);
+  NS_ASSERT_DEBUG(state >= State::PrimitivesBool && state <= State::PrimitivesString, "No primitive list is open");
 
   m_StateStack.PopBack();
 
@@ -422,10 +417,10 @@ void wdOpenDdlWriter::EndPrimitiveList()
   }
 }
 
-void wdOpenDdlWriter::WritePrimitiveType(wdOpenDdlWriter::State exp)
+void nsOpenDdlWriter::WritePrimitiveType(nsOpenDdlWriter::State exp)
 {
   auto& state = m_StateStack.PeekBack();
-  WD_ASSERT_DEBUG(state.m_State == exp, "Cannot write thie primitive type without have the correct primitive list open");
+  NS_ASSERT_DEBUG(state.m_State == exp, "Cannot write thie primitive type without have the correct primitive list open");
 
   if (state.m_bPrimitivesWritten)
   {
@@ -437,25 +432,25 @@ void wdOpenDdlWriter::WritePrimitiveType(wdOpenDdlWriter::State exp)
 }
 
 
-void wdOpenDdlWriter::WriteBinaryAsHex(const void* pData, wdUInt32 uiBytes)
+void nsOpenDdlWriter::WriteBinaryAsHex(const void* pData, nsUInt32 uiBytes)
 {
   char tmp[4];
 
-  wdUInt8* pBytes = (wdUInt8*)pData;
+  nsUInt8* pBytes = (nsUInt8*)pData;
 
-  for (wdUInt32 i = 0; i < uiBytes; ++i)
+  for (nsUInt32 i = 0; i < uiBytes; ++i)
   {
-    wdStringUtils::snprintf(tmp, 4, "%02X", (wdUInt32)*pBytes);
+    nsStringUtils::snprintf(tmp, 4, "%02X", (nsUInt32)*pBytes);
     ++pBytes;
 
     OutputString(tmp, 2);
   }
 }
 
-void wdOpenDdlWriter::WriteBool(const bool* pValues, wdUInt32 uiCount /*= 1*/)
+void nsOpenDdlWriter::WriteBool(const bool* pValues, nsUInt32 uiCount /*= 1*/)
 {
-  WD_ASSERT_DEBUG(pValues != nullptr, "Invalid value array");
-  WD_ASSERT_DEBUG(uiCount > 0, "This is pointless");
+  NS_ASSERT_DEBUG(pValues != nullptr, "Invalid value array");
+  NS_ASSERT_DEBUG(uiCount > 0, "This is pointless");
 
   WritePrimitiveType(State::PrimitivesBool);
 
@@ -468,7 +463,7 @@ void wdOpenDdlWriter::WriteBool(const bool* pValues, wdUInt32 uiCount /*= 1*/)
     else
       OutputString("0", 1);
 
-    for (wdUInt32 i = 1; i < uiCount; ++i)
+    for (nsUInt32 i = 1; i < uiCount; ++i)
     {
       if (pValues[i])
         OutputString(",1", 2);
@@ -483,7 +478,7 @@ void wdOpenDdlWriter::WriteBool(const bool* pValues, wdUInt32 uiCount /*= 1*/)
     else
       OutputString("false", 5);
 
-    for (wdUInt32 i = 1; i < uiCount; ++i)
+    for (nsUInt32 i = 1; i < uiCount; ++i)
     {
       if (pValues[i])
         OutputString(",true", 5);
@@ -493,158 +488,158 @@ void wdOpenDdlWriter::WriteBool(const bool* pValues, wdUInt32 uiCount /*= 1*/)
   }
 }
 
-void wdOpenDdlWriter::WriteInt8(const wdInt8* pValues, wdUInt32 uiCount /*= 1*/)
+void nsOpenDdlWriter::WriteInt8(const nsInt8* pValues, nsUInt32 uiCount /*= 1*/)
 {
-  WD_ASSERT_DEBUG(pValues != nullptr, "Invalid value array");
-  WD_ASSERT_DEBUG(uiCount > 0, "This is pointless");
+  NS_ASSERT_DEBUG(pValues != nullptr, "Invalid value array");
+  NS_ASSERT_DEBUG(uiCount > 0, "This is pointless");
 
   WritePrimitiveType(State::PrimitivesInt8);
 
-  m_sTemp.Format("{0}", pValues[0]);
+  m_sTemp.SetFormat("{0}", pValues[0]);
   OutputString(m_sTemp.GetData());
 
-  for (wdUInt32 i = 1; i < uiCount; ++i)
+  for (nsUInt32 i = 1; i < uiCount; ++i)
   {
-    m_sTemp.Format(",{0}", pValues[i]);
+    m_sTemp.SetFormat(",{0}", pValues[i]);
     OutputString(m_sTemp.GetData());
   }
 }
 
-void wdOpenDdlWriter::WriteInt16(const wdInt16* pValues, wdUInt32 uiCount /*= 1*/)
+void nsOpenDdlWriter::WriteInt16(const nsInt16* pValues, nsUInt32 uiCount /*= 1*/)
 {
-  WD_ASSERT_DEBUG(pValues != nullptr, "Invalid value array");
-  WD_ASSERT_DEBUG(uiCount > 0, "This is pointless");
+  NS_ASSERT_DEBUG(pValues != nullptr, "Invalid value array");
+  NS_ASSERT_DEBUG(uiCount > 0, "This is pointless");
 
   WritePrimitiveType(State::PrimitivesInt16);
 
-  m_sTemp.Format("{0}", pValues[0]);
+  m_sTemp.SetFormat("{0}", pValues[0]);
   OutputString(m_sTemp.GetData());
 
-  for (wdUInt32 i = 1; i < uiCount; ++i)
+  for (nsUInt32 i = 1; i < uiCount; ++i)
   {
-    m_sTemp.Format(",{0}", pValues[i]);
+    m_sTemp.SetFormat(",{0}", pValues[i]);
     OutputString(m_sTemp.GetData());
   }
 }
 
-void wdOpenDdlWriter::WriteInt32(const wdInt32* pValues, wdUInt32 uiCount /*= 1*/)
+void nsOpenDdlWriter::WriteInt32(const nsInt32* pValues, nsUInt32 uiCount /*= 1*/)
 {
-  WD_ASSERT_DEBUG(pValues != nullptr, "Invalid value array");
-  WD_ASSERT_DEBUG(uiCount > 0, "This is pointless");
+  NS_ASSERT_DEBUG(pValues != nullptr, "Invalid value array");
+  NS_ASSERT_DEBUG(uiCount > 0, "This is pointless");
 
   WritePrimitiveType(State::PrimitivesInt32);
 
-  m_sTemp.Format("{0}", pValues[0]);
+  m_sTemp.SetFormat("{0}", pValues[0]);
   OutputString(m_sTemp.GetData());
 
-  for (wdUInt32 i = 1; i < uiCount; ++i)
+  for (nsUInt32 i = 1; i < uiCount; ++i)
   {
-    m_sTemp.Format(",{0}", pValues[i]);
+    m_sTemp.SetFormat(",{0}", pValues[i]);
     OutputString(m_sTemp.GetData());
   }
 }
 
-void wdOpenDdlWriter::WriteInt64(const wdInt64* pValues, wdUInt32 uiCount /*= 1*/)
+void nsOpenDdlWriter::WriteInt64(const nsInt64* pValues, nsUInt32 uiCount /*= 1*/)
 {
-  WD_ASSERT_DEBUG(pValues != nullptr, "Invalid value array");
-  WD_ASSERT_DEBUG(uiCount > 0, "This is pointless");
+  NS_ASSERT_DEBUG(pValues != nullptr, "Invalid value array");
+  NS_ASSERT_DEBUG(uiCount > 0, "This is pointless");
 
   WritePrimitiveType(State::PrimitivesInt64);
 
-  m_sTemp.Format("{0}", pValues[0]);
+  m_sTemp.SetFormat("{0}", pValues[0]);
   OutputString(m_sTemp.GetData());
 
-  for (wdUInt32 i = 1; i < uiCount; ++i)
+  for (nsUInt32 i = 1; i < uiCount; ++i)
   {
-    m_sTemp.Format(",{0}", pValues[i]);
+    m_sTemp.SetFormat(",{0}", pValues[i]);
     OutputString(m_sTemp.GetData());
   }
 }
 
 
-void wdOpenDdlWriter::WriteUInt8(const wdUInt8* pValues, wdUInt32 uiCount /*= 1*/)
+void nsOpenDdlWriter::WriteUInt8(const nsUInt8* pValues, nsUInt32 uiCount /*= 1*/)
 {
-  WD_ASSERT_DEBUG(pValues != nullptr, "Invalid value array");
-  WD_ASSERT_DEBUG(uiCount > 0, "This is pointless");
+  NS_ASSERT_DEBUG(pValues != nullptr, "Invalid value array");
+  NS_ASSERT_DEBUG(uiCount > 0, "This is pointless");
 
   WritePrimitiveType(State::PrimitivesUInt8);
 
-  m_sTemp.Format("{0}", pValues[0]);
+  m_sTemp.SetFormat("{0}", pValues[0]);
   OutputString(m_sTemp.GetData());
 
-  for (wdUInt32 i = 1; i < uiCount; ++i)
+  for (nsUInt32 i = 1; i < uiCount; ++i)
   {
-    m_sTemp.Format(",{0}", pValues[i]);
+    m_sTemp.SetFormat(",{0}", pValues[i]);
     OutputString(m_sTemp.GetData());
   }
 }
 
-void wdOpenDdlWriter::WriteUInt16(const wdUInt16* pValues, wdUInt32 uiCount /*= 1*/)
+void nsOpenDdlWriter::WriteUInt16(const nsUInt16* pValues, nsUInt32 uiCount /*= 1*/)
 {
-  WD_ASSERT_DEBUG(pValues != nullptr, "Invalid value array");
-  WD_ASSERT_DEBUG(uiCount > 0, "This is pointless");
+  NS_ASSERT_DEBUG(pValues != nullptr, "Invalid value array");
+  NS_ASSERT_DEBUG(uiCount > 0, "This is pointless");
 
   WritePrimitiveType(State::PrimitivesUInt16);
 
-  m_sTemp.Format("{0}", pValues[0]);
+  m_sTemp.SetFormat("{0}", pValues[0]);
   OutputString(m_sTemp.GetData());
 
-  for (wdUInt32 i = 1; i < uiCount; ++i)
+  for (nsUInt32 i = 1; i < uiCount; ++i)
   {
-    m_sTemp.Format(",{0}", pValues[i]);
+    m_sTemp.SetFormat(",{0}", pValues[i]);
     OutputString(m_sTemp.GetData());
   }
 }
 
-void wdOpenDdlWriter::WriteUInt32(const wdUInt32* pValues, wdUInt32 uiCount /*= 1*/)
+void nsOpenDdlWriter::WriteUInt32(const nsUInt32* pValues, nsUInt32 uiCount /*= 1*/)
 {
-  WD_ASSERT_DEBUG(pValues != nullptr, "Invalid value array");
-  WD_ASSERT_DEBUG(uiCount > 0, "This is pointless");
+  NS_ASSERT_DEBUG(pValues != nullptr, "Invalid value array");
+  NS_ASSERT_DEBUG(uiCount > 0, "This is pointless");
 
   WritePrimitiveType(State::PrimitivesUInt32);
 
-  m_sTemp.Format("{0}", pValues[0]);
+  m_sTemp.SetFormat("{0}", pValues[0]);
   OutputString(m_sTemp.GetData());
 
-  for (wdUInt32 i = 1; i < uiCount; ++i)
+  for (nsUInt32 i = 1; i < uiCount; ++i)
   {
-    m_sTemp.Format(",{0}", pValues[i]);
+    m_sTemp.SetFormat(",{0}", pValues[i]);
     OutputString(m_sTemp.GetData());
   }
 }
 
-void wdOpenDdlWriter::WriteUInt64(const wdUInt64* pValues, wdUInt32 uiCount /*= 1*/)
+void nsOpenDdlWriter::WriteUInt64(const nsUInt64* pValues, nsUInt32 uiCount /*= 1*/)
 {
-  WD_ASSERT_DEBUG(pValues != nullptr, "Invalid value array");
-  WD_ASSERT_DEBUG(uiCount > 0, "This is pointless");
+  NS_ASSERT_DEBUG(pValues != nullptr, "Invalid value array");
+  NS_ASSERT_DEBUG(uiCount > 0, "This is pointless");
 
   WritePrimitiveType(State::PrimitivesUInt64);
 
-  m_sTemp.Format("{0}", pValues[0]);
+  m_sTemp.SetFormat("{0}", pValues[0]);
   OutputString(m_sTemp.GetData());
 
-  for (wdUInt32 i = 1; i < uiCount; ++i)
+  for (nsUInt32 i = 1; i < uiCount; ++i)
   {
-    m_sTemp.Format(",{0}", pValues[i]);
+    m_sTemp.SetFormat(",{0}", pValues[i]);
     OutputString(m_sTemp.GetData());
   }
 }
 
-void wdOpenDdlWriter::WriteFloat(const float* pValues, wdUInt32 uiCount /*= 1*/)
+void nsOpenDdlWriter::WriteFloat(const float* pValues, nsUInt32 uiCount /*= 1*/)
 {
-  WD_ASSERT_DEBUG(pValues != nullptr, "Invalid value array");
-  WD_ASSERT_DEBUG(uiCount > 0, "This is pointless");
+  NS_ASSERT_DEBUG(pValues != nullptr, "Invalid value array");
+  NS_ASSERT_DEBUG(uiCount > 0, "This is pointless");
 
   WritePrimitiveType(State::PrimitivesFloat);
 
   if (m_FloatPrecisionMode == FloatPrecisionMode::Readable)
   {
-    m_sTemp.Format("{0}", pValues[0]);
+    m_sTemp.SetFormat("{0}", pValues[0]);
     OutputString(m_sTemp.GetData());
 
-    for (wdUInt32 i = 1; i < uiCount; ++i)
+    for (nsUInt32 i = 1; i < uiCount; ++i)
     {
-      m_sTemp.Format(",{0}", pValues[i]);
+      m_sTemp.SetFormat(",{0}", pValues[i]);
       OutputString(m_sTemp.GetData());
     }
   }
@@ -662,7 +657,7 @@ void wdOpenDdlWriter::WriteFloat(const float* pValues, wdUInt32 uiCount /*= 1*/)
       WriteBinaryAsHex(&pValues[0], 4);
     }
 
-    for (wdUInt32 i = 1; i < uiCount; ++i)
+    for (nsUInt32 i = 1; i < uiCount; ++i)
     {
       if (pValues[i] == 0)
       {
@@ -677,21 +672,21 @@ void wdOpenDdlWriter::WriteFloat(const float* pValues, wdUInt32 uiCount /*= 1*/)
   }
 }
 
-void wdOpenDdlWriter::WriteDouble(const double* pValues, wdUInt32 uiCount /*= 1*/)
+void nsOpenDdlWriter::WriteDouble(const double* pValues, nsUInt32 uiCount /*= 1*/)
 {
-  WD_ASSERT_DEBUG(pValues != nullptr, "Invalid value array");
-  WD_ASSERT_DEBUG(uiCount > 0, "This is pointless");
+  NS_ASSERT_DEBUG(pValues != nullptr, "Invalid value array");
+  NS_ASSERT_DEBUG(uiCount > 0, "This is pointless");
 
   WritePrimitiveType(State::PrimitivesDouble);
 
   if (m_FloatPrecisionMode == FloatPrecisionMode::Readable)
   {
-    m_sTemp.Format("{0}", pValues[0]);
+    m_sTemp.SetFormat("{0}", pValues[0]);
     OutputString(m_sTemp.GetData());
 
-    for (wdUInt32 i = 1; i < uiCount; ++i)
+    for (nsUInt32 i = 1; i < uiCount; ++i)
     {
-      m_sTemp.Format(",{0}", pValues[i]);
+      m_sTemp.SetFormat(",{0}", pValues[i]);
       OutputString(m_sTemp.GetData());
     }
   }
@@ -709,7 +704,7 @@ void wdOpenDdlWriter::WriteDouble(const double* pValues, wdUInt32 uiCount /*= 1*
       WriteBinaryAsHex(&pValues[0], 8);
     }
 
-    for (wdUInt32 i = 1; i < uiCount; ++i)
+    for (nsUInt32 i = 1; i < uiCount; ++i)
     {
       if (pValues[i] == 0)
       {
@@ -724,16 +719,16 @@ void wdOpenDdlWriter::WriteDouble(const double* pValues, wdUInt32 uiCount /*= 1*
   }
 }
 
-void wdOpenDdlWriter::WriteString(const wdStringView& sString)
+void nsOpenDdlWriter::WriteString(const nsStringView& sString)
 {
   WritePrimitiveType(State::PrimitivesString);
 
   OutputEscapedString(sString);
 }
 
-void wdOpenDdlWriter::WriteBinaryAsString(const void* pData, wdUInt32 uiBytes)
+void nsOpenDdlWriter::WriteBinaryAsString(const void* pData, nsUInt32 uiBytes)
 {
-  /// \test wdOpenDdlWriter::WriteBinaryAsString
+  /// \test nsOpenDdlWriter::WriteBinaryAsString
 
   WritePrimitiveType(State::PrimitivesString);
 
@@ -741,7 +736,3 @@ void wdOpenDdlWriter::WriteBinaryAsString(const void* pData, wdUInt32 uiBytes)
   WriteBinaryAsHex(pData, uiBytes);
   OutputString("\"", 1);
 }
-
-
-
-WD_STATICLINK_FILE(Foundation, Foundation_IO_Implementation_OpenDdlWriter);

@@ -4,59 +4,59 @@
 
 #include <Foundation/Reflection/Implementation/AbstractProperty.h>
 
-class wdRTTI;
+class nsRTTI;
 
-/// \brief Do not cast into this class or any of its derived classes, use wdTypedArrayProperty instead.
+/// \brief Do not cast into this class or any of its derived classes, use nsTypedArrayProperty instead.
 template <typename Type>
-class wdTypedArrayProperty : public wdAbstractArrayProperty
+class nsTypedArrayProperty : public nsAbstractArrayProperty
 {
 public:
-  wdTypedArrayProperty(const char* szPropertyName)
-    : wdAbstractArrayProperty(szPropertyName)
+  nsTypedArrayProperty(const char* szPropertyName)
+    : nsAbstractArrayProperty(szPropertyName)
   {
-    m_Flags = wdPropertyFlags::GetParameterFlags<Type>();
-    WD_CHECK_AT_COMPILETIME_MSG(!std::is_pointer<Type>::value ||
-                                  wdVariantTypeDeduction<typename wdTypeTraits<Type>::NonConstReferencePointerType>::value ==
-                                    wdVariantType::Invalid,
+    m_Flags = nsPropertyFlags::GetParameterFlags<Type>();
+    NS_CHECK_AT_COMPILETIME_MSG(!std::is_pointer<Type>::value ||
+                                  nsVariantTypeDeduction<typename nsTypeTraits<Type>::NonConstReferencePointerType>::value ==
+                                    nsVariantType::Invalid,
       "Pointer to standard types are not supported.");
   }
 
-  virtual const wdRTTI* GetSpecificType() const override { return wdGetStaticRTTI<typename wdTypeTraits<Type>::NonConstReferencePointerType>(); }
+  virtual const nsRTTI* GetSpecificType() const override { return nsGetStaticRTTI<typename nsTypeTraits<Type>::NonConstReferencePointerType>(); }
 };
 
-/// \brief Specialization of wdTypedArrayProperty to retain the pointer in const char*.
+/// \brief Specialization of nsTypedArrayProperty to retain the pointer in const char*.
 template <>
-class wdTypedArrayProperty<const char*> : public wdAbstractArrayProperty
+class nsTypedArrayProperty<const char*> : public nsAbstractArrayProperty
 {
 public:
-  wdTypedArrayProperty(const char* szPropertyName)
-    : wdAbstractArrayProperty(szPropertyName)
+  nsTypedArrayProperty(const char* szPropertyName)
+    : nsAbstractArrayProperty(szPropertyName)
   {
-    m_Flags = wdPropertyFlags::GetParameterFlags<const char*>();
+    m_Flags = nsPropertyFlags::GetParameterFlags<const char*>();
   }
 
-  virtual const wdRTTI* GetSpecificType() const override { return wdGetStaticRTTI<const char*>(); }
+  virtual const nsRTTI* GetSpecificType() const override { return nsGetStaticRTTI<const char*>(); }
 };
 
 
 template <typename Class, typename Type>
-class wdAccessorArrayProperty : public wdTypedArrayProperty<Type>
+class nsAccessorArrayProperty : public nsTypedArrayProperty<Type>
 {
 public:
-  using RealType = typename wdTypeTraits<Type>::NonConstReferenceType;
-  using GetCountFunc = wdUInt32 (Class::*)() const;
-  using GetValueFunc = Type (Class::*)(wdUInt32 uiIndex) const;
-  using SetValueFunc = void (Class::*)(wdUInt32 uiIndex, Type value);
-  using InsertFunc = void (Class::*)(wdUInt32 uiIndex, Type value);
-  using RemoveFunc = void (Class::*)(wdUInt32 uiIndex);
+  using RealType = typename nsTypeTraits<Type>::NonConstReferenceType;
+  using GetCountFunc = nsUInt32 (Class::*)() const;
+  using GetValueFunc = Type (Class::*)(nsUInt32 uiIndex) const;
+  using SetValueFunc = void (Class::*)(nsUInt32 uiIndex, Type value);
+  using InsertFunc = void (Class::*)(nsUInt32 uiIndex, Type value);
+  using RemoveFunc = void (Class::*)(nsUInt32 uiIndex);
 
 
-  wdAccessorArrayProperty(
+  nsAccessorArrayProperty(
     const char* szPropertyName, GetCountFunc getCount, GetValueFunc getter, SetValueFunc setter, InsertFunc insert, RemoveFunc remove)
-    : wdTypedArrayProperty<Type>(szPropertyName)
+    : nsTypedArrayProperty<Type>(szPropertyName)
   {
-    WD_ASSERT_DEBUG(getCount != nullptr, "The get count function of an array property cannot be nullptr.");
-    WD_ASSERT_DEBUG(getter != nullptr, "The get value function of an array property cannot be nullptr.");
+    NS_ASSERT_DEBUG(getCount != nullptr, "The get count function of an array property cannot be nullptr.");
+    NS_ASSERT_DEBUG(getter != nullptr, "The get value function of an array property cannot be nullptr.");
 
     m_GetCount = getCount;
     m_Getter = getter;
@@ -65,45 +65,45 @@ public:
     m_Remove = remove;
 
     if (m_Setter == nullptr)
-      wdAbstractArrayProperty::m_Flags.Add(wdPropertyFlags::ReadOnly);
+      nsAbstractArrayProperty::m_Flags.Add(nsPropertyFlags::ReadOnly);
   }
 
 
-  virtual wdUInt32 GetCount(const void* pInstance) const override { return (static_cast<const Class*>(pInstance)->*m_GetCount)(); }
+  virtual nsUInt32 GetCount(const void* pInstance) const override { return (static_cast<const Class*>(pInstance)->*m_GetCount)(); }
 
-  virtual void GetValue(const void* pInstance, wdUInt32 uiIndex, void* pObject) const override
+  virtual void GetValue(const void* pInstance, nsUInt32 uiIndex, void* pObject) const override
   {
-    WD_ASSERT_DEBUG(uiIndex < GetCount(pInstance), "GetValue: uiIndex ('{0}') is out of range ('{1}')", uiIndex, GetCount(pInstance));
+    NS_ASSERT_DEBUG(uiIndex < GetCount(pInstance), "GetValue: uiIndex ('{0}') is out of range ('{1}')", uiIndex, GetCount(pInstance));
     *static_cast<RealType*>(pObject) = (static_cast<const Class*>(pInstance)->*m_Getter)(uiIndex);
   }
 
-  virtual void SetValue(void* pInstance, wdUInt32 uiIndex, const void* pObject) override
+  virtual void SetValue(void* pInstance, nsUInt32 uiIndex, const void* pObject) const override
   {
-    WD_ASSERT_DEBUG(uiIndex < GetCount(pInstance), "SetValue: uiIndex ('{0}') is out of range ('{1}')", uiIndex, GetCount(pInstance));
-    WD_ASSERT_DEBUG(m_Setter != nullptr, "The property '{0}' has no setter function, thus it is read-only.", wdAbstractProperty::GetPropertyName());
+    NS_ASSERT_DEBUG(uiIndex < GetCount(pInstance), "SetValue: uiIndex ('{0}') is out of range ('{1}')", uiIndex, GetCount(pInstance));
+    NS_ASSERT_DEBUG(m_Setter != nullptr, "The property '{0}' has no setter function, thus it is read-only.", nsAbstractProperty::GetPropertyName());
     (static_cast<Class*>(pInstance)->*m_Setter)(uiIndex, *static_cast<const RealType*>(pObject));
   }
 
-  virtual void Insert(void* pInstance, wdUInt32 uiIndex, const void* pObject) override
+  virtual void Insert(void* pInstance, nsUInt32 uiIndex, const void* pObject) const override
   {
-    WD_ASSERT_DEBUG(uiIndex <= GetCount(pInstance), "Insert: uiIndex ('{0}') is out of range ('{1}')", uiIndex, GetCount(pInstance));
-    WD_ASSERT_DEBUG(m_Insert != nullptr, "The property '{0}' has no insert function, thus it is read-only.", wdAbstractProperty::GetPropertyName());
+    NS_ASSERT_DEBUG(uiIndex <= GetCount(pInstance), "Insert: uiIndex ('{0}') is out of range ('{1}')", uiIndex, GetCount(pInstance));
+    NS_ASSERT_DEBUG(m_Insert != nullptr, "The property '{0}' has no insert function, thus it is read-only.", nsAbstractProperty::GetPropertyName());
     (static_cast<Class*>(pInstance)->*m_Insert)(uiIndex, *static_cast<const RealType*>(pObject));
   }
 
-  virtual void Remove(void* pInstance, wdUInt32 uiIndex) override
+  virtual void Remove(void* pInstance, nsUInt32 uiIndex) const override
   {
-    WD_ASSERT_DEBUG(uiIndex < GetCount(pInstance), "Remove: uiIndex ('{0}') is out of range ('{1}')", uiIndex, GetCount(pInstance));
-    WD_ASSERT_DEBUG(m_Remove != nullptr, "The property '{0}' has no setter function, thus it is read-only.", wdAbstractProperty::GetPropertyName());
+    NS_ASSERT_DEBUG(uiIndex < GetCount(pInstance), "Remove: uiIndex ('{0}') is out of range ('{1}')", uiIndex, GetCount(pInstance));
+    NS_ASSERT_DEBUG(m_Remove != nullptr, "The property '{0}' has no setter function, thus it is read-only.", nsAbstractProperty::GetPropertyName());
     (static_cast<Class*>(pInstance)->*m_Remove)(uiIndex);
   }
 
-  virtual void Clear(void* pInstance) override { SetCount(pInstance, 0); }
+  virtual void Clear(void* pInstance) const override { SetCount(pInstance, 0); }
 
-  virtual void SetCount(void* pInstance, wdUInt32 uiCount) override
+  virtual void SetCount(void* pInstance, nsUInt32 uiCount) const override
   {
-    WD_ASSERT_DEBUG(m_Insert != nullptr && m_Remove != nullptr, "The property '{0}' has no remove and insert function, thus it is fixed-size.",
-      wdAbstractProperty::GetPropertyName());
+    NS_ASSERT_DEBUG(m_Insert != nullptr && m_Remove != nullptr, "The property '{0}' has no remove and insert function, thus it is fixed-size.",
+      nsAbstractProperty::GetPropertyName());
     while (uiCount < GetCount(pInstance))
     {
       Remove(pInstance, GetCount(pInstance) - 1);
@@ -126,10 +126,10 @@ private:
 
 
 template <typename Class, typename Container, Container Class::*Member>
-struct wdArrayPropertyAccessor
+struct nsArrayPropertyAccessor
 {
-  using ContainerType = typename wdTypeTraits<Container>::NonConstReferenceType;
-  using Type = typename wdTypeTraits<typename wdContainerSubTypeResolver<ContainerType>::Type>::NonConstReferenceType;
+  using ContainerType = typename nsTypeTraits<Container>::NonConstReferenceType;
+  using Type = typename nsTypeTraits<typename nsContainerSubTypeResolver<ContainerType>::Type>::NonConstReferenceType;
 
   static const ContainerType& GetConstContainer(const Class* pInstance) { return (*pInstance).*Member; }
 
@@ -138,69 +138,75 @@ struct wdArrayPropertyAccessor
 
 
 template <typename Class, typename Container, typename Type>
-class wdMemberArrayProperty : public wdTypedArrayProperty<typename wdTypeTraits<Type>::NonConstReferenceType>
+class nsMemberArrayProperty : public nsTypedArrayProperty<typename nsTypeTraits<Type>::NonConstReferenceType>
 {
 public:
-  using RealType = typename wdTypeTraits<Type>::NonConstReferenceType;
+  using RealType = typename nsTypeTraits<Type>::NonConstReferenceType;
   using GetConstContainerFunc = const Container& (*)(const Class* pInstance);
   using GetContainerFunc = Container& (*)(Class* pInstance);
 
-  wdMemberArrayProperty(const char* szPropertyName, GetConstContainerFunc constGetter, GetContainerFunc getter)
-    : wdTypedArrayProperty<RealType>(szPropertyName)
+  nsMemberArrayProperty(const char* szPropertyName, GetConstContainerFunc constGetter, GetContainerFunc getter)
+    : nsTypedArrayProperty<RealType>(szPropertyName)
   {
-    WD_ASSERT_DEBUG(constGetter != nullptr, "The const get count function of an array property cannot be nullptr.");
+    NS_ASSERT_DEBUG(constGetter != nullptr, "The const get count function of an array property cannot be nullptr.");
 
     m_ConstGetter = constGetter;
     m_Getter = getter;
 
     if (m_Getter == nullptr)
-      wdAbstractArrayProperty::m_Flags.Add(wdPropertyFlags::ReadOnly);
+      nsAbstractArrayProperty::m_Flags.Add(nsPropertyFlags::ReadOnly);
   }
 
-  virtual wdUInt32 GetCount(const void* pInstance) const override { return m_ConstGetter(static_cast<const Class*>(pInstance)).GetCount(); }
+  virtual nsUInt32 GetCount(const void* pInstance) const override { return m_ConstGetter(static_cast<const Class*>(pInstance)).GetCount(); }
 
-  virtual void GetValue(const void* pInstance, wdUInt32 uiIndex, void* pObject) const override
+  virtual void GetValue(const void* pInstance, nsUInt32 uiIndex, void* pObject) const override
   {
-    WD_ASSERT_DEBUG(uiIndex < GetCount(pInstance), "GetValue: uiIndex ('{0}') is out of range ('{1}')", uiIndex, GetCount(pInstance));
+    NS_ASSERT_DEBUG(uiIndex < GetCount(pInstance), "GetValue: uiIndex ('{0}') is out of range ('{1}')", uiIndex, GetCount(pInstance));
     *static_cast<RealType*>(pObject) = m_ConstGetter(static_cast<const Class*>(pInstance))[uiIndex];
   }
 
-  virtual void SetValue(void* pInstance, wdUInt32 uiIndex, const void* pObject) override
+  virtual void SetValue(void* pInstance, nsUInt32 uiIndex, const void* pObject) const override
   {
-    WD_ASSERT_DEBUG(uiIndex < GetCount(pInstance), "SetValue: uiIndex ('{0}') is out of range ('{1}')", uiIndex, GetCount(pInstance));
-    WD_ASSERT_DEBUG(m_Getter != nullptr, "The property '{0}' has no non-const array accessor function, thus it is read-only.",
-      wdAbstractProperty::GetPropertyName());
+    NS_ASSERT_DEBUG(uiIndex < GetCount(pInstance), "SetValue: uiIndex ('{0}') is out of range ('{1}')", uiIndex, GetCount(pInstance));
+    NS_ASSERT_DEBUG(m_Getter != nullptr, "The property '{0}' has no non-const array accessor function, thus it is read-only.",
+      nsAbstractProperty::GetPropertyName());
     m_Getter(static_cast<Class*>(pInstance))[uiIndex] = *static_cast<const RealType*>(pObject);
   }
 
-  virtual void Insert(void* pInstance, wdUInt32 uiIndex, const void* pObject) override
+  virtual void Insert(void* pInstance, nsUInt32 uiIndex, const void* pObject) const override
   {
-    WD_ASSERT_DEBUG(uiIndex <= GetCount(pInstance), "Insert: uiIndex ('{0}') is out of range ('{1}')", uiIndex, GetCount(pInstance));
-    WD_ASSERT_DEBUG(m_Getter != nullptr, "The property '{0}' has no non-const array accessor function, thus it is read-only.",
-      wdAbstractProperty::GetPropertyName());
-    m_Getter(static_cast<Class*>(pInstance)).Insert(*static_cast<const RealType*>(pObject), uiIndex);
+    NS_ASSERT_DEBUG(uiIndex <= GetCount(pInstance), "Insert: uiIndex ('{0}') is out of range ('{1}')", uiIndex, GetCount(pInstance));
+    NS_ASSERT_DEBUG(m_Getter != nullptr, "The property '{0}' has no non-const array accessor function, thus it is read-only.",
+      nsAbstractProperty::GetPropertyName());
+    m_Getter(static_cast<Class*>(pInstance)).InsertAt(uiIndex, *static_cast<const RealType*>(pObject));
   }
 
-  virtual void Remove(void* pInstance, wdUInt32 uiIndex) override
+  virtual void Remove(void* pInstance, nsUInt32 uiIndex) const override
   {
-    WD_ASSERT_DEBUG(uiIndex < GetCount(pInstance), "Remove: uiIndex ('{0}') is out of range ('{1}')", uiIndex, GetCount(pInstance));
-    WD_ASSERT_DEBUG(m_Getter != nullptr, "The property '{0}' has no non-const array accessor function, thus it is read-only.",
-      wdAbstractProperty::GetPropertyName());
+    NS_ASSERT_DEBUG(uiIndex < GetCount(pInstance), "Remove: uiIndex ('{0}') is out of range ('{1}')", uiIndex, GetCount(pInstance));
+    NS_ASSERT_DEBUG(m_Getter != nullptr, "The property '{0}' has no non-const array accessor function, thus it is read-only.",
+      nsAbstractProperty::GetPropertyName());
     m_Getter(static_cast<Class*>(pInstance)).RemoveAtAndCopy(uiIndex);
   }
 
-  virtual void Clear(void* pInstance) override
+  virtual void Clear(void* pInstance) const override
   {
-    WD_ASSERT_DEBUG(m_Getter != nullptr, "The property '{0}' has no non-const array accessor function, thus it is read-only.",
-      wdAbstractProperty::GetPropertyName());
+    NS_ASSERT_DEBUG(m_Getter != nullptr, "The property '{0}' has no non-const array accessor function, thus it is read-only.",
+      nsAbstractProperty::GetPropertyName());
     m_Getter(static_cast<Class*>(pInstance)).Clear();
   }
 
-  virtual void SetCount(void* pInstance, wdUInt32 uiCount) override
+  virtual void SetCount(void* pInstance, nsUInt32 uiCount) const override
   {
-    WD_ASSERT_DEBUG(m_Getter != nullptr, "The property '{0}' has no non-const array accessor function, thus it is read-only.",
-      wdAbstractProperty::GetPropertyName());
+    NS_ASSERT_DEBUG(m_Getter != nullptr, "The property '{0}' has no non-const array accessor function, thus it is read-only.",
+      nsAbstractProperty::GetPropertyName());
     m_Getter(static_cast<Class*>(pInstance)).SetCount(uiCount);
+  }
+
+  virtual void* GetValuePointer(void* pInstance, nsUInt32 uiIndex) const override
+  {
+    NS_ASSERT_DEBUG(uiIndex < GetCount(pInstance), "GetValue: uiIndex ('{0}') is out of range ('{1}')", uiIndex, GetCount(pInstance));
+    return &(m_Getter(static_cast<Class*>(pInstance))[uiIndex]);
   }
 
 private:
@@ -208,54 +214,54 @@ private:
   GetContainerFunc m_Getter;
 };
 
-/// \brief Read only version of wdMemberArrayProperty that does not call any functions that modify the array. This is needed to reflect wdArrayPtr members.
+/// \brief Read only version of nsMemberArrayProperty that does not call any functions that modify the array. This is needed to reflect nsArrayPtr members.
 template <typename Class, typename Container, typename Type>
-class wdMemberArrayReadOnlyProperty : public wdTypedArrayProperty<typename wdTypeTraits<Type>::NonConstReferenceType>
+class nsMemberArrayReadOnlyProperty : public nsTypedArrayProperty<typename nsTypeTraits<Type>::NonConstReferenceType>
 {
 public:
-  using RealType = typename wdTypeTraits<Type>::NonConstReferenceType;
+  using RealType = typename nsTypeTraits<Type>::NonConstReferenceType;
   using GetConstContainerFunc = const Container& (*)(const Class* pInstance);
 
-  wdMemberArrayReadOnlyProperty(const char* szPropertyName, GetConstContainerFunc constGetter)
-    : wdTypedArrayProperty<RealType>(szPropertyName)
+  nsMemberArrayReadOnlyProperty(const char* szPropertyName, GetConstContainerFunc constGetter)
+    : nsTypedArrayProperty<RealType>(szPropertyName)
   {
-    WD_ASSERT_DEBUG(constGetter != nullptr, "The const get count function of an array property cannot be nullptr.");
+    NS_ASSERT_DEBUG(constGetter != nullptr, "The const get count function of an array property cannot be nullptr.");
 
     m_ConstGetter = constGetter;
-    wdAbstractArrayProperty::m_Flags.Add(wdPropertyFlags::ReadOnly);
+    nsAbstractArrayProperty::m_Flags.Add(nsPropertyFlags::ReadOnly);
   }
 
-  virtual wdUInt32 GetCount(const void* pInstance) const override { return m_ConstGetter(static_cast<const Class*>(pInstance)).GetCount(); }
+  virtual nsUInt32 GetCount(const void* pInstance) const override { return m_ConstGetter(static_cast<const Class*>(pInstance)).GetCount(); }
 
-  virtual void GetValue(const void* pInstance, wdUInt32 uiIndex, void* pObject) const override
+  virtual void GetValue(const void* pInstance, nsUInt32 uiIndex, void* pObject) const override
   {
-    WD_ASSERT_DEBUG(uiIndex < GetCount(pInstance), "GetValue: uiIndex ('{0}') is out of range ('{1}')", uiIndex, GetCount(pInstance));
+    NS_ASSERT_DEBUG(uiIndex < GetCount(pInstance), "GetValue: uiIndex ('{0}') is out of range ('{1}')", uiIndex, GetCount(pInstance));
     *static_cast<RealType*>(pObject) = m_ConstGetter(static_cast<const Class*>(pInstance))[uiIndex];
   }
 
-  virtual void SetValue(void* pInstance, wdUInt32 uiIndex, const void* pObject) override
+  virtual void SetValue(void* pInstance, nsUInt32 uiIndex, const void* pObject) const override
   {
-    WD_REPORT_FAILURE("The property '{0}' is read-only.", wdAbstractProperty::GetPropertyName());
+    NS_REPORT_FAILURE("The property '{0}' is read-only.", nsAbstractProperty::GetPropertyName());
   }
 
-  virtual void Insert(void* pInstance, wdUInt32 uiIndex, const void* pObject) override
+  virtual void Insert(void* pInstance, nsUInt32 uiIndex, const void* pObject) const override
   {
-    WD_REPORT_FAILURE("The property '{0}' is read-only.", wdAbstractProperty::GetPropertyName());
+    NS_REPORT_FAILURE("The property '{0}' is read-only.", nsAbstractProperty::GetPropertyName());
   }
 
-  virtual void Remove(void* pInstance, wdUInt32 uiIndex) override
+  virtual void Remove(void* pInstance, nsUInt32 uiIndex) const override
   {
-    WD_REPORT_FAILURE("The property '{0}' is read-only.", wdAbstractProperty::GetPropertyName());
+    NS_REPORT_FAILURE("The property '{0}' is read-only.", nsAbstractProperty::GetPropertyName());
   }
 
-  virtual void Clear(void* pInstance) override
+  virtual void Clear(void* pInstance) const override
   {
-    WD_REPORT_FAILURE("The property '{0}' is read-only.", wdAbstractProperty::GetPropertyName());
+    NS_REPORT_FAILURE("The property '{0}' is read-only.", nsAbstractProperty::GetPropertyName());
   }
 
-  virtual void SetCount(void* pInstance, wdUInt32 uiCount) override
+  virtual void SetCount(void* pInstance, nsUInt32 uiCount) const override
   {
-    WD_REPORT_FAILURE("The property '{0}' is read-only.", wdAbstractProperty::GetPropertyName());
+    NS_REPORT_FAILURE("The property '{0}' is read-only.", nsAbstractProperty::GetPropertyName());
   }
 
 private:

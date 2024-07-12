@@ -1,31 +1,29 @@
 #pragma once
 
 template <typename Type>
-WD_ALWAYS_INLINE wdSizeTemplate<Type>::wdSizeTemplate()
-{
-}
+NS_ALWAYS_INLINE nsSizeTemplate<Type>::nsSizeTemplate() = default;
 
 template <typename Type>
-WD_ALWAYS_INLINE wdSizeTemplate<Type>::wdSizeTemplate(Type width, Type height)
+NS_ALWAYS_INLINE nsSizeTemplate<Type>::nsSizeTemplate(Type width, Type height)
   : width(width)
   , height(height)
 {
 }
 
 template <typename Type>
-WD_ALWAYS_INLINE bool wdSizeTemplate<Type>::HasNonZeroArea() const
+NS_ALWAYS_INLINE bool nsSizeTemplate<Type>::HasNonZeroArea() const
 {
   return (width > 0) && (height > 0);
 }
 
 template <typename Type>
-WD_ALWAYS_INLINE bool operator==(const wdSizeTemplate<Type>& v1, const wdSizeTemplate<Type>& v2)
+NS_ALWAYS_INLINE bool operator==(const nsSizeTemplate<Type>& v1, const nsSizeTemplate<Type>& v2)
 {
   return v1.height == v2.height && v1.width == v2.width;
 }
 
 template <typename Type>
-WD_ALWAYS_INLINE bool operator!=(const wdSizeTemplate<Type>& v1, const wdSizeTemplate<Type>& v2)
+NS_ALWAYS_INLINE bool operator!=(const nsSizeTemplate<Type>& v1, const nsSizeTemplate<Type>& v2)
 {
   return v1.height != v2.height || v1.width != v2.width;
 }

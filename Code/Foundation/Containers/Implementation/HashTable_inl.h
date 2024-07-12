@@ -1,19 +1,19 @@
 
 /// \brief Value used by containers for indices to indicate an invalid index.
-#ifndef wdInvalidIndex
-#  define wdInvalidIndex 0xFFFFFFFF
+#ifndef nsInvalidIndex
+#  define nsInvalidIndex 0xFFFFFFFF
 #endif
 
 // ***** Const Iterator *****
 
 template <typename K, typename V, typename H>
-wdHashTableBase<K, V, H>::ConstIterator::ConstIterator(const wdHashTableBase<K, V, H>& hashTable)
+nsHashTableBaseConstIterator<K, V, H>::nsHashTableBaseConstIterator(const nsHashTableBase<K, V, H>& hashTable)
   : m_pHashTable(&hashTable)
 {
 }
 
 template <typename K, typename V, typename H>
-void wdHashTableBase<K, V, H>::ConstIterator::SetToBegin()
+void nsHashTableBaseConstIterator<K, V, H>::SetToBegin()
 {
   if (m_pHashTable->IsEmpty())
   {
@@ -27,7 +27,7 @@ void wdHashTableBase<K, V, H>::ConstIterator::SetToBegin()
 }
 
 template <typename K, typename V, typename H>
-inline void wdHashTableBase<K, V, H>::ConstIterator::SetToEnd()
+inline void nsHashTableBaseConstIterator<K, V, H>::SetToEnd()
 {
   m_uiCurrentCount = m_pHashTable->m_uiCount;
   m_uiCurrentIndex = m_pHashTable->m_uiCapacity;
@@ -35,37 +35,31 @@ inline void wdHashTableBase<K, V, H>::ConstIterator::SetToEnd()
 
 
 template <typename K, typename V, typename H>
-WD_FORCE_INLINE bool wdHashTableBase<K, V, H>::ConstIterator::IsValid() const
+NS_FORCE_INLINE bool nsHashTableBaseConstIterator<K, V, H>::IsValid() const
 {
   return m_uiCurrentCount < m_pHashTable->m_uiCount;
 }
 
 template <typename K, typename V, typename H>
-WD_FORCE_INLINE bool wdHashTableBase<K, V, H>::ConstIterator::operator==(const typename wdHashTableBase<K, V, H>::ConstIterator& rhs) const
+NS_FORCE_INLINE bool nsHashTableBaseConstIterator<K, V, H>::operator==(const nsHashTableBaseConstIterator<K, V, H>& rhs) const
 {
   return m_uiCurrentIndex == rhs.m_uiCurrentIndex && m_pHashTable->m_pEntries == rhs.m_pHashTable->m_pEntries;
 }
 
 template <typename K, typename V, typename H>
-WD_ALWAYS_INLINE bool wdHashTableBase<K, V, H>::ConstIterator::operator!=(const typename wdHashTableBase<K, V, H>::ConstIterator& rhs) const
-{
-  return !(*this == rhs);
-}
-
-template <typename K, typename V, typename H>
-WD_ALWAYS_INLINE const K& wdHashTableBase<K, V, H>::ConstIterator::Key() const
+NS_ALWAYS_INLINE const K& nsHashTableBaseConstIterator<K, V, H>::Key() const
 {
   return m_pHashTable->m_pEntries[m_uiCurrentIndex].key;
 }
 
 template <typename K, typename V, typename H>
-WD_ALWAYS_INLINE const V& wdHashTableBase<K, V, H>::ConstIterator::Value() const
+NS_ALWAYS_INLINE const V& nsHashTableBaseConstIterator<K, V, H>::Value() const
 {
   return m_pHashTable->m_pEntries[m_uiCurrentIndex].value;
 }
 
 template <typename K, typename V, typename H>
-void wdHashTableBase<K, V, H>::ConstIterator::Next()
+void nsHashTableBaseConstIterator<K, V, H>::Next()
 {
   // if we already iterated over the amount of valid elements that the hash-table stores, early out
   if (m_uiCurrentCount >= m_pHashTable->m_uiCount)
@@ -91,30 +85,53 @@ void wdHashTableBase<K, V, H>::ConstIterator::Next()
 }
 
 template <typename K, typename V, typename H>
-WD_ALWAYS_INLINE void wdHashTableBase<K, V, H>::ConstIterator::operator++()
+NS_ALWAYS_INLINE void nsHashTableBaseConstIterator<K, V, H>::operator++()
 {
   Next();
 }
 
+#if NS_ENABLED(NS_USE_CPP20_OPERATORS)
+// These functions are used for structured bindings.
+// They describe how many elements can be accessed in the binding and which type they are.
+namespace std
+{
+  template <typename K, typename V, typename H>
+  struct tuple_size<nsHashTableBaseConstIterator<K, V, H>> : integral_constant<size_t, 2>
+  {
+  };
+
+  template <typename K, typename V, typename H>
+  struct tuple_element<0, nsHashTableBaseConstIterator<K, V, H>>
+  {
+    using type = const K&;
+  };
+
+  template <typename K, typename V, typename H>
+  struct tuple_element<1, nsHashTableBaseConstIterator<K, V, H>>
+  {
+    using type = const V&;
+  };
+} // namespace std
+#endif
 
 // ***** Iterator *****
 
 template <typename K, typename V, typename H>
-wdHashTableBase<K, V, H>::Iterator::Iterator(const wdHashTableBase<K, V, H>& hashTable)
-  : ConstIterator(hashTable)
+nsHashTableBaseIterator<K, V, H>::nsHashTableBaseIterator(const nsHashTableBase<K, V, H>& hashTable)
+  : nsHashTableBaseConstIterator<K, V, H>(hashTable)
 {
 }
 
 template <typename K, typename V, typename H>
-wdHashTableBase<K, V, H>::Iterator::Iterator(const typename wdHashTableBase<K, V, H>::Iterator& rhs)
-  : ConstIterator(*rhs.m_pHashTable)
+nsHashTableBaseIterator<K, V, H>::nsHashTableBaseIterator(const nsHashTableBaseIterator<K, V, H>& rhs)
+  : nsHashTableBaseConstIterator<K, V, H>(*rhs.m_pHashTable)
 {
   this->m_uiCurrentIndex = rhs.m_uiCurrentIndex;
   this->m_uiCurrentCount = rhs.m_uiCurrentCount;
 }
 
 template <typename K, typename V, typename H>
-WD_ALWAYS_INLINE void wdHashTableBase<K, V, H>::Iterator::operator=(const Iterator& rhs) // [tested]
+NS_ALWAYS_INLINE void nsHashTableBaseIterator<K, V, H>::operator=(const nsHashTableBaseIterator& rhs) // [tested]
 {
   this->m_pHashTable = rhs.m_pHashTable;
   this->m_uiCurrentIndex = rhs.m_uiCurrentIndex;
@@ -122,16 +139,46 @@ WD_ALWAYS_INLINE void wdHashTableBase<K, V, H>::Iterator::operator=(const Iterat
 }
 
 template <typename K, typename V, typename H>
-WD_FORCE_INLINE V& wdHashTableBase<K, V, H>::Iterator::Value()
+NS_FORCE_INLINE V& nsHashTableBaseIterator<K, V, H>::Value()
+{
+  return this->m_pHashTable->m_pEntries[this->m_uiCurrentIndex].value;
+}
+
+template <typename K, typename V, typename H>
+NS_FORCE_INLINE V& nsHashTableBaseIterator<K, V, H>::Value() const
 {
   return this->m_pHashTable->m_pEntries[this->m_uiCurrentIndex].value;
 }
 
 
-// ***** wdHashTableBase *****
+#if NS_ENABLED(NS_USE_CPP20_OPERATORS)
+// These functions are used for structured bindings.
+// They describe how many elements can be accessed in the binding and which type they are.
+namespace std
+{
+  template <typename K, typename V, typename H>
+  struct tuple_size<nsHashTableBaseIterator<K, V, H>> : integral_constant<size_t, 2>
+  {
+  };
+
+  template <typename K, typename V, typename H>
+  struct tuple_element<0, nsHashTableBaseIterator<K, V, H>>
+  {
+    using type = const K&;
+  };
+
+  template <typename K, typename V, typename H>
+  struct tuple_element<1, nsHashTableBaseIterator<K, V, H>>
+  {
+    using type = V&;
+  };
+} // namespace std
+#endif
+
+// ***** nsHashTableBase *****
 
 template <typename K, typename V, typename H>
-wdHashTableBase<K, V, H>::wdHashTableBase(wdAllocatorBase* pAllocator)
+nsHashTableBase<K, V, H>::nsHashTableBase(nsAllocator* pAllocator)
 {
   m_pEntries = nullptr;
   m_pEntryFlags = nullptr;
@@ -141,7 +188,7 @@ wdHashTableBase<K, V, H>::wdHashTableBase(wdAllocatorBase* pAllocator)
 }
 
 template <typename K, typename V, typename H>
-wdHashTableBase<K, V, H>::wdHashTableBase(const wdHashTableBase<K, V, H>& other, wdAllocatorBase* pAllocator)
+nsHashTableBase<K, V, H>::nsHashTableBase(const nsHashTableBase<K, V, H>& other, nsAllocator* pAllocator)
 {
   m_pEntries = nullptr;
   m_pEntryFlags = nullptr;
@@ -153,7 +200,7 @@ wdHashTableBase<K, V, H>::wdHashTableBase(const wdHashTableBase<K, V, H>& other,
 }
 
 template <typename K, typename V, typename H>
-wdHashTableBase<K, V, H>::wdHashTableBase(wdHashTableBase<K, V, H>&& other, wdAllocatorBase* pAllocator)
+nsHashTableBase<K, V, H>::nsHashTableBase(nsHashTableBase<K, V, H>&& other, nsAllocator* pAllocator)
 {
   m_pEntries = nullptr;
   m_pEntryFlags = nullptr;
@@ -165,22 +212,22 @@ wdHashTableBase<K, V, H>::wdHashTableBase(wdHashTableBase<K, V, H>&& other, wdAl
 }
 
 template <typename K, typename V, typename H>
-wdHashTableBase<K, V, H>::~wdHashTableBase()
+nsHashTableBase<K, V, H>::~nsHashTableBase()
 {
   Clear();
-  WD_DELETE_RAW_BUFFER(m_pAllocator, m_pEntries);
-  WD_DELETE_RAW_BUFFER(m_pAllocator, m_pEntryFlags);
+  NS_DELETE_RAW_BUFFER(m_pAllocator, m_pEntries);
+  NS_DELETE_RAW_BUFFER(m_pAllocator, m_pEntryFlags);
   m_uiCapacity = 0;
 }
 
 template <typename K, typename V, typename H>
-void wdHashTableBase<K, V, H>::operator=(const wdHashTableBase<K, V, H>& rhs)
+void nsHashTableBase<K, V, H>::operator=(const nsHashTableBase<K, V, H>& rhs)
 {
   Clear();
   Reserve(rhs.GetCount());
 
-  wdUInt32 uiCopied = 0;
-  for (wdUInt32 i = 0; uiCopied < rhs.GetCount(); ++i)
+  nsUInt32 uiCopied = 0;
+  for (nsUInt32 i = 0; uiCopied < rhs.GetCount(); ++i)
   {
     if (rhs.IsValidEntry(i))
     {
@@ -191,7 +238,7 @@ void wdHashTableBase<K, V, H>::operator=(const wdHashTableBase<K, V, H>& rhs)
 }
 
 template <typename K, typename V, typename H>
-void wdHashTableBase<K, V, H>::operator=(wdHashTableBase<K, V, H>&& rhs)
+void nsHashTableBase<K, V, H>::operator=(nsHashTableBase<K, V, H>&& rhs)
 {
   // Clear any existing data (calls destructors if necessary)
   Clear();
@@ -200,8 +247,8 @@ void wdHashTableBase<K, V, H>::operator=(wdHashTableBase<K, V, H>&& rhs)
   {
     Reserve(rhs.m_uiCapacity);
 
-    wdUInt32 uiCopied = 0;
-    for (wdUInt32 i = 0; uiCopied < rhs.GetCount(); ++i)
+    nsUInt32 uiCopied = 0;
+    for (nsUInt32 i = 0; uiCopied < rhs.GetCount(); ++i)
     {
       if (rhs.IsValidEntry(i))
       {
@@ -214,8 +261,8 @@ void wdHashTableBase<K, V, H>::operator=(wdHashTableBase<K, V, H>&& rhs)
   }
   else
   {
-    WD_DELETE_RAW_BUFFER(m_pAllocator, m_pEntries);
-    WD_DELETE_RAW_BUFFER(m_pAllocator, m_pEntryFlags);
+    NS_DELETE_RAW_BUFFER(m_pAllocator, m_pEntries);
+    NS_DELETE_RAW_BUFFER(m_pAllocator, m_pEntryFlags);
 
     // Move all data over.
     m_pEntries = rhs.m_pEntries;
@@ -232,13 +279,13 @@ void wdHashTableBase<K, V, H>::operator=(wdHashTableBase<K, V, H>&& rhs)
 }
 
 template <typename K, typename V, typename H>
-bool wdHashTableBase<K, V, H>::operator==(const wdHashTableBase<K, V, H>& rhs) const
+bool nsHashTableBase<K, V, H>::operator==(const nsHashTableBase<K, V, H>& rhs) const
 {
   if (m_uiCount != rhs.m_uiCount)
     return false;
 
-  wdUInt32 uiCompared = 0;
-  for (wdUInt32 i = 0; uiCompared < m_uiCount; ++i)
+  nsUInt32 uiCompared = 0;
+  for (nsUInt32 i = 0; uiCompared < m_uiCount; ++i)
   {
     if (IsValidEntry(i))
     {
@@ -257,90 +304,84 @@ bool wdHashTableBase<K, V, H>::operator==(const wdHashTableBase<K, V, H>& rhs) c
 }
 
 template <typename K, typename V, typename H>
-WD_ALWAYS_INLINE bool wdHashTableBase<K, V, H>::operator!=(const wdHashTableBase<K, V, H>& rhs) const
+void nsHashTableBase<K, V, H>::Reserve(nsUInt32 uiCapacity)
 {
-  return !(*this == rhs);
-}
+  const nsUInt64 uiCap64 = static_cast<nsUInt64>(uiCapacity);
+  nsUInt64 uiNewCapacity64 = uiCap64 + (uiCap64 * 2 / 3);                  // ensure a maximum load of 60%
 
-template <typename K, typename V, typename H>
-void wdHashTableBase<K, V, H>::Reserve(wdUInt32 uiCapacity)
-{
-  const wdUInt64 uiCap64 = static_cast<wdUInt64>(uiCapacity);
-  wdUInt64 uiNewCapacity64 = uiCap64 + (uiCap64 * 2 / 3); // ensure a maximum load of 60%
+  uiNewCapacity64 = nsMath::Min<nsUInt64>(uiNewCapacity64, 0x80000000llu); // the largest power-of-two in 32 bit
 
-  uiNewCapacity64 = wdMath::Min<wdUInt64>(uiNewCapacity64, 0x80000000llu); // the largest power-of-two in 32 bit
-
-  wdUInt32 uiNewCapacity32 = static_cast<wdUInt32>(uiNewCapacity64 & 0xFFFFFFFF);
-  WD_ASSERT_DEBUG(uiCapacity <= uiNewCapacity32, "wdHashSet/Map do not support more than 2 billion entries.");
+  nsUInt32 uiNewCapacity32 = static_cast<nsUInt32>(uiNewCapacity64 & 0xFFFFFFFF);
+  NS_ASSERT_DEBUG(uiCapacity <= uiNewCapacity32, "nsHashSet/Map do not support more than 2 billion entries.");
 
   if (m_uiCapacity >= uiNewCapacity32)
     return;
 
-  uiNewCapacity32 = wdMath::Max<wdUInt32>(wdMath::PowerOfTwo_Ceil(uiNewCapacity32), CAPACITY_ALIGNMENT);
+  uiNewCapacity32 = nsMath::Max<nsUInt32>(nsMath::PowerOfTwo_Ceil(uiNewCapacity32), CAPACITY_ALIGNMENT);
   SetCapacity(uiNewCapacity32);
 }
 
 template <typename K, typename V, typename H>
-void wdHashTableBase<K, V, H>::Compact()
+void nsHashTableBase<K, V, H>::Compact()
 {
   if (IsEmpty())
   {
     // completely deallocate all data, if the table is empty.
-    WD_DELETE_RAW_BUFFER(m_pAllocator, m_pEntries);
-    WD_DELETE_RAW_BUFFER(m_pAllocator, m_pEntryFlags);
+    NS_DELETE_RAW_BUFFER(m_pAllocator, m_pEntries);
+    NS_DELETE_RAW_BUFFER(m_pAllocator, m_pEntryFlags);
     m_uiCapacity = 0;
   }
   else
   {
-    const wdUInt32 uiNewCapacity = wdMath::PowerOfTwo_Ceil(m_uiCount + (CAPACITY_ALIGNMENT - 1)) & ~(CAPACITY_ALIGNMENT - 1);
+    const nsUInt32 uiNewCapacity = nsMath::PowerOfTwo_Ceil(m_uiCount + (CAPACITY_ALIGNMENT - 1)) & ~(CAPACITY_ALIGNMENT - 1);
     if (m_uiCapacity != uiNewCapacity)
       SetCapacity(uiNewCapacity);
   }
 }
 
 template <typename K, typename V, typename H>
-WD_ALWAYS_INLINE wdUInt32 wdHashTableBase<K, V, H>::GetCount() const
+NS_ALWAYS_INLINE nsUInt32 nsHashTableBase<K, V, H>::GetCount() const
 {
   return m_uiCount;
 }
 
 template <typename K, typename V, typename H>
-WD_ALWAYS_INLINE bool wdHashTableBase<K, V, H>::IsEmpty() const
+NS_ALWAYS_INLINE bool nsHashTableBase<K, V, H>::IsEmpty() const
 {
   return m_uiCount == 0;
 }
 
 template <typename K, typename V, typename H>
-void wdHashTableBase<K, V, H>::Clear()
+void nsHashTableBase<K, V, H>::Clear()
 {
-  for (wdUInt32 i = 0; i < m_uiCapacity; ++i)
+  for (nsUInt32 i = 0; i < m_uiCapacity; ++i)
   {
     if (IsValidEntry(i))
     {
-      wdMemoryUtils::Destruct(&m_pEntries[i].key, 1);
-      wdMemoryUtils::Destruct(&m_pEntries[i].value, 1);
+      nsMemoryUtils::Destruct(&m_pEntries[i].key, 1);
+      nsMemoryUtils::Destruct(&m_pEntries[i].value, 1);
     }
   }
 
-  wdMemoryUtils::ZeroFill(m_pEntryFlags, GetFlagsCapacity());
+  nsMemoryUtils::ZeroFill(m_pEntryFlags, GetFlagsCapacity());
   m_uiCount = 0;
 }
 
 template <typename K, typename V, typename H>
 template <typename CompatibleKeyType, typename CompatibleValueType>
-bool wdHashTableBase<K, V, H>::Insert(CompatibleKeyType&& key, CompatibleValueType&& value, V* out_pOldValue /*= nullptr*/)
+bool nsHashTableBase<K, V, H>::Insert(CompatibleKeyType&& key, CompatibleValueType&& value, V* out_pOldValue /*= nullptr*/)
 {
   Reserve(m_uiCount + 1);
 
-  wdUInt32 uiIndex = H::Hash(key) & (m_uiCapacity - 1);
-  wdUInt32 uiDeletedIndex = wdInvalidIndex;
+  nsUInt32 uiIndex = H::Hash(key) & (m_uiCapacity - 1);
+  nsUInt32 uiDeletedIndex = nsInvalidIndex;
 
-  wdUInt32 uiCounter = 0;
+  nsUInt32 uiCounter = 0;
   while (!IsFreeEntry(uiIndex) && uiCounter < m_uiCapacity)
   {
     if (IsDeletedEntry(uiIndex))
     {
-      if (uiDeletedIndex == wdInvalidIndex)
+      if (uiDeletedIndex == nsInvalidIndex)
         uiDeletedIndex = uiIndex;
     }
     else if (H::Equal(m_pEntries[uiIndex].key, key))
@@ -359,11 +400,11 @@ bool wdHashTableBase<K, V, H>::Insert(CompatibleKeyType&& key, CompatibleValueTy
   }
 
   // new entry
-  uiIndex = uiDeletedIndex != wdInvalidIndex ? uiDeletedIndex : uiIndex;
+  uiIndex = uiDeletedIndex != nsInvalidIndex ? uiDeletedIndex : uiIndex;
 
   // Both constructions might either be a move or a copy.
-  wdMemoryUtils::CopyOrMoveConstruct(&m_pEntries[uiIndex].key, std::forward<CompatibleKeyType>(key));
-  wdMemoryUtils::CopyOrMoveConstruct(&m_pEntries[uiIndex].value, std::forward<CompatibleValueType>(value));
+  nsMemoryUtils::CopyOrMoveConstruct(&m_pEntries[uiIndex].key, std::forward<CompatibleKeyType>(key));
+  nsMemoryUtils::CopyOrMoveConstruct(&m_pEntries[uiIndex].value, std::forward<CompatibleValueType>(value));
 
   MarkEntryAsValid(uiIndex);
   ++m_uiCount;
@@ -373,10 +414,10 @@ bool wdHashTableBase<K, V, H>::Insert(CompatibleKeyType&& key, CompatibleValueTy
 
 template <typename K, typename V, typename H>
 template <typename CompatibleKeyType>
-bool wdHashTableBase<K, V, H>::Remove(const CompatibleKeyType& key, V* out_pOldValue /*= nullptr*/)
+bool nsHashTableBase<K, V, H>::Remove(const CompatibleKeyType& key, V* out_pOldValue /*= nullptr*/)
 {
-  wdUInt32 uiIndex = FindEntry(key);
-  if (uiIndex != wdInvalidIndex)
+  nsUInt32 uiIndex = FindEntry(key);
+  if (uiIndex != nsInvalidIndex)
   {
     if (out_pOldValue != nullptr)
       *out_pOldValue = std::move(m_pEntries[uiIndex].value);
@@ -389,11 +430,11 @@ bool wdHashTableBase<K, V, H>::Remove(const CompatibleKeyType& key, V* out_pOldV
 }
 
 template <typename K, typename V, typename H>
-typename wdHashTableBase<K, V, H>::Iterator wdHashTableBase<K, V, H>::Remove(const typename wdHashTableBase<K, V, H>::Iterator& pos)
+typename nsHashTableBase<K, V, H>::Iterator nsHashTableBase<K, V, H>::Remove(const typename nsHashTableBase<K, V, H>::Iterator& pos)
 {
-  WD_ASSERT_DEBUG(pos.m_pHashTable == this, "Iterator from wrong hashtable");
+  NS_ASSERT_DEBUG(pos.m_pHashTable == this, "Iterator from wrong hashtable");
   Iterator it = pos;
-  wdUInt32 uiIndex = pos.m_uiCurrentIndex;
+  nsUInt32 uiIndex = pos.m_uiCurrentIndex;
   ++it;
   --it.m_uiCurrentCount;
   RemoveInternal(uiIndex);
@@ -401,12 +442,12 @@ typename wdHashTableBase<K, V, H>::Iterator wdHashTableBase<K, V, H>::Remove(con
 }
 
 template <typename K, typename V, typename H>
-void wdHashTableBase<K, V, H>::RemoveInternal(wdUInt32 uiIndex)
+void nsHashTableBase<K, V, H>::RemoveInternal(nsUInt32 uiIndex)
 {
-  wdMemoryUtils::Destruct(&m_pEntries[uiIndex].key, 1);
-  wdMemoryUtils::Destruct(&m_pEntries[uiIndex].value, 1);
+  nsMemoryUtils::Destruct(&m_pEntries[uiIndex].key, 1);
+  nsMemoryUtils::Destruct(&m_pEntries[uiIndex].value, 1);
 
-  wdUInt32 uiNextIndex = uiIndex + 1;
+  nsUInt32 uiNextIndex = uiIndex + 1;
   if (uiNextIndex == m_uiCapacity)
     uiNextIndex = 0;
 
@@ -417,7 +458,7 @@ void wdHashTableBase<K, V, H>::RemoveInternal(wdUInt32 uiIndex)
     MarkEntryAsFree(uiIndex);
 
     // run backwards and free all deleted entries in this chain
-    wdUInt32 uiPrevIndex = (uiIndex != 0) ? uiIndex : m_uiCapacity;
+    nsUInt32 uiPrevIndex = (uiIndex != 0) ? uiIndex : m_uiCapacity;
     --uiPrevIndex;
 
     while (IsDeletedEntry(uiPrevIndex))
@@ -439,11 +480,12 @@ void wdHashTableBase<K, V, H>::RemoveInternal(wdUInt32 uiIndex)
 
 template <typename K, typename V, typename H>
 template <typename CompatibleKeyType>
-inline bool wdHashTableBase<K, V, H>::TryGetValue(const CompatibleKeyType& key, V& out_value) const
+inline bool nsHashTableBase<K, V, H>::TryGetValue(const CompatibleKeyType& key, V& out_value) const
 {
-  wdUInt32 uiIndex = FindEntry(key);
-  if (uiIndex != wdInvalidIndex)
+  nsUInt32 uiIndex = FindEntry(key);
+  if (uiIndex != nsInvalidIndex)
   {
+    NS_ASSERT_DEBUG(m_pEntries != nullptr, "No entries present"); // To fix static analysis
     out_value = m_pEntries[uiIndex].value;
     return true;
   }
@@ -453,12 +495,13 @@ inline bool wdHashTableBase<K, V, H>::TryGetValue(const CompatibleKeyType& key, 
 
 template <typename K, typename V, typename H>
 template <typename CompatibleKeyType>
-inline bool wdHashTableBase<K, V, H>::TryGetValue(const CompatibleKeyType& key, const V*& out_pValue) const
+inline bool nsHashTableBase<K, V, H>::TryGetValue(const CompatibleKeyType& key, const V*& out_pValue) const
 {
-  wdUInt32 uiIndex = FindEntry(key);
-  if (uiIndex != wdInvalidIndex)
+  nsUInt32 uiIndex = FindEntry(key);
+  if (uiIndex != nsInvalidIndex)
   {
     out_pValue = &m_pEntries[uiIndex].value;
+    NS_ANALYSIS_ASSUME(out_pValue != nullptr);
     return true;
   }
 
@@ -467,12 +510,13 @@ inline bool wdHashTableBase<K, V, H>::TryGetValue(const CompatibleKeyType& key, 
 
 template <typename K, typename V, typename H>
 template <typename CompatibleKeyType>
-inline bool wdHashTableBase<K, V, H>::TryGetValue(const CompatibleKeyType& key, V*& out_pValue) const
+inline bool nsHashTableBase<K, V, H>::TryGetValue(const CompatibleKeyType& key, V*& out_pValue) const
 {
-  wdUInt32 uiIndex = FindEntry(key);
-  if (uiIndex != wdInvalidIndex)
+  nsUInt32 uiIndex = FindEntry(key);
+  if (uiIndex != nsInvalidIndex)
   {
     out_pValue = &m_pEntries[uiIndex].value;
+    NS_ANALYSIS_ASSUME(out_pValue != nullptr);
     return true;
   }
 
@@ -481,10 +525,10 @@ inline bool wdHashTableBase<K, V, H>::TryGetValue(const CompatibleKeyType& key, 
 
 template <typename K, typename V, typename H>
 template <typename CompatibleKeyType>
-inline typename wdHashTableBase<K, V, H>::ConstIterator wdHashTableBase<K, V, H>::Find(const CompatibleKeyType& key) const
+inline typename nsHashTableBase<K, V, H>::ConstIterator nsHashTableBase<K, V, H>::Find(const CompatibleKeyType& key) const
 {
-  wdUInt32 uiIndex = FindEntry(key);
-  if (uiIndex == wdInvalidIndex)
+  nsUInt32 uiIndex = FindEntry(key);
+  if (uiIndex == nsInvalidIndex)
   {
     return GetEndIterator();
   }
@@ -498,10 +542,10 @@ inline typename wdHashTableBase<K, V, H>::ConstIterator wdHashTableBase<K, V, H>
 
 template <typename K, typename V, typename H>
 template <typename CompatibleKeyType>
-inline typename wdHashTableBase<K, V, H>::Iterator wdHashTableBase<K, V, H>::Find(const CompatibleKeyType& key)
+inline typename nsHashTableBase<K, V, H>::Iterator nsHashTableBase<K, V, H>::Find(const CompatibleKeyType& key)
 {
-  wdUInt32 uiIndex = FindEntry(key);
-  if (uiIndex == wdInvalidIndex)
+  nsUInt32 uiIndex = FindEntry(key);
+  if (uiIndex == nsInvalidIndex)
   {
     return GetEndIterator();
   }
@@ -515,38 +559,38 @@ inline typename wdHashTableBase<K, V, H>::Iterator wdHashTableBase<K, V, H>::Fin
 
 template <typename K, typename V, typename H>
 template <typename CompatibleKeyType>
-inline const V* wdHashTableBase<K, V, H>::GetValue(const CompatibleKeyType& key) const
+inline const V* nsHashTableBase<K, V, H>::GetValue(const CompatibleKeyType& key) const
 {
-  wdUInt32 uiIndex = FindEntry(key);
-  return (uiIndex != wdInvalidIndex) ? &m_pEntries[uiIndex].value : nullptr;
+  nsUInt32 uiIndex = FindEntry(key);
+  return (uiIndex != nsInvalidIndex) ? &m_pEntries[uiIndex].value : nullptr;
 }
 
 template <typename K, typename V, typename H>
 template <typename CompatibleKeyType>
-inline V* wdHashTableBase<K, V, H>::GetValue(const CompatibleKeyType& key)
+inline V* nsHashTableBase<K, V, H>::GetValue(const CompatibleKeyType& key)
 {
-  wdUInt32 uiIndex = FindEntry(key);
-  return (uiIndex != wdInvalidIndex) ? &m_pEntries[uiIndex].value : nullptr;
+  nsUInt32 uiIndex = FindEntry(key);
+  return (uiIndex != nsInvalidIndex) ? &m_pEntries[uiIndex].value : nullptr;
 }
 
 template <typename K, typename V, typename H>
-inline V& wdHashTableBase<K, V, H>::operator[](const K& key)
+inline V& nsHashTableBase<K, V, H>::operator[](const K& key)
 {
   return FindOrAdd(key, nullptr);
 }
 
 template <typename K, typename V, typename H>
-V& wdHashTableBase<K, V, H>::FindOrAdd(const K& key, bool* out_pExisted)
+V& nsHashTableBase<K, V, H>::FindOrAdd(const K& key, bool* out_pExisted)
 {
-  const wdUInt32 uiHash = H::Hash(key);
-  wdUInt32 uiIndex = FindEntry(uiHash, key);
+  const nsUInt32 uiHash = H::Hash(key);
+  nsUInt32 uiIndex = FindEntry(uiHash, key);
 
   if (out_pExisted)
   {
-    *out_pExisted = uiIndex != wdInvalidIndex;
+    *out_pExisted = uiIndex != nsInvalidIndex;
   }
 
-  if (uiIndex == wdInvalidIndex)
+  if (uiIndex == nsInvalidIndex)
   {
     Reserve(m_uiCount + 1);
 
@@ -560,23 +604,25 @@ V& wdHashTableBase<K, V, H>::FindOrAdd(const K& key, bool* out_pExisted)
     }
 
     // new entry
-    wdMemoryUtils::CopyConstruct(&m_pEntries[uiIndex].key, key, 1);
-    wdMemoryUtils::DefaultConstruct(&m_pEntries[uiIndex].value, 1);
+    nsMemoryUtils::CopyConstruct(&m_pEntries[uiIndex].key, key, 1);
+    nsMemoryUtils::Construct<ConstructAll>(&m_pEntries[uiIndex].value, 1);
     MarkEntryAsValid(uiIndex);
     ++m_uiCount;
   }
+
+  NS_ASSERT_DEBUG(m_pEntries != nullptr, "Entries should be present");
   return m_pEntries[uiIndex].value;
 }
 
 template <typename K, typename V, typename H>
 template <typename CompatibleKeyType>
-WD_FORCE_INLINE bool wdHashTableBase<K, V, H>::Contains(const CompatibleKeyType& key) const
+NS_FORCE_INLINE bool nsHashTableBase<K, V, H>::Contains(const CompatibleKeyType& key) const
 {
-  return FindEntry(key) != wdInvalidIndex;
+  return FindEntry(key) != nsInvalidIndex;
 }
 
 template <typename K, typename V, typename H>
-WD_ALWAYS_INLINE typename wdHashTableBase<K, V, H>::Iterator wdHashTableBase<K, V, H>::GetIterator()
+NS_ALWAYS_INLINE typename nsHashTableBase<K, V, H>::Iterator nsHashTableBase<K, V, H>::GetIterator()
 {
   Iterator iterator(*this);
   iterator.SetToBegin();
@@ -584,7 +630,7 @@ WD_ALWAYS_INLINE typename wdHashTableBase<K, V, H>::Iterator wdHashTableBase<K, 
 }
 
 template <typename K, typename V, typename H>
-WD_ALWAYS_INLINE typename wdHashTableBase<K, V, H>::Iterator wdHashTableBase<K, V, H>::GetEndIterator()
+NS_ALWAYS_INLINE typename nsHashTableBase<K, V, H>::Iterator nsHashTableBase<K, V, H>::GetEndIterator()
 {
   Iterator iterator(*this);
   iterator.SetToEnd();
@@ -592,7 +638,7 @@ WD_ALWAYS_INLINE typename wdHashTableBase<K, V, H>::Iterator wdHashTableBase<K, 
 }
 
 template <typename K, typename V, typename H>
-WD_ALWAYS_INLINE typename wdHashTableBase<K, V, H>::ConstIterator wdHashTableBase<K, V, H>::GetIterator() const
+NS_ALWAYS_INLINE typename nsHashTableBase<K, V, H>::ConstIterator nsHashTableBase<K, V, H>::GetIterator() const
 {
   ConstIterator iterator(*this);
   iterator.SetToBegin();
@@ -600,7 +646,7 @@ WD_ALWAYS_INLINE typename wdHashTableBase<K, V, H>::ConstIterator wdHashTableBas
 }
 
 template <typename K, typename V, typename H>
-WD_ALWAYS_INLINE typename wdHashTableBase<K, V, H>::ConstIterator wdHashTableBase<K, V, H>::GetEndIterator() const
+NS_ALWAYS_INLINE typename nsHashTableBase<K, V, H>::ConstIterator nsHashTableBase<K, V, H>::GetEndIterator() const
 {
   ConstIterator iterator(*this);
   iterator.SetToEnd();
@@ -608,63 +654,63 @@ WD_ALWAYS_INLINE typename wdHashTableBase<K, V, H>::ConstIterator wdHashTableBas
 }
 
 template <typename K, typename V, typename H>
-WD_ALWAYS_INLINE wdAllocatorBase* wdHashTableBase<K, V, H>::GetAllocator() const
+NS_ALWAYS_INLINE nsAllocator* nsHashTableBase<K, V, H>::GetAllocator() const
 {
   return m_pAllocator;
 }
 
 template <typename K, typename V, typename H>
-wdUInt64 wdHashTableBase<K, V, H>::GetHeapMemoryUsage() const
+nsUInt64 nsHashTableBase<K, V, H>::GetHeapMemoryUsage() const
 {
-  return ((wdUInt64)m_uiCapacity * sizeof(Entry)) + (sizeof(wdUInt32) * (wdUInt64)GetFlagsCapacity());
+  return ((nsUInt64)m_uiCapacity * sizeof(Entry)) + (sizeof(nsUInt32) * (nsUInt64)GetFlagsCapacity());
 }
 
 // private methods
 template <typename K, typename V, typename H>
-void wdHashTableBase<K, V, H>::SetCapacity(wdUInt32 uiCapacity)
+void nsHashTableBase<K, V, H>::SetCapacity(nsUInt32 uiCapacity)
 {
-  WD_ASSERT_DEV(wdMath::IsPowerOf2(uiCapacity), "uiCapacity must be a power of two to avoid modulo during lookup.");
-  const wdUInt32 uiOldCapacity = m_uiCapacity;
+  NS_ASSERT_DEBUG(nsMath::IsPowerOf2(uiCapacity), "uiCapacity must be a power of two to avoid modulo during lookup.");
+  const nsUInt32 uiOldCapacity = m_uiCapacity;
   m_uiCapacity = uiCapacity;
 
   Entry* pOldEntries = m_pEntries;
-  wdUInt32* pOldEntryFlags = m_pEntryFlags;
+  nsUInt32* pOldEntryFlags = m_pEntryFlags;
 
-  m_pEntries = WD_NEW_RAW_BUFFER(m_pAllocator, Entry, m_uiCapacity);
-  m_pEntryFlags = WD_NEW_RAW_BUFFER(m_pAllocator, wdUInt32, GetFlagsCapacity());
-  wdMemoryUtils::ZeroFill(m_pEntryFlags, GetFlagsCapacity());
+  m_pEntries = NS_NEW_RAW_BUFFER(m_pAllocator, Entry, m_uiCapacity);
+  m_pEntryFlags = NS_NEW_RAW_BUFFER(m_pAllocator, nsUInt32, GetFlagsCapacity());
+  nsMemoryUtils::ZeroFill(m_pEntryFlags, GetFlagsCapacity());
 
   m_uiCount = 0;
-  for (wdUInt32 i = 0; i < uiOldCapacity; ++i)
+  for (nsUInt32 i = 0; i < uiOldCapacity; ++i)
   {
     if (GetFlags(pOldEntryFlags, i) == VALID_ENTRY)
     {
-      WD_VERIFY(!Insert(std::move(pOldEntries[i].key), std::move(pOldEntries[i].value)), "Implementation error");
+      NS_VERIFY(!Insert(std::move(pOldEntries[i].key), std::move(pOldEntries[i].value)), "Implementation error");
 
-      wdMemoryUtils::Destruct(&pOldEntries[i].key, 1);
-      wdMemoryUtils::Destruct(&pOldEntries[i].value, 1);
+      nsMemoryUtils::Destruct(&pOldEntries[i].key, 1);
+      nsMemoryUtils::Destruct(&pOldEntries[i].value, 1);
     }
   }
 
-  WD_DELETE_RAW_BUFFER(m_pAllocator, pOldEntries);
-  WD_DELETE_RAW_BUFFER(m_pAllocator, pOldEntryFlags);
+  NS_DELETE_RAW_BUFFER(m_pAllocator, pOldEntries);
+  NS_DELETE_RAW_BUFFER(m_pAllocator, pOldEntryFlags);
 }
 
 template <typename K, typename V, typename H>
 template <typename CompatibleKeyType>
-WD_ALWAYS_INLINE wdUInt32 wdHashTableBase<K, V, H>::FindEntry(const CompatibleKeyType& key) const
+NS_ALWAYS_INLINE nsUInt32 nsHashTableBase<K, V, H>::FindEntry(const CompatibleKeyType& key) const
 {
   return FindEntry(H::Hash(key), key);
 }
 
 template <typename K, typename V, typename H>
 template <typename CompatibleKeyType>
-inline wdUInt32 wdHashTableBase<K, V, H>::FindEntry(wdUInt32 uiHash, const CompatibleKeyType& key) const
+inline nsUInt32 nsHashTableBase<K, V, H>::FindEntry(nsUInt32 uiHash, const CompatibleKeyType& key) const
 {
   if (m_uiCapacity > 0)
   {
-    wdUInt32 uiIndex = uiHash & (m_uiCapacity - 1);
-    wdUInt32 uiCounter = 0;
+    nsUInt32 uiIndex = uiHash & (m_uiCapacity - 1);
+    nsUInt32 uiCounter = 0;
     while (!IsFreeEntry(uiIndex) && uiCounter < m_uiCapacity)
     {
       if (IsValidEntry(uiIndex) && H::Equal(m_pEntries[uiIndex].key, key))
@@ -678,15 +724,15 @@ inline wdUInt32 wdHashTableBase<K, V, H>::FindEntry(wdUInt32 uiHash, const Compa
     }
   }
   // not found
-  return wdInvalidIndex;
+  return nsInvalidIndex;
 }
 
-#define WD_HASHTABLE_USE_BITFLAGS WD_ON
+#define NS_HASHTABLE_USE_BITFLAGS NS_ON
 
 template <typename K, typename V, typename H>
-WD_FORCE_INLINE wdUInt32 wdHashTableBase<K, V, H>::GetFlagsCapacity() const
+NS_FORCE_INLINE nsUInt32 nsHashTableBase<K, V, H>::GetFlagsCapacity() const
 {
-#if WD_ENABLED(WD_HASHTABLE_USE_BITFLAGS)
+#if NS_ENABLED(NS_HASHTABLE_USE_BITFLAGS)
   return (m_uiCapacity + 15) / 16;
 #else
   return m_uiCapacity;
@@ -694,11 +740,11 @@ WD_FORCE_INLINE wdUInt32 wdHashTableBase<K, V, H>::GetFlagsCapacity() const
 }
 
 template <typename K, typename V, typename H>
-WD_ALWAYS_INLINE wdUInt32 wdHashTableBase<K, V, H>::GetFlags(wdUInt32* pFlags, wdUInt32 uiEntryIndex) const
+NS_ALWAYS_INLINE nsUInt32 nsHashTableBase<K, V, H>::GetFlags(nsUInt32* pFlags, nsUInt32 uiEntryIndex) const
 {
-#if WD_ENABLED(WD_HASHTABLE_USE_BITFLAGS)
-  const wdUInt32 uiIndex = uiEntryIndex / 16;
-  const wdUInt32 uiSubIndex = (uiEntryIndex & 15) * 2;
+#if NS_ENABLED(NS_HASHTABLE_USE_BITFLAGS)
+  const nsUInt32 uiIndex = uiEntryIndex / 16;
+  const nsUInt32 uiSubIndex = (uiEntryIndex & 15) * 2;
   return (pFlags[uiIndex] >> uiSubIndex) & FLAGS_MASK;
 #else
   return pFlags[uiEntryIndex] & FLAGS_MASK;
@@ -706,123 +752,123 @@ WD_ALWAYS_INLINE wdUInt32 wdHashTableBase<K, V, H>::GetFlags(wdUInt32* pFlags, w
 }
 
 template <typename K, typename V, typename H>
-void wdHashTableBase<K, V, H>::SetFlags(wdUInt32 uiEntryIndex, wdUInt32 uiFlags)
+void nsHashTableBase<K, V, H>::SetFlags(nsUInt32 uiEntryIndex, nsUInt32 uiFlags)
 {
-#if WD_ENABLED(WD_HASHTABLE_USE_BITFLAGS)
-  const wdUInt32 uiIndex = uiEntryIndex / 16;
-  const wdUInt32 uiSubIndex = (uiEntryIndex & 15) * 2;
-  WD_ASSERT_DEBUG(uiIndex < GetFlagsCapacity(), "Out of bounds access");
+#if NS_ENABLED(NS_HASHTABLE_USE_BITFLAGS)
+  const nsUInt32 uiIndex = uiEntryIndex / 16;
+  const nsUInt32 uiSubIndex = (uiEntryIndex & 15) * 2;
+  NS_ASSERT_DEBUG(uiIndex < GetFlagsCapacity(), "Out of bounds access");
   m_pEntryFlags[uiIndex] &= ~(FLAGS_MASK << uiSubIndex);
   m_pEntryFlags[uiIndex] |= (uiFlags << uiSubIndex);
 #else
-  WD_ASSERT_DEV(uiEntryIndex < GetFlagsCapacity(), "Out of bounds access");
+  NS_ASSERT_DEBUG(uiEntryIndex < GetFlagsCapacity(), "Out of bounds access");
   m_pEntryFlags[uiEntryIndex] = uiFlags;
 #endif
 }
 
 template <typename K, typename V, typename H>
-WD_FORCE_INLINE bool wdHashTableBase<K, V, H>::IsFreeEntry(wdUInt32 uiEntryIndex) const
+NS_FORCE_INLINE bool nsHashTableBase<K, V, H>::IsFreeEntry(nsUInt32 uiEntryIndex) const
 {
   return GetFlags(m_pEntryFlags, uiEntryIndex) == FREE_ENTRY;
 }
 
 template <typename K, typename V, typename H>
-WD_FORCE_INLINE bool wdHashTableBase<K, V, H>::IsValidEntry(wdUInt32 uiEntryIndex) const
+NS_FORCE_INLINE bool nsHashTableBase<K, V, H>::IsValidEntry(nsUInt32 uiEntryIndex) const
 {
   return GetFlags(m_pEntryFlags, uiEntryIndex) == VALID_ENTRY;
 }
 
 template <typename K, typename V, typename H>
-WD_FORCE_INLINE bool wdHashTableBase<K, V, H>::IsDeletedEntry(wdUInt32 uiEntryIndex) const
+NS_FORCE_INLINE bool nsHashTableBase<K, V, H>::IsDeletedEntry(nsUInt32 uiEntryIndex) const
 {
   return GetFlags(m_pEntryFlags, uiEntryIndex) == DELETED_ENTRY;
 }
 
 template <typename K, typename V, typename H>
-WD_FORCE_INLINE void wdHashTableBase<K, V, H>::MarkEntryAsFree(wdUInt32 uiEntryIndex)
+NS_FORCE_INLINE void nsHashTableBase<K, V, H>::MarkEntryAsFree(nsUInt32 uiEntryIndex)
 {
   SetFlags(uiEntryIndex, FREE_ENTRY);
 }
 
 template <typename K, typename V, typename H>
-WD_FORCE_INLINE void wdHashTableBase<K, V, H>::MarkEntryAsValid(wdUInt32 uiEntryIndex)
+NS_FORCE_INLINE void nsHashTableBase<K, V, H>::MarkEntryAsValid(nsUInt32 uiEntryIndex)
 {
   SetFlags(uiEntryIndex, VALID_ENTRY);
 }
 
 template <typename K, typename V, typename H>
-WD_FORCE_INLINE void wdHashTableBase<K, V, H>::MarkEntryAsDeleted(wdUInt32 uiEntryIndex)
+NS_FORCE_INLINE void nsHashTableBase<K, V, H>::MarkEntryAsDeleted(nsUInt32 uiEntryIndex)
 {
   SetFlags(uiEntryIndex, DELETED_ENTRY);
 }
 
 
 template <typename K, typename V, typename H, typename A>
-wdHashTable<K, V, H, A>::wdHashTable()
-  : wdHashTableBase<K, V, H>(A::GetAllocator())
+nsHashTable<K, V, H, A>::nsHashTable()
+  : nsHashTableBase<K, V, H>(A::GetAllocator())
 {
 }
 
 template <typename K, typename V, typename H, typename A>
-wdHashTable<K, V, H, A>::wdHashTable(wdAllocatorBase* pAllocator)
-  : wdHashTableBase<K, V, H>(pAllocator)
+nsHashTable<K, V, H, A>::nsHashTable(nsAllocator* pAllocator)
+  : nsHashTableBase<K, V, H>(pAllocator)
 {
 }
 
 template <typename K, typename V, typename H, typename A>
-wdHashTable<K, V, H, A>::wdHashTable(const wdHashTable<K, V, H, A>& other)
-  : wdHashTableBase<K, V, H>(other, A::GetAllocator())
+nsHashTable<K, V, H, A>::nsHashTable(const nsHashTable<K, V, H, A>& other)
+  : nsHashTableBase<K, V, H>(other, A::GetAllocator())
 {
 }
 
 template <typename K, typename V, typename H, typename A>
-wdHashTable<K, V, H, A>::wdHashTable(const wdHashTableBase<K, V, H>& other)
-  : wdHashTableBase<K, V, H>(other, A::GetAllocator())
+nsHashTable<K, V, H, A>::nsHashTable(const nsHashTableBase<K, V, H>& other)
+  : nsHashTableBase<K, V, H>(other, A::GetAllocator())
 {
 }
 
 template <typename K, typename V, typename H, typename A>
-wdHashTable<K, V, H, A>::wdHashTable(wdHashTable<K, V, H, A>&& other)
-  : wdHashTableBase<K, V, H>(std::move(other), other.GetAllocator())
+nsHashTable<K, V, H, A>::nsHashTable(nsHashTable<K, V, H, A>&& other)
+  : nsHashTableBase<K, V, H>(std::move(other), other.GetAllocator())
 {
 }
 
 template <typename K, typename V, typename H, typename A>
-wdHashTable<K, V, H, A>::wdHashTable(wdHashTableBase<K, V, H>&& other)
-  : wdHashTableBase<K, V, H>(std::move(other), other.GetAllocator())
+nsHashTable<K, V, H, A>::nsHashTable(nsHashTableBase<K, V, H>&& other)
+  : nsHashTableBase<K, V, H>(std::move(other), other.GetAllocator())
 {
 }
 
 template <typename K, typename V, typename H, typename A>
-void wdHashTable<K, V, H, A>::operator=(const wdHashTable<K, V, H, A>& rhs)
+void nsHashTable<K, V, H, A>::operator=(const nsHashTable<K, V, H, A>& rhs)
 {
-  wdHashTableBase<K, V, H>::operator=(rhs);
+  nsHashTableBase<K, V, H>::operator=(rhs);
 }
 
 template <typename K, typename V, typename H, typename A>
-void wdHashTable<K, V, H, A>::operator=(const wdHashTableBase<K, V, H>& rhs)
+void nsHashTable<K, V, H, A>::operator=(const nsHashTableBase<K, V, H>& rhs)
 {
-  wdHashTableBase<K, V, H>::operator=(rhs);
+  nsHashTableBase<K, V, H>::operator=(rhs);
 }
 
 template <typename K, typename V, typename H, typename A>
-void wdHashTable<K, V, H, A>::operator=(wdHashTable<K, V, H, A>&& rhs)
+void nsHashTable<K, V, H, A>::operator=(nsHashTable<K, V, H, A>&& rhs)
 {
-  wdHashTableBase<K, V, H>::operator=(std::move(rhs));
+  nsHashTableBase<K, V, H>::operator=(std::move(rhs));
 }
 
 template <typename K, typename V, typename H, typename A>
-void wdHashTable<K, V, H, A>::operator=(wdHashTableBase<K, V, H>&& rhs)
+void nsHashTable<K, V, H, A>::operator=(nsHashTableBase<K, V, H>&& rhs)
 {
-  wdHashTableBase<K, V, H>::operator=(std::move(rhs));
+  nsHashTableBase<K, V, H>::operator=(std::move(rhs));
 }
 
 template <typename KeyType, typename ValueType, typename Hasher>
-void wdHashTableBase<KeyType, ValueType, Hasher>::Swap(wdHashTableBase<KeyType, ValueType, Hasher>& other)
+void nsHashTableBase<KeyType, ValueType, Hasher>::Swap(nsHashTableBase<KeyType, ValueType, Hasher>& other)
 {
-  wdMath::Swap(this->m_pEntries, other.m_pEntries);
-  wdMath::Swap(this->m_pEntryFlags, other.m_pEntryFlags);
-  wdMath::Swap(this->m_uiCount, other.m_uiCount);
-  wdMath::Swap(this->m_uiCapacity, other.m_uiCapacity);
-  wdMath::Swap(this->m_pAllocator, other.m_pAllocator);
+  nsMath::Swap(this->m_pEntries, other.m_pEntries);
+  nsMath::Swap(this->m_pEntryFlags, other.m_pEntryFlags);
+  nsMath::Swap(this->m_uiCount, other.m_uiCount);
+  nsMath::Swap(this->m_uiCapacity, other.m_uiCapacity);
+  nsMath::Swap(this->m_pAllocator, other.m_pAllocator);
 }

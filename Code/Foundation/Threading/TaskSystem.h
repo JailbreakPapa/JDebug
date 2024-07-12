@@ -8,7 +8,7 @@
 
 /// \brief This system allows to automatically distribute tasks onto a number of worker threads.
 ///
-/// By deriving from wdTask you can create your own task types. These can be executed through this task system.
+/// By deriving from nsTask you can create your own task types. These can be executed through this task system.
 /// You can run a single task using the 'StartSingleTask' function. For more complex setups, it is possible
 /// to create groups of tasks, which can have interdependencies. This should be used to group all
 /// tasks that belong to one system and need to be done before another system runs. For example you could group
@@ -21,7 +21,7 @@
 ///
 /// Note that it is crucial to call 'FinishFrameTasks' once per frame, otherwise tasks that need to be executed on the
 /// main thread are never executed.
-class WD_FOUNDATION_DLL wdTaskSystem
+class NS_FOUNDATION_DLL nsTaskSystem
 {
 public:
   /// \name Managing Tasks
@@ -30,13 +30,13 @@ public:
 public:
   /// \brief A helper function to insert a single task into the system and start it right away. Returns ID of the Group into which the task
   /// has been put.
-  static wdTaskGroupID StartSingleTask(const wdSharedPtr<wdTask>& pTask, wdTaskPriority::Enum priority,
-    wdOnTaskGroupFinishedCallback callback = wdOnTaskGroupFinishedCallback()); // [tested]
+  static nsTaskGroupID StartSingleTask(const nsSharedPtr<nsTask>& pTask, nsTaskPriority::Enum priority,
+    nsOnTaskGroupFinishedCallback callback = nsOnTaskGroupFinishedCallback()); // [tested]
 
   /// \brief A helper function to insert a single task into the system and start it right away. Returns ID of the Group into which the task
   /// has been put. This overload allows to additionally specify a single dependency.
-  static wdTaskGroupID StartSingleTask(const wdSharedPtr<wdTask>& pTask, wdTaskPriority::Enum priority, wdTaskGroupID dependency,
-    wdOnTaskGroupFinishedCallback callback = wdOnTaskGroupFinishedCallback()); // [tested]
+  static nsTaskGroupID StartSingleTask(const nsSharedPtr<nsTask>& pTask, nsTaskPriority::Enum priority, nsTaskGroupID dependency,
+    nsOnTaskGroupFinishedCallback callback = nsOnTaskGroupFinishedCallback()); // [tested]
 
   /// \brief Call this function once at the end of a frame. It will ensure that all tasks for 'this frame' get finished properly.
   ///
@@ -58,11 +58,11 @@ public:
 
   /// \brief This function will try to remove the given task from the work queue, to prevent it from being executed.
   ///
-  /// The function will return WD_SUCCESS, if the task could be removed and thus its execution could be prevented.
-  /// It will also return WD_SUCCESS, if the task was already finished and nothing needed to be done.
+  /// The function will return NS_SUCCESS, if the task could be removed and thus its execution could be prevented.
+  /// It will also return NS_SUCCESS, if the task was already finished and nothing needed to be done.
   /// Tasks that are removed without execution will still be marked as 'finished' and dependent tasks will be scheduled.
   ///
-  /// WD_FAILURE is returned, if the task had already been started and thus could not be prevented from running.
+  /// NS_FAILURE is returned, if the task had already been started and thus could not be prevented from running.
   ///
   /// In case of failure, \a bWaitForIt determines whether 'WaitForTask' is called (with all its consequences),
   /// or whether the function will return immediately.
@@ -72,36 +72,36 @@ public:
   /// Therefore when bWaitForIt is true, this function might block for a very long time.
   /// It is advised to implement tasks that need to be canceled regularly (e.g. path searches for units that might die)
   /// in a way that allows for quick canceling.
-  static wdResult CancelTask(const wdSharedPtr<wdTask>& pTask, wdOnTaskRunning::Enum onTaskRunning = wdOnTaskRunning::WaitTillFinished); // [tested]
+  static nsResult CancelTask(const nsSharedPtr<nsTask>& pTask, nsOnTaskRunning::Enum onTaskRunning = nsOnTaskRunning::WaitTillFinished); // [tested]
 
   struct TaskData
   {
-    wdSharedPtr<wdTask> m_pTask;
-    wdTaskGroup* m_pBelongsToGroup = nullptr;
-    wdUInt32 m_uiInvocation = 0;
+    nsSharedPtr<nsTask> m_pTask;
+    nsTaskGroup* m_pBelongsToGroup = nullptr;
+    nsUInt32 m_uiInvocation = 0;
   };
 
 private:
   /// \brief Searches for a task of priority between \a FirstPriority and \a LastPriority (inclusive).
-  static TaskData GetNextTask(wdTaskPriority::Enum FirstPriority, wdTaskPriority::Enum LastPriority, bool bOnlyTasksThatNeverWait,
-    const wdTaskGroupID& WaitingForGroup, wdAtomicInteger32* pWorkerState);
+  static TaskData GetNextTask(nsTaskPriority::Enum FirstPriority, nsTaskPriority::Enum LastPriority, bool bOnlyTasksThatNeverWait,
+    const nsTaskGroupID& WaitingForGroup, nsAtomicInteger32* pWorkerState);
 
   /// \brief Executes some task of priority between \a FirstPriority and \a LastPriority (inclusive). Returns true, if any such task was available.
-  static bool ExecuteTask(wdTaskPriority::Enum FirstPriority, wdTaskPriority::Enum LastPriority, bool bOnlyTasksThatNeverWait,
-    const wdTaskGroupID& WaitingForGroup, wdAtomicInteger32* pWorkerState);
+  static bool ExecuteTask(nsTaskPriority::Enum FirstPriority, nsTaskPriority::Enum LastPriority, bool bOnlyTasksThatNeverWait,
+    const nsTaskGroupID& WaitingForGroup, nsAtomicInteger32* pWorkerState);
 
   /// \brief Called whenever a task has been finished/canceled. Makes sure that groups are marked as finished when all tasks are done.
-  static void TaskHasFinished(wdSharedPtr<wdTask>&& pTask, wdTaskGroup* pGroup);
+  static void TaskHasFinished(nsSharedPtr<nsTask>&& pTask, nsTaskGroup* pGroup);
 
   /// \brief Moves all 'next frame' tasks into the 'this frame' queues.
   static void ReprioritizeFrameTasks();
 
   /// \brief Executes tasks of priority 'SomeFrameMainThread', as long as the last duration between frames is no longer than fSmoothFrameMS.
-  static void ExecuteSomeFrameTasks(wdTime smoothFrameTime);
+  static void ExecuteSomeFrameTasks(nsTime smoothFrameTime);
 
 
   /// \brief Helps executing tasks that are suitable for the calling thread. Returns true if a task was found and executed.
-  static bool HelpExecutingTasks(const wdTaskGroupID& WaitingForGroup);
+  static bool HelpExecutingTasks(const nsTaskGroupID& WaitingForGroup);
 
   ///@}
 
@@ -114,11 +114,11 @@ public:
   ///
   /// All tasks that are added to this group will be run with the same given \a Priority.
   /// Once all tasks in the group are finished and thus the group is finished, an optional \a Callback can be executed.
-  static wdTaskGroupID CreateTaskGroup(
-    wdTaskPriority::Enum priority, wdOnTaskGroupFinishedCallback callback = wdOnTaskGroupFinishedCallback()); // [tested]
+  static nsTaskGroupID CreateTaskGroup(
+    nsTaskPriority::Enum priority, nsOnTaskGroupFinishedCallback callback = nsOnTaskGroupFinishedCallback()); // [tested]
 
   /// \brief Adds a task to the given task group. The group must not yet have been started.
-  static void AddTaskToGroup(wdTaskGroupID group, const wdSharedPtr<wdTask>& pTask); // [tested]
+  static void AddTaskToGroup(nsTaskGroupID group, const nsSharedPtr<nsTask>& pTask); // [tested]
 
   /// \brief Adds a dependency on another group to \a Group. This means \a Group will not be execute before \a DependsOn has finished.
   ///
@@ -128,37 +128,37 @@ public:
   /// its dependencies are fulfilled. So you might add a long running task and a short task which depends on it, but the system will
   /// not block at the end of the frame, to wait for the long running task (to finish the short task thereafter), as that short task
   /// won't get scheduled for execution, at all, until all its dependencies are actually finished.
-  static void AddTaskGroupDependency(wdTaskGroupID group, wdTaskGroupID dependsOn); // [tested]
+  static void AddTaskGroupDependency(nsTaskGroupID group, nsTaskGroupID dependsOn); // [tested]
 
   /// \brief Same as AddTaskGroupDependency() but batches multiple dependency additions
-  static void AddTaskGroupDependencyBatch(wdArrayPtr<const wdTaskGroupDependency> batch);
+  static void AddTaskGroupDependencyBatch(nsArrayPtr<const nsTaskGroupDependency> batch);
 
   /// \brief Starts the task group. After this no further modifications on the group (new tasks or dependencies) are allowed.
-  static void StartTaskGroup(wdTaskGroupID group); // [tested]
+  static void StartTaskGroup(nsTaskGroupID group); // [tested]
 
   /// \brief Same as StartTaskGroup() but batches multiple actions
-  static void StartTaskGroupBatch(wdArrayPtr<const wdTaskGroupID> batch);
+  static void StartTaskGroupBatch(nsArrayPtr<const nsTaskGroupID> batch);
 
   /// \brief Returns whether the given \a Group id refers to a task group that has been finished already.
   ///
   /// There is no time frame in which group IDs are valid. You may call this function at any time, even 10 minutes later,
   /// and it will correctly determine the results.
-  static bool IsTaskGroupFinished(wdTaskGroupID group); // [tested]
+  static bool IsTaskGroupFinished(nsTaskGroupID group); // [tested]
 
   /// \brief Cancels all the tasks in the given group.
   ///
-  /// WD_SUCCESS is returned, if all tasks were already finished or could be removed without waiting for any of them.
-  /// WD_FAILURE is returned, if at least one task was being processed by another thread and could not be removed without waiting.
+  /// NS_SUCCESS is returned, if all tasks were already finished or could be removed without waiting for any of them.
+  /// NS_FAILURE is returned, if at least one task was being processed by another thread and could not be removed without waiting.
   /// If bWaitForIt is false, the function cancels all tasks, but returns without blocking, even if not all tasks have been finished.
   /// If bWaitForIt is true, the function returns only after it is guaranteed that all tasks are properly terminated.
-  static wdResult CancelGroup(wdTaskGroupID group, wdOnTaskRunning::Enum onTaskRunning = wdOnTaskRunning::WaitTillFinished); // [tested]
+  static nsResult CancelGroup(nsTaskGroupID group, nsOnTaskRunning::Enum onTaskRunning = nsOnTaskRunning::WaitTillFinished); // [tested]
 
   /// \brief Blocks until all tasks in the given group have finished.
   ///
   /// If you need to wait for some other task to finish, this should always be the preferred method to do so.
   /// WaitForGroup will put the current thread to sleep and use thread signals to only wake it up again once the group is indeed
   /// finished. This is the most efficient way to wait for a task.
-  static void WaitForGroup(wdTaskGroupID group); // [tested]
+  static void WaitForGroup(nsTaskGroupID group); // [tested]
 
   /// \brief Blocks the current thread until the given delegate returns true.
   ///
@@ -167,14 +167,14 @@ public:
   /// WaitForCondition() will NOT put the current thread to sleep, but instead keep polling the delegate. However, in between,
   /// it will try to execute other tasks and if there are no tasks that it could take on, it will wake up another worker thread
   /// thus guaranteeing, that there are enough unblocked threads in the system to do all the work.
-  static void WaitForCondition(wdDelegate<bool()> condition);
+  static void WaitForCondition(nsDelegate<bool()> condition);
 
 private:
   /// \brief Takes all the tasks in the given group and schedules them for execution, by inserting them into the proper task lists.
-  static void ScheduleGroupTasks(wdTaskGroup* pGroup, bool bHighPriority);
+  static void ScheduleGroupTasks(nsTaskGroup* pGroup, bool bHighPriority);
 
   /// \brief Is called whenever a dependency of pGroup has finished. Once all dependencies are finished, the group's tasks will get scheduled.
-  static void DependencyHasFinished(wdTaskGroup* pGroup);
+  static void DependencyHasFinished(nsTaskGroup* pGroup);
 
   ///@}
 
@@ -185,7 +185,7 @@ public:
   /// \brief Sets the number of threads to use for the different task categories.
   ///
   /// \a uiShortTasks and \a uiLongTasks must be at least 1 and should not exceed the number of available CPU cores.
-  /// There will always be exactly one additional thread for file access tasks (wdTaskPriority::FileAccess).
+  /// There will always be exactly one additional thread for file access tasks (nsTaskPriority::FileAccess).
   ///
   /// If \a uiShortTasks or \a uiLongTasks is smaller than 1, a default number of threads will be used for that type of work.
   /// This number of threads depends on the number of available CPU cores.
@@ -193,44 +193,44 @@ public:
   /// this default configuration.
   /// Unless you have a good idea how to set up the number of worker threads to make good use of the available cores,
   /// it is a good idea to just use the default settings.
-  static void SetWorkerThreadCount(wdInt32 iShortTasks = -1, wdInt32 iLongTasks = -1); // [tested]
+  static void SetWorkerThreadCount(nsInt32 iShortTasks = -1, nsInt32 iLongTasks = -1); // [tested]
 
   /// \brief Returns the maximum number of threads that should work on the given type of task at the same time.
-  static wdUInt32 GetWorkerThreadCount(wdWorkerThreadType::Enum type);
+  static nsUInt32 GetWorkerThreadCount(nsWorkerThreadType::Enum type);
 
   /// \brief Returns the number of threads that have been allocated to potentially work on the given type of task.
   ///
   /// CAREFUL! This is not the number of threads that will be active at the same time. Use GetWorkerThreadCount() for that.
   /// This is the maximum number of threads that may jump in, if too many threads are blocked. This number will change dynamically
   /// at runtime to prevent deadlocks and it can grow very, very large.
-  static wdUInt32 GetNumAllocatedWorkerThreads(wdWorkerThreadType::Enum type);
+  static nsUInt32 GetNumAllocatedWorkerThreads(nsWorkerThreadType::Enum type);
 
   /// \brief Returns the (thread local) type of tasks that would be executed on this thread
-  static wdWorkerThreadType::Enum GetCurrentThreadWorkerType();
+  static nsWorkerThreadType::Enum GetCurrentThreadWorkerType();
 
   /// \brief Returns the utilization (0.0 to 1.0) of the given thread. Note: This will only be valid, if FinishFrameTasks() is called once
   /// per frame.
   ///
   /// Also optionally returns the number of tasks that were finished during the last frame.
-  static double GetThreadUtilization(wdWorkerThreadType::Enum type, wdUInt32 uiThreadIndex, wdUInt32* pNumTasksExecuted = nullptr);
+  static double GetThreadUtilization(nsWorkerThreadType::Enum type, nsUInt32 uiThreadIndex, nsUInt32* pNumTasksExecuted = nullptr);
 
   /// \brief [internal] Wakes up or allocates up to \a uiNumThreads, unless enough threads are currently active and not blocked
-  static void WakeUpThreads(wdWorkerThreadType::Enum type, wdUInt32 uiNumThreads);
+  static void WakeUpThreads(nsWorkerThreadType::Enum type, nsUInt32 uiNumThreads);
 
 private:
-  friend class wdTaskWorkerThread;
+  friend class nsTaskWorkerThread;
 
   /// \brief Allocates \a uiAddThreads additional threads of \a type
-  static void AllocateThreads(wdWorkerThreadType::Enum type, wdUInt32 uiAddThreads);
+  static void AllocateThreads(nsWorkerThreadType::Enum type, nsUInt32 uiAddThreads);
 
   /// \brief Shuts down all worker threads. Does NOT finish the remaining tasks that were not started yet. Does not clear them either, though.
   static void StopWorkerThreads();
 
   /// \brief Uses a thread local variable to know the current thread type and to decide the range of task priorities that it may execute
-  static void DetermineTasksToExecuteOnThread(wdTaskPriority::Enum& out_FirstPriority, wdTaskPriority::Enum& out_LastPriority);
+  static void DetermineTasksToExecuteOnThread(nsTaskPriority::Enum& out_FirstPriority, nsTaskPriority::Enum& out_LastPriority);
 
 private:
-  static wdUniquePtr<wdTaskSystemThreadState> s_pThreadState;
+  static nsUniquePtr<nsTaskSystemThreadState> s_pThreadState;
 
   ///@}
 
@@ -239,20 +239,20 @@ private:
 
 public:
   /// A helper function to process task items in a parallel fashion by having per-worker index ranges generated.
-  static void ParallelForIndexed(wdUInt32 uiStartIndex, wdUInt32 uiNumItems, wdParallelForIndexedFunction32 taskCallback,
-    const char* szTaskName = nullptr, const wdParallelForParams& params = wdParallelForParams());
+  static void ParallelForIndexed(nsUInt32 uiStartIndex, nsUInt32 uiNumItems, nsParallelForIndexedFunction32 taskCallback,
+    const char* szTaskName = nullptr, nsTaskNesting taskNesting = nsTaskNesting::Never, const nsParallelForParams& params = nsParallelForParams());
 
   /// A helper function to process task items in a parallel fashion by having per-worker index ranges generated.
-  static void ParallelForIndexed(wdUInt64 uiStartIndex, wdUInt64 uiNumItems, wdParallelForIndexedFunction64 taskCallback,
-    const char* szTaskName = nullptr, const wdParallelForParams& params = wdParallelForParams());
+  static void ParallelForIndexed(nsUInt64 uiStartIndex, nsUInt64 uiNumItems, nsParallelForIndexedFunction64 taskCallback,
+    const char* szTaskName = nullptr, nsTaskNesting taskNesting = nsTaskNesting::Never, const nsParallelForParams& params = nsParallelForParams());
 
   /// A helper function to process task items in a parallel fashion by generating per-worker sub-ranges
   /// from an initial item array pointer.
   /// Given an array pointer 'taskItems' with elements of type ElemType, the following invocations are possible:
-  ///   - ParallelFor(taskItems, [](wdArrayPtr<ElemType> taskItemSlice) { });
+  ///   - ParallelFor(taskItems, [](nsArrayPtr<ElemType> taskItemSlice) { });
   template <typename ElemType, typename Callback>
   static void ParallelFor(
-    wdArrayPtr<ElemType> taskItems, Callback taskCallback, const char* szTaskName = nullptr, const wdParallelForParams& params = wdParallelForParams());
+    nsArrayPtr<ElemType> taskItems, Callback taskCallback, const char* szTaskName = nullptr, const nsParallelForParams& params = nsParallelForParams());
   /// A helper function to process task items in a parallel fashion and one-by-one (without global index).
   /// Given an array pointer 'taskItems' with elements of type ElemType, the following invocations are possible:
   ///   - ParallelFor(taskItems, [](ElemType taskItem) { });
@@ -260,20 +260,20 @@ public:
   ///   - ParallelFor(taskItems, [](const ElemType& taskItem) { });
   template <typename ElemType, typename Callback>
   static void ParallelForSingle(
-    wdArrayPtr<ElemType> taskItems, Callback taskCallback, const char* szTaskName = nullptr, const wdParallelForParams& params = wdParallelForParams());
+    nsArrayPtr<ElemType> taskItems, Callback taskCallback, const char* szTaskName = nullptr, const nsParallelForParams& params = nsParallelForParams());
   /// A helper function to process task items in a parallel fashion and one-by-one (with global index).
   /// Given an array pointer 'taskItems' with elements of type ElemType, the following invocations are possible:
-  ///   - ParallelFor(taskItems, [](wdUInt32 globalTaskItemIndex, ElemType taskItem) { });
-  ///   - ParallelFor(taskItems, [](wdUInt32 globalTaskItemIndex, ElemType& taskItem) { });
-  ///   - ParallelFor(taskItems, [](wdUInt32 globalTaskItemIndex, const ElemType& taskItem) { });
+  ///   - ParallelFor(taskItems, [](nsUInt32 globalTaskItemIndex, ElemType taskItem) { });
+  ///   - ParallelFor(taskItems, [](nsUInt32 globalTaskItemIndex, ElemType& taskItem) { });
+  ///   - ParallelFor(taskItems, [](nsUInt32 globalTaskItemIndex, const ElemType& taskItem) { });
   template <typename ElemType, typename Callback>
   static void ParallelForSingleIndex(
-    wdArrayPtr<ElemType> taskItems, Callback taskCallback, const char* szTaskName = nullptr, const wdParallelForParams& params = wdParallelForParams());
+    nsArrayPtr<ElemType> taskItems, Callback taskCallback, const char* szTaskName = nullptr, const nsParallelForParams& params = nsParallelForParams());
 
 private:
   template <typename ElemType>
   static void ParallelForInternal(
-    wdArrayPtr<ElemType> taskItems, wdParallelForFunction<ElemType> taskCallback, const char* taskName, const wdParallelForParams& params);
+    nsArrayPtr<ElemType> taskItems, nsParallelForFunction<ElemType> taskCallback, const char* taskName, const nsParallelForParams& params);
 
   ///@}
 
@@ -281,8 +281,8 @@ private:
   ///@{
 
 public:
-  /// \brief Writes the internal state of the wdTaskSystem as a DGML graph.
-  static void WriteStateSnapshotToDGML(wdDGMLGraph& ref_graph);
+  /// \brief Writes the internal state of the nsTaskSystem as a DGML graph.
+  static void WriteStateSnapshotToDGML(nsDGMLGraph& ref_graph);
 
   /// \brief Convenience function to write the task graph snapshot to a file. If no path is given, the file is written to
   /// ":appdata/TaskGraphs/__date__.dgml"
@@ -298,19 +298,19 @@ public:
   /// \brief Sets the target frame time that is supposed to not be exceeded.
   ///
   /// \see FinishFrameTasks() for more details.
-  static void SetTargetFrameTime(wdTime targetFrameTime = wdTime::Seconds(1.0 / 40.0) /* 40 FPS -> 25 ms */);
+  static void SetTargetFrameTime(nsTime targetFrameTime = nsTime::MakeFromSeconds(1.0 / 40.0) /* 40 FPS -> 25 ms */);
 
 private:
-  WD_MAKE_SUBSYSTEM_STARTUP_FRIEND(Foundation, TaskSystem);
+  NS_MAKE_SUBSYSTEM_STARTUP_FRIEND(Foundation, TaskSystem);
 
   static void Startup();
   static void Shutdown();
 
 private:
   /// One mutex to rule them all.
-  static wdMutex s_TaskSystemMutex;
+  static nsMutex s_TaskSystemMutex;
 
-  static wdUniquePtr<wdTaskSystemState> s_pState;
+  static nsUniquePtr<nsTaskSystemState> s_pState;
 
   ///@}
 };

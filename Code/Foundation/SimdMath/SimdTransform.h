@@ -2,29 +2,34 @@
 
 #include <Foundation/SimdMath/SimdQuat.h>
 
-class WD_FOUNDATION_DLL wdSimdTransform
+class NS_FOUNDATION_DLL nsSimdTransform
 {
 public:
-  WD_DECLARE_POD_TYPE();
+  NS_DECLARE_POD_TYPE();
 
   /// \brief Default constructor: Does not do any initialization.
-  wdSimdTransform(); // [tested]
+  nsSimdTransform(); // [tested]
 
   /// \brief Sets position, rotation and scale.
-  explicit wdSimdTransform(const wdSimdVec4f& vPosition, const wdSimdQuat& qRotation = wdSimdQuat::IdentityQuaternion(),
-    const wdSimdVec4f& vScale = wdSimdVec4f(1.0f)); // [tested]
+  explicit nsSimdTransform(const nsSimdVec4f& vPosition, const nsSimdQuat& qRotation = nsSimdQuat::MakeIdentity(), const nsSimdVec4f& vScale = nsSimdVec4f(1.0f)); // [tested]
 
   /// \brief Sets rotation.
-  explicit wdSimdTransform(const wdSimdQuat& qRotation); // [tested]
+  explicit nsSimdTransform(const nsSimdQuat& qRotation); // [tested]
 
-  /// \brief Sets the position to be zero and the rotation to identity.
-  void SetIdentity(); // [tested]
+  /// \brief Creates a transform from the given position, rotation and scale.
+  [[nodiscard]] static nsSimdTransform Make(const nsSimdVec4f& vPosition, const nsSimdQuat& qRotation = nsSimdQuat::MakeIdentity(), const nsSimdVec4f& vScale = nsSimdVec4f(1.0f)); // [tested]
 
-  /// \brief Returns an Identity Transform.
-  static wdSimdTransform IdentityTransform(); // [tested]
+  /// \brief Creates an identity transform.
+  [[nodiscard]] static nsSimdTransform MakeIdentity(); // [tested]
+
+  /// \brief Creates a transform that is the local transformation needed to get from the parent's transform to the child's.
+  [[nodiscard]] static nsSimdTransform MakeLocalTransform(const nsSimdTransform& globalTransformParent, const nsSimdTransform& globalTransformChild); // [tested]
+
+  /// \brief Creates a transform that is the global transform, that is reached by applying the child's local transform to the parent's global one.
+  [[nodiscard]] static nsSimdTransform MakeGlobalTransform(const nsSimdTransform& globalTransformParent, const nsSimdTransform& localTransformChild); // [tested]
 
   /// \brief Returns the scale component with maximum magnitude.
-  wdSimdFloat GetMaxScale() const; // [tested]
+  nsSimdFloat GetMaxScale() const; // [tested]
 
   /// \brief Returns whether this transform contains negative scaling aka mirroring.
   bool ContainsNegativeScale() const;
@@ -34,67 +39,59 @@ public:
 
 public:
   /// \brief Equality Check with epsilon
-  bool IsEqual(const wdSimdTransform& rhs, const wdSimdFloat& fEpsilon) const; // [tested]
+  bool IsEqual(const nsSimdTransform& rhs, const nsSimdFloat& fEpsilon) const; // [tested]
 
 public:
   /// \brief Inverts this transform.
   void Invert(); // [tested]
 
   /// \brief Returns the inverse of this transform.
-  wdSimdTransform GetInverse() const; // [tested]
-
-public:
-  /// \brief Sets this transform to be the local transformation needed to get from the parent's transform to the child's.
-  void SetLocalTransform(const wdSimdTransform& globalTransformParent, const wdSimdTransform& globalTransformChild); // [tested]
-
-  /// \brief Sets this transform to the global transform, that is reached by applying the child's local transform to the parent's global
-  /// one.
-  void SetGlobalTransform(const wdSimdTransform& globalTransformParent, const wdSimdTransform& localTransformChild); // [tested]
+  nsSimdTransform GetInverse() const; // [tested]
 
   /// \brief Returns the transformation as a matrix.
-  wdSimdMat4f GetAsMat4() const; // [tested]
+  nsSimdMat4f GetAsMat4() const;                                            // [tested]
 
 public:
-  wdSimdVec4f TransformPosition(const wdSimdVec4f& v) const;  // [tested]
-  wdSimdVec4f TransformDirection(const wdSimdVec4f& v) const; // [tested]
+  [[nodiscard]] nsSimdVec4f TransformPosition(const nsSimdVec4f& v) const;  // [tested]
+  [[nodiscard]] nsSimdVec4f TransformDirection(const nsSimdVec4f& v) const; // [tested]
 
   /// \brief Concatenates the two transforms. This is the same as a matrix multiplication, thus not commutative.
-  void operator*=(const wdSimdTransform& other); // [tested]
+  void operator*=(const nsSimdTransform& other); // [tested]
 
   /// \brief Multiplies \a q into the rotation component, thus rotating the entire transformation.
-  void operator*=(const wdSimdQuat& q); // [tested]
+  void operator*=(const nsSimdQuat& q);  // [tested]
 
-  void operator+=(const wdSimdVec4f& v); // [tested]
-  void operator-=(const wdSimdVec4f& v); // [tested]
+  void operator+=(const nsSimdVec4f& v); // [tested]
+  void operator-=(const nsSimdVec4f& v); // [tested]
 
 public:
-  wdSimdVec4f m_Position;
-  wdSimdQuat m_Rotation;
-  wdSimdVec4f m_Scale;
+  nsSimdVec4f m_Position;
+  nsSimdQuat m_Rotation;
+  nsSimdVec4f m_Scale;
 };
 
 // *** free functions ***
 
 /// \brief Transforms the vector v by the transform.
-WD_ALWAYS_INLINE const wdSimdVec4f operator*(const wdSimdTransform& t, const wdSimdVec4f& v); // [tested]
+NS_ALWAYS_INLINE const nsSimdVec4f operator*(const nsSimdTransform& t, const nsSimdVec4f& v); // [tested]
 
 /// \brief Rotates the transform by the given quaternion. Multiplies q from the left with t.
-WD_ALWAYS_INLINE const wdSimdTransform operator*(const wdSimdQuat& q, const wdSimdTransform& t); // [tested]
+NS_ALWAYS_INLINE const nsSimdTransform operator*(const nsSimdQuat& q, const nsSimdTransform& t); // [tested]
 
 /// \brief Rotates the transform by the given quaternion. Multiplies q from the right with t.
-WD_ALWAYS_INLINE const wdSimdTransform operator*(const wdSimdTransform& t, const wdSimdQuat& q); // [tested]
+NS_ALWAYS_INLINE const nsSimdTransform operator*(const nsSimdTransform& t, const nsSimdQuat& q); // [tested]
 
-/// \brief Translates the wdSimdTransform by the vector. This will move the object in global space.
-WD_ALWAYS_INLINE const wdSimdTransform operator+(const wdSimdTransform& t, const wdSimdVec4f& v); // [tested]
+/// \brief Translates the nsSimdTransform by the vector. This will move the object in global space.
+NS_ALWAYS_INLINE const nsSimdTransform operator+(const nsSimdTransform& t, const nsSimdVec4f& v); // [tested]
 
-/// \brief Translates the wdSimdTransform by the vector. This will move the object in global space.
-WD_ALWAYS_INLINE const wdSimdTransform operator-(const wdSimdTransform& t, const wdSimdVec4f& v); // [tested]
+/// \brief Translates the nsSimdTransform by the vector. This will move the object in global space.
+NS_ALWAYS_INLINE const nsSimdTransform operator-(const nsSimdTransform& t, const nsSimdVec4f& v); // [tested]
 
 /// \brief Concatenates the two transforms. This is the same as a matrix multiplication, thus not commutative.
-WD_ALWAYS_INLINE const wdSimdTransform operator*(const wdSimdTransform& lhs, const wdSimdTransform& rhs); // [tested]
+NS_ALWAYS_INLINE const nsSimdTransform operator*(const nsSimdTransform& lhs, const nsSimdTransform& rhs); // [tested]
 
-WD_ALWAYS_INLINE bool operator==(const wdSimdTransform& t1, const wdSimdTransform& t2); // [tested]
-WD_ALWAYS_INLINE bool operator!=(const wdSimdTransform& t1, const wdSimdTransform& t2); // [tested]
+NS_ALWAYS_INLINE bool operator==(const nsSimdTransform& t1, const nsSimdTransform& t2);                   // [tested]
+NS_ALWAYS_INLINE bool operator!=(const nsSimdTransform& t1, const nsSimdTransform& t2);                   // [tested]
 
 
 #include <Foundation/SimdMath/Implementation/SimdTransform_inl.h>

@@ -2,15 +2,15 @@
 
 #include <Foundation/Utilities/Stats.h>
 
-wdMutex wdStats::s_Mutex;
-wdStats::MapType wdStats::s_Stats;
-wdStats::wdEventStats wdStats::s_StatsEvents;
+nsMutex nsStats::s_Mutex;
+nsStats::MapType nsStats::s_Stats;
+nsStats::nsEventStats nsStats::s_StatsEvents;
 
-void wdStats::RemoveStat(const char* szStatName)
+void nsStats::RemoveStat(nsStringView sStatName)
 {
-  WD_LOCK(s_Mutex);
+  NS_LOCK(s_Mutex);
 
-  MapType::Iterator it = s_Stats.Find(szStatName);
+  MapType::Iterator it = s_Stats.Find(sStatName);
 
   if (!it.IsValid())
     return;
@@ -19,17 +19,17 @@ void wdStats::RemoveStat(const char* szStatName)
 
   StatsEventData e;
   e.m_EventType = StatsEventData::Remove;
-  e.m_szStatName = szStatName;
+  e.m_sStatName = sStatName;
 
   s_StatsEvents.Broadcast(e);
 }
 
-void wdStats::SetStat(const char* szStatName, const wdVariant& value)
+void nsStats::SetStat(nsStringView sStatName, const nsVariant& value)
 {
-  WD_LOCK(s_Mutex);
+  NS_LOCK(s_Mutex);
 
   bool bExisted = false;
-  auto it = s_Stats.FindOrAdd(szStatName, &bExisted);
+  auto it = s_Stats.FindOrAdd(sStatName, &bExisted);
 
   if (it.Value() == value)
     return;
@@ -38,11 +38,8 @@ void wdStats::SetStat(const char* szStatName, const wdVariant& value)
 
   StatsEventData e;
   e.m_EventType = bExisted ? StatsEventData::Set : StatsEventData::Add;
-  e.m_szStatName = szStatName;
+  e.m_sStatName = sStatName;
   e.m_NewStatValue = value;
 
   s_StatsEvents.Broadcast(e);
 }
-
-
-WD_STATICLINK_FILE(Foundation, Foundation_Utilities_Implementation_Stats);

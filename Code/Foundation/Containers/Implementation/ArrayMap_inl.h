@@ -1,14 +1,14 @@
 #pragma once
 
 template <typename KEY, typename VALUE>
-inline wdArrayMapBase<KEY, VALUE>::wdArrayMapBase(wdAllocatorBase* pAllocator)
+inline nsArrayMapBase<KEY, VALUE>::nsArrayMapBase(nsAllocator* pAllocator)
   : m_Data(pAllocator)
 {
   m_bSorted = true;
 }
 
 template <typename KEY, typename VALUE>
-inline wdArrayMapBase<KEY, VALUE>::wdArrayMapBase(const wdArrayMapBase& rhs, wdAllocatorBase* pAllocator)
+inline nsArrayMapBase<KEY, VALUE>::nsArrayMapBase(const nsArrayMapBase& rhs, nsAllocator* pAllocator)
   : m_bSorted(rhs.m_bSorted)
   , m_Data(pAllocator)
 {
@@ -16,26 +16,26 @@ inline wdArrayMapBase<KEY, VALUE>::wdArrayMapBase(const wdArrayMapBase& rhs, wdA
 }
 
 template <typename KEY, typename VALUE>
-inline void wdArrayMapBase<KEY, VALUE>::operator=(const wdArrayMapBase& rhs)
+inline void nsArrayMapBase<KEY, VALUE>::operator=(const nsArrayMapBase& rhs)
 {
   m_bSorted = rhs.m_bSorted;
   m_Data = rhs.m_Data;
 }
 
 template <typename KEY, typename VALUE>
-WD_ALWAYS_INLINE wdUInt32 wdArrayMapBase<KEY, VALUE>::GetCount() const
+NS_ALWAYS_INLINE nsUInt32 nsArrayMapBase<KEY, VALUE>::GetCount() const
 {
   return m_Data.GetCount();
 }
 
 template <typename KEY, typename VALUE>
-WD_ALWAYS_INLINE bool wdArrayMapBase<KEY, VALUE>::IsEmpty() const
+NS_ALWAYS_INLINE bool nsArrayMapBase<KEY, VALUE>::IsEmpty() const
 {
   return m_Data.IsEmpty();
 }
 
 template <typename KEY, typename VALUE>
-inline void wdArrayMapBase<KEY, VALUE>::Clear()
+inline void nsArrayMapBase<KEY, VALUE>::Clear()
 {
   m_bSorted = true;
   m_Data.Clear();
@@ -43,7 +43,7 @@ inline void wdArrayMapBase<KEY, VALUE>::Clear()
 
 template <typename KEY, typename VALUE>
 template <typename CompatibleKeyType, typename CompatibleValueType>
-inline wdUInt32 wdArrayMapBase<KEY, VALUE>::Insert(CompatibleKeyType&& key, CompatibleValueType&& value)
+inline nsUInt32 nsArrayMapBase<KEY, VALUE>::Insert(CompatibleKeyType&& key, CompatibleValueType&& value)
 {
   Pair& ref = m_Data.ExpandAndGetRef();
   ref.key = std::forward<CompatibleKeyType>(key);
@@ -53,7 +53,7 @@ inline wdUInt32 wdArrayMapBase<KEY, VALUE>::Insert(CompatibleKeyType&& key, Comp
 }
 
 template <typename KEY, typename VALUE>
-inline void wdArrayMapBase<KEY, VALUE>::Sort() const
+inline void nsArrayMapBase<KEY, VALUE>::Sort() const
 {
   if (m_bSorted)
     return;
@@ -64,19 +64,19 @@ inline void wdArrayMapBase<KEY, VALUE>::Sort() const
 
 template <typename KEY, typename VALUE>
 template <typename CompatibleKeyType>
-wdUInt32 wdArrayMapBase<KEY, VALUE>::Find(const CompatibleKeyType& key) const
+nsUInt32 nsArrayMapBase<KEY, VALUE>::Find(const CompatibleKeyType& key) const
 {
   if (!m_bSorted)
   {
     m_Data.Sort();
   }
 
-  wdUInt32 lb = 0;
-  wdUInt32 ub = m_Data.GetCount();
+  nsUInt32 lb = 0;
+  nsUInt32 ub = m_Data.GetCount();
 
   while (lb < ub)
   {
-    const wdUInt32 middle = lb + ((ub - lb) >> 1);
+    const nsUInt32 middle = lb + ((ub - lb) >> 1);
 
     if (m_Data[middle].key < key)
     {
@@ -92,24 +92,24 @@ wdUInt32 wdArrayMapBase<KEY, VALUE>::Find(const CompatibleKeyType& key) const
     }
   }
 
-  return wdInvalidIndex;
+  return nsInvalidIndex;
 }
 
 template <typename KEY, typename VALUE>
 template <typename CompatibleKeyType>
-wdUInt32 wdArrayMapBase<KEY, VALUE>::LowerBound(const CompatibleKeyType& key) const
+nsUInt32 nsArrayMapBase<KEY, VALUE>::LowerBound(const CompatibleKeyType& key) const
 {
   if (!m_bSorted)
   {
     m_Data.Sort();
   }
 
-  wdUInt32 lb = 0;
-  wdUInt32 ub = m_Data.GetCount();
+  nsUInt32 lb = 0;
+  nsUInt32 ub = m_Data.GetCount();
 
   while (lb < ub)
   {
-    const wdUInt32 middle = lb + ((ub - lb) >> 1);
+    const nsUInt32 middle = lb + ((ub - lb) >> 1);
 
     if (m_Data[middle].key < key)
     {
@@ -122,26 +122,26 @@ wdUInt32 wdArrayMapBase<KEY, VALUE>::LowerBound(const CompatibleKeyType& key) co
   }
 
   if (lb == m_Data.GetCount())
-    return wdInvalidIndex;
+    return nsInvalidIndex;
 
   return lb;
 }
 
 template <typename KEY, typename VALUE>
 template <typename CompatibleKeyType>
-wdUInt32 wdArrayMapBase<KEY, VALUE>::UpperBound(const CompatibleKeyType& key) const
+nsUInt32 nsArrayMapBase<KEY, VALUE>::UpperBound(const CompatibleKeyType& key) const
 {
   if (!m_bSorted)
   {
     m_Data.Sort();
   }
 
-  wdUInt32 lb = 0;
-  wdUInt32 ub = m_Data.GetCount();
+  nsUInt32 lb = 0;
+  nsUInt32 ub = m_Data.GetCount();
 
   while (lb < ub)
   {
-    const wdUInt32 middle = lb + ((ub - lb) >> 1);
+    const nsUInt32 middle = lb + ((ub - lb) >> 1);
 
     if (key < m_Data[middle].key)
     {
@@ -154,52 +154,52 @@ wdUInt32 wdArrayMapBase<KEY, VALUE>::UpperBound(const CompatibleKeyType& key) co
   }
 
   if (ub == m_Data.GetCount())
-    return wdInvalidIndex;
+    return nsInvalidIndex;
 
   return ub;
 }
 
 template <typename KEY, typename VALUE>
-WD_ALWAYS_INLINE const KEY& wdArrayMapBase<KEY, VALUE>::GetKey(wdUInt32 uiIndex) const
+NS_ALWAYS_INLINE const KEY& nsArrayMapBase<KEY, VALUE>::GetKey(nsUInt32 uiIndex) const
 {
   return m_Data[uiIndex].key;
 }
 
 template <typename KEY, typename VALUE>
-WD_ALWAYS_INLINE const VALUE& wdArrayMapBase<KEY, VALUE>::GetValue(wdUInt32 uiIndex) const
+NS_ALWAYS_INLINE const VALUE& nsArrayMapBase<KEY, VALUE>::GetValue(nsUInt32 uiIndex) const
 {
   return m_Data[uiIndex].value;
 }
 
 template <typename KEY, typename VALUE>
-VALUE& wdArrayMapBase<KEY, VALUE>::GetValue(wdUInt32 uiIndex)
+VALUE& nsArrayMapBase<KEY, VALUE>::GetValue(nsUInt32 uiIndex)
 {
   return m_Data[uiIndex].value;
 }
 
 template <typename KEY, typename VALUE>
-WD_ALWAYS_INLINE wdDynamicArray<typename wdArrayMapBase<KEY, VALUE>::Pair>& wdArrayMapBase<KEY, VALUE>::GetData()
+NS_ALWAYS_INLINE nsDynamicArray<typename nsArrayMapBase<KEY, VALUE>::Pair>& nsArrayMapBase<KEY, VALUE>::GetData()
 {
   m_bSorted = false;
   return m_Data;
 }
 
 template <typename KEY, typename VALUE>
-WD_ALWAYS_INLINE const wdDynamicArray<typename wdArrayMapBase<KEY, VALUE>::Pair>& wdArrayMapBase<KEY, VALUE>::GetData() const
+NS_ALWAYS_INLINE const nsDynamicArray<typename nsArrayMapBase<KEY, VALUE>::Pair>& nsArrayMapBase<KEY, VALUE>::GetData() const
 {
   return m_Data;
 }
 
 template <typename KEY, typename VALUE>
 template <typename CompatibleKeyType>
-VALUE& wdArrayMapBase<KEY, VALUE>::FindOrAdd(const CompatibleKeyType& key, bool* out_pExisted)
+VALUE& nsArrayMapBase<KEY, VALUE>::FindOrAdd(const CompatibleKeyType& key, bool* out_pExisted)
 {
-  wdUInt32 index = Find<CompatibleKeyType>(key);
+  nsUInt32 index = Find<CompatibleKeyType>(key);
 
   if (out_pExisted)
-    *out_pExisted = index != wdInvalidIndex;
+    *out_pExisted = index != nsInvalidIndex;
 
-  if (index == wdInvalidIndex)
+  if (index == nsInvalidIndex)
   {
     index = Insert(key, VALUE());
   }
@@ -209,19 +209,19 @@ VALUE& wdArrayMapBase<KEY, VALUE>::FindOrAdd(const CompatibleKeyType& key, bool*
 
 template <typename KEY, typename VALUE>
 template <typename CompatibleKeyType>
-WD_ALWAYS_INLINE VALUE& wdArrayMapBase<KEY, VALUE>::operator[](const CompatibleKeyType& key)
+NS_ALWAYS_INLINE VALUE& nsArrayMapBase<KEY, VALUE>::operator[](const CompatibleKeyType& key)
 {
   return FindOrAdd(key);
 }
 
 template <typename KEY, typename VALUE>
-WD_ALWAYS_INLINE const typename wdArrayMapBase<KEY, VALUE>::Pair& wdArrayMapBase<KEY, VALUE>::GetPair(wdUInt32 uiIndex) const
+NS_ALWAYS_INLINE const typename nsArrayMapBase<KEY, VALUE>::Pair& nsArrayMapBase<KEY, VALUE>::GetPair(nsUInt32 uiIndex) const
 {
   return m_Data[uiIndex];
 }
 
 template <typename KEY, typename VALUE>
-void wdArrayMapBase<KEY, VALUE>::RemoveAtAndCopy(wdUInt32 uiIndex, bool bKeepSorted)
+void nsArrayMapBase<KEY, VALUE>::RemoveAtAndCopy(nsUInt32 uiIndex, bool bKeepSorted)
 {
   if (bKeepSorted && m_bSorted)
   {
@@ -236,11 +236,11 @@ void wdArrayMapBase<KEY, VALUE>::RemoveAtAndCopy(wdUInt32 uiIndex, bool bKeepSor
 
 template <typename KEY, typename VALUE>
 template <typename CompatibleKeyType>
-bool wdArrayMapBase<KEY, VALUE>::RemoveAndCopy(const CompatibleKeyType& key, bool bKeepSorted)
+bool nsArrayMapBase<KEY, VALUE>::RemoveAndCopy(const CompatibleKeyType& key, bool bKeepSorted)
 {
-  const wdUInt32 uiIndex = Find(key);
+  const nsUInt32 uiIndex = Find(key);
 
-  if (uiIndex == wdInvalidIndex)
+  if (uiIndex == nsInvalidIndex)
     return false;
 
   RemoveAtAndCopy(uiIndex, bKeepSorted);
@@ -249,18 +249,18 @@ bool wdArrayMapBase<KEY, VALUE>::RemoveAndCopy(const CompatibleKeyType& key, boo
 
 template <typename KEY, typename VALUE>
 template <typename CompatibleKeyType>
-WD_ALWAYS_INLINE bool wdArrayMapBase<KEY, VALUE>::Contains(const CompatibleKeyType& key) const
+NS_ALWAYS_INLINE bool nsArrayMapBase<KEY, VALUE>::Contains(const CompatibleKeyType& key) const
 {
-  return Find(key) != wdInvalidIndex;
+  return Find(key) != nsInvalidIndex;
 }
 
 template <typename KEY, typename VALUE>
 template <typename CompatibleKeyType>
-bool wdArrayMapBase<KEY, VALUE>::Contains(const CompatibleKeyType& key, const VALUE& value) const
+bool nsArrayMapBase<KEY, VALUE>::Contains(const CompatibleKeyType& key, const VALUE& value) const
 {
-  wdUInt32 atpos = LowerBound(key);
+  nsUInt32 atpos = LowerBound(key);
 
-  if (atpos == wdInvalidIndex)
+  if (atpos == nsInvalidIndex)
     return false;
 
   while (atpos < m_Data.GetCount())
@@ -279,19 +279,19 @@ bool wdArrayMapBase<KEY, VALUE>::Contains(const CompatibleKeyType& key, const VA
 
 
 template <typename KEY, typename VALUE>
-WD_ALWAYS_INLINE void wdArrayMapBase<KEY, VALUE>::Reserve(wdUInt32 uiSize)
+NS_ALWAYS_INLINE void nsArrayMapBase<KEY, VALUE>::Reserve(nsUInt32 uiSize)
 {
   m_Data.Reserve(uiSize);
 }
 
 template <typename KEY, typename VALUE>
-WD_ALWAYS_INLINE void wdArrayMapBase<KEY, VALUE>::Compact()
+NS_ALWAYS_INLINE void nsArrayMapBase<KEY, VALUE>::Compact()
 {
   m_Data.Compact();
 }
 
 template <typename KEY, typename VALUE>
-bool wdArrayMapBase<KEY, VALUE>::operator==(const wdArrayMapBase<KEY, VALUE>& rhs) const
+bool nsArrayMapBase<KEY, VALUE>::operator==(const nsArrayMapBase<KEY, VALUE>& rhs) const
 {
   Sort();
   rhs.Sort();
@@ -299,44 +299,38 @@ bool wdArrayMapBase<KEY, VALUE>::operator==(const wdArrayMapBase<KEY, VALUE>& rh
   return m_Data == rhs.m_Data;
 }
 
-template <typename KEY, typename VALUE>
-WD_ALWAYS_INLINE bool wdArrayMapBase<KEY, VALUE>::operator!=(const wdArrayMapBase<KEY, VALUE>& rhs) const
-{
-  return !(*this == rhs);
-}
-
 template <typename KEY, typename VALUE, typename A>
-wdArrayMap<KEY, VALUE, A>::wdArrayMap()
-  : wdArrayMapBase<KEY, VALUE>(A::GetAllocator())
+nsArrayMap<KEY, VALUE, A>::nsArrayMap()
+  : nsArrayMapBase<KEY, VALUE>(A::GetAllocator())
 {
 }
 
 template <typename KEY, typename VALUE, typename A>
-wdArrayMap<KEY, VALUE, A>::wdArrayMap(wdAllocatorBase* pAllocator)
-  : wdArrayMapBase<KEY, VALUE>(pAllocator)
+nsArrayMap<KEY, VALUE, A>::nsArrayMap(nsAllocator* pAllocator)
+  : nsArrayMapBase<KEY, VALUE>(pAllocator)
 {
 }
 
 template <typename KEY, typename VALUE, typename A>
-wdArrayMap<KEY, VALUE, A>::wdArrayMap(const wdArrayMap<KEY, VALUE, A>& rhs)
-  : wdArrayMapBase<KEY, VALUE>(rhs, A::GetAllocator())
+nsArrayMap<KEY, VALUE, A>::nsArrayMap(const nsArrayMap<KEY, VALUE, A>& rhs)
+  : nsArrayMapBase<KEY, VALUE>(rhs, A::GetAllocator())
 {
 }
 
 template <typename KEY, typename VALUE, typename A>
-wdArrayMap<KEY, VALUE, A>::wdArrayMap(const wdArrayMapBase<KEY, VALUE>& rhs)
-  : wdArrayMapBase<KEY, VALUE>(rhs, A::GetAllocator())
+nsArrayMap<KEY, VALUE, A>::nsArrayMap(const nsArrayMapBase<KEY, VALUE>& rhs)
+  : nsArrayMapBase<KEY, VALUE>(rhs, A::GetAllocator())
 {
 }
 
 template <typename KEY, typename VALUE, typename A>
-void wdArrayMap<KEY, VALUE, A>::operator=(const wdArrayMap<KEY, VALUE, A>& rhs)
+void nsArrayMap<KEY, VALUE, A>::operator=(const nsArrayMap<KEY, VALUE, A>& rhs)
 {
-  wdArrayMapBase<KEY, VALUE>::operator=(rhs);
+  nsArrayMapBase<KEY, VALUE>::operator=(rhs);
 }
 
 template <typename KEY, typename VALUE, typename A>
-void wdArrayMap<KEY, VALUE, A>::operator=(const wdArrayMapBase<KEY, VALUE>& rhs)
+void nsArrayMap<KEY, VALUE, A>::operator=(const nsArrayMapBase<KEY, VALUE>& rhs)
 {
-  wdArrayMapBase<KEY, VALUE>::operator=(rhs);
+  nsArrayMapBase<KEY, VALUE>::operator=(rhs);
 }

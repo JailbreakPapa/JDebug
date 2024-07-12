@@ -1,31 +1,31 @@
 #pragma once
 
-wdTag::wdTag()
-  : m_uiBlockIndex(0xFFFFFFFEu)
-{
-}
+nsTag::nsTag()
 
-bool wdTag::operator==(const wdTag& rhs) const
+
+  = default;
+
+bool nsTag::operator==(const nsTag& rhs) const
 {
   return m_sTagString == rhs.m_sTagString;
 }
 
-bool wdTag::operator!=(const wdTag& rhs) const
+bool nsTag::operator!=(const nsTag& rhs) const
 {
   return m_sTagString != rhs.m_sTagString;
 }
 
-bool wdTag::operator<(const wdTag& rhs) const
+bool nsTag::operator<(const nsTag& rhs) const
 {
   return m_sTagString < rhs.m_sTagString;
 }
 
-const wdString& wdTag::GetTagString() const
+const nsString& nsTag::GetTagString() const
 {
   return m_sTagString.GetString();
 }
 
-bool wdTag::IsValid() const
+bool nsTag::IsValid() const
 {
   return m_uiBlockIndex != 0xFFFFFFFEu;
 }

@@ -9,63 +9,65 @@
 #  include <Foundation/Communication/RemoteMessage.h>
 #  include <Foundation/Logging/Log.h>
 
-wdIpcChannelEnet::wdIpcChannelEnet(const char* szAddress, Mode::Enum mode)
-  : wdIpcChannel(szAddress, mode)
+nsIpcChannelEnet::nsIpcChannelEnet(nsStringView sAddress, Mode::Enum mode)
+  : nsIpcChannel(sAddress, mode)
+  , m_sAddress(sAddress)
 {
-  m_sAddress = szAddress;
-  m_pNetwork = wdRemoteInterfaceEnet::Make();
-  m_pNetwork->SetMessageHandler(0, wdMakeDelegate(&wdIpcChannelEnet::NetworkMessageHandler, this));
-  m_pNetwork->m_RemoteEvents.AddEventHandler(wdMakeDelegate(&wdIpcChannelEnet::EnetEventHandler, this));
+  m_pNetwork = nsRemoteInterfaceEnet::Make();
+  m_pNetwork->SetMessageHandler(0, nsMakeDelegate(&nsIpcChannelEnet::NetworkMessageHandler, this));
+  m_pNetwork->m_RemoteEvents.AddEventHandler(nsMakeDelegate(&nsIpcChannelEnet::EnetEventHandler, this));
 
   m_pOwner->AddChannel(this);
 }
 
-wdIpcChannelEnet::~wdIpcChannelEnet()
+nsIpcChannelEnet::~nsIpcChannelEnet()
 {
   m_pNetwork->ShutdownConnection();
 
   m_pOwner->RemoveChannel(this);
 }
 
-void wdIpcChannelEnet::InternalConnect()
+void nsIpcChannelEnet::InternalConnect()
 {
   if (m_Mode == Mode::Server)
   {
     m_pNetwork->StartServer('RMOT', m_sAddress, false).IgnoreResult();
+    SetConnectionState(ConnectionState::Connecting);
   }
   else
   {
-    if ((m_sLastAddress != m_sAddress) || (wdTime::Now() - m_LastConnectAttempt > wdTime::Seconds(10)))
+    SetConnectionState(ConnectionState::Connecting);
+    if ((m_sLastAddress != m_sAddress) || (nsTime::Now() - m_LastConnectAttempt > nsTime::MakeFromSeconds(10)))
     {
       m_sLastAddress = m_sAddress;
-      m_LastConnectAttempt = wdTime::Now();
+      m_LastConnectAttempt = nsTime::Now();
       m_pNetwork->ConnectToServer('RMOT', m_sAddress, false).IgnoreResult();
     }
 
-    m_pNetwork->WaitForConnectionToServer(wdTime::Milliseconds(10.0)).IgnoreResult();
+    m_pNetwork->WaitForConnectionToServer(nsTime::MakeFromMilliseconds(10.0)).IgnoreResult();
   }
 
-  m_bConnected = m_pNetwork->IsConnectedToOther() ? 1 : 0;
+  SetConnectionState(m_pNetwork->IsConnectedToOther() ? ConnectionState::Connected : ConnectionState::Disconnected);
 }
 
-void wdIpcChannelEnet::InternalDisconnect()
+void nsIpcChannelEnet::InternalDisconnect()
 {
   m_pNetwork->ShutdownConnection();
-  m_pNetwork->m_RemoteEvents.RemoveEventHandler(wdMakeDelegate(&wdIpcChannelEnet::EnetEventHandler, this));
+  m_pNetwork->m_RemoteEvents.RemoveEventHandler(nsMakeDelegate(&nsIpcChannelEnet::EnetEventHandler, this));
 
-  m_bConnected = 0;
+  SetConnectionState(ConnectionState::Disconnected);
 }
 
-void wdIpcChannelEnet::InternalSend()
+void nsIpcChannelEnet::InternalSend()
 {
   {
-    WD_LOCK(m_OutputQueueMutex);
+    NS_LOCK(m_OutputQueueMutex);
 
     while (!m_OutputQueue.IsEmpty())
     {
-      wdContiguousMemoryStreamStorage& storage = m_OutputQueue.PeekFront();
+      nsContiguousMemoryStreamStorage& storage = m_OutputQueue.PeekFront();
 
-      m_pNetwork->Send(wdRemoteTransmitMode::Reliable, 0, 0, storage);
+      m_pNetwork->Send(nsRemoteTransmitMode::Reliable, 0, 0, storage);
 
       m_OutputQueue.PopFront();
     }
@@ -74,41 +76,37 @@ void wdIpcChannelEnet::InternalSend()
   m_pNetwork->UpdateRemoteInterface();
 }
 
-bool wdIpcChannelEnet::NeedWakeup() const
+bool nsIpcChannelEnet::NeedWakeup() const
 {
   return true;
 }
 
-void wdIpcChannelEnet::Tick()
+void nsIpcChannelEnet::Tick()
 {
   m_pNetwork->UpdateRemoteInterface();
 
-  m_bConnected = m_pNetwork->IsConnectedToOther() ? 1 : 0;
+  SetConnectionState(m_pNetwork->IsConnectedToOther() ? ConnectionState::Connected : ConnectionState::Disconnected);
 
   m_pNetwork->ExecuteAllMessageHandlers();
 }
 
-void wdIpcChannelEnet::NetworkMessageHandler(wdRemoteMessage& msg)
+void nsIpcChannelEnet::NetworkMessageHandler(nsRemoteMessage& msg)
 {
-  ReceiveMessageData(msg.GetMessageData());
+  ReceiveData(msg.GetMessageData());
 }
 
-void wdIpcChannelEnet::EnetEventHandler(const wdRemoteEvent& e)
+void nsIpcChannelEnet::EnetEventHandler(const nsRemoteEvent& e)
 {
-  if (e.m_Type == wdRemoteEvent::DisconnectedFromServer)
+  if (e.m_Type == nsRemoteEvent::DisconnectedFromServer)
   {
-    wdLog::Info("Disconnected from remote engine process.");
+    nsLog::Info("Disconnected from remote engine process.");
     Disconnect();
   }
 
-  if (e.m_Type == wdRemoteEvent::ConnectedToServer)
+  if (e.m_Type == nsRemoteEvent::ConnectedToServer)
   {
-    wdLog::Info("Connected to remote engine process.");
+    nsLog::Info("Connected to remote engine process.");
   }
 }
 
 #endif
-
-
-
-WD_STATICLINK_FILE(Foundation, Foundation_Communication_Implementation_IpcChannelEnet);

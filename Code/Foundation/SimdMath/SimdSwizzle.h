@@ -1,6 +1,6 @@
 #pragma once
 
-struct wdSwizzle
+struct nsSwizzle
 {
   enum Enum
   {

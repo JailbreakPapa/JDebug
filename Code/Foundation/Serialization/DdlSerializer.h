@@ -8,28 +8,28 @@
 #include <Foundation/Serialization/AbstractObjectGraph.h>
 #include <Foundation/Types/UniquePtr.h>
 
-class wdOpenDdlReaderElement;
+class nsOpenDdlReaderElement;
 
-struct WD_FOUNDATION_DLL wdSerializedBlock
+struct NS_FOUNDATION_DLL nsSerializedBlock
 {
-  wdString m_Name;
-  wdUniquePtr<wdAbstractObjectGraph> m_Graph;
+  nsString m_Name;
+  nsUniquePtr<nsAbstractObjectGraph> m_Graph;
 };
 
-class WD_FOUNDATION_DLL wdAbstractGraphDdlSerializer
+class NS_FOUNDATION_DLL nsAbstractGraphDdlSerializer
 {
 public:
-  static void Write(wdStreamWriter& inout_stream, const wdAbstractObjectGraph* pGraph, const wdAbstractObjectGraph* pTypesGraph = nullptr, bool bCompactMmode = true, wdOpenDdlWriter::TypeStringMode typeMode = wdOpenDdlWriter::TypeStringMode::Shortest);
-  static wdResult Read(wdStreamReader& inout_stream, wdAbstractObjectGraph* pGraph, wdAbstractObjectGraph* pTypesGraph = nullptr, bool bApplyPatches = true);
+  static void Write(nsStreamWriter& inout_stream, const nsAbstractObjectGraph* pGraph, const nsAbstractObjectGraph* pTypesGraph = nullptr, bool bCompactMmode = true, nsOpenDdlWriter::TypeStringMode typeMode = nsOpenDdlWriter::TypeStringMode::Shortest);
+  static nsResult Read(nsStreamReader& inout_stream, nsAbstractObjectGraph* pGraph, nsAbstractObjectGraph* pTypesGraph = nullptr, bool bApplyPatches = true);
 
-  static void Write(wdOpenDdlWriter& inout_stream, const wdAbstractObjectGraph* pGraph, const wdAbstractObjectGraph* pTypesGraph = nullptr);
-  static wdResult Read(const wdOpenDdlReaderElement* pRootElement, wdAbstractObjectGraph* pGraph, wdAbstractObjectGraph* pTypesGraph = nullptr, bool bApplyPatches = true);
+  static void Write(nsOpenDdlWriter& inout_stream, const nsAbstractObjectGraph* pGraph, const nsAbstractObjectGraph* pTypesGraph = nullptr);
+  static nsResult Read(const nsOpenDdlReaderElement* pRootElement, nsAbstractObjectGraph* pGraph, nsAbstractObjectGraph* pTypesGraph = nullptr, bool bApplyPatches = true);
 
-  static void WriteDocument(wdStreamWriter& inout_stream, const wdAbstractObjectGraph* pHeader, const wdAbstractObjectGraph* pGraph, const wdAbstractObjectGraph* pTypes, bool bCompactMode = true, wdOpenDdlWriter::TypeStringMode typeMode = wdOpenDdlWriter::TypeStringMode::Shortest);
-  static wdResult ReadDocument(wdStreamReader& inout_stream, wdUniquePtr<wdAbstractObjectGraph>& ref_pHeader, wdUniquePtr<wdAbstractObjectGraph>& ref_pGraph, wdUniquePtr<wdAbstractObjectGraph>& ref_pTypes, bool bApplyPatches = true);
+  static void WriteDocument(nsStreamWriter& inout_stream, const nsAbstractObjectGraph* pHeader, const nsAbstractObjectGraph* pGraph, const nsAbstractObjectGraph* pTypes, bool bCompactMode = true, nsOpenDdlWriter::TypeStringMode typeMode = nsOpenDdlWriter::TypeStringMode::Shortest);
+  static nsResult ReadDocument(nsStreamReader& inout_stream, nsUniquePtr<nsAbstractObjectGraph>& ref_pHeader, nsUniquePtr<nsAbstractObjectGraph>& ref_pGraph, nsUniquePtr<nsAbstractObjectGraph>& ref_pTypes, bool bApplyPatches = true);
 
-  static wdResult ReadHeader(wdStreamReader& inout_stream, wdAbstractObjectGraph* pGraph);
+  static nsResult ReadHeader(nsStreamReader& inout_stream, nsAbstractObjectGraph* pGraph);
 
 private:
-  static wdResult ReadBlocks(wdStreamReader& stream, wdHybridArray<wdSerializedBlock, 3>& blocks);
+  static nsResult ReadBlocks(nsStreamReader& stream, nsHybridArray<nsSerializedBlock, 3>& blocks);
 };

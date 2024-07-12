@@ -7,21 +7,21 @@
 #  include <enet/enet.h>
 #endif
 
-class wdTelemetryThread;
+class nsTelemetryThread;
 
-wdTelemetry::wdEventTelemetry wdTelemetry::s_TelemetryEvents;
-wdUInt32 wdTelemetry::s_uiApplicationID = 0;
-wdUInt32 wdTelemetry::s_uiServerID = 0;
-wdUInt16 wdTelemetry::s_uiPort = 1040;
-bool wdTelemetry::s_bConnectedToServer = false;
-bool wdTelemetry::s_bConnectedToClient = false;
-bool wdTelemetry::s_bAllowNetworkUpdate = true;
-wdTime wdTelemetry::s_PingToServer;
-wdString wdTelemetry::s_sServerName;
-wdString wdTelemetry::s_sServerIP;
+nsTelemetry::nsEventTelemetry nsTelemetry::s_TelemetryEvents;
+nsUInt32 nsTelemetry::s_uiApplicationID = 0;
+nsUInt32 nsTelemetry::s_uiServerID = 0;
+nsUInt16 nsTelemetry::s_uiPort = 1040;
+bool nsTelemetry::s_bConnectedToServer = false;
+bool nsTelemetry::s_bConnectedToClient = false;
+bool nsTelemetry::s_bAllowNetworkUpdate = true;
+nsTime nsTelemetry::s_PingToServer;
+nsString nsTelemetry::s_sServerName;
+nsString nsTelemetry::s_sServerIP;
 static bool g_bInitialized = false;
-wdTelemetry::ConnectionMode wdTelemetry::s_ConnectionMode = wdTelemetry::None;
-wdMap<wdUInt64, wdTelemetry::MessageQueue> wdTelemetry::s_SystemMessages;
+nsTelemetry::ConnectionMode nsTelemetry::s_ConnectionMode = nsTelemetry::None;
+nsMap<nsUInt64, nsTelemetry::MessageQueue> nsTelemetry::s_SystemMessages;
 
 #ifdef BUILDSYSTEM_ENABLE_ENET_SUPPORT
 static ENetAddress g_pServerAddress;
@@ -29,15 +29,15 @@ static ENetHost* g_pHost = nullptr;
 static ENetPeer* g_pConnectionToServer = nullptr;
 #endif // BUILDSYSTEM_ENABLE_ENET_SUPPORT
 
-void wdTelemetry::UpdateServerPing()
+void nsTelemetry::UpdateServerPing()
 {
 #ifdef BUILDSYSTEM_ENABLE_ENET_SUPPORT
   enet_peer_ping(g_pConnectionToServer);
-  wdTelemetry::s_PingToServer = wdTime::Milliseconds(g_pConnectionToServer->lastRoundTripTime);
+  nsTelemetry::s_PingToServer = nsTime::MakeFromMilliseconds(g_pConnectionToServer->lastRoundTripTime);
 #endif // BUILDSYSTEM_ENABLE_ENET_SUPPORT
 }
 
-void wdTelemetry::UpdateNetwork()
+void nsTelemetry::UpdateNetwork()
 {
 #ifdef BUILDSYSTEM_ENABLE_ENET_SUPPORT
   if (!g_pHost)
@@ -52,9 +52,9 @@ void wdTelemetry::UpdateNetwork()
 
   while (true)
   {
-    WD_LOCK(GetTelemetryMutex());
+    NS_LOCK(GetTelemetryMutex());
 
-    const wdInt32 iStatus = enet_host_service(g_pHost, &NetworkEvent, 0);
+    const nsInt32 iStatus = enet_host_service(g_pHost, &NetworkEvent, 0);
 
     if (iStatus <= 0)
     {
@@ -66,7 +66,7 @@ void wdTelemetry::UpdateNetwork()
     {
       case ENET_EVENT_TYPE_CONNECT:
       {
-        if ((wdTelemetry::s_ConnectionMode == wdTelemetry::Server) && (NetworkEvent.peer->eventData != 'WDBC'))
+        if ((nsTelemetry::s_ConnectionMode == nsTelemetry::Server) && (NetworkEvent.peer->eventData != 'NSBC'))
         {
           enet_peer_disconnect(NetworkEvent.peer, 0);
           break;
@@ -82,8 +82,8 @@ void wdTelemetry::UpdateNetwork()
           // Querying host IP and name can take a lot of time which can lead to timeouts
           // enet_address_get_host(&NetworkEvent.peer->address, szHostName, 63);
 
-          wdTelemetry::s_sServerIP = szHostIP;
-          // wdTelemetry::s_ServerName = szHostName;
+          nsTelemetry::s_sServerIP = szHostIP;
+          // nsTelemetry::s_ServerName = szHostName;
 
           // now we are waiting for the server to send its ID
         }
@@ -91,7 +91,7 @@ void wdTelemetry::UpdateNetwork()
         {
           // got a new client, send the server ID to it
           s_bConnectedToClient = true; // we need this fake state, otherwise Broadcast will queue the message instead of sending it
-          Broadcast(wdTelemetry::Reliable, 'WDBC', 'WDID', &s_uiApplicationID, sizeof(wdUInt32));
+          Broadcast(nsTelemetry::Reliable, 'NSBC', 'NSID', &s_uiApplicationID, sizeof(nsUInt32));
           s_bConnectedToClient = false;
 
           // then wait for its acknowledgment message
@@ -106,11 +106,11 @@ void wdTelemetry::UpdateNetwork()
           s_bConnectedToServer = false;
 
           // First wait a bit to ensure that the Server could shut down, if this was a legitimate disconnect
-          wdThreadUtils::Sleep(wdTime::Seconds(1));
+          nsThreadUtils::Sleep(nsTime::MakeFromSeconds(1));
 
           // Now try to reconnect. If the Server still exists, fine, connect to that.
           // If it does not exist anymore, this will connect to the next best Server that can be found.
-          g_pConnectionToServer = enet_host_connect(g_pHost, &g_pServerAddress, 2, 'WDBC');
+          g_pConnectionToServer = enet_host_connect(g_pHost, &g_pServerAddress, 2, 'NSBC');
 
           TelemetryEventData e;
           e.m_EventType = TelemetryEventData::DisconnectedFromServer;
@@ -132,23 +132,23 @@ void wdTelemetry::UpdateNetwork()
 
       case ENET_EVENT_TYPE_RECEIVE:
       {
-        const wdUInt32 uiSystemID = *((wdUInt32*)&NetworkEvent.packet->data[0]);
-        const wdUInt32 uiMsgID = *((wdUInt32*)&NetworkEvent.packet->data[4]);
-        const wdUInt8* pData = &NetworkEvent.packet->data[8];
+        const nsUInt32 uiSystemID = *((nsUInt32*)&NetworkEvent.packet->data[0]);
+        const nsUInt32 uiMsgID = *((nsUInt32*)&NetworkEvent.packet->data[4]);
+        const nsUInt8* pData = &NetworkEvent.packet->data[8];
 
-        if (uiSystemID == 'WDBC')
+        if (uiSystemID == 'NSBC')
         {
           switch (uiMsgID)
           {
-            case 'WDID':
+            case 'NSID':
             {
-              s_uiServerID = *((wdUInt32*)pData);
+              s_uiServerID = *((nsUInt32*)pData);
 
               // connection to server is finalized
               s_bConnectedToServer = true;
 
               // acknowledge that the ID has been received
-              SendToServer('WDBC', 'AKID', nullptr, 0);
+              SendToServer('NSBC', 'AKID', nullptr, 0);
 
               // go tell the others about it
               TelemetryEventData e;
@@ -191,11 +191,11 @@ void wdTelemetry::UpdateNetwork()
           if (Queue.m_bAcceptMessages)
           {
             Queue.m_IncomingQueue.PushBack();
-            wdTelemetryMessage& Msg = Queue.m_IncomingQueue.PeekBack();
+            nsTelemetryMessage& Msg = Queue.m_IncomingQueue.PeekBack();
 
             Msg.SetMessageID(uiSystemID, uiMsgID);
 
-            WD_ASSERT_DEV((wdUInt32)NetworkEvent.packet->dataLength >= 8, "Message Length Invalid: {0}", (wdUInt32)NetworkEvent.packet->dataLength);
+            NS_ASSERT_DEV((nsUInt32)NetworkEvent.packet->dataLength >= 8, "Message Length Invalid: {0}", (nsUInt32)NetworkEvent.packet->dataLength);
 
             Msg.GetWriter().WriteBytes(pData, NetworkEvent.packet->dataLength - 8).IgnoreResult();
           }
@@ -214,48 +214,48 @@ void wdTelemetry::UpdateNetwork()
 #endif // BUILDSYSTEM_ENABLE_ENET_SUPPORT
 }
 
-void wdTelemetry::SetServerName(const char* szName)
+void nsTelemetry::SetServerName(nsStringView sName)
 {
   if (s_ConnectionMode == ConnectionMode::Client)
     return;
 
-  if (s_sServerName == szName)
+  if (s_sServerName == sName)
     return;
 
-  s_sServerName = szName;
+  s_sServerName = sName;
 
   SendServerName();
 }
 
-void wdTelemetry::SendServerName()
+void nsTelemetry::SendServerName()
 {
   if (!IsConnectedToOther())
     return;
 
   char data[48];
-  wdStringUtils::Copy(data, WD_ARRAY_SIZE(data), s_sServerName.GetData());
+  nsStringUtils::Copy(data, NS_ARRAY_SIZE(data), s_sServerName.GetData());
 
-  Broadcast(wdTelemetry::Reliable, 'WDBC', 'NAME', data, WD_ARRAY_SIZE(data));
+  Broadcast(nsTelemetry::Reliable, 'NSBC', 'NAME', data, NS_ARRAY_SIZE(data));
 }
 
-wdResult wdTelemetry::RetrieveMessage(wdUInt32 uiSystemID, wdTelemetryMessage& out_message)
+nsResult nsTelemetry::RetrieveMessage(nsUInt32 uiSystemID, nsTelemetryMessage& out_message)
 {
   if (s_SystemMessages[uiSystemID].m_IncomingQueue.IsEmpty())
-    return WD_FAILURE;
+    return NS_FAILURE;
 
-  WD_LOCK(GetTelemetryMutex());
+  NS_LOCK(GetTelemetryMutex());
 
   // check again while inside the lock
   if (s_SystemMessages[uiSystemID].m_IncomingQueue.IsEmpty())
-    return WD_FAILURE;
+    return NS_FAILURE;
 
   out_message = s_SystemMessages[uiSystemID].m_IncomingQueue.PeekFront();
   s_SystemMessages[uiSystemID].m_IncomingQueue.PopFront();
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
-void wdTelemetry::InitializeAsServer()
+void nsTelemetry::InitializeAsServer()
 {
 #ifdef BUILDSYSTEM_ENABLE_ENET_SUPPORT
   g_pServerAddress.host = ENET_HOST_ANY;
@@ -263,42 +263,42 @@ void wdTelemetry::InitializeAsServer()
 
   g_pHost = enet_host_create(&g_pServerAddress, 32, 2, 0, 0);
 #else
-  wdLog::SeriousWarning("Enet is not compiled into this build, wdTelemetry::InitializeAsServer() will be ignored.");
+  nsLog::SeriousWarning("Enet is not compiled into this build, nsTelemetry::InitializeAsServer() will be ignored.");
 #endif // BUILDSYSTEM_ENABLE_ENET_SUPPORT
 }
 
-wdResult wdTelemetry::InitializeAsClient(const char* szConnectTo)
+nsResult nsTelemetry::InitializeAsClient(nsStringView sConnectTo0)
 {
 #ifdef BUILDSYSTEM_ENABLE_ENET_SUPPORT
   g_pHost = enet_host_create(nullptr, 1, 2, 0, 0);
 
-  wdStringBuilder sConnectTo = szConnectTo;
+  nsStringBuilder sConnectTo = sConnectTo0;
 
   const char* szColon = sConnectTo.FindLastSubString(":");
   if (szColon != nullptr)
   {
-    sConnectTo.Shrink(0, wdStringUtils::GetStringElementCount(szColon));
+    sConnectTo.Shrink(0, nsStringUtils::GetStringElementCount(szColon));
 
-    wdStringBuilder sPort = szColon + 1;
-    s_uiPort = static_cast<wdUInt16>(atoi(sPort.GetData()));
+    nsStringBuilder sPort = szColon + 1;
+    s_uiPort = static_cast<nsUInt16>(atoi(sPort.GetData()));
   }
 
   if (sConnectTo.IsEmpty() || sConnectTo.IsEqual_NoCase("localhost"))
     enet_address_set_host(&g_pServerAddress, "localhost");
   else if (sConnectTo.FindSubString(".") != nullptr)
   {
-    wdHybridArray<wdString, 8> IP;
+    nsHybridArray<nsString, 8> IP;
     sConnectTo.Split(false, IP, ".");
 
     if (IP.GetCount() != 4)
-      return WD_FAILURE;
+      return NS_FAILURE;
 
-    const wdUInt32 ip1 = atoi(IP[0].GetData()) & 0xFF;
-    const wdUInt32 ip2 = atoi(IP[1].GetData()) & 0xFF;
-    const wdUInt32 ip3 = atoi(IP[2].GetData()) & 0xFF;
-    const wdUInt32 ip4 = atoi(IP[3].GetData()) & 0xFF;
+    const nsUInt32 ip1 = atoi(IP[0].GetData()) & 0xFF;
+    const nsUInt32 ip2 = atoi(IP[1].GetData()) & 0xFF;
+    const nsUInt32 ip3 = atoi(IP[2].GetData()) & 0xFF;
+    const nsUInt32 ip4 = atoi(IP[3].GetData()) & 0xFF;
 
-    const wdUInt32 uiIP = (ip1 | ip2 << 8 | ip3 << 16 | ip4 << 24);
+    const nsUInt32 uiIP = (ip1 | ip2 << 8 | ip3 << 16 | ip4 << 24);
 
     g_pServerAddress.host = uiIP;
   }
@@ -308,18 +308,18 @@ wdResult wdTelemetry::InitializeAsClient(const char* szConnectTo)
   g_pServerAddress.port = s_uiPort;
 
   g_pConnectionToServer = nullptr;
-  g_pConnectionToServer = enet_host_connect(g_pHost, &g_pServerAddress, 2, 'WDBC');
+  g_pConnectionToServer = enet_host_connect(g_pHost, &g_pServerAddress, 2, 'NSBC');
 
   if (g_pConnectionToServer)
-    return WD_SUCCESS;
+    return NS_SUCCESS;
 #else
-  wdLog::SeriousWarning("Enet is not compiled into this build, wdTelemetry::InitializeAsClient() will be ignored.");
+  nsLog::SeriousWarning("Enet is not compiled into this build, nsTelemetry::InitializeAsClient() will be ignored.");
 #endif // BUILDSYSTEM_ENABLE_ENET_SUPPORT
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
-wdResult wdTelemetry::OpenConnection(ConnectionMode Mode, const char* szConnectTo)
+nsResult nsTelemetry::OpenConnection(ConnectionMode Mode, nsStringView sConnectTo)
 {
 #ifdef BUILDSYSTEM_ENABLE_ENET_SUPPORT
   CloseConnection();
@@ -328,25 +328,25 @@ wdResult wdTelemetry::OpenConnection(ConnectionMode Mode, const char* szConnectT
   {
     if (enet_initialize() != 0)
     {
-      wdLog::Error("Enet could not be initialized.");
-      return WD_FAILURE;
+      nsLog::Error("Enet could not be initialized.");
+      return NS_FAILURE;
     }
 
     g_bInitialized = true;
   }
 
-  s_uiApplicationID = (wdUInt32)wdTime::Now().GetSeconds();
+  s_uiApplicationID = (nsUInt32)nsTime::Now().GetSeconds();
 
   switch (Mode)
   {
-    case wdTelemetry::Server:
+    case nsTelemetry::Server:
       InitializeAsServer();
       break;
-    case wdTelemetry::Client:
-      if (InitializeAsClient(szConnectTo) == WD_FAILURE)
+    case nsTelemetry::Client:
+      if (InitializeAsClient(sConnectTo) == NS_FAILURE)
       {
         CloseConnection();
-        return WD_FAILURE;
+        return NS_FAILURE;
       }
       break;
     default:
@@ -355,34 +355,34 @@ wdResult wdTelemetry::OpenConnection(ConnectionMode Mode, const char* szConnectT
 
   s_ConnectionMode = Mode;
 
-  wdTelemetry::UpdateNetwork();
+  nsTelemetry::UpdateNetwork();
 
   StartTelemetryThread();
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 #else
-  wdLog::SeriousWarning("Enet is not compiled into this build, wdTelemetry::OpenConnection() will be ignored.");
-  return WD_FAILURE;
+  nsLog::SeriousWarning("Enet is not compiled into this build, nsTelemetry::OpenConnection() will be ignored.");
+  return NS_FAILURE;
 #endif // BUILDSYSTEM_ENABLE_ENET_SUPPORT
 }
 
-void wdTelemetry::Transmit(TransmitMode tm, const void* pData, wdUInt32 uiDataBytes)
+void nsTelemetry::Transmit(TransmitMode tm, const void* pData, nsUInt32 uiDataBytes)
 {
 #ifdef BUILDSYSTEM_ENABLE_ENET_SUPPORT
   if (!g_pHost)
     return;
 
-  WD_LOCK(GetTelemetryMutex());
+  NS_LOCK(GetTelemetryMutex());
 
   ENetPacket* pPacket = enet_packet_create(pData, uiDataBytes, (tm == Reliable) ? ENET_PACKET_FLAG_RELIABLE : 0);
   enet_host_broadcast(g_pHost, 0, pPacket);
 
   // make sure the message is processed immediately
-  wdTelemetry::UpdateNetwork();
+  nsTelemetry::UpdateNetwork();
 #endif // BUILDSYSTEM_ENABLE_ENET_SUPPORT
 }
 
-void wdTelemetry::Send(TransmitMode tm, wdUInt32 uiSystemID, wdUInt32 uiMsgID, const void* pData, wdUInt32 uiDataBytes)
+void nsTelemetry::Send(TransmitMode tm, nsUInt32 uiSystemID, nsUInt32 uiMsgID, const void* pData, nsUInt32 uiDataBytes)
 {
 #ifdef BUILDSYSTEM_ENABLE_ENET_SUPPORT
   if (!g_pHost)
@@ -395,41 +395,41 @@ void wdTelemetry::Send(TransmitMode tm, wdUInt32 uiSystemID, wdUInt32 uiMsgID, c
   {
     // when we do have a connection, just send the message out
 
-    wdHybridArray<wdUInt8, 64> TempData;
+    nsHybridArray<nsUInt8, 64> TempData;
     TempData.SetCountUninitialized(8 + uiDataBytes);
-    *((wdUInt32*)&TempData[0]) = uiSystemID;
-    *((wdUInt32*)&TempData[4]) = uiMsgID;
+    *((nsUInt32*)&TempData[0]) = uiSystemID;
+    *((nsUInt32*)&TempData[4]) = uiMsgID;
 
     if (pData && uiDataBytes > 0)
-      wdMemoryUtils::Copy((wdUInt8*)&TempData[8], (wdUInt8*)pData, uiDataBytes);
+      nsMemoryUtils::Copy((nsUInt8*)&TempData[8], (nsUInt8*)pData, uiDataBytes);
 
     Transmit(tm, &TempData[0], TempData.GetCount());
   }
 #endif // BUILDSYSTEM_ENABLE_ENET_SUPPORT
 }
 
-void wdTelemetry::Send(TransmitMode tm, wdUInt32 uiSystemID, wdUInt32 uiMsgID, wdStreamReader& Stream, wdInt32 iDataBytes)
+void nsTelemetry::Send(TransmitMode tm, nsUInt32 uiSystemID, nsUInt32 uiMsgID, nsStreamReader& Stream, nsInt32 iDataBytes)
 {
 #ifdef BUILDSYSTEM_ENABLE_ENET_SUPPORT
   if (!g_pHost)
     return;
 
-  const wdUInt32 uiStackSize = 1024;
+  const nsUInt32 uiStackSize = 1024;
 
-  wdHybridArray<wdUInt8, uiStackSize + 8> TempData;
+  nsHybridArray<nsUInt8, uiStackSize + 8> TempData;
   TempData.SetCountUninitialized(8);
-  *((wdUInt32*)&TempData[0]) = uiSystemID;
-  *((wdUInt32*)&TempData[4]) = uiMsgID;
+  *((nsUInt32*)&TempData[0]) = uiSystemID;
+  *((nsUInt32*)&TempData[4]) = uiMsgID;
 
   // if we don't know how much to take out of the stream, read the data piece by piece from the input stream
   if (iDataBytes < 0)
   {
     while (true)
     {
-      const wdUInt32 uiOffset = TempData.GetCount();
+      const nsUInt32 uiOffset = TempData.GetCount();
       TempData.SetCountUninitialized(uiOffset + uiStackSize); // no allocation the first time
 
-      const wdUInt32 uiRead = static_cast<wdUInt32>(Stream.ReadBytes(&TempData[uiOffset], uiStackSize));
+      const nsUInt32 uiRead = static_cast<nsUInt32>(Stream.ReadBytes(&TempData[uiOffset], uiStackSize));
 
       if (uiRead < uiStackSize)
       {
@@ -463,11 +463,9 @@ void wdTelemetry::Send(TransmitMode tm, wdUInt32 uiSystemID, wdUInt32 uiMsgID, w
 #endif // BUILDSYSTEM_ENABLE_ENET_SUPPORT
 }
 
-void wdTelemetry::CloseConnection()
+void nsTelemetry::CloseConnection()
 {
 #ifdef BUILDSYSTEM_ENABLE_ENET_SUPPORT
-  s_bConnectedToServer = false;
-  s_bConnectedToClient = false;
   s_ConnectionMode = None;
   s_uiServerID = 0;
   g_pConnectionToServer = nullptr;
@@ -475,22 +473,40 @@ void wdTelemetry::CloseConnection()
   StopTelemetryThread();
 
   // prevent other threads from interfering
-  WD_LOCK(GetTelemetryMutex());
+  NS_LOCK(GetTelemetryMutex());
 
   UpdateNetwork();
-  wdThreadUtils::Sleep(wdTime::Milliseconds(10));
+  nsThreadUtils::Sleep(nsTime::MakeFromMilliseconds(10));
 
   if (g_pHost)
   {
     // send all peers that we are disconnecting
-    for (wdUInt32 i = (wdUInt32)g_pHost->connectedPeers; i > 0; --i)
+    for (nsUInt32 i = (nsUInt32)g_pHost->connectedPeers; i > 0; --i)
       enet_peer_disconnect(&g_pHost->peers[i - 1], 0);
 
     // process the network messages (e.g. send the disconnect messages)
     UpdateNetwork();
-    wdThreadUtils::Sleep(wdTime::Milliseconds(10));
+    nsThreadUtils::Sleep(nsTime::MakeFromMilliseconds(10));
   }
 
+  {
+    // Fire disconnect event.
+    if (s_bConnectedToClient)
+    {
+      TelemetryEventData e;
+      e.m_EventType = TelemetryEventData::DisconnectedFromClient;
+      s_TelemetryEvents.Broadcast(e);
+      s_bConnectedToClient = false;
+    }
+
+    if (s_bConnectedToServer)
+    {
+      TelemetryEventData e;
+      e.m_EventType = TelemetryEventData::DisconnectedFromServer;
+      s_TelemetryEvents.Broadcast(e);
+      s_bConnectedToServer = false;
+    }
+  }
   // finally close the network connection
   if (g_pHost)
   {
@@ -512,7 +528,3 @@ void wdTelemetry::CloseConnection()
   }
 #endif // BUILDSYSTEM_ENABLE_ENET_SUPPORT
 }
-
-
-
-WD_STATICLINK_FILE(Foundation, Foundation_Communication_Implementation_Telemetry);

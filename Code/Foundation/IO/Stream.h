@@ -10,84 +10,84 @@
 #include <Foundation/Math/Math.h>
 #include <Foundation/Memory/EndianHelper.h>
 
-typedef wdUInt16 wdTypeVersion;
+using nsTypeVersion = nsUInt16;
 
-template <wdUInt16 Size, typename AllocatorWrapper>
-struct wdHybridString;
+template <nsUInt16 Size, typename AllocatorWrapper>
+struct nsHybridString;
 
-using wdString = wdHybridString<32, wdDefaultAllocatorWrapper>;
+using nsString = nsHybridString<32, nsDefaultAllocatorWrapper>;
 
 /// \brief Interface for binary in (read) streams.
-class WD_FOUNDATION_DLL wdStreamReader
+class NS_FOUNDATION_DLL nsStreamReader
 {
-  WD_DISALLOW_COPY_AND_ASSIGN(wdStreamReader);
+  NS_DISALLOW_COPY_AND_ASSIGN(nsStreamReader);
 
 public:
   /// \brief Constructor
-  wdStreamReader();
+  nsStreamReader();
 
   /// \brief Virtual destructor to ensure correct cleanup
-  virtual ~wdStreamReader();
+  virtual ~nsStreamReader();
 
   /// \brief Reads a raw number of bytes into the read buffer, this is the only method which has to be implemented to fully implement the
   /// interface.
-  virtual wdUInt64 ReadBytes(void* pReadBuffer, wdUInt64 uiBytesToRead) = 0; // [tested]
+  virtual nsUInt64 ReadBytes(void* pReadBuffer, nsUInt64 uiBytesToRead) = 0; // [tested]
 
   /// \brief Helper method to read a word value correctly (copes with potentially different endianess)
   template <typename T>
-  wdResult ReadWordValue(T* pWordValue); // [tested]
+  nsResult ReadWordValue(T* pWordValue); // [tested]
 
   /// \brief Helper method to read a dword value correctly (copes with potentially different endianess)
   template <typename T>
-  wdResult ReadDWordValue(T* pDWordValue); // [tested]
+  nsResult ReadDWordValue(T* pDWordValue); // [tested]
 
   /// \brief Helper method to read a qword value correctly (copes with potentially different endianess)
   template <typename T>
-  wdResult ReadQWordValue(T* pQWordValue); // [tested]
+  nsResult ReadQWordValue(T* pQWordValue); // [tested]
 
   /// \brief Reads an array of elements from the stream
   template <typename ArrayType, typename ValueType>
-  wdResult ReadArray(wdArrayBase<ValueType, ArrayType>& inout_array); // [tested]
+  nsResult ReadArray(nsArrayBase<ValueType, ArrayType>& inout_array); // [tested]
 
   /// \brief Reads a small array of elements from the stream
-  template <typename ValueType, wdUInt16 uiSize, typename AllocatorWrapper>
-  wdResult ReadArray(wdSmallArray<ValueType, uiSize, AllocatorWrapper>& ref_array);
+  template <typename ValueType, nsUInt16 uiSize, typename AllocatorWrapper>
+  nsResult ReadArray(nsSmallArray<ValueType, uiSize, AllocatorWrapper>& ref_array);
 
   /// \brief Writes a C style fixed array
-  template <typename ValueType, wdUInt32 uiSize>
-  wdResult ReadArray(ValueType (&array)[uiSize]);
+  template <typename ValueType, nsUInt32 uiSize>
+  nsResult ReadArray(ValueType (&array)[uiSize]);
 
   /// \brief Reads a set
   template <typename KeyType, typename Comparer>
-  wdResult ReadSet(wdSetBase<KeyType, Comparer>& inout_set); // [tested]
+  nsResult ReadSet(nsSetBase<KeyType, Comparer>& inout_set); // [tested]
 
   /// \brief Reads a map
   template <typename KeyType, typename ValueType, typename Comparer>
-  wdResult ReadMap(wdMapBase<KeyType, ValueType, Comparer>& inout_map); // [tested]
+  nsResult ReadMap(nsMapBase<KeyType, ValueType, Comparer>& inout_map); // [tested]
 
   /// \brief Read a hash table (note that the entry order is not stable)
   template <typename KeyType, typename ValueType, typename Hasher>
-  wdResult ReadHashTable(wdHashTableBase<KeyType, ValueType, Hasher>& inout_hashTable); // [tested]
+  nsResult ReadHashTable(nsHashTableBase<KeyType, ValueType, Hasher>& inout_hashTable); // [tested]
 
-  /// \brief Reads a string into an wdStringBuilder
-  wdResult ReadString(wdStringBuilder& ref_sBuilder); // [tested]
+  /// \brief Reads a string into an nsStringBuilder
+  nsResult ReadString(nsStringBuilder& ref_sBuilder); // [tested]
 
-  /// \brief Reads a string into an wdString
-  wdResult ReadString(wdString& ref_sString);
+  /// \brief Reads a string into an nsString
+  nsResult ReadString(nsString& ref_sString);
 
 
   /// \brief Helper method to skip a number of bytes (implementations of the stream reader may implement this more efficiently for example)
-  virtual wdUInt64 SkipBytes(wdUInt64 uiBytesToSkip)
+  virtual nsUInt64 SkipBytes(nsUInt64 uiBytesToSkip)
   {
-    wdUInt8 uiTempBuffer[1024];
+    nsUInt8 uiTempBuffer[1024];
 
-    wdUInt64 uiBytesSkipped = 0;
+    nsUInt64 uiBytesSkipped = 0;
 
     while (uiBytesSkipped < uiBytesToSkip)
     {
-      wdUInt64 uiBytesToRead = wdMath::Min<wdUInt64>(uiBytesToSkip - uiBytesSkipped, 1024);
+      nsUInt64 uiBytesToRead = nsMath::Min<nsUInt64>(uiBytesToSkip - uiBytesSkipped, 1024);
 
-      wdUInt64 uiBytesRead = ReadBytes(uiTempBuffer, uiBytesToRead);
+      nsUInt64 uiBytesRead = ReadBytes(uiTempBuffer, uiBytesToRead);
 
       uiBytesSkipped += uiBytesRead;
 
@@ -99,73 +99,73 @@ public:
     return uiBytesSkipped;
   }
 
-  WD_ALWAYS_INLINE wdTypeVersion ReadVersion(wdTypeVersion expectedMaxVersion);
+  NS_ALWAYS_INLINE nsTypeVersion ReadVersion(nsTypeVersion expectedMaxVersion);
 };
 
 /// \brief Interface for binary out (write) streams.
-class WD_FOUNDATION_DLL wdStreamWriter
+class NS_FOUNDATION_DLL nsStreamWriter
 {
-  WD_DISALLOW_COPY_AND_ASSIGN(wdStreamWriter);
+  NS_DISALLOW_COPY_AND_ASSIGN(nsStreamWriter);
 
 public:
   /// \brief Constructor
-  wdStreamWriter();
+  nsStreamWriter();
 
   /// \brief Virtual destructor to ensure correct cleanup
-  virtual ~wdStreamWriter();
+  virtual ~nsStreamWriter();
 
   /// \brief Writes a raw number of bytes from the buffer, this is the only method which has to be implemented to fully implement the
   /// interface.
-  virtual wdResult WriteBytes(const void* pWriteBuffer, wdUInt64 uiBytesToWrite) = 0; // [tested]
+  virtual nsResult WriteBytes(const void* pWriteBuffer, nsUInt64 uiBytesToWrite) = 0; // [tested]
 
   /// \brief Flushes the stream, may be implemented (not necessary to implement the interface correctly) so that user code can ensure that
   /// content is written
-  virtual wdResult Flush() // [tested]
+  virtual nsResult Flush() // [tested]
   {
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
 
   /// \brief Helper method to write a word value correctly (copes with potentially different endianess)
   template <typename T>
-  wdResult WriteWordValue(const T* pWordValue); // [tested]
+  nsResult WriteWordValue(const T* pWordValue); // [tested]
 
   /// \brief Helper method to write a dword value correctly (copes with potentially different endianess)
   template <typename T>
-  wdResult WriteDWordValue(const T* pDWordValue); // [tested]
+  nsResult WriteDWordValue(const T* pDWordValue); // [tested]
 
   /// \brief Helper method to write a qword value correctly (copes with potentially different endianess)
   template <typename T>
-  wdResult WriteQWordValue(const T* pQWordValue); // [tested]
+  nsResult WriteQWordValue(const T* pQWordValue); // [tested]
 
   /// \brief Writes a type version to the stream
-  WD_ALWAYS_INLINE void WriteVersion(wdTypeVersion version);
+  NS_ALWAYS_INLINE void WriteVersion(nsTypeVersion version);
 
   /// \brief Writes an array of elements to the stream
   template <typename ArrayType, typename ValueType>
-  wdResult WriteArray(const wdArrayBase<ValueType, ArrayType>& array); // [tested]
+  nsResult WriteArray(const nsArrayBase<ValueType, ArrayType>& array); // [tested]
 
   /// \brief Writes a small array of elements to the stream
-  template <typename ValueType, wdUInt16 uiSize>
-  wdResult WriteArray(const wdSmallArrayBase<ValueType, uiSize>& array);
+  template <typename ValueType, nsUInt16 uiSize>
+  nsResult WriteArray(const nsSmallArrayBase<ValueType, uiSize>& array);
 
   /// \brief Writes a C style fixed array
-  template <typename ValueType, wdUInt32 uiSize>
-  wdResult WriteArray(const ValueType (&array)[uiSize]);
+  template <typename ValueType, nsUInt32 uiSize>
+  nsResult WriteArray(const ValueType (&array)[uiSize]);
 
   /// \brief Writes a set
   template <typename KeyType, typename Comparer>
-  wdResult WriteSet(const wdSetBase<KeyType, Comparer>& set); // [tested]
+  nsResult WriteSet(const nsSetBase<KeyType, Comparer>& set); // [tested]
 
   /// \brief Writes a map
   template <typename KeyType, typename ValueType, typename Comparer>
-  wdResult WriteMap(const wdMapBase<KeyType, ValueType, Comparer>& map); // [tested]
+  nsResult WriteMap(const nsMapBase<KeyType, ValueType, Comparer>& map); // [tested]
 
   /// \brief Writes a hash table (note that the entry order might change on read)
   template <typename KeyType, typename ValueType, typename Hasher>
-  wdResult WriteHashTable(const wdHashTableBase<KeyType, ValueType, Hasher>& hashTable); // [tested]
+  nsResult WriteHashTable(const nsHashTableBase<KeyType, ValueType, Hasher>& hashTable); // [tested]
 
   /// \brief Writes a string
-  wdResult WriteString(const wdStringView sStringView); // [tested]
+  nsResult WriteString(const nsStringView sStringView); // [tested]
 };
 
 // Contains the helper methods of both interfaces

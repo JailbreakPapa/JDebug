@@ -5,11 +5,11 @@
 /// \brief A simple size class templated on the type for width and height.
 ///
 template <typename Type>
-class wdSizeTemplate
+class nsSizeTemplate
 {
 public:
   // Means this object can be copied using memcpy instead of copy construction.
-  WD_DECLARE_POD_TYPE();
+  NS_DECLARE_POD_TYPE();
 
   // *** Data ***
 public:
@@ -19,10 +19,10 @@ public:
   // *** Constructors ***
 public:
   /// \brief Default constructor does not initialize the data.
-  wdSizeTemplate();
+  nsSizeTemplate();
 
   /// \brief Constructor to set all values.
-  wdSizeTemplate(Type width, Type height);
+  nsSizeTemplate(Type width, Type height);
 
   // *** Common Functions ***
 public:
@@ -31,13 +31,13 @@ public:
 };
 
 template <typename Type>
-bool operator==(const wdSizeTemplate<Type>& v1, const wdSizeTemplate<Type>& v2);
+bool operator==(const nsSizeTemplate<Type>& v1, const nsSizeTemplate<Type>& v2);
 
 template <typename Type>
-bool operator!=(const wdSizeTemplate<Type>& v1, const wdSizeTemplate<Type>& v2);
+bool operator!=(const nsSizeTemplate<Type>& v1, const nsSizeTemplate<Type>& v2);
 
 #include <Foundation/Math/Implementation/Size_inl.h>
 
-typedef wdSizeTemplate<wdUInt32> wdSizeU32;
-typedef wdSizeTemplate<float> wdSizeFloat;
-typedef wdSizeTemplate<double> wdSizeDouble;
+using nsSizeU32 = nsSizeTemplate<nsUInt32>;
+using nsSizeFloat = nsSizeTemplate<float>;
+using nsSizeDouble = nsSizeTemplate<double>;

@@ -5,20 +5,19 @@
 #include <Foundation/DataProcessing/Stream/ProcessingStreamProcessor.h>
 
 // clang-format off
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdProcessingStreamProcessor, 1, wdRTTINoAllocator)
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsProcessingStreamProcessor, 1, nsRTTINoAllocator)
+NS_END_DYNAMIC_REFLECTED_TYPE;
 // clang-format on
 
-wdProcessingStreamProcessor::wdProcessingStreamProcessor()
-  : m_pStreamGroup(nullptr)
-{
-}
+nsProcessingStreamProcessor::nsProcessingStreamProcessor()
 
-wdProcessingStreamProcessor::~wdProcessingStreamProcessor()
+  = default;
+
+nsProcessingStreamProcessor::~nsProcessingStreamProcessor()
 {
   m_pStreamGroup = nullptr;
 }
 
 
 
-WD_STATICLINK_FILE(Foundation, Foundation_DataProcessing_Stream_Implementation_ProcessingStreamProcessor);
+NS_STATICLINK_FILE(Foundation, Foundation_DataProcessing_Stream_Implementation_ProcessingStreamProcessor);

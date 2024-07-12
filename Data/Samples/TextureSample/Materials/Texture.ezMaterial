@@ -1,7 +1,0 @@
-string %Shader { "Shaders/Texture.wdShader" }
-
-Texture2D
-{
-  string %Variable { "DiffuseTexture" }
-  string %Value { "Textures/Reference_D.dds" }
-}

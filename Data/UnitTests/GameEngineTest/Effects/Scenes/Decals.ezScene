@@ -3,7 +3,7 @@ HeaderV2
 o
 {
 	Uuid %id{u4{4114495068825608376,4693612569124721933}}
-	s %t{"wdAssetDocumentInfo"}
+	s %t{"nsAssetDocumentInfo"}
 	u3 %v{2}
 	s %n{"Header"}
 	p
@@ -49,7 +49,7 @@ Objects
 o
 {
 	Uuid %id{u4{10837245717779351191,57595389489836995}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -60,7 +60,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{"{ 2417d010-56d1-4645-bfa5-7bc347d4df55 }"}
-		s %Shape{"wdGreyBoxShape::Box"}
+		s %Shape{"nsGreyBoxShape::Box"}
 		f %SizeNegX{0x0000803F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -75,7 +75,7 @@ o
 o
 {
 	Uuid %id{u4{11885124527520754330,343423854554647643}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -90,7 +90,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -101,7 +101,7 @@ o
 o
 {
 	Uuid %id{u4{10087995563929660299,513198622279344750}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -116,7 +116,7 @@ o
 		Quat %LocalRotation{f{0x146AEA3D,0xF7FE7EBD,0xD6F35EBF,0x9E9DF23E}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000D83F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -128,7 +128,7 @@ o
 o
 {
 	Uuid %id{u4{11923291469196352611,801549209369366753}}
-	s %t{"wdDecalComponent"}
+	s %t{"nsDecalComponent"}
 	u3 %v{8}
 	p
 	{
@@ -141,7 +141,7 @@ o
 		}
 		Color %EmissiveColor{f{0,0,0,0x0000803F}}
 		Vec3 %Extents{f{0x0000803F,0x0000803F,0x0000803F}}
-		wdVarianceTypeTime %FadeOutDelay
+		nsVarianceTypeTime %FadeOutDelay
 		{
 			f %Variance{0}
 			Time %Value{d{0}}
@@ -149,9 +149,9 @@ o
 		Time %FadeOutDuration{d{0x000000000000F03F}}
 		Angle %InnerFadeAngle{f{0xF3665F3F}}
 		b %MapNormalToGeometry{1}
-		s %OnFinishedAction{"wdOnComponentFinishedAction::None"}
+		s %OnFinishedAction{"nsOnComponentFinishedAction::None"}
 		Angle %OuterFadeAngle{f{0xDB0FC93F}}
-		s %ProjectionAxis{"wdBasisAxis::NegativeZ"}
+		s %ProjectionAxis{"nsBasisAxis::Negativns"}
 		f %SizeVariance{0}
 		f %SortOrder{0x000000C0}
 		b %WrapAround{1}
@@ -160,7 +160,7 @@ o
 o
 {
 	Uuid %id{u4{13835641887959259316,847800651780126830}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -171,7 +171,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{"{ 2417d010-56d1-4645-bfa5-7bc347d4df55 }"}
-		s %Shape{"wdGreyBoxShape::Box"}
+		s %Shape{"nsGreyBoxShape::Box"}
 		f %SizeNegX{0x0000803F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -186,7 +186,7 @@ o
 o
 {
 	Uuid %id{u4{1322628229538739776,982328832485907310}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -201,7 +201,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -212,7 +212,7 @@ o
 o
 {
 	Uuid %id{u4{4450087996897488991,1031748640386083227}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -227,7 +227,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -238,7 +238,7 @@ o
 o
 {
 	Uuid %id{u4{9219883799913550221,1077453841051298675}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -253,7 +253,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -264,7 +264,7 @@ o
 o
 {
 	Uuid %id{u4{11193642225478463846,1161857308367574287}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -279,7 +279,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -290,7 +290,7 @@ o
 o
 {
 	Uuid %id{u4{14442726665315826841,1475557226396168782}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -305,7 +305,7 @@ o
 		Quat %LocalRotation{f{0xDA8DE6BD,0xA005D1BE,0x7AC6B73E,0x4EEE54BF}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000A03F,0x0000803F}}
 		f %LocalUniformScaling{0x00001040}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -317,7 +317,7 @@ o
 o
 {
 	Uuid %id{u4{3273145589977244762,1486705629711386497}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -328,7 +328,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{"{ f2c2c3fb-5dc5-4189-b246-4493392aecaa }"}
-		s %Shape{"wdGreyBoxShape::Box"}
+		s %Shape{"nsGreyBoxShape::Box"}
 		f %SizeNegX{0x0000803F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -343,7 +343,7 @@ o
 o
 {
 	Uuid %id{u4{6400605357335993977,1536125437611562414}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -354,7 +354,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{"{ 839dc50c-66bd-4557-91b3-4ed3c1e9a703 }"}
-		s %Shape{"wdGreyBoxShape::Box"}
+		s %Shape{"nsGreyBoxShape::Box"}
 		f %SizeNegX{0x0000803F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -369,7 +369,7 @@ o
 o
 {
 	Uuid %id{u4{11170401160352055207,1581830638276777862}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -380,7 +380,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{"{ 2417d010-56d1-4645-bfa5-7bc347d4df55 }"}
-		s %Shape{"wdGreyBoxShape::Box"}
+		s %Shape{"nsGreyBoxShape::Box"}
 		f %SizeNegX{0x0000803F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -395,7 +395,7 @@ o
 o
 {
 	Uuid %id{u4{13144159585916968832,1666234105593053474}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -406,7 +406,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{"{ f5b6801b-53d5-4749-b616-90170271cd68 }"}
-		s %Shape{"wdGreyBoxShape::Box"}
+		s %Shape{"nsGreyBoxShape::Box"}
 		f %SizeNegX{0x0000803F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -421,7 +421,7 @@ o
 o
 {
 	Uuid %id{u4{18159204386226433430,1762189018677652954}}
-	s %t{"wdDecalComponent"}
+	s %t{"nsDecalComponent"}
 	u3 %v{8}
 	p
 	{
@@ -434,7 +434,7 @@ o
 		}
 		Color %EmissiveColor{f{0x493D8841,0x98117E3C,0xD3151E41,0x0000803F}}
 		Vec3 %Extents{f{0x0000803F,0x0000803F,0x0000803F}}
-		wdVarianceTypeTime %FadeOutDelay
+		nsVarianceTypeTime %FadeOutDelay
 		{
 			f %Variance{0}
 			Time %Value{d{0}}
@@ -442,9 +442,9 @@ o
 		Time %FadeOutDuration{d{0}}
 		Angle %InnerFadeAngle{f{0x920A863F}}
 		b %MapNormalToGeometry{0}
-		s %OnFinishedAction{"wdOnComponentFinishedAction::None"}
+		s %OnFinishedAction{"nsOnComponentFinishedAction::None"}
 		Angle %OuterFadeAngle{f{0xDB0FC93F}}
-		s %ProjectionAxis{"wdBasisAxis::PositiveX"}
+		s %ProjectionAxis{"nsBasisAxis::PositiveX"}
 		f %SizeVariance{0}
 		f %SortOrder{0}
 		b %WrapAround{0}
@@ -453,7 +453,7 @@ o
 o
 {
 	Uuid %id{u4{9342283408560868220,2543792996657480646}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -468,7 +468,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -479,7 +479,7 @@ o
 o
 {
 	Uuid %id{u4{11292800768999373206,3048169793882959833}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -490,7 +490,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{"{ ff4ecbeb-c91a-4a38-b66e-dabf240152d5 }"}
-		s %Shape{"wdGreyBoxShape::Box"}
+		s %Shape{"nsGreyBoxShape::Box"}
 		f %SizeNegX{0x0000803F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -505,7 +505,7 @@ o
 o
 {
 	Uuid %id{u4{10015600574614426199,3089703270035101371}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -520,7 +520,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -531,7 +531,7 @@ o
 o
 {
 	Uuid %id{u4{13143060341973175414,3139123077935277288}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -546,7 +546,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -557,7 +557,7 @@ o
 o
 {
 	Uuid %id{u4{4181060072573239161,3158352686483741990}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -572,7 +572,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -583,7 +583,7 @@ o
 o
 {
 	Uuid %id{u4{11966117935052931185,3594080067260580558}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -594,7 +594,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{"{ dc4b274a-7aa4-4663-b2d6-19d86951aa30 }"}
-		s %Shape{"wdGreyBoxShape::Box"}
+		s %Shape{"nsGreyBoxShape::Box"}
 		f %SizeNegX{0x0000803F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -609,7 +609,7 @@ o
 o
 {
 	Uuid %id{u4{15093577702411680400,3643499875160756475}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -620,7 +620,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{"{ 7ad63cae-bab3-4dc8-a5cf-0803c172a739 }"}
-		s %Shape{"wdGreyBoxShape::Box"}
+		s %Shape{"nsGreyBoxShape::Box"}
 		f %SizeNegX{0x0000803F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -635,7 +635,7 @@ o
 o
 {
 	Uuid %id{u4{6131577433011744147,3662729483709221177}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -646,7 +646,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{"{ 2417d010-56d1-4645-bfa5-7bc347d4df55 }"}
-		s %Shape{"wdGreyBoxShape::Box"}
+		s %Shape{"nsGreyBoxShape::Box"}
 		f %SizeNegX{0x0000803F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -661,7 +661,7 @@ o
 o
 {
 	Uuid %id{u4{17459461300562291482,3694945787865196345}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -676,7 +676,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -687,7 +687,7 @@ o
 o
 {
 	Uuid %id{u4{963234587291244852,4199322585090675532}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -698,7 +698,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{"{ 2417d010-56d1-4645-bfa5-7bc347d4df55 }"}
-		s %Shape{"wdGreyBoxShape::Box"}
+		s %Shape{"nsGreyBoxShape::Box"}
 		f %SizeNegX{0x0000803F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -713,7 +713,7 @@ o
 o
 {
 	Uuid %id{u4{4631371759611690133,4640262588539221199}}
-	s %t{"wdSceneLayer"}
+	s %t{"nsSceneLayer"}
 	u3 %v{1}
 	p
 	{
@@ -723,7 +723,7 @@ o
 o
 {
 	Uuid %id{u4{8980534528679596953,4656399325270279531}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -738,7 +738,7 @@ o
 		Quat %LocalRotation{f{0,0xF204353F,0xF30435B3,0xF304353F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -750,7 +750,7 @@ o
 o
 {
 	Uuid %id{u4{10202072702674301334,4687037136244609833}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -765,7 +765,7 @@ o
 		Quat %LocalRotation{f{0xF204B5BE,0xF204B53E,0x70C41CBF,0x70C41C3F}}
 		Vec3 %LocalScaling{f{0x0000603F,0x0000C03F,0x0000203F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -777,7 +777,7 @@ o
 o
 {
 	Uuid %id{u4{15359788062460853171,4694555997248065284}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -792,7 +792,7 @@ o
 		Quat %LocalRotation{f{0,0,0x16EFC3BE,0x5E836C3F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000B03F,0x0000803F}}
 		f %LocalUniformScaling{0x00004040}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -804,7 +804,7 @@ o
 o
 {
 	Uuid %id{u4{14138508343935863196,4703247524139380160}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -819,7 +819,7 @@ o
 		Quat %LocalRotation{f{0x24E38ABB,0xAACB7D3E,0x3AB4873C,0x55F9773F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -831,7 +831,7 @@ o
 o
 {
 	Uuid %id{u4{11915399459142442885,4716574867133135854}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -846,7 +846,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -857,7 +857,7 @@ o
 o
 {
 	Uuid %id{u4{9510613987454506377,4738429101568201906}}
-	s %t{"wdDecalComponent"}
+	s %t{"nsDecalComponent"}
 	u3 %v{8}
 	p
 	{
@@ -870,7 +870,7 @@ o
 		}
 		Color %EmissiveColor{f{0,0,0,0x0000803F}}
 		Vec3 %Extents{f{0x00004040,0x00004040,0x00004040}}
-		wdVarianceTypeTime %FadeOutDelay
+		nsVarianceTypeTime %FadeOutDelay
 		{
 			f %Variance{0}
 			Time %Value{d{0}}
@@ -878,9 +878,9 @@ o
 		Time %FadeOutDuration{d{0x000000000000E03F}}
 		Angle %InnerFadeAngle{f{0xF3665F3F}}
 		b %MapNormalToGeometry{1}
-		s %OnFinishedAction{"wdOnComponentFinishedAction::DeleteGameObject"}
+		s %OnFinishedAction{"nsOnComponentFinishedAction::DeleteGameObject"}
 		Angle %OuterFadeAngle{f{0xC2B8B23F}}
-		s %ProjectionAxis{"wdBasisAxis::PositiveY"}
+		s %ProjectionAxis{"nsBasisAxis::PositiveY"}
 		f %SizeVariance{0}
 		f %SortOrder{0}
 		b %WrapAround{0}
@@ -889,7 +889,7 @@ o
 o
 {
 	Uuid %id{u4{14862890108025201050,4750668481186424938}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -904,7 +904,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -915,7 +915,7 @@ o
 o
 {
 	Uuid %id{u4{15685294059647642778,4768326753015371786}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -930,7 +930,7 @@ o
 		Quat %LocalRotation{f{0,0,0x56360FBF,0xA431543F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -941,7 +941,7 @@ o
 o
 {
 	Uuid %id{u4{13359075245692352906,4808705898882851391}}
-	s %t{"wdSceneDocumentSettings"}
+	s %t{"nsSceneDocumentSettings"}
 	u3 %v{2}
 	p
 	{
@@ -954,7 +954,7 @@ o
 o
 {
 	Uuid %id{u4{8682955429373649326,4820637435859289533}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -969,7 +969,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -980,7 +980,7 @@ o
 o
 {
 	Uuid %id{u4{12768255523215581368,4827720991907658152}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -995,7 +995,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -1007,7 +1007,7 @@ o
 o
 {
 	Uuid %id{u4{9301581704469162910,4860539961231084677}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -1022,7 +1022,7 @@ o
 		Quat %LocalRotation{f{0x1C16B3BD,0xD02CB13E,0xFA596A3E,0xB0D9673F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x00007040}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -1034,7 +1034,7 @@ o
 o
 {
 	Uuid %id{u4{4656300558898302142,4882717358843663849}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -1049,7 +1049,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x00000040}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -1061,7 +1061,7 @@ o
 o
 {
 	Uuid %id{u4{18085442068424735140,4886084605302893068}}
-	s %t{"wdDecalComponent"}
+	s %t{"nsDecalComponent"}
 	u3 %v{8}
 	p
 	{
@@ -1074,7 +1074,7 @@ o
 		}
 		Color %EmissiveColor{f{0,0,0,0x0000803F}}
 		Vec3 %Extents{f{0x0000803F,0x0000803F,0x0000803F}}
-		wdVarianceTypeTime %FadeOutDelay
+		nsVarianceTypeTime %FadeOutDelay
 		{
 			f %Variance{0}
 			Time %Value{d{0}}
@@ -1082,9 +1082,9 @@ o
 		Time %FadeOutDuration{d{0x000000000000F03F}}
 		Angle %InnerFadeAngle{f{0xF3665F3F}}
 		b %MapNormalToGeometry{1}
-		s %OnFinishedAction{"wdOnComponentFinishedAction::None"}
+		s %OnFinishedAction{"nsOnComponentFinishedAction::None"}
 		Angle %OuterFadeAngle{f{0xC2B8B23F}}
-		s %ProjectionAxis{"wdBasisAxis::NegativeZ"}
+		s %ProjectionAxis{"nsBasisAxis::Negativns"}
 		f %SizeVariance{0}
 		f %SortOrder{0}
 		b %WrapAround{0}
@@ -1093,7 +1093,7 @@ o
 o
 {
 	Uuid %id{u4{5675210186602748821,4896711170491529478}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -1108,7 +1108,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x3333333F}
-		s %Mode{"wdObjectMode::ForceDynamic"}
+		s %Mode{"nsObjectMode::ForceDynamic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -1120,7 +1120,7 @@ o
 o
 {
 	Uuid %id{u4{13649859360092904068,4901281856961990908}}
-	s %t{"wdDecalComponent"}
+	s %t{"nsDecalComponent"}
 	u3 %v{8}
 	p
 	{
@@ -1133,7 +1133,7 @@ o
 		}
 		Color %EmissiveColor{f{0,0,0,0x0000803F}}
 		Vec3 %Extents{f{0x0000803F,0x0000803F,0x0000803F}}
-		wdVarianceTypeTime %FadeOutDelay
+		nsVarianceTypeTime %FadeOutDelay
 		{
 			f %Variance{0}
 			Time %Value{d{0}}
@@ -1141,9 +1141,9 @@ o
 		Time %FadeOutDuration{d{0}}
 		Angle %InnerFadeAngle{f{0xF3665F3F}}
 		b %MapNormalToGeometry{1}
-		s %OnFinishedAction{"wdOnComponentFinishedAction::None"}
+		s %OnFinishedAction{"nsOnComponentFinishedAction::None"}
 		Angle %OuterFadeAngle{f{0xC2B8B23F}}
-		s %ProjectionAxis{"wdBasisAxis::NegativeZ"}
+		s %ProjectionAxis{"nsBasisAxis::Negativns"}
 		f %SizeVariance{0x0000803F}
 		f %SortOrder{0x0000803F}
 		b %WrapAround{0}
@@ -1152,7 +1152,7 @@ o
 o
 {
 	Uuid %id{u4{7416931700290487689,4912311501832781719}}
-	s %t{"wdMeshComponent"}
+	s %t{"nsMeshComponent"}
 	u3 %v{3}
 	p
 	{
@@ -1168,7 +1168,7 @@ o
 o
 {
 	Uuid %id{u4{13426233348495853989,4930755075128542131}}
-	s %t{"wdDecalComponent"}
+	s %t{"nsDecalComponent"}
 	u3 %v{8}
 	p
 	{
@@ -1181,7 +1181,7 @@ o
 		}
 		Color %EmissiveColor{f{0,0,0,0x0000803F}}
 		Vec3 %Extents{f{0x00008040,0x00008040,0x0000803F}}
-		wdVarianceTypeTime %FadeOutDelay
+		nsVarianceTypeTime %FadeOutDelay
 		{
 			f %Variance{0}
 			Time %Value{d{0}}
@@ -1189,9 +1189,9 @@ o
 		Time %FadeOutDuration{d{0}}
 		Angle %InnerFadeAngle{f{0xF3665F3F}}
 		b %MapNormalToGeometry{1}
-		s %OnFinishedAction{"wdOnComponentFinishedAction::None"}
+		s %OnFinishedAction{"nsOnComponentFinishedAction::None"}
 		Angle %OuterFadeAngle{f{0xC2B8B23F}}
-		s %ProjectionAxis{"wdBasisAxis::NegativeZ"}
+		s %ProjectionAxis{"nsBasisAxis::Negativns"}
 		f %SizeVariance{0}
 		f %SortOrder{0}
 		b %WrapAround{0}
@@ -1200,7 +1200,7 @@ o
 o
 {
 	Uuid %id{u4{17195083967727545483,4982906584338087287}}
-	s %t{"wdDecalComponent"}
+	s %t{"nsDecalComponent"}
 	u3 %v{8}
 	p
 	{
@@ -1213,7 +1213,7 @@ o
 		}
 		Color %EmissiveColor{f{0,0,0,0x0000803F}}
 		Vec3 %Extents{f{0x0000803F,0x0000803F,0x0000803F}}
-		wdVarianceTypeTime %FadeOutDelay
+		nsVarianceTypeTime %FadeOutDelay
 		{
 			f %Variance{0}
 			Time %Value{d{0}}
@@ -1221,9 +1221,9 @@ o
 		Time %FadeOutDuration{d{0}}
 		Angle %InnerFadeAngle{f{0xF3665F3F}}
 		b %MapNormalToGeometry{1}
-		s %OnFinishedAction{"wdOnComponentFinishedAction::None"}
+		s %OnFinishedAction{"nsOnComponentFinishedAction::None"}
 		Angle %OuterFadeAngle{f{0xC2B8B23F}}
-		s %ProjectionAxis{"wdBasisAxis::NegativeZ"}
+		s %ProjectionAxis{"nsBasisAxis::Negativns"}
 		f %SizeVariance{0}
 		f %SortOrder{0x000000C0}
 		b %WrapAround{0}
@@ -1232,7 +1232,7 @@ o
 o
 {
 	Uuid %id{u4{12609912085371752597,4997448076341935951}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -1247,7 +1247,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -1259,7 +1259,7 @@ o
 o
 {
 	Uuid %id{u4{13389861973496279687,5037649325170394834}}
-	s %t{"wdDirectionalLightComponent"}
+	s %t{"nsDirectionalLightComponent"}
 	u3 %v{3}
 	p
 	{
@@ -1280,7 +1280,7 @@ o
 o
 {
 	Uuid %id{u4{13950190252157910406,5040533210089972224}}
-	s %t{"wdCameraComponent"}
+	s %t{"nsCameraComponent"}
 	u3 %v{10}
 	p
 	{
@@ -1295,20 +1295,20 @@ o
 		f %FarPlane{0x00007A44}
 		f %ISO{0x0000C842}
 		VarArray %IncludeTags{}
-		s %Mode{"wdCameraMode::PerspectiveFixedFovY"}
+		s %Mode{"nsCameraMode::PerspectiveFixedFovY"}
 		f %NearPlane{0x0000803E}
 		s %RenderTarget{""}
 		Vec2 %RenderTargetOffset{f{0,0}}
 		Vec2 %RenderTargetSize{f{0x0000803F,0x0000803F}}
 		b %ShowStats{0}
 		Time %ShutterTime{d{0x000000000000F03F}}
-		s %UsageHint{"wdCameraUsageHint::MainView"}
+		s %UsageHint{"nsCameraUsageHint::MainView"}
 	}
 }
 o
 {
 	Uuid %id{u4{3993240663051057323,5075467591603048276}}
-	s %t{"wdDecalComponent"}
+	s %t{"nsDecalComponent"}
 	u3 %v{8}
 	p
 	{
@@ -1321,7 +1321,7 @@ o
 		}
 		Color %EmissiveColor{f{0,0,0,0x0000803F}}
 		Vec3 %Extents{f{0xCDCCCC3D,0x00000040,0x00000040}}
-		wdVarianceTypeTime %FadeOutDelay
+		nsVarianceTypeTime %FadeOutDelay
 		{
 			f %Variance{0}
 			Time %Value{d{0}}
@@ -1329,9 +1329,9 @@ o
 		Time %FadeOutDuration{d{0}}
 		Angle %InnerFadeAngle{f{0xF3665F3F}}
 		b %MapNormalToGeometry{1}
-		s %OnFinishedAction{"wdOnComponentFinishedAction::None"}
+		s %OnFinishedAction{"nsOnComponentFinishedAction::None"}
 		Angle %OuterFadeAngle{f{0xC2B8B23F}}
-		s %ProjectionAxis{"wdBasisAxis::PositiveX"}
+		s %ProjectionAxis{"nsBasisAxis::PositiveX"}
 		f %SizeVariance{0}
 		f %SortOrder{0x0000803F}
 		b %WrapAround{0}
@@ -1340,7 +1340,7 @@ o
 o
 {
 	Uuid %id{u4{6967666241760641206,5093465914183385192}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -1356,7 +1356,7 @@ o
 		Quat %LocalRotation{f{0x8E0507BE,0x3592E23E,0xE8AF813E,0x9A9E593F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -1368,7 +1368,7 @@ o
 o
 {
 	Uuid %id{u4{13018059425379769499,5147171753512568849}}
-	s %t{"wdDecalComponent"}
+	s %t{"nsDecalComponent"}
 	u3 %v{8}
 	p
 	{
@@ -1381,7 +1381,7 @@ o
 		}
 		Color %EmissiveColor{f{0xF110893F,0x16E07340,0,0x0000803F}}
 		Vec3 %Extents{f{0x0000803F,0x0000803F,0x0000803F}}
-		wdVarianceTypeTime %FadeOutDelay
+		nsVarianceTypeTime %FadeOutDelay
 		{
 			f %Variance{0}
 			Time %Value{d{0}}
@@ -1389,9 +1389,9 @@ o
 		Time %FadeOutDuration{d{0}}
 		Angle %InnerFadeAngle{f{0x920A863F}}
 		b %MapNormalToGeometry{1}
-		s %OnFinishedAction{"wdOnComponentFinishedAction::None"}
+		s %OnFinishedAction{"nsOnComponentFinishedAction::None"}
 		Angle %OuterFadeAngle{f{0xDB0FC93F}}
-		s %ProjectionAxis{"wdBasisAxis::PositiveX"}
+		s %ProjectionAxis{"nsBasisAxis::PositiveX"}
 		f %SizeVariance{0}
 		f %SortOrder{0}
 		b %WrapAround{0}
@@ -1400,7 +1400,7 @@ o
 o
 {
 	Uuid %id{u4{8916447014416611484,5182216604141610844}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -1454,7 +1454,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -1466,7 +1466,7 @@ o
 o
 {
 	Uuid %id{u4{13865916819580947871,5220951664358615041}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -1477,7 +1477,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{"{ d65800e7-6639-4be7-be45-c9b9071806e2 }"}
-		s %Shape{"wdGreyBoxShape::Box"}
+		s %Shape{"nsGreyBoxShape::Box"}
 		f %SizeNegX{0x0000803F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -1492,7 +1492,7 @@ o
 o
 {
 	Uuid %id{u4{15973207481885987209,5222549446697770449}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -1507,7 +1507,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -1519,7 +1519,7 @@ o
 o
 {
 	Uuid %id{u4{8428617270035962423,5268286683093377190}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -1534,7 +1534,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -1545,7 +1545,7 @@ o
 o
 {
 	Uuid %id{u4{2582225780660286763,5275949971465666019}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -1560,7 +1560,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -1571,7 +1571,7 @@ o
 o
 {
 	Uuid %id{u4{14190040909226991752,5308810929611649696}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -1586,7 +1586,7 @@ o
 		Quat %LocalRotation{f{0,0xEAE9663E,0xEBE966B2,0xF967793F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000D240}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -1598,7 +1598,7 @@ o
 o
 {
 	Uuid %id{u4{2452759441585065108,5345970255108227869}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -1613,7 +1613,7 @@ o
 		Quat %LocalRotation{f{0x59F1343F,0x044F0239,0x8C18353F,0xCE320239}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -1624,7 +1624,7 @@ o
 o
 {
 	Uuid %id{u4{1650142523182162864,5358184180770099854}}
-	s %t{"wdAmbientLightComponent"}
+	s %t{"nsAmbientLightComponent"}
 	u3 %v{2}
 	p
 	{
@@ -1637,7 +1637,7 @@ o
 o
 {
 	Uuid %id{u4{5096829619996339095,5413878273275796616}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -1648,7 +1648,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{"{ cebac79d-f44f-4526-89b7-fb5826ddd065 }"}
-		s %Shape{"wdGreyBoxShape::Box"}
+		s %Shape{"nsGreyBoxShape::Box"}
 		f %SizeNegX{0x0000803E}
 		f %SizeNegY{0}
 		f %SizeNegZ{0}
@@ -1663,7 +1663,7 @@ o
 o
 {
 	Uuid %id{u4{18399923322527579292,5414483569842894483}}
-	s %t{"wdSkyBoxComponent"}
+	s %t{"nsSkyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -1678,7 +1678,7 @@ o
 o
 {
 	Uuid %id{u4{15745771203082205056,5422090289479785927}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -1693,7 +1693,7 @@ o
 		Quat %LocalRotation{f{0,0x74A731BE,0x75A73132,0x2F1E7C3F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000C03F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -1705,7 +1705,7 @@ o
 o
 {
 	Uuid %id{u4{2682419217511246235,5443902579735839698}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -1720,7 +1720,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x00000040}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -1732,7 +1732,7 @@ o
 o
 {
 	Uuid %id{u4{2100521151010563466,5444163705681822405}}
-	s %t{"wdCameraComponent"}
+	s %t{"nsCameraComponent"}
 	u3 %v{10}
 	p
 	{
@@ -1747,20 +1747,20 @@ o
 		f %FarPlane{0x00007A44}
 		f %ISO{0x0000C842}
 		VarArray %IncludeTags{}
-		s %Mode{"wdCameraMode::PerspectiveFixedFovY"}
+		s %Mode{"nsCameraMode::PerspectiveFixedFovY"}
 		f %NearPlane{0x0000803E}
 		s %RenderTarget{""}
 		Vec2 %RenderTargetOffset{f{0,0}}
 		Vec2 %RenderTargetSize{f{0x0000803F,0x0000803F}}
 		b %ShowStats{0}
 		Time %ShutterTime{d{0x000000000000F03F}}
-		s %UsageHint{"wdCameraUsageHint::None"}
+		s %UsageHint{"nsCameraUsageHint::None"}
 	}
 }
 o
 {
 	Uuid %id{u4{10572943743609095841,5448901794630397891}}
-	s %t{"wdMeshComponent"}
+	s %t{"nsMeshComponent"}
 	u3 %v{3}
 	p
 	{
@@ -1776,7 +1776,7 @@ o
 o
 {
 	Uuid %id{u4{6048280248667463314,5451735262128846087}}
-	s %t{"wdDecalComponent"}
+	s %t{"nsDecalComponent"}
 	u3 %v{8}
 	p
 	{
@@ -1789,7 +1789,7 @@ o
 		}
 		Color %EmissiveColor{f{0,0,0,0x0000803F}}
 		Vec3 %Extents{f{0x00000040,0x00000040,0x00000040}}
-		wdVarianceTypeTime %FadeOutDelay
+		nsVarianceTypeTime %FadeOutDelay
 		{
 			f %Variance{0}
 			Time %Value{d{0}}
@@ -1797,9 +1797,9 @@ o
 		Time %FadeOutDuration{d{0}}
 		Angle %InnerFadeAngle{f{0xF3665F3F}}
 		b %MapNormalToGeometry{1}
-		s %OnFinishedAction{"wdOnComponentFinishedAction::None"}
+		s %OnFinishedAction{"nsOnComponentFinishedAction::None"}
 		Angle %OuterFadeAngle{f{0xC2B8B23F}}
-		s %ProjectionAxis{"wdBasisAxis::PositiveX"}
+		s %ProjectionAxis{"nsBasisAxis::PositiveX"}
 		f %SizeVariance{0}
 		f %SortOrder{0}
 		b %WrapAround{0}
@@ -1808,7 +1808,7 @@ o
 o
 {
 	Uuid %id{u4{17309183826656460187,5514675962871561532}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -1823,7 +1823,7 @@ o
 		Quat %LocalRotation{f{0xF17549B2,0x78D9BE3E,0x1D08CB32,0xDC8C6D3F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{"Scene Thumbnail Camera"}
 		VarArray %Tags
 		{
@@ -1835,7 +1835,7 @@ o
 o
 {
 	Uuid %id{u4{2977644932153770164,5648349780105025177}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -1850,7 +1850,7 @@ o
 		Quat %LocalRotation{f{0,0x6864753E,0x696475B2,0x638A783F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -1862,7 +1862,7 @@ o
 o
 {
 	Uuid %id{u4{17218935119340022925,5648438764797614440}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -1873,7 +1873,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{""}
-		s %Shape{"wdGreyBoxShape::Column"}
+		s %Shape{"nsGreyBoxShape::Column"}
 		f %SizeNegX{0x0000003F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -1888,7 +1888,7 @@ o
 o
 {
 	Uuid %id{u4{17489337538716084115,5727049623509982980}}
-	s %t{"wdDecalComponent"}
+	s %t{"nsDecalComponent"}
 	u3 %v{8}
 	p
 	{
@@ -1901,7 +1901,7 @@ o
 		}
 		Color %EmissiveColor{f{0,0,0,0x0000803F}}
 		Vec3 %Extents{f{0x0000803F,0x0000803F,0x0000803F}}
-		wdVarianceTypeTime %FadeOutDelay
+		nsVarianceTypeTime %FadeOutDelay
 		{
 			f %Variance{0}
 			Time %Value{d{0}}
@@ -1909,9 +1909,9 @@ o
 		Time %FadeOutDuration{d{0}}
 		Angle %InnerFadeAngle{f{0xF3665F3F}}
 		b %MapNormalToGeometry{0}
-		s %OnFinishedAction{"wdOnComponentFinishedAction::None"}
+		s %OnFinishedAction{"nsOnComponentFinishedAction::None"}
 		Angle %OuterFadeAngle{f{0xC2B8B23F}}
-		s %ProjectionAxis{"wdBasisAxis::PositiveX"}
+		s %ProjectionAxis{"nsBasisAxis::PositiveX"}
 		f %SizeVariance{0}
 		f %SortOrder{0}
 		b %WrapAround{0}
@@ -1920,7 +1920,7 @@ o
 o
 {
 	Uuid %id{u4{3702933292722027147,5735000138030956466}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -1931,7 +1931,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{"{ ffd752af-28a6-4c87-874e-6d083761e9e4 }"}
-		s %Shape{"wdGreyBoxShape::Box"}
+		s %Shape{"nsGreyBoxShape::Box"}
 		f %SizeNegX{0x0000803E}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -1946,7 +1946,7 @@ o
 o
 {
 	Uuid %id{u4{13207177410609350550,5741766035118617898}}
-	s %t{"wdDecalComponent"}
+	s %t{"nsDecalComponent"}
 	u3 %v{8}
 	p
 	{
@@ -1959,7 +1959,7 @@ o
 		}
 		Color %EmissiveColor{f{0,0,0,0x0000803F}}
 		Vec3 %Extents{f{0x0000803F,0x0000803F,0x0000803F}}
-		wdVarianceTypeTime %FadeOutDelay
+		nsVarianceTypeTime %FadeOutDelay
 		{
 			f %Variance{0}
 			Time %Value{d{0}}
@@ -1967,9 +1967,9 @@ o
 		Time %FadeOutDuration{d{0}}
 		Angle %InnerFadeAngle{f{0xF3665F3F}}
 		b %MapNormalToGeometry{1}
-		s %OnFinishedAction{"wdOnComponentFinishedAction::None"}
+		s %OnFinishedAction{"nsOnComponentFinishedAction::None"}
 		Angle %OuterFadeAngle{f{0xC2B8B23F}}
-		s %ProjectionAxis{"wdBasisAxis::NegativeZ"}
+		s %ProjectionAxis{"nsBasisAxis::Negativns"}
 		f %SizeVariance{0}
 		f %SortOrder{0x000080BF}
 		b %WrapAround{0}
@@ -1978,7 +1978,7 @@ o
 o
 {
 	Uuid %id{u4{13343550686406626707,5761901389017673549}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -1989,7 +1989,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{""}
-		s %Shape{"wdGreyBoxShape::ArchX"}
+		s %Shape{"nsGreyBoxShape::ArchX"}
 		f %SizeNegX{0x0000003F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0x0000803F}
@@ -2004,7 +2004,7 @@ o
 o
 {
 	Uuid %id{u4{10379134630474467409,5772663480318856377}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -2015,7 +2015,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{"{ 2417d010-56d1-4645-bfa5-7bc347d4df55 }"}
-		s %Shape{"wdGreyBoxShape::Box"}
+		s %Shape{"nsGreyBoxShape::Box"}
 		f %SizeNegX{0x0000803F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -2030,7 +2030,7 @@ o
 o
 {
 	Uuid %id{u4{4532743141098791749,5780326768691145206}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -2041,7 +2041,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{"{ 2417d010-56d1-4645-bfa5-7bc347d4df55 }"}
-		s %Shape{"wdGreyBoxShape::Box"}
+		s %Shape{"nsGreyBoxShape::Box"}
 		f %SizeNegX{0x0000803F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -2056,7 +2056,7 @@ o
 o
 {
 	Uuid %id{u4{15641735062369331787,5799711894318607086}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -2071,7 +2071,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -2082,7 +2082,7 @@ o
 o
 {
 	Uuid %id{u4{17592252422807836773,6304088691544086273}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -2093,7 +2093,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{"{ 2417d010-56d1-4645-bfa5-7bc347d4df55 }"}
-		s %Shape{"wdGreyBoxShape::Box"}
+		s %Shape{"nsGreyBoxShape::Box"}
 		f %SizeNegX{0x0000803F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -2108,7 +2108,7 @@ o
 o
 {
 	Uuid %id{u4{18096612296587978288,6449934965513159559}}
-	s %t{"wdSceneDocumentRoot"}
+	s %t{"nsSceneDocumentRoot"}
 	u3 %v{2}
 	s %n{"ObjectTree"}
 	p
@@ -2164,7 +2164,7 @@ o
 o
 {
 	Uuid %id{u4{9550008394802014755,6495946559054667097}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -2179,7 +2179,7 @@ o
 		Quat %LocalRotation{f{0x0FEAB43E,0x9C046FBE,0x95072EBF,0x364919BF}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000A03F,0x0000803F}}
 		f %LocalUniformScaling{0x00001040}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -2191,7 +2191,7 @@ o
 o
 {
 	Uuid %id{u4{9154000129696466167,6735574365454046305}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -2206,7 +2206,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -2217,7 +2217,7 @@ o
 o
 {
 	Uuid %id{u4{2351875798562309649,6771837600567401792}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -2232,7 +2232,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -2243,7 +2243,7 @@ o
 o
 {
 	Uuid %id{u4{13266486115712621344,6782578351336151269}}
-	s %t{"wdDecalComponent"}
+	s %t{"nsDecalComponent"}
 	u3 %v{8}
 	p
 	{
@@ -2256,7 +2256,7 @@ o
 		}
 		Color %EmissiveColor{f{0xEAF80141,0x493D8841,0x98117E3C,0x0000803F}}
 		Vec3 %Extents{f{0x0000803F,0x0000803F,0x0000803F}}
-		wdVarianceTypeTime %FadeOutDelay
+		nsVarianceTypeTime %FadeOutDelay
 		{
 			f %Variance{0}
 			Time %Value{d{0}}
@@ -2264,9 +2264,9 @@ o
 		Time %FadeOutDuration{d{0}}
 		Angle %InnerFadeAngle{f{0x920A863F}}
 		b %MapNormalToGeometry{0}
-		s %OnFinishedAction{"wdOnComponentFinishedAction::None"}
+		s %OnFinishedAction{"nsOnComponentFinishedAction::None"}
 		Angle %OuterFadeAngle{f{0xDB0FC93F}}
-		s %ProjectionAxis{"wdBasisAxis::PositiveX"}
+		s %ProjectionAxis{"nsBasisAxis::PositiveX"}
 		f %SizeVariance{0}
 		f %SortOrder{0}
 		b %WrapAround{0}
@@ -2275,7 +2275,7 @@ o
 o
 {
 	Uuid %id{u4{11104517490134971153,7239951162679525492}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -2286,7 +2286,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{"{ f2c2c3fb-5dc5-4189-b246-4493392aecaa }"}
-		s %Shape{"wdGreyBoxShape::Box"}
+		s %Shape{"nsGreyBoxShape::Box"}
 		f %SizeNegX{0x0000803F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -2301,7 +2301,7 @@ o
 o
 {
 	Uuid %id{u4{4302393159000814635,7276214397792880979}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -2312,7 +2312,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{"{ 2417d010-56d1-4645-bfa5-7bc347d4df55 }"}
-		s %Shape{"wdGreyBoxShape::Box"}
+		s %Shape{"nsGreyBoxShape::Box"}
 		f %SizeNegX{0x0000803F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -2327,7 +2327,7 @@ o
 o
 {
 	Uuid %id{u4{17105102266231311895,8151530124041023830}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -2342,7 +2342,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -2353,7 +2353,7 @@ o
 o
 {
 	Uuid %id{u4{14046195541359845396,8247618721725443724}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -2368,7 +2368,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -2379,7 +2379,7 @@ o
 o
 {
 	Uuid %id{u4{17173655308718594611,8297038529625619641}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -2394,7 +2394,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -2405,7 +2405,7 @@ o
 o
 {
 	Uuid %id{u4{11767775841745532206,8345178495795582637}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -2420,7 +2420,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -2431,7 +2431,7 @@ o
 o
 {
 	Uuid %id{u4{608875552960265265,8655906921266503017}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -2442,7 +2442,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{"{ f3e61b7d-9784-4254-a0bb-df775cf6eaef }"}
-		s %Shape{"wdGreyBoxShape::Box"}
+		s %Shape{"nsGreyBoxShape::Box"}
 		f %SizeNegX{0x0000803F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -2457,7 +2457,7 @@ o
 o
 {
 	Uuid %id{u4{15996712901798350382,8751995518950922911}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -2468,7 +2468,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{"{ a96dcd7d-58ed-4a9c-ba36-746f8068e573 }"}
-		s %Shape{"wdGreyBoxShape::Box"}
+		s %Shape{"nsGreyBoxShape::Box"}
 		f %SizeNegX{0x0000803F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -2483,7 +2483,7 @@ o
 o
 {
 	Uuid %id{u4{677428595447547981,8801415326851098828}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -2494,7 +2494,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{"{ ff4ecbeb-c91a-4a38-b66e-dabf240152d5 }"}
-		s %Shape{"wdGreyBoxShape::Box"}
+		s %Shape{"nsGreyBoxShape::Box"}
 		f %SizeNegX{0x0000803F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -2509,7 +2509,7 @@ o
 o
 {
 	Uuid %id{u4{17846972474772152590,8842948803003240366}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -2524,7 +2524,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -2535,7 +2535,7 @@ o
 o
 {
 	Uuid %id{u4{13718293202184037192,8849555293021061824}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -2546,7 +2546,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{"{ 2417d010-56d1-4645-bfa5-7bc347d4df55 }"}
-		s %Shape{"wdGreyBoxShape::Box"}
+		s %Shape{"nsGreyBoxShape::Box"}
 		f %SizeNegX{0x0000803F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -2561,7 +2561,7 @@ o
 o
 {
 	Uuid %id{u4{1350745761501105960,9347325600228719553}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -2572,7 +2572,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{"{ dc4b274a-7aa4-4663-b2d6-19d86951aa30 }"}
-		s %Shape{"wdGreyBoxShape::Box"}
+		s %Shape{"nsGreyBoxShape::Box"}
 		f %SizeNegX{0x0000803F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -2587,7 +2587,7 @@ o
 o
 {
 	Uuid %id{u4{1487012179149241396,9570302994378047418}}
-	s %t{"wdDecalComponent"}
+	s %t{"nsDecalComponent"}
 	u3 %v{8}
 	p
 	{
@@ -2600,7 +2600,7 @@ o
 		}
 		Color %EmissiveColor{f{0,0,0,0x0000803F}}
 		Vec3 %Extents{f{0x0000803F,0x0000803F,0x0000803F}}
-		wdVarianceTypeTime %FadeOutDelay
+		nsVarianceTypeTime %FadeOutDelay
 		{
 			f %Variance{0}
 			Time %Value{d{0}}
@@ -2608,9 +2608,9 @@ o
 		Time %FadeOutDuration{d{0}}
 		Angle %InnerFadeAngle{f{0xF3665F3F}}
 		b %MapNormalToGeometry{1}
-		s %OnFinishedAction{"wdOnComponentFinishedAction::None"}
+		s %OnFinishedAction{"nsOnComponentFinishedAction::None"}
 		Angle %OuterFadeAngle{f{0xC2B8B23F}}
-		s %ProjectionAxis{"wdBasisAxis::NegativeZ"}
+		s %ProjectionAxis{"nsBasisAxis::Negativns"}
 		f %SizeVariance{0}
 		f %SortOrder{0}
 		b %WrapAround{0}
@@ -2619,7 +2619,7 @@ o
 o
 {
 	Uuid %id{u4{12725129863273477432,9621952338649528693}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -2634,7 +2634,7 @@ o
 		Quat %LocalRotation{f{0x3A50613E,0xDEA7BABD,0xCA4BBEBE,0x27B5653F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x00001040}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -2646,7 +2646,7 @@ o
 o
 {
 	Uuid %id{u4{8348393846283738400,9648603349633070821}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -2661,7 +2661,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x00001040}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -2673,7 +2673,7 @@ o
 o
 {
 	Uuid %id{u4{9154685773231669026,9685943408407290496}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -2691,7 +2691,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -2702,7 +2702,7 @@ o
 o
 {
 	Uuid %id{u4{5213310483949040170,9696890048639827631}}
-	s %t{"wdDecalComponent"}
+	s %t{"nsDecalComponent"}
 	u3 %v{8}
 	p
 	{
@@ -2715,7 +2715,7 @@ o
 		}
 		Color %EmissiveColor{f{0,0,0,0x0000803F}}
 		Vec3 %Extents{f{0xB81EA53F,0x0000803F,0xC3F5A83F}}
-		wdVarianceTypeTime %FadeOutDelay
+		nsVarianceTypeTime %FadeOutDelay
 		{
 			f %Variance{0}
 			Time %Value{d{0}}
@@ -2723,9 +2723,9 @@ o
 		Time %FadeOutDuration{d{0}}
 		Angle %InnerFadeAngle{f{0xF3665F3F}}
 		b %MapNormalToGeometry{1}
-		s %OnFinishedAction{"wdOnComponentFinishedAction::None"}
+		s %OnFinishedAction{"nsOnComponentFinishedAction::None"}
 		Angle %OuterFadeAngle{f{0xC2B8B23F}}
-		s %ProjectionAxis{"wdBasisAxis::NegativeZ"}
+		s %ProjectionAxis{"nsBasisAxis::Negativns"}
 		f %SizeVariance{0}
 		f %SortOrder{0x000020C1}
 		b %WrapAround{0}
@@ -2734,7 +2734,7 @@ o
 o
 {
 	Uuid %id{u4{5220485994188724553,9710143549885386918}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -2749,7 +2749,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -2760,7 +2760,7 @@ o
 o
 {
 	Uuid %id{u4{6288427973525919263,9786380581655508436}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -2778,7 +2778,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x3333333F}
-		s %Mode{"wdObjectMode::ForceDynamic"}
+		s %Mode{"nsObjectMode::ForceDynamic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -2790,7 +2790,7 @@ o
 o
 {
 	Uuid %id{u4{8030149487213658131,9801980912996760677}}
-	s %t{"wdMeshComponent"}
+	s %t{"nsMeshComponent"}
 	u3 %v{3}
 	p
 	{
@@ -2806,7 +2806,7 @@ o
 o
 {
 	Uuid %id{u4{18184524574605609243,9808253519678870514}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -2821,7 +2821,7 @@ o
 		Quat %LocalRotation{f{0,0,0x7483C3BE,0xA2996C3F}}
 		Vec3 %LocalScaling{f{0x965BE23E,0xBA6B4940,0x14240E3F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -2833,7 +2833,7 @@ o
 o
 {
 	Uuid %id{u4{16813135491622468442,9884305313487101689}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -2848,7 +2848,7 @@ o
 		Quat %LocalRotation{f{0x8D3B32BE,0xBBA9C53E,0xB082823E,0x968A5E3F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x00000040}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -2860,7 +2860,7 @@ o
 o
 {
 	Uuid %id{u4{14560425768540169744,9910302925739550696}}
-	s %t{"wdDecalComponent"}
+	s %t{"nsDecalComponent"}
 	u3 %v{8}
 	p
 	{
@@ -2873,7 +2873,7 @@ o
 		}
 		Color %EmissiveColor{f{0,0,0,0x0000803F}}
 		Vec3 %Extents{f{0x0000803F,0x0000803F,0x0000803F}}
-		wdVarianceTypeTime %FadeOutDelay
+		nsVarianceTypeTime %FadeOutDelay
 		{
 			f %Variance{0}
 			Time %Value{d{0}}
@@ -2881,9 +2881,9 @@ o
 		Time %FadeOutDuration{d{0x0000000000000040}}
 		Angle %InnerFadeAngle{f{0xF3665F3F}}
 		b %MapNormalToGeometry{1}
-		s %OnFinishedAction{"wdOnComponentFinishedAction::None"}
+		s %OnFinishedAction{"nsOnComponentFinishedAction::None"}
 		Angle %OuterFadeAngle{f{0xDB0FC93F}}
-		s %ProjectionAxis{"wdBasisAxis::NegativeZ"}
+		s %ProjectionAxis{"nsBasisAxis::Negativns"}
 		f %SizeVariance{0}
 		f %SortOrder{0x000000C0}
 		b %WrapAround{1}
@@ -2892,7 +2892,7 @@ o
 o
 {
 	Uuid %id{u4{12064871567194344989,9935235141914554993}}
-	s %t{"wdDecalComponent"}
+	s %t{"nsDecalComponent"}
 	u3 %v{8}
 	p
 	{
@@ -2905,7 +2905,7 @@ o
 		}
 		Color %EmissiveColor{f{0,0,0,0x0000803F}}
 		Vec3 %Extents{f{0x0000803F,0x0000803F,0x0000803F}}
-		wdVarianceTypeTime %FadeOutDelay
+		nsVarianceTypeTime %FadeOutDelay
 		{
 			f %Variance{0}
 			Time %Value{d{0}}
@@ -2913,9 +2913,9 @@ o
 		Time %FadeOutDuration{d{0x0000000000000040}}
 		Angle %InnerFadeAngle{f{0x920A863F}}
 		b %MapNormalToGeometry{1}
-		s %OnFinishedAction{"wdOnComponentFinishedAction::None"}
+		s %OnFinishedAction{"nsOnComponentFinishedAction::None"}
 		Angle %OuterFadeAngle{f{0xDB0FC93F}}
-		s %ProjectionAxis{"wdBasisAxis::NegativeZ"}
+		s %ProjectionAxis{"nsBasisAxis::Negativns"}
 		f %SizeVariance{0}
 		f %SortOrder{0}
 		b %WrapAround{0}
@@ -2924,7 +2924,7 @@ o
 o
 {
 	Uuid %id{u4{2635142112618664222,10040794669363912953}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -2939,7 +2939,7 @@ o
 		Quat %LocalRotation{f{0,0xF204353F,0xF30435B3,0xF304353F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -2951,7 +2951,7 @@ o
 o
 {
 	Uuid %id{u4{3806550033735592463,10061638208729291214}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -2966,7 +2966,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x00008040}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -2978,7 +2978,7 @@ o
 o
 {
 	Uuid %id{u4{10092520113326087210,10148025502157191533}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -2993,7 +2993,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -3004,7 +3004,7 @@ o
 o
 {
 	Uuid %id{u4{4709388151703866423,10164110944105803398}}
-	s %t{"wdDecalComponent"}
+	s %t{"nsDecalComponent"}
 	u3 %v{8}
 	p
 	{
@@ -3017,7 +3017,7 @@ o
 		}
 		Color %EmissiveColor{f{0,0,0,0x0000803F}}
 		Vec3 %Extents{f{0x0000803F,0x0000803F,0x0000803F}}
-		wdVarianceTypeTime %FadeOutDelay
+		nsVarianceTypeTime %FadeOutDelay
 		{
 			f %Variance{0}
 			Time %Value{d{0}}
@@ -3025,9 +3025,9 @@ o
 		Time %FadeOutDuration{d{0x0000000000000040}}
 		Angle %InnerFadeAngle{f{0xAA619C3F}}
 		b %MapNormalToGeometry{1}
-		s %OnFinishedAction{"wdOnComponentFinishedAction::None"}
+		s %OnFinishedAction{"nsOnComponentFinishedAction::None"}
 		Angle %OuterFadeAngle{f{0xDB0FC93F}}
-		s %ProjectionAxis{"wdBasisAxis::NegativeZ"}
+		s %ProjectionAxis{"nsBasisAxis::Negativns"}
 		f %SizeVariance{0}
 		f %SortOrder{0x000000C0}
 		b %WrapAround{1}
@@ -3036,7 +3036,7 @@ o
 o
 {
 	Uuid %id{u4{2082869138823523415,10170937105768585861}}
-	s %t{"wdDecalComponent"}
+	s %t{"nsDecalComponent"}
 	u3 %v{8}
 	p
 	{
@@ -3049,7 +3049,7 @@ o
 		}
 		Color %EmissiveColor{f{0,0,0,0x0000803F}}
 		Vec3 %Extents{f{0x0000803F,0x0000803F,0x0000803F}}
-		wdVarianceTypeTime %FadeOutDelay
+		nsVarianceTypeTime %FadeOutDelay
 		{
 			f %Variance{0}
 			Time %Value{d{0}}
@@ -3057,9 +3057,9 @@ o
 		Time %FadeOutDuration{d{0}}
 		Angle %InnerFadeAngle{f{0x920A863F}}
 		b %MapNormalToGeometry{1}
-		s %OnFinishedAction{"wdOnComponentFinishedAction::None"}
+		s %OnFinishedAction{"nsOnComponentFinishedAction::None"}
 		Angle %OuterFadeAngle{f{0xDB0FC93F}}
-		s %ProjectionAxis{"wdBasisAxis::PositiveX"}
+		s %ProjectionAxis{"nsBasisAxis::PositiveX"}
 		f %SizeVariance{0}
 		f %SortOrder{0}
 		b %WrapAround{0}
@@ -3068,7 +3068,7 @@ o
 o
 {
 	Uuid %id{u4{12712027284508524368,10192131155472205400}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -3083,7 +3083,7 @@ o
 		Quat %LocalRotation{f{0,0xF204353F,0xF30435B3,0xF304353F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -3095,7 +3095,7 @@ o
 o
 {
 	Uuid %id{u4{8853354768495266619,10245945290577549818}}
-	s %t{"wdDecalComponent"}
+	s %t{"nsDecalComponent"}
 	u3 %v{8}
 	p
 	{
@@ -3108,7 +3108,7 @@ o
 		}
 		Color %EmissiveColor{f{0,0,0,0x0000803F}}
 		Vec3 %Extents{f{0xCDCCCC3D,0x00000040,0x00000040}}
-		wdVarianceTypeTime %FadeOutDelay
+		nsVarianceTypeTime %FadeOutDelay
 		{
 			f %Variance{0}
 			Time %Value{d{0}}
@@ -3116,9 +3116,9 @@ o
 		Time %FadeOutDuration{d{0}}
 		Angle %InnerFadeAngle{f{0xF3665F3F}}
 		b %MapNormalToGeometry{1}
-		s %OnFinishedAction{"wdOnComponentFinishedAction::None"}
+		s %OnFinishedAction{"nsOnComponentFinishedAction::None"}
 		Angle %OuterFadeAngle{f{0xC2B8B23F}}
-		s %ProjectionAxis{"wdBasisAxis::PositiveX"}
+		s %ProjectionAxis{"nsBasisAxis::PositiveX"}
 		f %SizeVariance{0}
 		f %SortOrder{0x000080BF}
 		b %WrapAround{0}
@@ -3127,7 +3127,7 @@ o
 o
 {
 	Uuid %id{u4{17680602242360435496,10275474415144846281}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -3142,7 +3142,7 @@ o
 		Quat %LocalRotation{f{0x92BCDDBD,0xF00805BF,0x84444EBE,0xD1BC523F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0xF8E40940}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -3154,7 +3154,7 @@ o
 o
 {
 	Uuid %id{u4{16619311591941420061,10420400592201098932}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -3169,7 +3169,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -3180,7 +3180,7 @@ o
 o
 {
 	Uuid %id{u4{1300027285590617660,10469820400101274849}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -3195,7 +3195,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -3206,7 +3206,7 @@ o
 o
 {
 	Uuid %id{u4{11510730784546490901,10583713692018479998}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -3217,7 +3217,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{""}
-		s %Shape{"wdGreyBoxShape::RampX"}
+		s %Shape{"nsGreyBoxShape::RampX"}
 		f %SizeNegX{0x0000003F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -3232,7 +3232,7 @@ o
 o
 {
 	Uuid %id{u4{7576531005503546428,10607913833496576420}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -3243,7 +3243,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{"{ 2417d010-56d1-4645-bfa5-7bc347d4df55 }"}
-		s %Shape{"wdGreyBoxShape::Column"}
+		s %Shape{"nsGreyBoxShape::Column"}
 		f %SizeNegX{0x0000803F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -3258,7 +3258,7 @@ o
 o
 {
 	Uuid %id{u4{12043037473764592196,10652402299382670720}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -3269,7 +3269,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{"{ a0ef32ce-e0ca-4b9e-b8ab-39e0b2767b79 }"}
-		s %Shape{"wdGreyBoxShape::Box"}
+		s %Shape{"nsGreyBoxShape::Box"}
 		f %SizeNegX{0x0000803F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -3284,7 +3284,7 @@ o
 o
 {
 	Uuid %id{u4{7925389479662853433,10689405157870611925}}
-	s %t{"wdDecalComponent"}
+	s %t{"nsDecalComponent"}
 	u3 %v{8}
 	p
 	{
@@ -3297,7 +3297,7 @@ o
 		}
 		Color %EmissiveColor{f{0,0,0,0x0000803F}}
 		Vec3 %Extents{f{0x0000803F,0x00000040,0x00000040}}
-		wdVarianceTypeTime %FadeOutDelay
+		nsVarianceTypeTime %FadeOutDelay
 		{
 			f %Variance{0}
 			Time %Value{d{0}}
@@ -3305,9 +3305,9 @@ o
 		Time %FadeOutDuration{d{0}}
 		Angle %InnerFadeAngle{f{0xF3665F3F}}
 		b %MapNormalToGeometry{1}
-		s %OnFinishedAction{"wdOnComponentFinishedAction::None"}
+		s %OnFinishedAction{"nsOnComponentFinishedAction::None"}
 		Angle %OuterFadeAngle{f{0xC2B8B23F}}
-		s %ProjectionAxis{"wdBasisAxis::PositiveX"}
+		s %ProjectionAxis{"nsBasisAxis::PositiveX"}
 		f %SizeVariance{0}
 		f %SortOrder{0x000080BF}
 		b %WrapAround{0}
@@ -3316,7 +3316,7 @@ o
 o
 {
 	Uuid %id{u4{6338836315508864220,10732238011229625462}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -3331,7 +3331,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -3342,7 +3342,7 @@ o
 o
 {
 	Uuid %id{u4{7837759037597979460,10818827479079526719}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -3357,7 +3357,7 @@ o
 		Quat %LocalRotation{f{0,0x6864753E,0x696475B2,0x638A783F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -3369,7 +3369,7 @@ o
 o
 {
 	Uuid %id{u4{18149631906316082199,10836130606222479509}}
-	s %t{"wdDecalComponent"}
+	s %t{"nsDecalComponent"}
 	u3 %v{8}
 	p
 	{
@@ -3382,7 +3382,7 @@ o
 		}
 		Color %EmissiveColor{f{0,0,0,0x0000803F}}
 		Vec3 %Extents{f{0x00000040,0x00000040,0x00000040}}
-		wdVarianceTypeTime %FadeOutDelay
+		nsVarianceTypeTime %FadeOutDelay
 		{
 			f %Variance{0}
 			Time %Value{d{0}}
@@ -3390,9 +3390,9 @@ o
 		Time %FadeOutDuration{d{0}}
 		Angle %InnerFadeAngle{f{0xF3665F3F}}
 		b %MapNormalToGeometry{1}
-		s %OnFinishedAction{"wdOnComponentFinishedAction::None"}
+		s %OnFinishedAction{"nsOnComponentFinishedAction::None"}
 		Angle %OuterFadeAngle{f{0xC2B8B23F}}
-		s %ProjectionAxis{"wdBasisAxis::PositiveX"}
+		s %ProjectionAxis{"nsBasisAxis::PositiveX"}
 		f %SizeVariance{0}
 		f %SortOrder{0}
 		b %WrapAround{0}
@@ -3401,7 +3401,7 @@ o
 o
 {
 	Uuid %id{u4{123084878670373431,10924777389426578119}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -3412,7 +3412,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{"{ 1551d6b1-7f83-4caa-96d4-900b0eb873b9 }"}
-		s %Shape{"wdGreyBoxShape::Box"}
+		s %Shape{"nsGreyBoxShape::Box"}
 		f %SizeNegX{0x0000803F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -3427,7 +3427,7 @@ o
 o
 {
 	Uuid %id{u4{3250544646029122646,10974197197326754036}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -3438,7 +3438,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{"{ d65800e7-6639-4be7-be45-c9b9071806e2 }"}
-		s %Shape{"wdGreyBoxShape::Box"}
+		s %Shape{"nsGreyBoxShape::Box"}
 		f %SizeNegX{0x0000803F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -3453,7 +3453,7 @@ o
 o
 {
 	Uuid %id{u4{9779773004496390729,10987467092330771956}}
-	s %t{"wdDecalComponent"}
+	s %t{"nsDecalComponent"}
 	u3 %v{8}
 	p
 	{
@@ -3466,7 +3466,7 @@ o
 		}
 		Color %EmissiveColor{f{0,0,0,0x0000803F}}
 		Vec3 %Extents{f{0x00000040,0x00000040,0x00000040}}
-		wdVarianceTypeTime %FadeOutDelay
+		nsVarianceTypeTime %FadeOutDelay
 		{
 			f %Variance{0}
 			Time %Value{d{0}}
@@ -3474,9 +3474,9 @@ o
 		Time %FadeOutDuration{d{0x666666666666E63F}}
 		Angle %InnerFadeAngle{f{0xF3665F3F}}
 		b %MapNormalToGeometry{1}
-		s %OnFinishedAction{"wdOnComponentFinishedAction::DeleteComponent"}
+		s %OnFinishedAction{"nsOnComponentFinishedAction::DeleteComponent"}
 		Angle %OuterFadeAngle{f{0xC2B8B23F}}
-		s %ProjectionAxis{"wdBasisAxis::PositiveX"}
+		s %ProjectionAxis{"nsBasisAxis::PositiveX"}
 		f %SizeVariance{0}
 		f %SortOrder{0x000000C0}
 		b %WrapAround{0}
@@ -3485,7 +3485,7 @@ o
 o
 {
 	Uuid %id{u4{2124114693355402981,10991018062294685401}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -3500,7 +3500,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -3511,7 +3511,7 @@ o
 o
 {
 	Uuid %id{u4{7872934112748928865,11217770229950154912}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -3526,7 +3526,7 @@ o
 		Quat %LocalRotation{f{0,0x15EFC33E,0x16EFC3B2,0x5E836C3F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x00008040}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -3538,7 +3538,7 @@ o
 o
 {
 	Uuid %id{u4{8289353675947369206,11236614808455104649}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -3549,7 +3549,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{"{ 2417d010-56d1-4645-bfa5-7bc347d4df55 }"}
-		s %Shape{"wdGreyBoxShape::Box"}
+		s %Shape{"nsGreyBoxShape::Box"}
 		f %SizeNegX{0x0000803F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -3564,7 +3564,7 @@ o
 o
 {
 	Uuid %id{u4{6909793748765566274,11262287346372588826}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -3579,7 +3579,7 @@ o
 		Quat %LocalRotation{f{0,0x6864753E,0x696475B2,0x638A783F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -3591,7 +3591,7 @@ o
 o
 {
 	Uuid %id{u4{17114193560923166016,11340562131713244051}}
-	s %t{"wdDecalComponent"}
+	s %t{"nsDecalComponent"}
 	u3 %v{8}
 	p
 	{
@@ -3604,7 +3604,7 @@ o
 		}
 		Color %EmissiveColor{f{0,0,0,0x0000803F}}
 		Vec3 %Extents{f{0x0000803F,0x0000803F,0x0000803F}}
-		wdVarianceTypeTime %FadeOutDelay
+		nsVarianceTypeTime %FadeOutDelay
 		{
 			f %Variance{0}
 			Time %Value{d{0}}
@@ -3612,9 +3612,9 @@ o
 		Time %FadeOutDuration{d{0}}
 		Angle %InnerFadeAngle{f{0xF3665F3F}}
 		b %MapNormalToGeometry{1}
-		s %OnFinishedAction{"wdOnComponentFinishedAction::None"}
+		s %OnFinishedAction{"nsOnComponentFinishedAction::None"}
 		Angle %OuterFadeAngle{f{0xC2B8B23F}}
-		s %ProjectionAxis{"wdBasisAxis::PositiveX"}
+		s %ProjectionAxis{"nsBasisAxis::PositiveX"}
 		f %SizeVariance{0}
 		f %SortOrder{0}
 		b %WrapAround{1}
@@ -3623,7 +3623,7 @@ o
 o
 {
 	Uuid %id{u4{8773727061018091215,11494095653834710203}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -3638,7 +3638,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -3649,7 +3649,7 @@ o
 o
 {
 	Uuid %id{u4{4074632053793907967,11495394859520164588}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -3660,7 +3660,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{"{ 2417d010-56d1-4645-bfa5-7bc347d4df55 }"}
-		s %Shape{"wdGreyBoxShape::Box"}
+		s %Shape{"nsGreyBoxShape::Box"}
 		f %SizeNegX{0x0000803F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -3675,7 +3675,7 @@ o
 o
 {
 	Uuid %id{u4{10724244421456596201,11998472451060189390}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -3686,7 +3686,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{"{ 2417d010-56d1-4645-bfa5-7bc347d4df55 }"}
-		s %Shape{"wdGreyBoxShape::Box"}
+		s %Shape{"nsGreyBoxShape::Box"}
 		f %SizeNegX{0x0000803F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -3701,7 +3701,7 @@ o
 o
 {
 	Uuid %id{u4{18189627104201313772,13067436549062891048}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -3716,7 +3716,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -3727,7 +3727,7 @@ o
 o
 {
 	Uuid %id{u4{1693400390930267142,13571813346288370235}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -3738,7 +3738,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{"{ 2417d010-56d1-4645-bfa5-7bc347d4df55 }"}
-		s %Shape{"wdGreyBoxShape::Box"}
+		s %Shape{"nsGreyBoxShape::Box"}
 		f %SizeNegX{0x0000803F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -3753,7 +3753,7 @@ o
 o
 {
 	Uuid %id{u4{15065460170449314216,13725247181127495848}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -3768,7 +3768,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -3779,7 +3779,7 @@ o
 o
 {
 	Uuid %id{u4{3362270325320737455,13855355849108986908}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -3794,7 +3794,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -3805,7 +3805,7 @@ o
 o
 {
 	Uuid %id{u4{6489730092679486670,13904775657009162825}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -3820,7 +3820,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -3831,7 +3831,7 @@ o
 o
 {
 	Uuid %id{u4{3430823367808020171,14000864254693582719}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -3846,7 +3846,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -3857,7 +3857,7 @@ o
 o
 {
 	Uuid %id{u4{5463273265064972764,14067909874996890848}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -3872,7 +3872,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -3883,7 +3883,7 @@ o
 o
 {
 	Uuid %id{u4{17015977530887819202,14229623978352975035}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -3894,7 +3894,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{"{ 839dc50c-66bd-4557-91b3-4ed3c1e9a703 }"}
-		s %Shape{"wdGreyBoxShape::Box"}
+		s %Shape{"nsGreyBoxShape::Box"}
 		f %SizeNegX{0x0000803F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -3909,7 +3909,7 @@ o
 o
 {
 	Uuid %id{u4{908838140502404587,14320113815631645884}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -3924,7 +3924,7 @@ o
 		Quat %LocalRotation{f{0xB54A723E,0x541EDE3C,0x4873E23D,0x6604773F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000D83F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -3936,7 +3936,7 @@ o
 o
 {
 	Uuid %id{u4{5312787685759242441,14359732646334466095}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -3947,7 +3947,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{"{ f5b6801b-53d5-4749-b616-90170271cd68 }"}
-		s %Shape{"wdGreyBoxShape::Box"}
+		s %Shape{"nsGreyBoxShape::Box"}
 		f %SizeNegX{0x0000803F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -3962,7 +3962,7 @@ o
 o
 {
 	Uuid %id{u4{2482091257497767142,14394331716456917444}}
-	s %t{"wdDecalComponent"}
+	s %t{"nsDecalComponent"}
 	u3 %v{8}
 	p
 	{
@@ -3975,7 +3975,7 @@ o
 		}
 		Color %EmissiveColor{f{0,0,0,0x0000803F}}
 		Vec3 %Extents{f{0x0000803F,0x0000803F,0x0000803F}}
-		wdVarianceTypeTime %FadeOutDelay
+		nsVarianceTypeTime %FadeOutDelay
 		{
 			f %Variance{0}
 			Time %Value{d{0}}
@@ -3983,9 +3983,9 @@ o
 		Time %FadeOutDuration{d{0}}
 		Angle %InnerFadeAngle{f{0xF3665F3F}}
 		b %MapNormalToGeometry{1}
-		s %OnFinishedAction{"wdOnComponentFinishedAction::None"}
+		s %OnFinishedAction{"nsOnComponentFinishedAction::None"}
 		Angle %OuterFadeAngle{f{0xC2B8B23F}}
-		s %ProjectionAxis{"wdBasisAxis::NegativeZ"}
+		s %ProjectionAxis{"nsBasisAxis::Negativns"}
 		f %SizeVariance{0}
 		f %SortOrder{0x000020C1}
 		b %WrapAround{0}
@@ -3994,7 +3994,7 @@ o
 o
 {
 	Uuid %id{u4{8440247453117991656,14409152454234642012}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -4005,7 +4005,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{"{ f3e61b7d-9784-4254-a0bb-df775cf6eaef }"}
-		s %Shape{"wdGreyBoxShape::Box"}
+		s %Shape{"nsGreyBoxShape::Box"}
 		f %SizeNegX{0x0000803F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -4020,7 +4020,7 @@ o
 o
 {
 	Uuid %id{u4{5381340728246525157,14505241051919061906}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -4031,7 +4031,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{"{ a96dcd7d-58ed-4a9c-ba36-746f8068e573 }"}
-		s %Shape{"wdGreyBoxShape::Box"}
+		s %Shape{"nsGreyBoxShape::Box"}
 		f %SizeNegX{0x0000803F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -4046,7 +4046,7 @@ o
 o
 {
 	Uuid %id{u4{15453305348154336215,14505695187495960327}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -4061,7 +4061,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{"Invisible"}
 		VarArray %Tags
 		{
@@ -4073,7 +4073,7 @@ o
 o
 {
 	Uuid %id{u4{7413790625503477750,14572286672222370035}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -4084,7 +4084,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{"{ 2417d010-56d1-4645-bfa5-7bc347d4df55 }"}
-		s %Shape{"wdGreyBoxShape::Box"}
+		s %Shape{"nsGreyBoxShape::Box"}
 		f %SizeNegX{0x0000803F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -4099,7 +4099,7 @@ o
 o
 {
 	Uuid %id{u4{11279346663672881140,14596317945106537899}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -4114,7 +4114,7 @@ o
 		Quat %LocalRotation{f{0x8D3B32BE,0xBBA9C53E,0xB082823E,0x968A5E3F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x00000040}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -4126,7 +4126,7 @@ o
 o
 {
 	Uuid %id{u4{2744134045769096899,14608464402721667887}}
-	s %t{"wdDecalComponent"}
+	s %t{"nsDecalComponent"}
 	u3 %v{8}
 	p
 	{
@@ -4139,7 +4139,7 @@ o
 		}
 		Color %EmissiveColor{f{0,0,0,0x0000803F}}
 		Vec3 %Extents{f{0x0000803F,0x0000803F,0x0000803F}}
-		wdVarianceTypeTime %FadeOutDelay
+		nsVarianceTypeTime %FadeOutDelay
 		{
 			f %Variance{0}
 			Time %Value{d{0}}
@@ -4147,9 +4147,9 @@ o
 		Time %FadeOutDuration{d{0x000000000000F03F}}
 		Angle %InnerFadeAngle{f{0xF3665F3F}}
 		b %MapNormalToGeometry{1}
-		s %OnFinishedAction{"wdOnComponentFinishedAction::None"}
+		s %OnFinishedAction{"nsOnComponentFinishedAction::None"}
 		Angle %OuterFadeAngle{f{0xDB0FC93F}}
-		s %ProjectionAxis{"wdBasisAxis::NegativeZ"}
+		s %ProjectionAxis{"nsBasisAxis::Negativns"}
 		f %SizeVariance{0}
 		f %SortOrder{0x000000C0}
 		b %WrapAround{1}
@@ -4158,7 +4158,7 @@ o
 o
 {
 	Uuid %id{u4{9895899913078340798,14784206275916171350}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -4173,7 +4173,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -4184,7 +4184,7 @@ o
 o
 {
 	Uuid %id{u4{14995824384583487729,14882949737388022071}}
-	s %t{"wdDecalComponent"}
+	s %t{"nsDecalComponent"}
 	u3 %v{8}
 	p
 	{
@@ -4197,7 +4197,7 @@ o
 		}
 		Color %EmissiveColor{f{0xB5BD2E3C,0xC3D25640,0x28673B41,0x0000803F}}
 		Vec3 %Extents{f{0x0000803F,0x0000803F,0x0000803F}}
-		wdVarianceTypeTime %FadeOutDelay
+		nsVarianceTypeTime %FadeOutDelay
 		{
 			f %Variance{0}
 			Time %Value{d{0}}
@@ -4205,9 +4205,9 @@ o
 		Time %FadeOutDuration{d{0}}
 		Angle %InnerFadeAngle{f{0x920A863F}}
 		b %MapNormalToGeometry{1}
-		s %OnFinishedAction{"wdOnComponentFinishedAction::None"}
+		s %OnFinishedAction{"nsOnComponentFinishedAction::None"}
 		Angle %OuterFadeAngle{f{0xDB0FC93F}}
-		s %ProjectionAxis{"wdBasisAxis::PositiveX"}
+		s %ProjectionAxis{"nsBasisAxis::PositiveX"}
 		f %SizeVariance{0}
 		f %SortOrder{0}
 		b %WrapAround{1}
@@ -4216,7 +4216,7 @@ o
 o
 {
 	Uuid %id{u4{13402079471399553244,15453699358833228707}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -4231,7 +4231,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -4242,7 +4242,7 @@ o
 o
 {
 	Uuid %id{u4{12251944924393162673,15681976559527360852}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -4253,7 +4253,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{""}
-		s %Shape{"wdGreyBoxShape::StairsX"}
+		s %Shape{"nsGreyBoxShape::StairsX"}
 		f %SizeNegX{0x5C8F023F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -4268,7 +4268,7 @@ o
 o
 {
 	Uuid %id{u4{5311688441815449023,15832621618676689909}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -4283,7 +4283,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -4294,7 +4294,7 @@ o
 o
 {
 	Uuid %id{u4{14796432246125064386,15851851227225154611}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -4309,7 +4309,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -4320,7 +4320,7 @@ o
 o
 {
 	Uuid %id{u4{17923892013483813601,15901271035125330528}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -4335,7 +4335,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -4346,7 +4346,7 @@ o
 o
 {
 	Uuid %id{u4{8027486879283060756,15931707120022112769}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -4361,7 +4361,7 @@ o
 		Quat %LocalRotation{f{0,0x15EFC33E,0x16EFC3B2,0x5E836C3F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x00008040}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -4373,7 +4373,7 @@ o
 o
 {
 	Uuid %id{u4{17268746327457297907,16054499021785201908}}
-	s %t{"wdDecalComponent"}
+	s %t{"nsDecalComponent"}
 	u3 %v{8}
 	p
 	{
@@ -4386,7 +4386,7 @@ o
 		}
 		Color %EmissiveColor{f{0,0,0,0x0000803F}}
 		Vec3 %Extents{f{0x0000803F,0x0000803F,0x0000803F}}
-		wdVarianceTypeTime %FadeOutDelay
+		nsVarianceTypeTime %FadeOutDelay
 		{
 			f %Variance{0}
 			Time %Value{d{0}}
@@ -4394,9 +4394,9 @@ o
 		Time %FadeOutDuration{d{0}}
 		Angle %InnerFadeAngle{f{0xF3665F3F}}
 		b %MapNormalToGeometry{1}
-		s %OnFinishedAction{"wdOnComponentFinishedAction::None"}
+		s %OnFinishedAction{"nsOnComponentFinishedAction::None"}
 		Angle %OuterFadeAngle{f{0xC2B8B23F}}
-		s %ProjectionAxis{"wdBasisAxis::PositiveX"}
+		s %ProjectionAxis{"nsBasisAxis::PositiveX"}
 		f %SizeVariance{0}
 		f %SortOrder{0}
 		b %WrapAround{0}
@@ -4405,7 +4405,7 @@ o
 o
 {
 	Uuid %id{u4{6003939418389594836,16173646125169237927}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -4420,7 +4420,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -4431,7 +4431,7 @@ o
 o
 {
 	Uuid %id{u4{7262205802253954009,16336998415902169096}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -4442,7 +4442,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{"{ 7ad63cae-bab3-4dc8-a5cf-0803c172a739 }"}
-		s %Shape{"wdGreyBoxShape::Box"}
+		s %Shape{"nsGreyBoxShape::Box"}
 		f %SizeNegX{0x0000803F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -4457,7 +4457,7 @@ o
 o
 {
 	Uuid %id{u4{15758124482714375119,16351469642444418209}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -4468,7 +4468,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{"{ 2417d010-56d1-4645-bfa5-7bc347d4df55 }"}
-		s %Shape{"wdGreyBoxShape::Column"}
+		s %Shape{"nsGreyBoxShape::Column"}
 		f %SizeNegX{0x0000803F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -4483,7 +4483,7 @@ o
 o
 {
 	Uuid %id{u4{16746949606563569372,16356228024450633798}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -4494,7 +4494,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{"{ 2417d010-56d1-4645-bfa5-7bc347d4df55 }"}
-		s %Shape{"wdGreyBoxShape::Box"}
+		s %Shape{"nsGreyBoxShape::Box"}
 		f %SizeNegX{0x0000803F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -4509,7 +4509,7 @@ o
 o
 {
 	Uuid %id{u4{1427665300212766971,16405647832350809715}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -4520,7 +4520,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{"{ a0ef32ce-e0ca-4b9e-b8ab-39e0b2767b79 }"}
-		s %Shape{"wdGreyBoxShape::Box"}
+		s %Shape{"nsGreyBoxShape::Box"}
 		f %SizeNegX{0x0000803F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -4535,7 +4535,7 @@ o
 o
 {
 	Uuid %id{u4{17917572387867175264,16426621770745728579}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -4550,7 +4550,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -4561,7 +4561,7 @@ o
 o
 {
 	Uuid %id{u4{5880725228203980438,16447306102058644844}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -4576,7 +4576,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -4587,7 +4587,7 @@ o
 o
 {
 	Uuid %id{u4{7954456778828099822,16678022922394717114}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -4598,7 +4598,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{"{ 1551d6b1-7f83-4caa-96d4-900b0eb873b9 }"}
-		s %Shape{"wdGreyBoxShape::Box"}
+		s %Shape{"nsGreyBoxShape::Box"}
 		f %SizeNegX{0x0000803F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -4613,7 +4613,7 @@ o
 o
 {
 	Uuid %id{u4{1421345674596128634,16930998567971207766}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -4624,7 +4624,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{"{ 2417d010-56d1-4645-bfa5-7bc347d4df55 }"}
-		s %Shape{"wdGreyBoxShape::Box"}
+		s %Shape{"nsGreyBoxShape::Box"}
 		f %SizeNegX{0x0000803F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -4639,7 +4639,7 @@ o
 o
 {
 	Uuid %id{u4{7831242588642485424,16951682899284124031}}
-	s %t{"wdGreyBoxComponent"}
+	s %t{"nsGreyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -4650,7 +4650,7 @@ o
 		b %GenerateCollision{1}
 		b %IncludeInNavmesh{1}
 		s %Material{"{ 2417d010-56d1-4645-bfa5-7bc347d4df55 }"}
-		s %Shape{"wdGreyBoxShape::Box"}
+		s %Shape{"nsGreyBoxShape::Box"}
 		f %SizeNegX{0x0000803F}
 		f %SizeNegY{0x0000803F}
 		f %SizeNegZ{0}
@@ -4665,7 +4665,7 @@ o
 o
 {
 	Uuid %id{u4{8886728357340846205,17999962665973909424}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -4680,7 +4680,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -4694,17 +4694,17 @@ Types
 o
 {
 	Uuid %id{u4{6914292285925798136,1108246313736053318}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Abstract|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Abstract|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdReflectedClass"}
+		s %ParentTypeName{"nsReflectedClass"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdComponent"}
+		s %TypeName{"nsComponent"}
 		u3 %TypeSize{48}
 		u3 %TypeVersion{1}
 	}
@@ -4712,17 +4712,17 @@ o
 o
 {
 	Uuid %id{u4{15501499876559131010,2215366623898344174}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::IsEnum|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::IsEnum|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdEnumBase"}
+		s %ParentTypeName{"nsEnumBase"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdGreyBoxShape"}
+		s %TypeName{"nsGreyBoxShape"}
 		u3 %TypeSize{1}
 		u3 %TypeVersion{1}
 	}
@@ -4730,17 +4730,17 @@ o
 o
 {
 	Uuid %id{u4{14111303022569467614,2386623797596195684}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdRenderComponent"}
+		s %ParentTypeName{"nsRenderComponent"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdDecalComponent"}
+		s %TypeName{"nsDecalComponent"}
 		u3 %TypeSize{192}
 		u3 %TypeVersion{8}
 	}
@@ -4748,17 +4748,17 @@ o
 o
 {
 	Uuid %id{u4{15272284220582915620,3290797833852729302}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::IsEnum|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::IsEnum|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdEnumBase"}
+		s %ParentTypeName{"nsEnumBase"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdCameraMode"}
+		s %TypeName{"nsCameraMode"}
 		u3 %TypeSize{1}
 		u3 %TypeVersion{1}
 	}
@@ -4766,17 +4766,17 @@ o
 o
 {
 	Uuid %id{u4{14633628111157529947,3328384510238863063}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdMeshComponentBase"}
+		s %ParentTypeName{"nsMeshComponentBase"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdMeshComponent"}
+		s %TypeName{"nsMeshComponent"}
 		u3 %TypeSize{104}
 		u3 %TypeVersion{3}
 	}
@@ -4784,17 +4784,17 @@ o
 o
 {
 	Uuid %id{u4{5195345338716098525,5056385137718360950}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdReflectedClass"}
-		s %PluginName{"wdEditorPluginScene"}
+		s %ParentTypeName{"nsReflectedClass"}
+		s %PluginName{"nsEditorPluginScene"}
 		VarArray %Properties{}
-		s %TypeName{"wdSceneLayerBase"}
+		s %TypeName{"nsSceneLayerBase"}
 		u3 %TypeSize{16}
 		u3 %TypeVersion{1}
 	}
@@ -4802,17 +4802,17 @@ o
 o
 {
 	Uuid %id{u4{5837165590562654431,6019321076980052009}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdSceneLayerBase"}
-		s %PluginName{"wdEditorPluginScene"}
+		s %ParentTypeName{"nsSceneLayerBase"}
+		s %PluginName{"nsEditorPluginScene"}
 		VarArray %Properties{}
-		s %TypeName{"wdSceneLayer"}
+		s %TypeName{"nsSceneLayer"}
 		u3 %TypeSize{32}
 		u3 %TypeVersion{1}
 	}
@@ -4820,17 +4820,17 @@ o
 o
 {
 	Uuid %id{u4{14006718927935415587,6034394683520582586}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdVarianceTypeBase"}
+		s %ParentTypeName{"nsVarianceTypeBase"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdVarianceTypeTime"}
+		s %TypeName{"nsVarianceTypeTime"}
 		u3 %TypeSize{16}
 		u3 %TypeVersion{1}
 	}
@@ -4838,17 +4838,17 @@ o
 o
 {
 	Uuid %id{u4{17853239083303459813,6311346648076434393}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
 		s %ParentTypeName{""}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdVarianceTypeBase"}
+		s %TypeName{"nsVarianceTypeBase"}
 		u3 %TypeSize{4}
 		u3 %TypeVersion{1}
 	}
@@ -4856,17 +4856,17 @@ o
 o
 {
 	Uuid %id{u4{7605758958972330253,6687734095884105025}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Abstract|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Abstract|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdRenderComponent"}
+		s %ParentTypeName{"nsRenderComponent"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdMeshComponentBase"}
+		s %TypeName{"nsMeshComponentBase"}
 		u3 %TypeSize{104}
 		u3 %TypeVersion{1}
 	}
@@ -4874,17 +4874,17 @@ o
 o
 {
 	Uuid %id{u4{13649880205026559927,7297274558339895637}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
 		s %ParentTypeName{""}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdGameObject"}
+		s %TypeName{"nsGameObject"}
 		u3 %TypeSize{128}
 		u3 %TypeVersion{1}
 	}
@@ -4892,17 +4892,17 @@ o
 o
 {
 	Uuid %id{u4{450943844669591006,7318511461061204347}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdSceneDocumentSettingsBase"}
-		s %PluginName{"wdEditorPluginScene"}
+		s %ParentTypeName{"nsSceneDocumentSettingsBase"}
+		s %PluginName{"nsEditorPluginScene"}
 		VarArray %Properties{}
-		s %TypeName{"wdSceneDocumentSettings"}
+		s %TypeName{"nsSceneDocumentSettings"}
 		u3 %TypeSize{40}
 		u3 %TypeVersion{2}
 	}
@@ -4910,17 +4910,17 @@ o
 o
 {
 	Uuid %id{u4{8781371220448777178,8391987746845008996}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdRenderComponent"}
+		s %ParentTypeName{"nsRenderComponent"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdSkyBoxComponent"}
+		s %TypeName{"nsSkyBoxComponent"}
 		u3 %TypeSize{88}
 		u3 %TypeVersion{4}
 	}
@@ -4928,17 +4928,17 @@ o
 o
 {
 	Uuid %id{u4{6089094783765586323,8705960867921430659}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdReflectedClass"}
+		s %ParentTypeName{"nsReflectedClass"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdDocumentRoot"}
+		s %TypeName{"nsDocumentRoot"}
 		u3 %TypeSize{72}
 		u3 %TypeVersion{1}
 	}
@@ -4946,17 +4946,17 @@ o
 o
 {
 	Uuid %id{u4{3251891958765718680,9159887340540620231}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdDocumentRoot"}
-		s %PluginName{"wdEditorPluginScene"}
+		s %ParentTypeName{"nsDocumentRoot"}
+		s %PluginName{"nsEditorPluginScene"}
 		VarArray %Properties{}
-		s %TypeName{"wdSceneDocumentRoot"}
+		s %TypeName{"nsSceneDocumentRoot"}
 		u3 %TypeSize{80}
 		u3 %TypeVersion{2}
 	}
@@ -4964,17 +4964,17 @@ o
 o
 {
 	Uuid %id{u4{14543630447052729839,9459039542380974471}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::IsEnum|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::IsEnum|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdEnumBase"}
+		s %ParentTypeName{"nsEnumBase"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdObjectMode"}
+		s %TypeName{"nsObjectMode"}
 		u3 %TypeSize{1}
 		u3 %TypeVersion{1}
 	}
@@ -4982,17 +4982,17 @@ o
 o
 {
 	Uuid %id{u4{16508388108942581257,9601460247128054931}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdComponent"}
+		s %ParentTypeName{"nsComponent"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdCameraComponent"}
+		s %TypeName{"nsCameraComponent"}
 		u3 %TypeSize{504}
 		u3 %TypeVersion{10}
 	}
@@ -5000,17 +5000,17 @@ o
 o
 {
 	Uuid %id{u4{14619222012368174598,9914418461412086272}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdLightComponent"}
+		s %ParentTypeName{"nsLightComponent"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdDirectionalLightComponent"}
+		s %TypeName{"nsDirectionalLightComponent"}
 		u3 %TypeSize{96}
 		u3 %TypeVersion{3}
 	}
@@ -5018,17 +5018,17 @@ o
 o
 {
 	Uuid %id{u4{14700230518358869173,11472901527618371423}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdReflectedClass"}
-		s %PluginName{"wdEditorPluginScene"}
+		s %ParentTypeName{"nsReflectedClass"}
+		s %PluginName{"nsEditorPluginScene"}
 		VarArray %Properties{}
-		s %TypeName{"wdSceneDocumentSettingsBase"}
+		s %TypeName{"nsSceneDocumentSettingsBase"}
 		u3 %TypeSize{8}
 		u3 %TypeVersion{1}
 	}
@@ -5036,17 +5036,17 @@ o
 o
 {
 	Uuid %id{u4{2869469983493172804,11764438314605031013}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::IsEnum|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::IsEnum|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdEnumBase"}
+		s %ParentTypeName{"nsEnumBase"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdOnComponentFinishedAction"}
+		s %TypeName{"nsOnComponentFinishedAction"}
 		u3 %TypeSize{1}
 		u3 %TypeVersion{1}
 	}
@@ -5054,17 +5054,17 @@ o
 o
 {
 	Uuid %id{u4{14929650074649117491,12034915874076129355}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Abstract|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Abstract|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdComponent"}
+		s %ParentTypeName{"nsComponent"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdSettingsComponent"}
+		s %TypeName{"nsSettingsComponent"}
 		u3 %TypeSize{56}
 		u3 %TypeVersion{1}
 	}
@@ -5072,17 +5072,17 @@ o
 o
 {
 	Uuid %id{u4{16777871838542487558,12116962178824346014}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Abstract|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Abstract|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdComponent"}
+		s %ParentTypeName{"nsComponent"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdRenderComponent"}
+		s %TypeName{"nsRenderComponent"}
 		u3 %TypeSize{48}
 		u3 %TypeVersion{1}
 	}
@@ -5090,17 +5090,17 @@ o
 o
 {
 	Uuid %id{u4{10244937169896853361,14776906713232524690}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdRenderComponent"}
+		s %ParentTypeName{"nsRenderComponent"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdGreyBoxComponent"}
+		s %TypeName{"nsGreyBoxComponent"}
 		u3 %TypeSize{128}
 		u3 %TypeVersion{4}
 	}
@@ -5108,17 +5108,17 @@ o
 o
 {
 	Uuid %id{u4{12814930320360971966,14780945004767832345}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Abstract|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Abstract|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdRenderComponent"}
+		s %ParentTypeName{"nsRenderComponent"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdLightComponent"}
+		s %TypeName{"nsLightComponent"}
 		u3 %TypeSize{72}
 		u3 %TypeVersion{4}
 	}
@@ -5126,17 +5126,17 @@ o
 o
 {
 	Uuid %id{u4{2947336711354777548,15013008608905564043}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
 		s %ParentTypeName{""}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdEnumBase"}
+		s %TypeName{"nsEnumBase"}
 		u3 %TypeSize{1}
 		u3 %TypeVersion{1}
 	}
@@ -5144,17 +5144,17 @@ o
 o
 {
 	Uuid %id{u4{11081527203184866822,15735316544108576551}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdSettingsComponent"}
+		s %ParentTypeName{"nsSettingsComponent"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdAmbientLightComponent"}
+		s %TypeName{"nsAmbientLightComponent"}
 		u3 %TypeSize{72}
 		u3 %TypeVersion{2}
 	}
@@ -5162,17 +5162,17 @@ o
 o
 {
 	Uuid %id{u4{14469700887475489738,16951777026318265606}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::IsEnum|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::IsEnum|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdEnumBase"}
+		s %ParentTypeName{"nsEnumBase"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdBasisAxis"}
+		s %TypeName{"nsBasisAxis"}
 		u3 %TypeSize{1}
 		u3 %TypeVersion{1}
 	}
@@ -5180,17 +5180,17 @@ o
 o
 {
 	Uuid %id{u4{17965579125706971693,17079293274319994058}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::IsEnum|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::IsEnum|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdEnumBase"}
+		s %ParentTypeName{"nsEnumBase"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdCameraUsageHint"}
+		s %TypeName{"nsCameraUsageHint"}
 		u3 %TypeSize{1}
 		u3 %TypeVersion{1}
 	}
@@ -5198,17 +5198,17 @@ o
 o
 {
 	Uuid %id{u4{983387834180907111,17935407260904399048}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
 		s %ParentTypeName{""}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdReflectedClass"}
+		s %TypeName{"nsReflectedClass"}
 		u3 %TypeSize{8}
 		u3 %TypeVersion{1}
 	}

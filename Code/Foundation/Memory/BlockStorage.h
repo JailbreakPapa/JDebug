@@ -3,7 +3,7 @@
 #include <Foundation/Containers/Bitfield.h>
 #include <Foundation/Memory/LargeBlockAllocator.h>
 
-struct wdBlockStorageType
+struct nsBlockStorageType
 {
   enum Enum
   {
@@ -12,8 +12,8 @@ struct wdBlockStorageType
   };
 };
 
-template <typename T, wdUInt32 BlockSizeInByte, wdBlockStorageType::Enum StorageType>
-class wdBlockStorage
+template <typename T, nsUInt32 BlockSizeInByte, nsBlockStorageType::Enum StorageType>
+class nsBlockStorage
 {
 public:
   class ConstIterator
@@ -30,15 +30,15 @@ public:
     void operator++();
 
   protected:
-    friend class wdBlockStorage<T, BlockSizeInByte, StorageType>;
+    friend class nsBlockStorage<T, BlockSizeInByte, StorageType>;
 
-    ConstIterator(const wdBlockStorage<T, BlockSizeInByte, StorageType>& storage, wdUInt32 uiStartIndex, wdUInt32 uiCount);
+    ConstIterator(const nsBlockStorage<T, BlockSizeInByte, StorageType>& storage, nsUInt32 uiStartIndex, nsUInt32 uiCount);
 
     T& CurrentElement() const;
 
-    const wdBlockStorage<T, BlockSizeInByte, StorageType>& m_Storage;
-    wdUInt32 m_uiCurrentIndex;
-    wdUInt32 m_uiEndIndex;
+    const nsBlockStorage<T, BlockSizeInByte, StorageType>& m_Storage;
+    nsUInt32 m_uiCurrentIndex;
+    nsUInt32 m_uiEndIndex;
   };
 
   class Iterator : public ConstIterator
@@ -50,13 +50,13 @@ public:
     operator T*();
 
   private:
-    friend class wdBlockStorage<T, BlockSizeInByte, StorageType>;
+    friend class nsBlockStorage<T, BlockSizeInByte, StorageType>;
 
-    Iterator(const wdBlockStorage<T, BlockSizeInByte, StorageType>& storage, wdUInt32 uiStartIndex, wdUInt32 uiCount);
+    Iterator(const nsBlockStorage<T, BlockSizeInByte, StorageType>& storage, nsUInt32 uiStartIndex, nsUInt32 uiCount);
   };
 
-  wdBlockStorage(wdLargeBlockAllocator<BlockSizeInByte>* pBlockAllocator, wdAllocatorBase* pAllocator);
-  ~wdBlockStorage();
+  nsBlockStorage(nsLargeBlockAllocator<BlockSizeInByte>* pBlockAllocator, nsAllocator* pAllocator);
+  ~nsBlockStorage();
 
   void Clear();
 
@@ -64,22 +64,22 @@ public:
   void Delete(T* pObject);
   void Delete(T* pObject, T*& out_pMovedObject);
 
-  wdUInt32 GetCount() const;
-  Iterator GetIterator(wdUInt32 uiStartIndex = 0, wdUInt32 uiCount = wdInvalidIndex);
-  ConstIterator GetIterator(wdUInt32 uiStartIndex = 0, wdUInt32 uiCount = wdInvalidIndex) const;
+  nsUInt32 GetCount() const;
+  Iterator GetIterator(nsUInt32 uiStartIndex = 0, nsUInt32 uiCount = nsInvalidIndex);
+  ConstIterator GetIterator(nsUInt32 uiStartIndex = 0, nsUInt32 uiCount = nsInvalidIndex) const;
 
 private:
-  void Delete(T* pObject, T*& out_pMovedObject, wdTraitInt<wdBlockStorageType::Compact>);
-  void Delete(T* pObject, T*& out_pMovedObject, wdTraitInt<wdBlockStorageType::FreeList>);
+  void Delete(T* pObject, T*& out_pMovedObject, nsTraitInt<nsBlockStorageType::Compact>);
+  void Delete(T* pObject, T*& out_pMovedObject, nsTraitInt<nsBlockStorageType::FreeList>);
 
-  wdLargeBlockAllocator<BlockSizeInByte>* m_pBlockAllocator;
+  nsLargeBlockAllocator<BlockSizeInByte>* m_pBlockAllocator;
 
-  wdDynamicArray<wdDataBlock<T, BlockSizeInByte>> m_Blocks;
-  wdUInt32 m_uiCount;
+  nsDynamicArray<nsDataBlock<T, BlockSizeInByte>> m_Blocks;
+  nsUInt32 m_uiCount = 0;
 
-  wdUInt32 m_uiFreelistStart;
+  nsUInt32 m_uiFreelistStart = nsInvalidIndex;
 
-  wdDynamicBitfield m_UsedEntries;
+  nsDynamicBitfield m_UsedEntries;
 };
 
 #include <Foundation/Memory/Implementation/BlockStorage_inl.h>

@@ -6,16 +6,16 @@
 #include <Foundation/Math/Vec2.h>
 #include <Foundation/Types/Enum.h>
 
-class wdStreamWriter;
-class wdStreamReader;
+class nsStreamWriter;
+class nsStreamReader;
 
-struct WD_FOUNDATION_DLL wdCurveTangentMode
+struct NS_FOUNDATION_DLL nsCurveTangentMode
 {
-  typedef wdUInt8 StorageType;
+  using StorageType = nsUInt8;
 
   enum Enum
   {
-    Bwdier,
+    Bnsier,
     FixedLength,
     Linear,
     // Constant,
@@ -25,34 +25,34 @@ struct WD_FOUNDATION_DLL wdCurveTangentMode
 };
 
 /// \brief A 1D curve for animating a single value over time.
-class WD_FOUNDATION_DLL wdCurve1D
+class NS_FOUNDATION_DLL nsCurve1D
 {
 public:
   /// \brief Stores position and tangents to control spline interpolation
   struct ControlPoint
   {
-    WD_DECLARE_POD_TYPE();
+    NS_DECLARE_POD_TYPE();
 
     ControlPoint();
 
     /// \brief The position (x,y) of the control point
-    wdVec2d m_Position;
+    nsVec2d m_Position;
 
     /// \brief The tangent for the curve segment to the left that affects the spline interpolation
-    wdVec2 m_LeftTangent;
+    nsVec2 m_LeftTangent;
     /// \brief The tangent for the curve segment to the right that affects the spline interpolation
-    wdVec2 m_RightTangent;
+    nsVec2 m_RightTangent;
 
-    wdEnum<wdCurveTangentMode> m_TangentModeLeft;
-    wdEnum<wdCurveTangentMode> m_TangentModeRight;
+    nsEnum<nsCurveTangentMode> m_TangentModeLeft;
+    nsEnum<nsCurveTangentMode> m_TangentModeRight;
 
-    wdUInt16 m_uiOriginalIndex;
+    nsUInt16 m_uiOriginalIndex;
 
-    WD_ALWAYS_INLINE bool operator<(const ControlPoint& rhs) const { return m_Position.x < rhs.m_Position.x; }
+    NS_ALWAYS_INLINE bool operator<(const ControlPoint& rhs) const { return m_Position.x < rhs.m_Position.x; }
   };
 
 public:
-  wdCurve1D();
+  nsCurve1D();
 
   /// \brief Removes all control points.
   void Clear();
@@ -81,14 +81,14 @@ public:
   void QueryExtremeValues(double& ref_fMinVal, double& ref_fMaxVal) const;
 
   /// \brief Returns the number of control points.
-  wdUInt32 GetNumControlPoints() const;
+  nsUInt32 GetNumControlPoints() const;
 
   /// \brief Const access to a control point.
-  const ControlPoint& GetControlPoint(wdUInt32 uiIdx) const { return m_ControlPoints[uiIdx]; }
+  const ControlPoint& GetControlPoint(nsUInt32 uiIdx) const { return m_ControlPoints[uiIdx]; }
 
   /// \brief Non-const access to a control point. If you modify the position, SortControlPoints() has to be called before evaluating the
   /// curve.
-  ControlPoint& ModifyControlPoint(wdUInt32 uiIdx) { return m_ControlPoints[uiIdx]; }
+  ControlPoint& ModifyControlPoint(nsUInt32 uiIdx) { return m_ControlPoints[uiIdx]; }
 
   /// \brief Sorts the control point arrays by their position. The CPs have to be sorted before calling Evaluate(), otherwise the result
   /// will be wrong.
@@ -115,20 +115,20 @@ public:
   double NormalizeValue(double value) const;
 
   /// \brief How much heap memory the curve uses.
-  wdUInt64 GetHeapMemoryUsage() const;
+  nsUInt64 GetHeapMemoryUsage() const;
 
   /// \brief Stores the current state in a stream.
-  void Save(wdStreamWriter& inout_stream) const;
+  void Save(nsStreamWriter& inout_stream) const;
 
   /// \brief Restores the state from a stream.
-  void Load(wdStreamReader& inout_stream);
+  void Load(nsStreamReader& inout_stream);
 
   /// \brief Pre-computes sample points for linear interpolation that approximate the curve within the allowed error threshold.
   ///
   /// \note All control points must already be in sorted order, so call SortControlPoints() first if necessary.
-  void CreateLinearApproximation(double fMaxError = 0.01, wdUInt8 uiMaxSubDivs = 8);
+  void CreateLinearApproximation(double fMaxError = 0.01, nsUInt8 uiMaxSubDivs = 8);
 
-  const wdHybridArray<wdVec2d, 24>& GetLinearApproximation() const { return m_LinearApproximation; }
+  const nsHybridArray<nsVec2d, 24>& GetLinearApproximation() const { return m_LinearApproximation; }
 
   /// \brief Adjusts the tangents such that the curve cannot make loopings
   void ClampTangents();
@@ -139,28 +139,28 @@ public:
   void ApplyTangentModes();
 
   /// \brief Typically called by ApplyTangentModes() for specific control points. Control points must be in sorted order.
-  void MakeFixedLengthTangentLeft(wdUInt32 uiCpIdx);
+  void MakeFixedLengthTangentLeft(nsUInt32 uiCpIdx);
   /// \brief Typically called by ApplyTangentModes() for specific control points. Control points must be in sorted order.
-  void MakeFixedLengthTangentRight(wdUInt32 uiCpIdx);
+  void MakeFixedLengthTangentRight(nsUInt32 uiCpIdx);
   /// \brief Typically called by ApplyTangentModes() for specific control points. Control points must be in sorted order.
-  void MakeLinearTangentLeft(wdUInt32 uiCpIdx);
+  void MakeLinearTangentLeft(nsUInt32 uiCpIdx);
   /// \brief Typically called by ApplyTangentModes() for specific control points. Control points must be in sorted order.
-  void MakeLinearTangentRight(wdUInt32 uiCpIdx);
+  void MakeLinearTangentRight(nsUInt32 uiCpIdx);
 
-  void MakeAutoTangentLeft(wdUInt32 uiCpIdx);
-  void MakeAutoTangentRight(wdUInt32 uiCpIdx);
+  void MakeAutoTangentLeft(nsUInt32 uiCpIdx);
+  void MakeAutoTangentRight(nsUInt32 uiCpIdx);
 
 private:
   void RecomputeLinearApproxExtremes();
   void ApproximateMinMaxValues(const ControlPoint& lhs, const ControlPoint& rhs, double& fMinY, double& fMaxY);
   void ApproximateCurve(
-    const wdVec2d& p0, const wdVec2d& p1, const wdVec2d& p2, const wdVec2d& p3, double fMaxErrorX, double fMaxErrorY, wdInt32 iSubDivLeft);
-  void ApproximateCurvePiece(const wdVec2d& p0, const wdVec2d& p1, const wdVec2d& p2, const wdVec2d& p3, double tLeft, const wdVec2d& pLeft,
-    double tRight, const wdVec2d& pRight, double fMaxErrorX, double fMaxErrorY, wdInt32 iSubDivLeft);
-  wdInt32 FindApproxControlPoint(double x) const;
+    const nsVec2d& p0, const nsVec2d& p1, const nsVec2d& p2, const nsVec2d& p3, double fMaxErrorX, double fMaxErrorY, nsInt32 iSubDivLeft);
+  void ApproximateCurvePiece(const nsVec2d& p0, const nsVec2d& p1, const nsVec2d& p2, const nsVec2d& p3, double tLeft, const nsVec2d& pLeft,
+    double tRight, const nsVec2d& pRight, double fMaxErrorX, double fMaxErrorY, nsInt32 iSubDivLeft);
+  nsInt32 FindApproxControlPoint(double x) const;
 
   double m_fMinX, m_fMaxX;
   double m_fMinY, m_fMaxY;
-  wdHybridArray<ControlPoint, 8> m_ControlPoints;
-  wdHybridArray<wdVec2d, 24> m_LinearApproximation;
+  nsHybridArray<ControlPoint, 8> m_ControlPoints;
+  nsHybridArray<nsVec2d, 24> m_LinearApproximation;
 };

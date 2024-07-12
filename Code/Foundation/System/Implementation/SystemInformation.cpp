@@ -3,92 +3,19 @@
 #include <Foundation/System/SystemInformation.h>
 
 // Storage for the current configuration
-wdSystemInformation wdSystemInformation::s_SystemInformation;
-
-// Include inline file
-#if WD_ENABLED(WD_PLATFORM_WINDOWS)
-#  include <Foundation/System/Implementation/Win/SystemInformation_win.h>
-#elif WD_ENABLED(WD_PLATFORM_OSX)
-#  include <Foundation/System/Implementation/OSX/SystemInformation_OSX.h>
-#elif WD_ENABLED(WD_PLATFORM_LINUX) || WD_ENABLED(WD_PLATFORM_ANDROID)
-#  include <Foundation/System/Implementation/Posix/SystemInformation_posix.h>
-#else
-#  error "System configuration functions are not implemented on current platform"
-#endif
+nsSystemInformation nsSystemInformation::s_SystemInformation;
 
 /// CPU feature detection code copied from https://github.com/Mysticial/FeatureDetector
 
-#if WD_ENABLED(WD_PLATFORM_ARCH_X86)
+#if NS_ENABLED(NS_PLATFORM_ARCH_X86)
 
 namespace cpu_x86
 {
-#  if WD_ENABLED(WD_PLATFORM_WINDOWS)
+#  define _XCR_XFEATURE_ENABLED_MASK 0
 
-#    include <Windows.h>
-#    include <intrin.h>
-
-  static void cpuid(int32_t pOut[4], int32_t eax, int32_t ecx)
-  {
-    __cpuidex(pOut, eax, ecx);
-  }
-  static __int64 xgetbv(unsigned int x)
-  {
-    return _xgetbv(x);
-  }
-
-  static bool detect_OS_x64()
-  {
-#    ifdef _M_X64
-    return true;
-#    else
-
-    BOOL bIsWow64 = FALSE;
-
-    typedef BOOL(WINAPI * LPFN_ISWOW64PROCESS)(HANDLE, PBOOL);
-    LPFN_ISWOW64PROCESS fnIsWow64Process = (LPFN_ISWOW64PROCESS)GetProcAddress(GetModuleHandle(TEXT("kernel32")), "IsWow64Process");
-
-    if (NULL != fnIsWow64Process)
-    {
-      if (!fnIsWow64Process(GetCurrentProcess(), &bIsWow64))
-      {
-        printf("Error Detecting Operating System.\n");
-        printf("Defaulting to 32-bit OS.\n\n");
-        bIsWow64 = FALSE;
-      }
-    }
-
-    return bIsWow64 != 0;
-#    endif
-  }
-
-#  elif WD_ENABLED(WD_PLATFORM_OSX) || WD_ENABLED(WD_PLATFORM_LINUX) || WD_ENABLED(WD_PLATFORM_ANDROID)
-
-#    include <cpuid.h>
-
-  static void cpuid(int32_t out[4], int32_t eax, int32_t ecx)
-  {
-    __cpuid_count(eax, ecx, out[0], out[1], out[2], out[3]);
-  }
-
-  static uint64_t xgetbv(unsigned int index)
-  {
-    uint32_t eax, edx;
-    __asm__ __volatile__("xgetbv"
-                         : "=a"(eax), "=d"(edx)
-                         : "c"(index));
-    return ((uint64_t)edx << 32) | eax;
-  }
-#    define _XCR_XFEATURE_ENABLED_MASK 0
-
-  static bool detect_OS_x64()
-  {
-    //  We only support x64 on Linux.
-    return true;
-  }
-
-#  else
-#    error "CPU feature detection functions are not implemented on current platform"
-#  endif
+  void cpuid(int32_t pOut[4], int32_t eax, int32_t ecx);
+  uint64_t xgetbv(unsigned int uiIndex);
+  bool detect_OS_x64();
 
   static bool detect_OS_AVX()
   {
@@ -136,7 +63,7 @@ namespace cpu_x86
 
 } // namespace cpu_x86
 
-void wdCpuFeatures::Detect()
+void nsCpuFeatures::Detect()
 {
   using namespace cpu_x86;
 
@@ -238,10 +165,8 @@ void wdCpuFeatures::Detect()
 
 #else
 
-void wdCpuFeatures::Detect()
+void nsCpuFeatures::Detect()
 {
 }
 
 #endif
-
-WD_STATICLINK_FILE(Foundation, Foundation_System_Implementation_SystemInformation);

@@ -2,13 +2,13 @@
 #include <Foundation/Types/Implementation/DelegateHelper_inl.h>
 
 template <typename Function>
-WD_ALWAYS_INLINE wdDelegate<Function> wdMakeDelegate(Function* pFunction)
+NS_ALWAYS_INLINE nsDelegate<Function> nsMakeDelegate(Function* pFunction)
 {
-  return wdDelegate<Function>(pFunction);
+  return nsDelegate<Function>(pFunction);
 }
 
 template <typename Method, typename Class>
-WD_ALWAYS_INLINE typename wdMakeDelegateHelper<Method>::DelegateType wdMakeDelegate(Method method, Class* pClass)
+NS_ALWAYS_INLINE typename nsMakeDelegateHelper<Method>::DelegateType nsMakeDelegate(Method method, Class* pClass)
 {
-  return typename wdMakeDelegateHelper<Method>::DelegateType(method, pClass);
+  return typename nsMakeDelegateHelper<Method>::DelegateType(method, pClass);
 }

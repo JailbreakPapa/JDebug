@@ -7,46 +7,46 @@
 /// \brief This needs to be put into the class declaration of EVERY dynamically reflectable class.
 ///
 /// This macro extends a class, such that it is now able to return its own type information via GetDynamicRTTI(),
-/// which is a virtual function, that is reimplemented on each type. A class needs to be derived from wdReflectedClass
+/// which is a virtual function, that is reimplemented on each type. A class needs to be derived from nsReflectedClass
 /// (at least indirectly) for this.
-#define WD_ADD_DYNAMIC_REFLECTION_NO_GETTER(SELF, BASE_TYPE) \
-  WD_ALLOW_PRIVATE_PROPERTIES(SELF);                         \
+#define NS_ADD_DYNAMIC_REFLECTION_NO_GETTER(SELF, BASE_TYPE) \
+  NS_ALLOW_PRIVATE_PROPERTIES(SELF);                         \
                                                              \
 public:                                                      \
   using OWNTYPE = SELF;                                      \
   using SUPER = BASE_TYPE;                                   \
-  WD_ALWAYS_INLINE static const wdRTTI* GetStaticRTTI()      \
+  NS_ALWAYS_INLINE static const nsRTTI* GetStaticRTTI()      \
   {                                                          \
     return &SELF::s_RTTI;                                    \
   }                                                          \
                                                              \
 private:                                                     \
-  static wdRTTI s_RTTI;                                      \
-  WD_REFLECTION_DEBUG_CODE
+  static nsRTTI s_RTTI;                                      \
+  NS_REFLECTION_DEBUG_CODE
 
 
-#define WD_ADD_DYNAMIC_REFLECTION(SELF, BASE_TYPE)      \
-  WD_ADD_DYNAMIC_REFLECTION_NO_GETTER(SELF, BASE_TYPE)  \
+#define NS_ADD_DYNAMIC_REFLECTION(SELF, BASE_TYPE)      \
+  NS_ADD_DYNAMIC_REFLECTION_NO_GETTER(SELF, BASE_TYPE)  \
 public:                                                 \
-  virtual const wdRTTI* GetDynamicRTTI() const override \
+  virtual const nsRTTI* GetDynamicRTTI() const override \
   {                                                     \
     return &SELF::s_RTTI;                               \
   }
 
 
-#if WD_ENABLED(WD_COMPILE_FOR_DEVELOPMENT) && WD_ENABLED(WD_COMPILER_MSVC)
+#if NS_ENABLED(NS_COMPILE_FOR_DEVELOPMENT) && NS_ENABLED(NS_COMPILER_MSVC)
 
-#  define WD_REFLECTION_DEBUG_CODE                       \
-    static const wdRTTI* ReflectionDebug_GetParentType() \
+#  define NS_REFLECTION_DEBUG_CODE                       \
+    static const nsRTTI* ReflectionDebug_GetParentType() \
     {                                                    \
       return __super::GetStaticRTTI();                   \
     }
 
-#  define WD_REFLECTION_DEBUG_GETPARENTFUNC &OwnType::ReflectionDebug_GetParentType
+#  define NS_REFLECTION_DEBUG_GETPARENTFUNC &OwnType::ReflectionDebug_GetParentType
 
 #else
-#  define WD_REFLECTION_DEBUG_CODE /*empty*/
-#  define WD_REFLECTION_DEBUG_GETPARENTFUNC nullptr
+#  define NS_REFLECTION_DEBUG_CODE /*empty*/
+#  define NS_REFLECTION_DEBUG_GETPARENTFUNC nullptr
 #endif
 
 
@@ -55,44 +55,52 @@ public:                                                 \
 /// \param Type
 ///   The type for which the reflection functionality should be implemented.
 /// \param BaseType
-///   The base class type of \a Type. If it has no base class, pass wdNoBase
+///   The base class type of \a Type. If it has no base class, pass nsNoBase
 /// \param AllocatorType
-///   The type of an wdRTTIAllocator that can be used to create and destroy instances
-///   of \a Type. Pass wdRTTINoAllocator for types that should not be created dynamically.
-///   Pass wdRTTIDefaultAllocator<Type> for types that should be created on the default heap.
-///   Pass a custom wdRTTIAllocator type to handle allocation differently.
-#define WD_BEGIN_DYNAMIC_REFLECTED_TYPE(Type, Version, AllocatorType) \
-  WD_RTTIINFO_DECL(Type, Type::SUPER, Version)                        \
-  wdRTTI Type::s_RTTI = GetRTTI((Type*)0);                            \
-  WD_RTTIINFO_GETRTTI_IMPL_BEGIN(Type, Type::SUPER, AllocatorType)
+///   The type of an nsRTTIAllocator that can be used to create and destroy instances
+///   of \a Type. Pass nsRTTINoAllocator for types that should not be created dynamically.
+///   Pass nsRTTIDefaultAllocator<Type> for types that should be created on the default heap.
+///   Pass a custom nsRTTIAllocator type to handle allocation differently.
+#define NS_BEGIN_DYNAMIC_REFLECTED_TYPE(Type, Version, AllocatorType) \
+  NS_RTTIINFO_DECL(Type, Type::SUPER, Version)                        \
+  nsRTTI Type::s_RTTI = GetRTTI((Type*)0);                            \
+  NS_RTTIINFO_GETRTTI_IMPL_BEGIN(Type, Type::SUPER, AllocatorType)
 
-/// \brief Ends the reflection code block that was opened with WD_BEGIN_DYNAMIC_REFLECTED_TYPE.
-#define WD_END_DYNAMIC_REFLECTED_TYPE                                                                                                \
-  return wdRTTI(GetTypeName((OwnType*)0), wdGetStaticRTTI<OwnBaseType>(), sizeof(OwnType), GetTypeVersion((OwnType*)0),              \
-    wdVariant::TypeDeduction<OwnType>::value, flags, &Allocator, Properties, Functions, Attributes, MessageHandlers, MessageSenders, \
-    WD_REFLECTION_DEBUG_GETPARENTFUNC);                                                                                              \
+/// \brief Ends the reflection code block that was opened with NS_BEGIN_DYNAMIC_REFLECTED_TYPE.
+#define NS_END_DYNAMIC_REFLECTED_TYPE                                                                                                \
+  return nsRTTI(GetTypeName((OwnType*)0), nsGetStaticRTTI<OwnBaseType>(), sizeof(OwnType), GetTypeVersion((OwnType*)0),              \
+    nsVariant::TypeDeduction<OwnType>::value, flags, &Allocator, Properties, Functions, Attributes, MessageHandlers, MessageSenders, \
+    NS_REFLECTION_DEBUG_GETPARENTFUNC);                                                                                              \
   }
 
+/// \brief Same as NS_BEGIN_DYNAMIC_REFLECTED_TYPE but forces the type to be treated as abstract by reflection even though
+/// it might not be abstract from a C++ perspective.
+#define NS_BEGIN_ABSTRACT_DYNAMIC_REFLECTED_TYPE(Type, Version)     \
+  NS_BEGIN_DYNAMIC_REFLECTED_TYPE(Type, Version, nsRTTINoAllocator) \
+    flags.Add(nsTypeFlags::Abstract);
+
+#define NS_END_ABSTRACT_DYNAMIC_REFLECTED_TYPE NS_END_DYNAMIC_REFLECTED_TYPE
+
 /// \brief All classes that should be dynamically reflectable, need to be derived from this base class.
-class WD_FOUNDATION_DLL wdReflectedClass : public wdNoBase
+class NS_FOUNDATION_DLL nsReflectedClass : public nsNoBase
 {
-  WD_ADD_DYNAMIC_REFLECTION_NO_GETTER(wdReflectedClass, wdNoBase);
+  NS_ADD_DYNAMIC_REFLECTION_NO_GETTER(nsReflectedClass, nsNoBase);
 
 public:
-  virtual const wdRTTI* GetDynamicRTTI() const { return &wdReflectedClass::s_RTTI; }
+  virtual const nsRTTI* GetDynamicRTTI() const { return &nsReflectedClass::s_RTTI; }
 
 public:
-  WD_ALWAYS_INLINE wdReflectedClass() = default;
-  WD_ALWAYS_INLINE virtual ~wdReflectedClass() = default;
+  NS_ALWAYS_INLINE nsReflectedClass() = default;
+  NS_ALWAYS_INLINE virtual ~nsReflectedClass() = default;
 
   /// \brief Returns whether the type of this instance is of the given type or derived from it.
-  bool IsInstanceOf(const wdRTTI* pType) const;
+  bool IsInstanceOf(const nsRTTI* pType) const;
 
   /// \brief Returns whether the type of this instance is of the given type or derived from it.
   template <typename T>
-  WD_ALWAYS_INLINE bool IsInstanceOf() const
+  NS_ALWAYS_INLINE bool IsInstanceOf() const
   {
-    const wdRTTI* pType = wdGetStaticRTTI<T>();
+    const nsRTTI* pType = nsGetStaticRTTI<T>();
     return IsInstanceOf(pType);
   }
 };

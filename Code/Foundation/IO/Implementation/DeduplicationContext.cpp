@@ -3,18 +3,14 @@
 #include <Foundation/IO/DeduplicationReadContext.h>
 #include <Foundation/IO/DeduplicationWriteContext.h>
 
-WD_IMPLEMENT_SERIALIZATION_CONTEXT(wdDeduplicationReadContext);
+NS_IMPLEMENT_SERIALIZATION_CONTEXT(nsDeduplicationReadContext);
 
-wdDeduplicationReadContext::wdDeduplicationReadContext() = default;
-wdDeduplicationReadContext::~wdDeduplicationReadContext() = default;
+nsDeduplicationReadContext::nsDeduplicationReadContext() = default;
+nsDeduplicationReadContext::~nsDeduplicationReadContext() = default;
 
 //////////////////////////////////////////////////////////////////////////
 
-WD_IMPLEMENT_SERIALIZATION_CONTEXT(wdDeduplicationWriteContext);
+NS_IMPLEMENT_SERIALIZATION_CONTEXT(nsDeduplicationWriteContext);
 
-wdDeduplicationWriteContext::wdDeduplicationWriteContext() = default;
-wdDeduplicationWriteContext::~wdDeduplicationWriteContext() = default;
-
-
-
-WD_STATICLINK_FILE(Foundation, Foundation_IO_Implementation_DeduplicationContext);
+nsDeduplicationWriteContext::nsDeduplicationWriteContext() = default;
+nsDeduplicationWriteContext::~nsDeduplicationWriteContext() = default;

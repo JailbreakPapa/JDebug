@@ -3,55 +3,55 @@
 #include <Foundation/Reflection/Implementation/RTTI.h>
 #include <Foundation/Types/VariantTypeRegistry.h>
 
-WD_IMPLEMENT_SINGLETON(wdVariantTypeRegistry);
+NS_IMPLEMENT_SINGLETON(nsVariantTypeRegistry);
 
 // clang-format off
-WD_BEGIN_SUBSYSTEM_DECLARATION(Foundation, VariantTypeRegistry)
+NS_BEGIN_SUBSYSTEM_DECLARATION(Foundation, VariantTypeRegistry)
 
-BEGIN_SUBSYSTEM_DEPENDENCIES
-"Reflection"
-END_SUBSYSTEM_DEPENDENCIES
+  BEGIN_SUBSYSTEM_DEPENDENCIES
+    "Reflection"
+  END_SUBSYSTEM_DEPENDENCIES
 
-ON_CORESYSTEMS_STARTUP
-{
-  WD_DEFAULT_NEW(wdVariantTypeRegistry);
-}
+  ON_CORESYSTEMS_STARTUP
+  {
+    NS_DEFAULT_NEW(nsVariantTypeRegistry);
+  }
 
-ON_CORESYSTEMS_SHUTDOWN
-{
-  wdVariantTypeRegistry * pDummy = wdVariantTypeRegistry::GetSingleton();
-  WD_DEFAULT_DELETE(pDummy);
-}
+  ON_CORESYSTEMS_SHUTDOWN
+  {
+    nsVariantTypeRegistry * pDummy = nsVariantTypeRegistry::GetSingleton();
+    NS_DEFAULT_DELETE(pDummy);
+  }
 
-WD_END_SUBSYSTEM_DECLARATION;
+NS_END_SUBSYSTEM_DECLARATION;
 // clang-format on
 
-wdVariantTypeRegistry::wdVariantTypeRegistry()
+nsVariantTypeRegistry::nsVariantTypeRegistry()
   : m_SingletonRegistrar(this)
 {
-  wdPlugin::Events().AddEventHandler(wdMakeDelegate(&wdVariantTypeRegistry::PluginEventHandler, this));
+  nsPlugin::Events().AddEventHandler(nsMakeDelegate(&nsVariantTypeRegistry::PluginEventHandler, this));
 
   UpdateTypes();
 }
 
-wdVariantTypeRegistry::~wdVariantTypeRegistry()
+nsVariantTypeRegistry::~nsVariantTypeRegistry()
 {
-  wdPlugin::Events().RemoveEventHandler(wdMakeDelegate(&wdVariantTypeRegistry::PluginEventHandler, this));
+  nsPlugin::Events().RemoveEventHandler(nsMakeDelegate(&nsVariantTypeRegistry::PluginEventHandler, this));
 }
 
-const wdVariantTypeInfo* wdVariantTypeRegistry::FindVariantTypeInfo(const wdRTTI* pType) const
+const nsVariantTypeInfo* nsVariantTypeRegistry::FindVariantTypeInfo(const nsRTTI* pType) const
 {
-  const wdVariantTypeInfo* pTypeInfo = nullptr;
+  const nsVariantTypeInfo* pTypeInfo = nullptr;
   m_TypeInfos.TryGetValue(pType, pTypeInfo);
   return pTypeInfo;
 }
 
-void wdVariantTypeRegistry::PluginEventHandler(const wdPluginEvent& EventData)
+void nsVariantTypeRegistry::PluginEventHandler(const nsPluginEvent& EventData)
 {
   switch (EventData.m_EventType)
   {
-    case wdPluginEvent::AfterLoadingBeforeInit:
-    case wdPluginEvent::AfterUnloading:
+    case nsPluginEvent::AfterLoadingBeforeInit:
+    case nsPluginEvent::AfterUnloading:
       UpdateTypes();
       break;
     default:
@@ -59,14 +59,14 @@ void wdVariantTypeRegistry::PluginEventHandler(const wdPluginEvent& EventData)
   }
 }
 
-void wdVariantTypeRegistry::UpdateTypes()
+void nsVariantTypeRegistry::UpdateTypes()
 {
   m_TypeInfos.Clear();
-  wdVariantTypeInfo* pInstance = wdVariantTypeInfo::GetFirstInstance();
+  nsVariantTypeInfo* pInstance = nsVariantTypeInfo::GetFirstInstance();
 
   while (pInstance)
   {
-    WD_ASSERT_DEV(pInstance->GetType()->GetAllocator()->CanAllocate(), "Custom type '{0}' needs to be allocatable.", pInstance->GetType()->GetTypeName());
+    NS_ASSERT_DEV(pInstance->GetType()->GetAllocator()->CanAllocate(), "Custom type '{0}' needs to be allocatable.", pInstance->GetType()->GetTypeName());
 
     m_TypeInfos.Insert(pInstance->GetType(), pInstance);
     pInstance = pInstance->GetNextInstance();
@@ -75,11 +75,9 @@ void wdVariantTypeRegistry::UpdateTypes()
 
 //////////////////////////////////////////////////////////////////////////
 
-WD_ENUMERABLE_CLASS_IMPLEMENTATION(wdVariantTypeInfo);
+NS_ENUMERABLE_CLASS_IMPLEMENTATION(nsVariantTypeInfo);
 
-wdVariantTypeInfo::wdVariantTypeInfo()
-{
-}
+nsVariantTypeInfo::nsVariantTypeInfo() = default;
 
 
-WD_STATICLINK_FILE(Foundation, Foundation_Types_Implementation_VariantTypeRegistry);
+NS_STATICLINK_FILE(Foundation, Foundation_Types_Implementation_VariantTypeRegistry);

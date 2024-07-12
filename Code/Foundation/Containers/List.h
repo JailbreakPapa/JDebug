@@ -8,7 +8,7 @@
 /// Access is limited to iteration from front-to-back or back-to-front, there is no random-access.
 /// Define the type of object to store in the list via the template argument T.
 template <typename T>
-class wdListBase
+class nsListBase
 {
 private:
   struct ListElement;
@@ -30,13 +30,13 @@ private:
     }
     explicit ListElement(const T& data);
 
-    T m_Data;
+    T m_Data = {};
   };
 
   /// \brief base-class for all iterators
   struct ConstIterator
   {
-    WD_DECLARE_POD_TYPE();
+    NS_DECLARE_POD_TYPE();
 
     /// \brief Constructor.
     ConstIterator()
@@ -45,10 +45,8 @@ private:
     } // [tested]
 
     /// \brief Equality comparison operator.
-    bool operator==(typename wdListBase<T>::ConstIterator it2) const { return (m_pElement == it2.m_pElement); } // [tested]
-
-    /// \brief Inequality comparison operator.
-    bool operator!=(typename wdListBase<T>::ConstIterator it2) const { return (m_pElement != it2.m_pElement); } // [tested]
+    bool operator==(typename nsListBase<T>::ConstIterator it2) const { return (m_pElement == it2.m_pElement); } // [tested]
+    NS_ADD_DEFAULT_OPERATOR_NOTEQUAL(typename nsListBase<T>::ConstIterator);
 
     /// \brief Grants access to the node-data.
     const T& operator*() const { return (m_pElement->m_Data); } // [tested]
@@ -72,7 +70,7 @@ private:
     void operator--() { Prev(); } // [tested]
 
   private:
-    friend class wdListBase<T>;
+    friend class nsListBase<T>;
 
     ConstIterator(ListElement* pInit)
       : m_pElement(pInit)
@@ -90,7 +88,7 @@ public:
     using ConstIterator::operator*;
     using ConstIterator::operator->;
 
-    WD_DECLARE_POD_TYPE();
+    NS_DECLARE_POD_TYPE();
 
     /// \brief Constructor.
     Iterator()
@@ -105,7 +103,7 @@ public:
     T* operator->() { return (&this->m_pElement->m_Data); } // [tested]
 
   private:
-    friend class wdListBase<T>;
+    friend class nsListBase<T>;
 
     explicit Iterator(ListElement* pInit)
       : ConstIterator(pInit)
@@ -115,26 +113,26 @@ public:
 
 protected:
   /// \brief Initializes the list to be empty.
-  explicit wdListBase(wdAllocatorBase* pAllocator); // [tested]
+  explicit nsListBase(nsAllocator* pAllocator); // [tested]
 
   /// \brief Initializes the list with a copy from another list.
-  wdListBase(const wdListBase<T>& cc, wdAllocatorBase* pAllocator); // [tested]
+  nsListBase(const nsListBase<T>& cc, nsAllocator* pAllocator); // [tested]
 
   /// \brief Destroys the list and all its content.
-  ~wdListBase(); // [tested]
+  ~nsListBase(); // [tested]
 
   /// \brief Copies the list cc into this list.
-  void operator=(const wdListBase<T>& cc); // [tested]
+  void operator=(const nsListBase<T>& cc); // [tested]
 
 public:
   /// \brief Clears the list, afterwards it is empty.
   void Clear(); // [tested]
 
-  /// \brief See wdDeque::Compact()
+  /// \brief See nsDeque::Compact()
   void Compact();
 
   /// \brief Returns the number of elements in the list. O(1) operation.
-  wdUInt32 GetCount() const; // [tested]
+  nsUInt32 GetCount() const; // [tested]
 
   /// \brief Returns whether size == 0. O(1) operation.
   bool IsEmpty() const; // [tested]
@@ -151,8 +149,8 @@ public:
   /// \brief Returns the very last element in the list.
   T& PeekBack(); // [tested]
 
-  /// \brief Appends a default-constructed element to the list.
-  void PushBack(); // [tested]
+  /// \brief Appends a default-constructed element to the list and returns a reference to it.
+  T& PushBack(); // [tested]
 
   /// \brief Appends a copy of the given element to the list.
   void PushBack(const T& element); // [tested]
@@ -160,8 +158,8 @@ public:
   /// \brief Removes the very last element from the list.
   void PopBack(); // [tested]
 
-  /// \brief Appends a default-constructed element to the front of the list.
-  void PushFront(); // [tested]
+  /// \brief Appends a default-constructed element to the front of the list and returns a reference to it.
+  T& PushFront(); // [tested]
 
   /// \brief Appends a copy of the given element to the front of the list.
   void PushFront(const T& element); // [tested]
@@ -170,13 +168,16 @@ public:
   void PopFront(); // [tested]
 
   /// \brief Sets the number of elements that are in the list.
-  void SetCount(wdUInt32 uiNewSize); // [tested]
+  void SetCount(nsUInt32 uiNewSize); // [tested]
 
   /// \brief Inserts one element before the position defined by the iterator.
   Iterator Insert(const Iterator& pos, const T& data); // [tested]
 
   /// \brief Inserts the range defined by [first;last) after pos.
   void Insert(const Iterator& pos, ConstIterator first, const ConstIterator& last);
+
+  /// \brief Inserts a default constructed element before the position defined by the iterator.
+  Iterator Insert(const Iterator& pos);
 
   /// \brief Erases the element pointed to by the iterator.
   Iterator Remove(const Iterator& pos); // [tested]
@@ -187,32 +188,24 @@ public:
   /// \brief Returns an iterator to the first list-element.
   Iterator GetIterator(); // [tested]
 
-  /// \brief Returns an iterator to the last list-element. Can be used for reverse iteration.
-  Iterator GetLastIterator(); // [tested]
-
   /// \brief Returns an iterator pointing behind the last element. Necessary if one wants to insert elements at the end of a list.
   Iterator GetEndIterator(); // [tested]
 
   /// \brief Returns a const-iterator to the first list-element.
   ConstIterator GetIterator() const; // [tested]
 
-  /// \brief Returns a const-iterator to the last list-element. Can be used for reverse iteration.
-  ConstIterator GetLastIterator() const; // [tested]
-
   /// \brief Returns a const-iterator pointing behind the last element. Necessary if one wants to insert elements at the end of a list.
   ConstIterator GetEndIterator() const; // [tested]
 
   /// \brief Returns the allocator that is used by this instance.
-  wdAllocatorBase* GetAllocator() const { return m_Elements.GetAllocator(); }
+  nsAllocator* GetAllocator() const { return m_Elements.GetAllocator(); }
 
   /// \brief Comparison operator
-  bool operator==(const wdListBase<T>& rhs) const; // [tested]
-
-  /// \brief Comparison operator
-  bool operator!=(const wdListBase<T>& rhs) const; // [tested]
+  bool operator==(const nsListBase<T>& rhs) const; // [tested]
+  NS_ADD_DEFAULT_OPERATOR_NOTEQUAL(const nsListBase<T>&);
 
   /// \brief Returns the amount of bytes that are currently allocated on the heap.
-  wdUInt64 GetHeapMemoryUsage() const { return m_Elements.GetHeapMemoryUsage(); } // [tested]
+  nsUInt64 GetHeapMemoryUsage() const { return m_Elements.GetHeapMemoryUsage(); } // [tested]
 
 private:
   /// \brief Sentinel node before the first element.
@@ -225,34 +218,34 @@ private:
   Iterator m_End;
 
   /// \brief The number of active elements in the list.
-  wdUInt32 m_uiCount;
+  nsUInt32 m_uiCount;
 
-  /// \brief Acquires and initializes one node.
-  ListElement* AcquireNode(const T& data);
+  /// \brief Acquires and initializes one default constructed node.
+  ListElement* AcquireNode();
 
   /// \brief Destructs one node and puts it into the free-list.
   void ReleaseNode(ListElement* pNode);
 
   /// \brief Data-Store. Contains all the elements.
-  wdDeque<ListElement, wdNullAllocatorWrapper, false> m_Elements;
+  nsDeque<ListElement, nsNullAllocatorWrapper, false> m_Elements;
 
   /// \brief Stack that holds recently freed nodes, that can be quickly reused.
   ListElement* m_pFreeElementStack;
 };
 
-/// \brief \see wdListBase
-template <typename T, typename AllocatorWrapper = wdDefaultAllocatorWrapper>
-class wdList : public wdListBase<T>
+/// \brief \see nsListBase
+template <typename T, typename AllocatorWrapper = nsDefaultAllocatorWrapper>
+class nsList : public nsListBase<T>
 {
 public:
-  wdList();
-  explicit wdList(wdAllocatorBase* pAllocator);
+  nsList();
+  explicit nsList(nsAllocator* pAllocator);
 
-  wdList(const wdList<T, AllocatorWrapper>& other);
-  wdList(const wdListBase<T>& other);
+  nsList(const nsList<T, AllocatorWrapper>& other);
+  nsList(const nsListBase<T>& other);
 
-  void operator=(const wdList<T, AllocatorWrapper>& rhs);
-  void operator=(const wdListBase<T>& rhs);
+  void operator=(const nsList<T, AllocatorWrapper>& rhs);
+  void operator=(const nsListBase<T>& rhs);
 };
 
 #include <Foundation/Containers/Implementation/List_inl.h>

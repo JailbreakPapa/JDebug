@@ -5,7 +5,7 @@
 #include <Foundation/Types/Delegate.h>
 
 /// \brief Helper class to capture the current stack and print a captured stack
-class WD_FOUNDATION_DLL wdStackTracer
+class NS_FOUNDATION_DLL nsStackTracer
 {
 public:
   /// \brief Captures the current stack trace.
@@ -13,21 +13,21 @@ public:
   /// The trace will contain not more than ref_trace.GetCount() entries.
   /// [Windows] If called in an exception handler, set pContext to PEXCEPTION_POINTERS::ContextRecord.
   /// Returns the actual number of captured entries.
-  static wdUInt32 GetStackTrace(wdArrayPtr<void*>& ref_trace, void* pContext = nullptr);
+  static nsUInt32 GetStackTrace(nsArrayPtr<void*>& ref_trace, void* pContext = nullptr);
 
   /// \brief Callback-function to print a text somewhere
-  using PrintFunc = wdDelegate<void(const char* szText)>;
+  using PrintFunc = nsDelegate<void(const char* szText)>;
 
   /// \brief Print a stack trace
-  static void ResolveStackTrace(const wdArrayPtr<void*>& trace, PrintFunc printFunc);
+  static void ResolveStackTrace(const nsArrayPtr<void*>& trace, PrintFunc printFunc);
 
   /// \brief Print a stack trace without resolving it
-  static void PrintStackTrace(const wdArrayPtr<void*>& trace, PrintFunc printFunc);
+  static void PrintStackTrace(const nsArrayPtr<void*>& trace, PrintFunc printFunc);
 
 private:
-  wdStackTracer() = delete;
+  nsStackTracer() = delete;
 
-  static void OnPluginEvent(const wdPluginEvent& e);
+  static void OnPluginEvent(const nsPluginEvent& e);
 
-  WD_MAKE_SUBSYSTEM_STARTUP_FRIEND(Foundation, StackTracer);
+  NS_MAKE_SUBSYSTEM_STARTUP_FRIEND(Foundation, StackTracer);
 };

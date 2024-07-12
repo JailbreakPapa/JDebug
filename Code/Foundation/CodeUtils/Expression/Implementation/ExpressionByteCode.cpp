@@ -3,6 +3,7 @@
 #include <Foundation/CodeUtils/Expression/ExpressionByteCode.h>
 #include <Foundation/IO/ChunkStream.h>
 #include <Foundation/Logging/Log.h>
+#include <Foundation/Reflection/Reflection.h>
 
 namespace
 {
@@ -163,76 +164,107 @@ namespace
     "",
   };
 
-  static_assert(WD_ARRAY_SIZE(s_szOpCodeNames) == wdExpressionByteCode::OpCode::Count);
-  static_assert(wdExpressionByteCode::OpCode::LastBinary - wdExpressionByteCode::OpCode::FirstBinary == wdExpressionByteCode::OpCode::LastBinaryWithConstant - wdExpressionByteCode::OpCode::FirstBinaryWithConstant);
+  static_assert(NS_ARRAY_SIZE(s_szOpCodeNames) == nsExpressionByteCode::OpCode::Count);
+  static_assert(nsExpressionByteCode::OpCode::LastBinary - nsExpressionByteCode::OpCode::FirstBinary == nsExpressionByteCode::OpCode::LastBinaryWithConstant - nsExpressionByteCode::OpCode::FirstBinaryWithConstant);
 
 
-  static constexpr wdUInt32 GetMaxOpCodeLength()
+  static constexpr nsUInt32 GetMaxOpCodeLength()
   {
-    wdUInt32 uiMaxLength = 0;
-    for (wdUInt32 i = 0; i < WD_ARRAY_SIZE(s_szOpCodeNames); ++i)
+    nsUInt32 uiMaxLength = 0;
+    for (nsUInt32 i = 0; i < NS_ARRAY_SIZE(s_szOpCodeNames); ++i)
     {
-      uiMaxLength = wdMath::Max(uiMaxLength, wdStringUtils::GetStringElementCount(s_szOpCodeNames[i]));
+      uiMaxLength = nsMath::Max(uiMaxLength, nsStringUtils::GetStringElementCount(s_szOpCodeNames[i]));
     }
     return uiMaxLength;
   }
 
-  static constexpr wdUInt32 s_uiMaxOpCodeLength = GetMaxOpCodeLength();
+  static constexpr nsUInt32 s_uiMaxOpCodeLength = GetMaxOpCodeLength();
 
 } // namespace
 
-const char* wdExpressionByteCode::OpCode::GetName(Enum code)
+const char* nsExpressionByteCode::OpCode::GetName(Enum code)
 {
-  WD_ASSERT_DEBUG(code >= 0 && code < WD_ARRAY_SIZE(s_szOpCodeNames), "Out of bounds access");
+  NS_ASSERT_DEBUG(code >= 0 && code < NS_ARRAY_SIZE(s_szOpCodeNames), "Out of bounds access");
   return s_szOpCodeNames[code];
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-wdExpressionByteCode::wdExpressionByteCode() = default;
-wdExpressionByteCode::~wdExpressionByteCode() = default;
+//clang-format off
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsExpressionByteCode, nsNoBase, 1, nsRTTINoAllocator)
+NS_END_STATIC_REFLECTED_TYPE;
+//clang-format on
 
-bool wdExpressionByteCode::operator==(const wdExpressionByteCode& other) const
+nsExpressionByteCode::nsExpressionByteCode() = default;
+
+nsExpressionByteCode::nsExpressionByteCode(const nsExpressionByteCode& other)
 {
-  return m_ByteCode == other.m_ByteCode &&
-         m_Inputs == other.m_Inputs &&
-         m_Outputs == other.m_Outputs &&
-         m_Functions == other.m_Functions;
+  *this = other;
 }
 
-void wdExpressionByteCode::Clear()
+nsExpressionByteCode::~nsExpressionByteCode()
 {
-  m_ByteCode.Clear();
-  m_Inputs.Clear();
-  m_Outputs.Clear();
-  m_Functions.Clear();
+  Clear();
+}
 
-  m_uiNumInstructions = 0;
+void nsExpressionByteCode::operator=(const nsExpressionByteCode& other)
+{
+  Clear();
+  Init(other.GetByteCode(), other.GetInputs(), other.GetOutputs(), other.GetFunctions(), other.GetNumTempRegisters(), other.GetNumInstructions());
+}
+
+bool nsExpressionByteCode::operator==(const nsExpressionByteCode& other) const
+{
+  return GetByteCode() == other.GetByteCode() &&
+         GetInputs() == other.GetInputs() &&
+         GetOutputs() == other.GetOutputs() &&
+         GetFunctions() == other.GetFunctions();
+}
+
+void nsExpressionByteCode::Clear()
+{
+  nsMemoryUtils::Destruct(m_pInputs, m_uiNumInputs);
+  nsMemoryUtils::Destruct(m_pOutputs, m_uiNumOutputs);
+  nsMemoryUtils::Destruct(m_pFunctions, m_uiNumFunctions);
+
+  m_pInputs = nullptr;
+  m_pOutputs = nullptr;
+  m_pFunctions = nullptr;
+  m_pByteCode = nullptr;
+
+  m_uiByteCodeCount = 0;
+  m_uiNumInputs = 0;
+  m_uiNumOutputs = 0;
+  m_uiNumFunctions = 0;
+
   m_uiNumTempRegisters = 0;
+  m_uiNumInstructions = 0;
+
+  m_Data.Clear();
 }
 
-void wdExpressionByteCode::Disassemble(wdStringBuilder& out_sDisassembly) const
+void nsExpressionByteCode::Disassemble(nsStringBuilder& out_sDisassembly) const
 {
   out_sDisassembly.Append("// Inputs:\n");
-  for (wdUInt32 i = 0; i < m_Inputs.GetCount(); ++i)
+  for (nsUInt32 i = 0; i < m_uiNumInputs; ++i)
   {
-    out_sDisassembly.AppendFormat("//  {}: {}({})\n", i, m_Inputs[i].m_sName, wdProcessingStream::GetDataTypeName(m_Inputs[i].m_DataType));
+    out_sDisassembly.AppendFormat("//  {}: {}({})\n", i, m_pInputs[i].m_sName, nsProcessingStream::GetDataTypeName(m_pInputs[i].m_DataType));
   }
 
   out_sDisassembly.Append("\n// Outputs:\n");
-  for (wdUInt32 i = 0; i < m_Outputs.GetCount(); ++i)
+  for (nsUInt32 i = 0; i < m_uiNumOutputs; ++i)
   {
-    out_sDisassembly.AppendFormat("//  {}: {}({})\n", i, m_Outputs[i].m_sName, wdProcessingStream::GetDataTypeName(m_Outputs[i].m_DataType));
+    out_sDisassembly.AppendFormat("//  {}: {}({})\n", i, m_pOutputs[i].m_sName, nsProcessingStream::GetDataTypeName(m_pOutputs[i].m_DataType));
   }
 
   out_sDisassembly.Append("\n// Functions:\n");
-  for (wdUInt32 i = 0; i < m_Functions.GetCount(); ++i)
+  for (nsUInt32 i = 0; i < m_uiNumFunctions; ++i)
   {
-    out_sDisassembly.AppendFormat("//  {}: {} {}(", i, wdExpression::RegisterType::GetName(m_Functions[i].m_OutputType), m_Functions[i].m_sName);
-    const wdUInt32 uiNumArguments = m_Functions[i].m_InputTypes.GetCount();
-    for (wdUInt32 j = 0; j < uiNumArguments; ++j)
+    out_sDisassembly.AppendFormat("//  {}: {} {}(", i, nsExpression::RegisterType::GetName(m_pFunctions[i].m_OutputType), m_pFunctions[i].m_sName);
+    const nsUInt32 uiNumArguments = m_pFunctions[i].m_InputTypes.GetCount();
+    for (nsUInt32 j = 0; j < uiNumArguments; ++j)
     {
-      out_sDisassembly.Append(wdExpression::RegisterType::GetName(m_Functions[i].m_InputTypes[j]));
+      out_sDisassembly.Append(nsExpression::RegisterType::GetName(m_pFunctions[i].m_InputTypes[j]));
       if (j < uiNumArguments - 1)
       {
         out_sDisassembly.Append(", ");
@@ -241,14 +273,15 @@ void wdExpressionByteCode::Disassemble(wdStringBuilder& out_sDisassembly) const
     out_sDisassembly.Append(")\n");
   }
 
-  out_sDisassembly.AppendFormat("\n// Temp Registers: {}\n", m_uiNumTempRegisters);
-  out_sDisassembly.AppendFormat("// Instructions: {}\n\n", m_uiNumInstructions);
+  out_sDisassembly.AppendFormat("\n// Temp Registers: {}\n", GetNumTempRegisters());
+  out_sDisassembly.AppendFormat("// Instructions: {}\n\n", GetNumInstructions());
 
-  auto AppendConstant = [](wdUInt32 x, wdStringBuilder& out_sString) {
-    out_sString.AppendFormat("0x{}({})", wdArgU(x, 8, true, 16), wdArgF(*reinterpret_cast<float*>(&x), 6));
+  auto AppendConstant = [](nsUInt32 x, nsStringBuilder& out_sString)
+  {
+    out_sString.AppendFormat("0x{}({})", nsArgU(x, 8, true, 16), nsArgF(*reinterpret_cast<float*>(&x), 6));
   };
 
-  const StorageType* pByteCode = GetByteCode();
+  const StorageType* pByteCode = GetByteCodeStart();
   const StorageType* pByteCodeEnd = GetByteCodeEnd();
 
   while (pByteCode < pByteCodeEnd)
@@ -256,10 +289,10 @@ void wdExpressionByteCode::Disassemble(wdStringBuilder& out_sDisassembly) const
     OpCode::Enum opCode = GetOpCode(pByteCode);
     {
       const char* szOpCode = OpCode::GetName(opCode);
-      wdUInt32 uiOpCodeLength = wdStringUtils::GetStringElementCount(szOpCode);
+      nsUInt32 uiOpCodeLength = nsStringUtils::GetStringElementCount(szOpCode);
 
       out_sDisassembly.Append(szOpCode);
-      for (wdUInt32 i = uiOpCodeLength; i < s_uiMaxOpCodeLength + 1; ++i)
+      for (nsUInt32 i = uiOpCodeLength; i < s_uiMaxOpCodeLength + 1; ++i)
       {
         out_sDisassembly.Append(" ");
       }
@@ -267,24 +300,24 @@ void wdExpressionByteCode::Disassemble(wdStringBuilder& out_sDisassembly) const
 
     if (opCode > OpCode::FirstUnary && opCode < OpCode::LastUnary)
     {
-      wdUInt32 r = GetRegisterIndex(pByteCode);
-      wdUInt32 x = GetRegisterIndex(pByteCode);
+      nsUInt32 r = GetRegisterIndex(pByteCode);
+      nsUInt32 x = GetRegisterIndex(pByteCode);
 
       out_sDisassembly.AppendFormat("r{} r{}\n", r, x);
     }
     else if (opCode > OpCode::FirstBinary && opCode < OpCode::LastBinary)
     {
-      wdUInt32 r = GetRegisterIndex(pByteCode);
-      wdUInt32 a = GetRegisterIndex(pByteCode);
-      wdUInt32 b = GetRegisterIndex(pByteCode);
+      nsUInt32 r = GetRegisterIndex(pByteCode);
+      nsUInt32 a = GetRegisterIndex(pByteCode);
+      nsUInt32 b = GetRegisterIndex(pByteCode);
 
       out_sDisassembly.AppendFormat("r{} r{} r{}\n", r, a, b);
     }
     else if (opCode > OpCode::FirstBinaryWithConstant && opCode < OpCode::LastBinaryWithConstant)
     {
-      wdUInt32 r = GetRegisterIndex(pByteCode);
-      wdUInt32 a = GetRegisterIndex(pByteCode);
-      wdUInt32 b = GetRegisterIndex(pByteCode);
+      nsUInt32 r = GetRegisterIndex(pByteCode);
+      nsUInt32 a = GetRegisterIndex(pByteCode);
+      nsUInt32 b = GetRegisterIndex(pByteCode);
 
       out_sDisassembly.AppendFormat("r{} r{} ", r, a);
       AppendConstant(b, out_sDisassembly);
@@ -292,17 +325,17 @@ void wdExpressionByteCode::Disassemble(wdStringBuilder& out_sDisassembly) const
     }
     else if (opCode > OpCode::FirstTernary && opCode < OpCode::LastTernary)
     {
-      wdUInt32 r = GetRegisterIndex(pByteCode);
-      wdUInt32 a = GetRegisterIndex(pByteCode);
-      wdUInt32 b = GetRegisterIndex(pByteCode);
-      wdUInt32 c = GetRegisterIndex(pByteCode);
+      nsUInt32 r = GetRegisterIndex(pByteCode);
+      nsUInt32 a = GetRegisterIndex(pByteCode);
+      nsUInt32 b = GetRegisterIndex(pByteCode);
+      nsUInt32 c = GetRegisterIndex(pByteCode);
 
       out_sDisassembly.AppendFormat("r{} r{} r{} r{}\n", r, a, b, c);
     }
     else if (opCode == OpCode::MovX_C)
     {
-      wdUInt32 r = GetRegisterIndex(pByteCode);
-      wdUInt32 x = GetRegisterIndex(pByteCode);
+      nsUInt32 r = GetRegisterIndex(pByteCode);
+      nsUInt32 x = GetRegisterIndex(pByteCode);
 
       out_sDisassembly.AppendFormat("r{} ", r);
       AppendConstant(x, out_sDisassembly);
@@ -310,41 +343,41 @@ void wdExpressionByteCode::Disassemble(wdStringBuilder& out_sDisassembly) const
     }
     else if (opCode == OpCode::LoadF || opCode == OpCode::LoadI)
     {
-      wdUInt32 r = GetRegisterIndex(pByteCode);
-      wdUInt32 i = GetRegisterIndex(pByteCode);
+      nsUInt32 r = GetRegisterIndex(pByteCode);
+      nsUInt32 i = GetRegisterIndex(pByteCode);
 
-      out_sDisassembly.AppendFormat("r{} i{}({})\n", r, i, m_Inputs[i].m_sName);
+      out_sDisassembly.AppendFormat("r{} i{}({})\n", r, i, m_pInputs[i].m_sName);
     }
     else if (opCode == OpCode::StoreF || opCode == OpCode::StoreI)
     {
-      wdUInt32 o = GetRegisterIndex(pByteCode);
-      wdUInt32 r = GetRegisterIndex(pByteCode);
+      nsUInt32 o = GetRegisterIndex(pByteCode);
+      nsUInt32 r = GetRegisterIndex(pByteCode);
 
-      out_sDisassembly.AppendFormat("o{}({}) r{}\n", o, m_Outputs[o].m_sName, r);
+      out_sDisassembly.AppendFormat("o{}({}) r{}\n", o, m_pOutputs[o].m_sName, r);
     }
     else if (opCode == OpCode::Call)
     {
-      wdUInt32 uiIndex = GetFunctionIndex(pByteCode);
-      const char* szName = m_Functions[uiIndex].m_sName;
+      nsUInt32 uiIndex = GetFunctionIndex(pByteCode);
+      const char* szName = m_pFunctions[uiIndex].m_sName;
 
-      wdStringBuilder sName;
-      if (wdStringUtils::IsNullOrEmpty(szName))
+      nsStringBuilder sName;
+      if (nsStringUtils::IsNullOrEmpty(szName))
       {
-        sName.Format("Unknown_{0}", uiIndex);
+        sName.SetFormat("Unknown_{0}", uiIndex);
       }
       else
       {
         sName = szName;
       }
 
-      wdUInt32 r = GetRegisterIndex(pByteCode);
+      nsUInt32 r = GetRegisterIndex(pByteCode);
 
       out_sDisassembly.AppendFormat("{1} r{2}", sName, r);
 
-      wdUInt32 uiNumArgs = GetFunctionArgCount(pByteCode);
-      for (wdUInt32 uiArgIndex = 0; uiArgIndex < uiNumArgs; ++uiArgIndex)
+      nsUInt32 uiNumArgs = GetFunctionArgCount(pByteCode);
+      for (nsUInt32 uiArgIndex = 0; uiArgIndex < uiNumArgs; ++uiArgIndex)
       {
-        wdUInt32 x = GetRegisterIndex(pByteCode);
+        nsUInt32 x = GetRegisterIndex(pByteCode);
         out_sDisassembly.AppendFormat(" r{0}", x);
       }
 
@@ -352,97 +385,184 @@ void wdExpressionByteCode::Disassemble(wdStringBuilder& out_sDisassembly) const
     }
     else
     {
-      WD_ASSERT_NOT_IMPLEMENTED;
+      NS_ASSERT_NOT_IMPLEMENTED;
     }
   }
 }
 
-static constexpr wdUInt32 s_uiMetaDataVersion = 4;
-static constexpr wdUInt32 s_uiCodeVersion = 3;
+static constexpr nsTypeVersion s_uiByteCodeVersion = 6;
 
-void wdExpressionByteCode::Save(wdStreamWriter& inout_stream) const
+nsResult nsExpressionByteCode::Save(nsStreamWriter& inout_stream) const
 {
-  wdChunkStreamWriter chunk(inout_stream);
+  inout_stream.WriteVersion(s_uiByteCodeVersion);
 
-  chunk.BeginStream(1);
+  nsUInt32 uiDataSize = static_cast<nsUInt32>(m_Data.GetByteBlobPtr().GetCount());
 
+  inout_stream << uiDataSize;
+
+  inout_stream << m_uiNumInputs;
+  for (auto& input : GetInputs())
   {
-    chunk.BeginChunk("MetaData", s_uiMetaDataVersion);
-
-    chunk << m_uiNumInstructions;
-    chunk << m_uiNumTempRegisters;
-    chunk.WriteArray(m_Inputs).IgnoreResult();
-    chunk.WriteArray(m_Outputs).IgnoreResult();
-    chunk.WriteArray(m_Functions).IgnoreResult();
-
-    chunk.EndChunk();
+    NS_SUCCEED_OR_RETURN(input.Serialize(inout_stream));
   }
 
+  inout_stream << m_uiNumOutputs;
+  for (auto& output : GetOutputs())
   {
-    chunk.BeginChunk("Code", s_uiCodeVersion);
-
-    chunk << m_ByteCode.GetCount();
-    chunk.WriteBytes(m_ByteCode.GetData(), m_ByteCode.GetCount() * sizeof(StorageType)).IgnoreResult();
-
-    chunk.EndChunk();
+    NS_SUCCEED_OR_RETURN(output.Serialize(inout_stream));
   }
 
-  chunk.EndStream();
+  inout_stream << m_uiNumFunctions;
+  for (auto& function : GetFunctions())
+  {
+    NS_SUCCEED_OR_RETURN(function.Serialize(inout_stream));
+  }
+
+  inout_stream << m_uiByteCodeCount;
+  NS_SUCCEED_OR_RETURN(inout_stream.WriteBytes(m_pByteCode, m_uiByteCodeCount * sizeof(StorageType)));
+
+  inout_stream << m_uiNumTempRegisters;
+  inout_stream << m_uiNumInstructions;
+
+  return NS_SUCCESS;
 }
 
-wdResult wdExpressionByteCode::Load(wdStreamReader& inout_stream)
+nsResult nsExpressionByteCode::Load(nsStreamReader& inout_stream, nsByteArrayPtr externalMemory /*= nsByteArrayPtr()*/)
 {
-  wdChunkStreamReader chunk(inout_stream);
-  chunk.SetEndChunkFileMode(wdChunkStreamReader::EndChunkFileMode::SkipToEnd);
-
-  chunk.BeginStream();
-
-  while (chunk.GetCurrentChunk().m_bValid)
+  nsTypeVersion version = inout_stream.ReadVersion(s_uiByteCodeVersion);
+  if (version != s_uiByteCodeVersion)
   {
-    if (chunk.GetCurrentChunk().m_sChunkName == "MetaData")
-    {
-      if (chunk.GetCurrentChunk().m_uiChunkVersion >= s_uiMetaDataVersion)
-      {
-        chunk >> m_uiNumInstructions;
-        chunk >> m_uiNumTempRegisters;
-        WD_SUCCEED_OR_RETURN(chunk.ReadArray(m_Inputs));
-        WD_SUCCEED_OR_RETURN(chunk.ReadArray(m_Outputs));
-        WD_SUCCEED_OR_RETURN(chunk.ReadArray(m_Functions));
-      }
-      else
-      {
-        wdLog::Error("Invalid MetaData Chunk Version {}. Expected >= {}", chunk.GetCurrentChunk().m_uiChunkVersion, s_uiMetaDataVersion);
-
-        chunk.EndStream();
-        return WD_FAILURE;
-      }
-    }
-    else if (chunk.GetCurrentChunk().m_sChunkName == "Code")
-    {
-      if (chunk.GetCurrentChunk().m_uiChunkVersion >= s_uiCodeVersion)
-      {
-        wdUInt32 uiByteCodeCount = 0;
-        chunk >> uiByteCodeCount;
-
-        m_ByteCode.SetCountUninitialized(uiByteCodeCount);
-        chunk.ReadBytes(m_ByteCode.GetData(), uiByteCodeCount * sizeof(StorageType));
-      }
-      else
-      {
-        wdLog::Error("Invalid Code Chunk Version {}. Expected >= {}", chunk.GetCurrentChunk().m_uiChunkVersion, s_uiCodeVersion);
-
-        chunk.EndStream();
-        return WD_FAILURE;
-      }
-    }
-
-    chunk.NextChunk();
+    nsLog::Error("Invalid expression byte code version {}. Expected {}", version, s_uiByteCodeVersion);
+    return NS_FAILURE;
   }
 
-  chunk.EndStream();
+  nsUInt32 uiDataSize = 0;
+  inout_stream >> uiDataSize;
 
-  return WD_SUCCESS;
+  void* pData = nullptr;
+  if (externalMemory.IsEmpty())
+  {
+    m_Data.SetCountUninitialized(uiDataSize);
+    m_Data.ZeroFill();
+    pData = m_Data.GetByteBlobPtr().GetPtr();
+  }
+  else
+  {
+    if (externalMemory.GetCount() < uiDataSize)
+    {
+      nsLog::Error("External memory is too small. Expected at least {} bytes but got {} bytes.", uiDataSize, externalMemory.GetCount());
+      return NS_FAILURE;
+    }
+
+    if (nsMemoryUtils::IsAligned(externalMemory.GetPtr(), NS_ALIGNMENT_OF(nsExpression::StreamDesc)) == false)
+    {
+      nsLog::Error("External memory is not properly aligned. Expected an alignment of at least {} bytes.", NS_ALIGNMENT_OF(nsExpression::StreamDesc));
+      return NS_FAILURE;
+    }
+
+    pData = externalMemory.GetPtr();
+  }
+
+  // Inputs
+  {
+    inout_stream >> m_uiNumInputs;
+    m_pInputs = static_cast<nsExpression::StreamDesc*>(pData);
+    for (nsUInt32 i = 0; i < m_uiNumInputs; ++i)
+    {
+      NS_SUCCEED_OR_RETURN(m_pInputs[i].Deserialize(inout_stream));
+    }
+
+    pData = nsMemoryUtils::AddByteOffset(pData, GetInputs().ToByteArray().GetCount());
+  }
+
+  // Outputs
+  {
+    inout_stream >> m_uiNumOutputs;
+    m_pOutputs = static_cast<nsExpression::StreamDesc*>(pData);
+    for (nsUInt32 i = 0; i < m_uiNumOutputs; ++i)
+    {
+      NS_SUCCEED_OR_RETURN(m_pOutputs[i].Deserialize(inout_stream));
+    }
+
+    pData = nsMemoryUtils::AddByteOffset(pData, GetOutputs().ToByteArray().GetCount());
+  }
+
+  // Functions
+  {
+    pData = nsMemoryUtils::AlignForwards(pData, NS_ALIGNMENT_OF(nsExpression::FunctionDesc));
+
+    inout_stream >> m_uiNumFunctions;
+    m_pFunctions = static_cast<nsExpression::FunctionDesc*>(pData);
+    for (nsUInt32 i = 0; i < m_uiNumFunctions; ++i)
+    {
+      NS_SUCCEED_OR_RETURN(m_pFunctions[i].Deserialize(inout_stream));
+    }
+
+    pData = nsMemoryUtils::AddByteOffset(pData, GetFunctions().ToByteArray().GetCount());
+  }
+
+  // ByteCode
+  {
+    pData = nsMemoryUtils::AlignForwards(pData, NS_ALIGNMENT_OF(StorageType));
+
+    inout_stream >> m_uiByteCodeCount;
+    m_pByteCode = static_cast<StorageType*>(pData);
+    inout_stream.ReadBytes(m_pByteCode, m_uiByteCodeCount * sizeof(StorageType));
+  }
+
+  inout_stream >> m_uiNumTempRegisters;
+  inout_stream >> m_uiNumInstructions;
+
+  return NS_SUCCESS;
+}
+
+void nsExpressionByteCode::Init(nsArrayPtr<const StorageType> byteCode, nsArrayPtr<const nsExpression::StreamDesc> inputs, nsArrayPtr<const nsExpression::StreamDesc> outputs, nsArrayPtr<const nsExpression::FunctionDesc> functions, nsUInt32 uiNumTempRegisters, nsUInt32 uiNumInstructions)
+{
+  nsUInt32 uiOutputsOffset = 0;
+  nsUInt32 uiFunctionsOffset = 0;
+  nsUInt32 uiByteCodeOffset = 0;
+
+  nsUInt32 uiDataSize = 0;
+  uiDataSize += inputs.ToByteArray().GetCount();
+  uiOutputsOffset = uiDataSize;
+  uiDataSize += outputs.ToByteArray().GetCount();
+
+  uiDataSize = nsMemoryUtils::AlignSize<nsUInt32>(uiDataSize, NS_ALIGNMENT_OF(nsExpression::FunctionDesc));
+  uiFunctionsOffset = uiDataSize;
+  uiDataSize += functions.ToByteArray().GetCount();
+
+  uiDataSize = nsMemoryUtils::AlignSize<nsUInt32>(uiDataSize, NS_ALIGNMENT_OF(StorageType));
+  uiByteCodeOffset = uiDataSize;
+  uiDataSize += byteCode.ToByteArray().GetCount();
+
+  m_Data.SetCountUninitialized(uiDataSize);
+  m_Data.ZeroFill();
+
+  void* pData = m_Data.GetByteBlobPtr().GetPtr();
+
+  NS_ASSERT_DEV(inputs.GetCount() < nsSmallInvalidIndex, "Too many inputs");
+  m_pInputs = static_cast<nsExpression::StreamDesc*>(pData);
+  m_uiNumInputs = static_cast<nsUInt16>(inputs.GetCount());
+  nsMemoryUtils::Copy(m_pInputs, inputs.GetPtr(), m_uiNumInputs);
+
+  NS_ASSERT_DEV(outputs.GetCount() < nsSmallInvalidIndex, "Too many outputs");
+  m_pOutputs = static_cast<nsExpression::StreamDesc*>(nsMemoryUtils::AddByteOffset(pData, uiOutputsOffset));
+  m_uiNumOutputs = static_cast<nsUInt16>(outputs.GetCount());
+  nsMemoryUtils::Copy(m_pOutputs, outputs.GetPtr(), m_uiNumOutputs);
+
+  NS_ASSERT_DEV(functions.GetCount() < nsSmallInvalidIndex, "Too many functions");
+  m_pFunctions = static_cast<nsExpression::FunctionDesc*>(nsMemoryUtils::AddByteOffset(pData, uiFunctionsOffset));
+  m_uiNumFunctions = static_cast<nsUInt16>(functions.GetCount());
+  nsMemoryUtils::Copy(m_pFunctions, functions.GetPtr(), m_uiNumFunctions);
+
+  m_pByteCode = static_cast<StorageType*>(nsMemoryUtils::AddByteOffset(pData, uiByteCodeOffset));
+  m_uiByteCodeCount = byteCode.GetCount();
+  nsMemoryUtils::Copy(m_pByteCode, byteCode.GetPtr(), m_uiByteCodeCount);
+
+  NS_ASSERT_DEV(uiNumTempRegisters < nsSmallInvalidIndex, "Too many temp registers");
+  m_uiNumTempRegisters = static_cast<nsUInt16>(uiNumTempRegisters);
+  m_uiNumInstructions = uiNumInstructions;
 }
 
 
-WD_STATICLINK_FILE(Foundation, Foundation_CodeUtils_Expression_Implementation_ExpressionByteCode);
+NS_STATICLINK_FILE(Foundation, Foundation_CodeUtils_Expression_Implementation_ExpressionByteCode);

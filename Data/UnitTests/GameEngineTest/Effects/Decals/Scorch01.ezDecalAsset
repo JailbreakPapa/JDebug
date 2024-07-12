@@ -3,7 +3,7 @@ HeaderV2
 o
 {
 	Uuid %id{u4{7090259011275364739,5033770014469946947}}
-	s %t{"wdAssetDocumentInfo"}
+	s %t{"nsAssetDocumentInfo"}
 	u3 %v{2}
 	s %n{"Header"}
 	p
@@ -29,7 +29,7 @@ Objects
 o
 {
 	Uuid %id{u4{15565281368689195176,5491956938083744605}}
-	s %t{"wdDecalAssetProperties"}
+	s %t{"nsDecalAssetProperties"}
 	u3 %v{3}
 	p
 	{
@@ -37,7 +37,7 @@ o
 		s %BaseColor{"Textures/cc0Textures.com/Rock02/Rock02_col.jpg"}
 		b %BlendModeColorize{0}
 		s %Emissive{""}
-		s %Mode{"wdDecalMode::BaseColorNormalORM"}
+		s %Mode{"nsDecalMode::BaseColorNormalORM"}
 		s %Normal{"Textures/cc0Textures.com/Rock02/Rock02_nrm.jpg"}
 		s %ORM{"Textures/cc0Textures.com/Rock02/Rock02_rgh.jpg"}
 	}
@@ -45,7 +45,7 @@ o
 o
 {
 	Uuid %id{u4{18096612296587978288,6449934965513159559}}
-	s %t{"wdDocumentRoot"}
+	s %t{"nsDocumentRoot"}
 	u3 %v{1}
 	s %n{"ObjectTree"}
 	p
@@ -62,17 +62,17 @@ Types
 o
 {
 	Uuid %id{u4{16080444876215721849,4262270256821183373}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdReflectedClass"}
-		s %PluginName{"wdEditorPluginAssets"}
+		s %ParentTypeName{"nsReflectedClass"}
+		s %PluginName{"nsEditorPluginAssets"}
 		VarArray %Properties{}
-		s %TypeName{"wdDecalAssetProperties"}
+		s %TypeName{"nsDecalAssetProperties"}
 		u3 %TypeSize{336}
 		u3 %TypeVersion{3}
 	}
@@ -80,17 +80,17 @@ o
 o
 {
 	Uuid %id{u4{9504139122771220698,6496462017473412407}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::IsEnum|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::IsEnum|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdEnumBase"}
-		s %PluginName{"wdEditorPluginAssets"}
+		s %ParentTypeName{"nsEnumBase"}
+		s %PluginName{"nsEditorPluginAssets"}
 		VarArray %Properties{}
-		s %TypeName{"wdDecalMode"}
+		s %TypeName{"nsDecalMode"}
 		u3 %TypeSize{1}
 		u3 %TypeVersion{1}
 	}
@@ -98,17 +98,17 @@ o
 o
 {
 	Uuid %id{u4{6089094783765586323,8705960867921430659}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdReflectedClass"}
+		s %ParentTypeName{"nsReflectedClass"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdDocumentRoot"}
+		s %TypeName{"nsDocumentRoot"}
 		u3 %TypeSize{72}
 		u3 %TypeVersion{1}
 	}
@@ -116,17 +116,17 @@ o
 o
 {
 	Uuid %id{u4{2947336711354777548,15013008608905564043}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
 		s %ParentTypeName{""}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdEnumBase"}
+		s %TypeName{"nsEnumBase"}
 		u3 %TypeSize{1}
 		u3 %TypeVersion{1}
 	}
@@ -134,17 +134,17 @@ o
 o
 {
 	Uuid %id{u4{983387834180907111,17935407260904399048}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
 		s %ParentTypeName{""}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdReflectedClass"}
+		s %TypeName{"nsReflectedClass"}
 		u3 %TypeSize{8}
 		u3 %TypeVersion{1}
 	}

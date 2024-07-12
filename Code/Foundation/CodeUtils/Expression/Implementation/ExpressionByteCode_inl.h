@@ -1,76 +1,81 @@
 
-WD_ALWAYS_INLINE const wdExpressionByteCode::StorageType* wdExpressionByteCode::GetByteCode() const
+NS_ALWAYS_INLINE const nsExpressionByteCode::StorageType* nsExpressionByteCode::GetByteCodeStart() const
 {
-  return m_ByteCode.GetData();
+  return m_pByteCode;
 }
 
-WD_ALWAYS_INLINE const wdExpressionByteCode::StorageType* wdExpressionByteCode::GetByteCodeEnd() const
+NS_ALWAYS_INLINE const nsExpressionByteCode::StorageType* nsExpressionByteCode::GetByteCodeEnd() const
 {
-  return m_ByteCode.GetData() + m_ByteCode.GetCount();
+  return m_pByteCode + m_uiByteCodeCount;
 }
 
-WD_ALWAYS_INLINE wdUInt32 wdExpressionByteCode::GetNumInstructions() const
+NS_ALWAYS_INLINE nsArrayPtr<const nsExpressionByteCode::StorageType> nsExpressionByteCode::GetByteCode() const
+{
+  return nsMakeArrayPtr(m_pByteCode, m_uiByteCodeCount);
+}
+
+NS_ALWAYS_INLINE nsUInt32 nsExpressionByteCode::GetNumInstructions() const
 {
   return m_uiNumInstructions;
 }
 
-WD_ALWAYS_INLINE wdUInt32 wdExpressionByteCode::GetNumTempRegisters() const
+NS_ALWAYS_INLINE nsUInt32 nsExpressionByteCode::GetNumTempRegisters() const
 {
   return m_uiNumTempRegisters;
 }
 
-WD_ALWAYS_INLINE wdArrayPtr<const wdExpression::StreamDesc> wdExpressionByteCode::GetInputs() const
+NS_ALWAYS_INLINE nsArrayPtr<const nsExpression::StreamDesc> nsExpressionByteCode::GetInputs() const
 {
-  return m_Inputs;
+  return nsMakeArrayPtr(m_pInputs, m_uiNumInputs);
 }
 
-WD_ALWAYS_INLINE wdArrayPtr<const wdExpression::StreamDesc> wdExpressionByteCode::GetOutputs() const
+NS_ALWAYS_INLINE nsArrayPtr<const nsExpression::StreamDesc> nsExpressionByteCode::GetOutputs() const
 {
-  return m_Outputs;
+  return nsMakeArrayPtr(m_pOutputs, m_uiNumOutputs);
 }
 
-WD_ALWAYS_INLINE wdArrayPtr<const wdExpression::FunctionDesc> wdExpressionByteCode::GetFunctions() const
+NS_ALWAYS_INLINE nsArrayPtr<const nsExpression::FunctionDesc> nsExpressionByteCode::GetFunctions() const
 {
-  return m_Functions;
+  return nsMakeArrayPtr(m_pFunctions, m_uiNumFunctions);
 }
 
 // static
-WD_ALWAYS_INLINE wdExpressionByteCode::OpCode::Enum wdExpressionByteCode::GetOpCode(const StorageType*& ref_pByteCode)
+NS_ALWAYS_INLINE nsExpressionByteCode::OpCode::Enum nsExpressionByteCode::GetOpCode(const StorageType*& ref_pByteCode)
 {
-  wdUInt32 uiOpCode = *ref_pByteCode;
+  nsUInt32 uiOpCode = *ref_pByteCode;
   ++ref_pByteCode;
   return static_cast<OpCode::Enum>((uiOpCode >= 0 && uiOpCode < OpCode::Count) ? uiOpCode : 0);
 }
 
 // static
-WD_ALWAYS_INLINE wdUInt32 wdExpressionByteCode::GetRegisterIndex(const StorageType*& ref_pByteCode)
+NS_ALWAYS_INLINE nsUInt32 nsExpressionByteCode::GetRegisterIndex(const StorageType*& ref_pByteCode)
 {
-  wdUInt32 uiIndex = *ref_pByteCode;
+  nsUInt32 uiIndex = *ref_pByteCode;
   ++ref_pByteCode;
   return uiIndex;
 }
 
 // static
-WD_ALWAYS_INLINE wdExpression::Register wdExpressionByteCode::GetConstant(const StorageType*& ref_pByteCode)
+NS_ALWAYS_INLINE nsExpression::Register nsExpressionByteCode::GetConstant(const StorageType*& ref_pByteCode)
 {
-  wdExpression::Register r;
-  r.i = wdSimdVec4i(*ref_pByteCode);
+  nsExpression::Register r;
+  r.i = nsSimdVec4i(*ref_pByteCode);
   ++ref_pByteCode;
   return r;
 }
 
 // static
-WD_ALWAYS_INLINE wdUInt32 wdExpressionByteCode::GetFunctionIndex(const StorageType*& ref_pByteCode)
+NS_ALWAYS_INLINE nsUInt32 nsExpressionByteCode::GetFunctionIndex(const StorageType*& ref_pByteCode)
 {
-  wdUInt32 uiIndex = *ref_pByteCode;
+  nsUInt32 uiIndex = *ref_pByteCode;
   ++ref_pByteCode;
   return uiIndex;
 }
 
 // static
-WD_ALWAYS_INLINE wdUInt32 wdExpressionByteCode::GetFunctionArgCount(const StorageType*& ref_pByteCode)
+NS_ALWAYS_INLINE nsUInt32 nsExpressionByteCode::GetFunctionArgCount(const StorageType*& ref_pByteCode)
 {
-  wdUInt32 uiArgCount = *ref_pByteCode;
+  nsUInt32 uiArgCount = *ref_pByteCode;
   ++ref_pByteCode;
   return uiArgCount;
 }

@@ -132,8 +132,8 @@ static UNUSED_ATTR const S16 LL_defaultNorm[MaxLL+1] = {
      2, 3, 2, 1, 1, 1, 1, 1,
     -1,-1,-1,-1
 };
-#define LL_DEFAULTNORMLOG 6  /* for static allocation */
-static UNUSED_ATTR const U32 LL_defaultNormLog = LL_DEFAULTNORMLOG;
+#define LL_DEFAULTNOapuiOG 6  /* for static allocation */
+static UNUSED_ATTR const U32 LL_defaultNoapuiog = LL_DEFAULTNOapuiOG;
 
 static UNUSED_ATTR const U8 ML_bits[MaxML+1] = {
      0, 0, 0, 0, 0, 0, 0, 0,
@@ -153,8 +153,8 @@ static UNUSED_ATTR const S16 ML_defaultNorm[MaxML+1] = {
      1, 1, 1, 1, 1, 1,-1,-1,
     -1,-1,-1,-1,-1
 };
-#define ML_DEFAULTNORMLOG 6  /* for static allocation */
-static UNUSED_ATTR const U32 ML_defaultNormLog = ML_DEFAULTNORMLOG;
+#define ML_DEFAULTNOapuiOG 6  /* for static allocation */
+static UNUSED_ATTR const U32 ML_defaultNoapuiog = ML_DEFAULTNOapuiOG;
 
 static UNUSED_ATTR const S16 OF_defaultNorm[DefaultMaxOff+1] = {
      1, 1, 1, 1, 1, 1, 2, 2,
@@ -162,8 +162,8 @@ static UNUSED_ATTR const S16 OF_defaultNorm[DefaultMaxOff+1] = {
      1, 1, 1, 1, 1, 1, 1, 1,
     -1,-1,-1,-1,-1
 };
-#define OF_DEFAULTNORMLOG 5  /* for static allocation */
-static UNUSED_ATTR const U32 OF_defaultNormLog = OF_DEFAULTNORMLOG;
+#define OF_DEFAULTNOapuiOG 5  /* for static allocation */
+static UNUSED_ATTR const U32 OF_defaultNoapuiog = OF_DEFAULTNOapuiOG;
 
 
 /*-*******************************************

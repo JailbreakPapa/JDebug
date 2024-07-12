@@ -6,11 +6,11 @@
 #include <Foundation/IO/Stream.h>
 #include <Foundation/Serialization/AbstractObjectGraph.h>
 
-class WD_FOUNDATION_DLL wdAbstractGraphBinarySerializer
+class NS_FOUNDATION_DLL nsAbstractGraphBinarySerializer
 {
 public:
-  static void Write(wdStreamWriter& inout_stream, const wdAbstractObjectGraph* pGraph, const wdAbstractObjectGraph* pTypesGraph = nullptr);                // [tested]
-  static void Read(wdStreamReader& inout_stream, wdAbstractObjectGraph* pGraph, wdAbstractObjectGraph* pTypesGraph = nullptr, bool bApplyPatches = false); // [tested]
+  static void Write(nsStreamWriter& inout_stream, const nsAbstractObjectGraph* pGraph, const nsAbstractObjectGraph* pTypesGraph = nullptr);                // [tested]
+  static void Read(nsStreamReader& inout_stream, nsAbstractObjectGraph* pGraph, nsAbstractObjectGraph* pTypesGraph = nullptr, bool bApplyPatches = false); // [tested]
 
 private:
 };

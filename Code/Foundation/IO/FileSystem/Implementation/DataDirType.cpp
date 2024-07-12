@@ -3,41 +3,37 @@
 #include <Foundation/IO/FileSystem/FileSystem.h>
 #include <Foundation/IO/OSFile.h>
 
-wdResult wdDataDirectoryType::InitializeDataDirectory(wdStringView sDataDirPath)
+nsResult nsDataDirectoryType::InitializeDataDirectory(nsStringView sDataDirPath)
 {
-  wdStringBuilder sPath = sDataDirPath;
+  nsStringBuilder sPath = sDataDirPath;
   sPath.MakeCleanPath();
 
-  WD_ASSERT_DEV(sPath.IsEmpty() || sPath.EndsWith("/"), "Data directory path must end with a slash.");
+  NS_ASSERT_DEV(sPath.IsEmpty() || sPath.EndsWith("/"), "Data directory path must end with a slash.");
 
   m_sDataDirectoryPath = sPath;
 
   return InternalInitializeDataDirectory(m_sDataDirectoryPath.GetData());
 }
 
-bool wdDataDirectoryType::ExistsFile(wdStringView sFile, bool bOneSpecificDataDir)
+bool nsDataDirectoryType::ExistsFile(nsStringView sFile, bool bOneSpecificDataDir)
 {
-  wdStringBuilder sRedirectedAsset;
+  nsStringBuilder sRedirectedAsset;
   ResolveAssetRedirection(sFile, sRedirectedAsset);
 
-  wdStringBuilder sPath = GetRedirectedDataDirectoryPath();
+  nsStringBuilder sPath = GetRedirectedDataDirectoryPath();
   sPath.AppendPath(sRedirectedAsset);
-  return wdOSFile::ExistsFile(sPath);
+  return nsOSFile::ExistsFile(sPath);
 }
 
-void wdDataDirectoryReaderWriterBase::Close()
+void nsDataDirectoryReaderWriterBase::Close()
 {
   InternalClose();
 
-  wdFileSystem::FileEvent fe;
-  fe.m_EventType = wdFileSystem::FileEventType::CloseFile;
+  nsFileSystem::FileEvent fe;
+  fe.m_EventType = nsFileSystem::FileEventType::CloseFile;
   fe.m_sFileOrDirectory = GetFilePath();
   fe.m_pDataDir = m_pDataDirectory;
-  wdFileSystem::s_pData->m_Event.Broadcast(fe);
+  nsFileSystem::s_pData->m_Event.Broadcast(fe);
 
   m_pDataDirectory->OnReaderWriterClose(this);
 }
-
-
-
-WD_STATICLINK_FILE(Foundation, Foundation_IO_FileSystem_Implementation_DataDirType);

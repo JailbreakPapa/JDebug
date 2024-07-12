@@ -7,12 +7,12 @@
 #include <Foundation/Containers/HybridArray.h>
 #include <Foundation/Strings/StringUtils.h>
 
-/// \brief Hash helper to be used as a template argument to wdHashTable / wdHashSet for case insensitive string keys.
-struct WD_FOUNDATION_DLL wdHashHelperString_NoCase
+/// \brief Hash helper to be used as a template argument to nsHashTable / nsHashSet for case insensitive string keys.
+struct NS_FOUNDATION_DLL nsHashHelperString_NoCase
 {
-  inline static wdUInt32 Hash(wdStringView sValue); // [tested]
+  inline static nsUInt32 Hash(nsStringView sValue);                       // [tested]
 
-  WD_ALWAYS_INLINE static bool Equal(wdStringView lhs, wdStringView rhs); // [tested]
+  NS_ALWAYS_INLINE static bool Equal(nsStringView lhs, nsStringView rhs); // [tested]
 };
 
 #include <Foundation/Algorithm/Implementation/HashHelperString_inl.h>

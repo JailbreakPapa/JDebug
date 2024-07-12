@@ -5,19 +5,15 @@
 
 ///\todo optimize
 
-wdResult wdSimdMat4f::Invert(const wdSimdFloat& fEpsilon)
+nsResult nsSimdMat4f::Invert(const nsSimdFloat& fEpsilon)
 {
-  wdMat4 tmp;
-  GetAsArray(tmp.m_fElementsCM, wdMatrixLayout::ColumnMajor);
+  nsMat4 tmp;
+  GetAsArray(tmp.m_fElementsCM, nsMatrixLayout::ColumnMajor);
 
   if (tmp.Invert(fEpsilon).Failed())
-    return WD_FAILURE;
+    return NS_FAILURE;
 
-  SetFromArray(tmp.m_fElementsCM, wdMatrixLayout::ColumnMajor);
+  *this = nsSimdMat4f::MakeFromColumnMajorArray(tmp.m_fElementsCM);
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
-
-
-
-WD_STATICLINK_FILE(Foundation, Foundation_SimdMath_Implementation_SimdMat4f);

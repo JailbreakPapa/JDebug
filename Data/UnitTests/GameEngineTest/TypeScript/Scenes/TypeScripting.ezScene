@@ -3,7 +3,7 @@ HeaderV2
 o
 {
 	Uuid %id{u4{12887889684847103107,5243788855127965982}}
-	s %t{"wdAssetDocumentInfo"}
+	s %t{"nsAssetDocumentInfo"}
 	u3 %v{2}
 	s %n{"Header"}
 	p
@@ -44,7 +44,7 @@ Objects
 o
 {
 	Uuid %id{u4{16677307058202752637,792282780495029483}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -59,7 +59,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{"Mat3"}
 		VarArray %Tags
 		{
@@ -71,7 +71,7 @@ o
 o
 {
 	Uuid %id{u4{5503622263708904293,841075753346807658}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -86,7 +86,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{"Transform"}
 		VarArray %Tags
 		{
@@ -98,7 +98,7 @@ o
 o
 {
 	Uuid %id{u4{1829894892155169750,986600333161545124}}
-	s %t{"wdMarkerComponent"}
+	s %t{"nsMarkerComponent"}
 	u3 %v{1}
 	p
 	{
@@ -110,7 +110,7 @@ o
 o
 {
 	Uuid %id{u4{14987643305686480023,1073182017794425916}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -125,7 +125,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{"Mat4"}
 		VarArray %Tags
 		{
@@ -137,7 +137,7 @@ o
 o
 {
 	Uuid %id{u4{772697805293118399,1151152418393053935}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -152,7 +152,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{"Cat1"}
 		VarArray %Tags
 		{
@@ -164,7 +164,7 @@ o
 o
 {
 	Uuid %id{u4{14640771179055165844,4630883920994583893}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -179,7 +179,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{"Vec2"}
 		VarArray %Tags
 		{
@@ -191,7 +191,7 @@ o
 o
 {
 	Uuid %id{u4{17668550041020302239,4649480971594730002}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -206,7 +206,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{"Debug"}
 		VarArray %Tags
 		{
@@ -218,7 +218,7 @@ o
 o
 {
 	Uuid %id{u4{1968429638964108176,4660015146587840088}}
-	s %t{"wdTypeScriptComponent"}
+	s %t{"nsTypeScriptComponent"}
 	u3 %v{4}
 	p
 	{
@@ -232,7 +232,7 @@ o
 o
 {
 	Uuid %id{u4{1976234503782554287,4692039428036134677}}
-	s %t{"wdDebugTextComponent"}
+	s %t{"nsDebugTextComponent"}
 	u3 %v{1}
 	p
 	{
@@ -248,7 +248,7 @@ o
 o
 {
 	Uuid %id{u4{7203814472770778542,4713319862559126478}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -268,7 +268,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{"GameObject"}
 		VarArray %Tags
 		{
@@ -280,7 +280,7 @@ o
 o
 {
 	Uuid %id{u4{1995354303189858990,4744822368435201658}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -295,7 +295,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{"Child1_Child1"}
 		VarArray %Tags
 		{
@@ -307,7 +307,7 @@ o
 o
 {
 	Uuid %id{u4{10621622212922155425,4758819323252907890}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -322,7 +322,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{"World"}
 		VarArray %Tags
 		{
@@ -334,7 +334,7 @@ o
 o
 {
 	Uuid %id{u4{5213261785783957428,4763515433451837782}}
-	s %t{"wdTypeScriptComponent"}
+	s %t{"nsTypeScriptComponent"}
 	u3 %v{4}
 	p
 	{
@@ -348,7 +348,7 @@ o
 o
 {
 	Uuid %id{u4{15053032658530598019,4775782259567829315}}
-	s %t{"wdTypeScriptComponent"}
+	s %t{"nsTypeScriptComponent"}
 	u3 %v{4}
 	p
 	{
@@ -362,7 +362,7 @@ o
 o
 {
 	Uuid %id{u4{10515101929075761803,4776239750908999954}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -380,7 +380,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{"Messaging"}
 		VarArray %Tags
 		{
@@ -392,7 +392,7 @@ o
 o
 {
 	Uuid %id{u4{16435044094538780092,4778781132823645085}}
-	s %t{"wdTypeScriptComponent"}
+	s %t{"nsTypeScriptComponent"}
 	u3 %v{4}
 	p
 	{
@@ -406,7 +406,7 @@ o
 o
 {
 	Uuid %id{u4{14362283097289748116,4787442603717395290}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -421,7 +421,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -433,7 +433,7 @@ o
 o
 {
 	Uuid %id{u4{2515927116124160942,4796434672985665463}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -448,7 +448,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{"Lifetime"}
 		VarArray %Tags
 		{
@@ -460,7 +460,7 @@ o
 o
 {
 	Uuid %id{u4{1788259760507374486,4841411956456378242}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -475,7 +475,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x00000040,0x00004040,0x00008040}}
 		f %LocalUniformScaling{0x0000A040}
-		s %Mode{"wdObjectMode::ForceDynamic"}
+		s %Mode{"nsObjectMode::ForceDynamic"}
 		s %Name{"Child2"}
 		VarArray %Tags
 		{
@@ -487,7 +487,7 @@ o
 o
 {
 	Uuid %id{u4{7370637089822377628,4856887948537807676}}
-	s %t{"wdPrefabReferenceComponent"}
+	s %t{"nsPrefabReferenceComponent"}
 	u3 %v{4}
 	p
 	{
@@ -499,7 +499,7 @@ o
 o
 {
 	Uuid %id{u4{5451376774311751098,4859317980827116100}}
-	s %t{"wdMarkerComponent"}
+	s %t{"nsMarkerComponent"}
 	u3 %v{1}
 	p
 	{
@@ -511,7 +511,7 @@ o
 o
 {
 	Uuid %id{u4{2113487223750869126,4886099596498488853}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -526,7 +526,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x00004040}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{"A"}
 		VarArray %Tags
 		{
@@ -538,7 +538,7 @@ o
 o
 {
 	Uuid %id{u4{7364048354871326909,4915883857500193785}}
-	s %t{"wdSpotLightComponent"}
+	s %t{"nsSpotLightComponent"}
 	u3 %v{2}
 	p
 	{
@@ -557,7 +557,7 @@ o
 o
 {
 	Uuid %id{u4{15725071870495338638,4919769838689399628}}
-	s %t{"wdPointLightComponent"}
+	s %t{"nsPointLightComponent"}
 	u3 %v{2}
 	p
 	{
@@ -574,7 +574,7 @@ o
 o
 {
 	Uuid %id{u4{17525528918155998107,4924407796148480769}}
-	s %t{"wdPointLightComponent"}
+	s %t{"nsPointLightComponent"}
 	u3 %v{2}
 	p
 	{
@@ -591,7 +591,7 @@ o
 o
 {
 	Uuid %id{u4{9226334673383624612,4927103941650998755}}
-	s %t{"wdMeshComponent"}
+	s %t{"nsMeshComponent"}
 	u3 %v{3}
 	p
 	{
@@ -604,7 +604,7 @@ o
 o
 {
 	Uuid %id{u4{3252122202181534086,4940991609346302417}}
-	s %t{"wdAmbientLightComponent"}
+	s %t{"nsAmbientLightComponent"}
 	u3 %v{2}
 	p
 	{
@@ -617,7 +617,7 @@ o
 o
 {
 	Uuid %id{u4{4717576732218644390,4945167901794984060}}
-	s %t{"wdTypeScriptComponent"}
+	s %t{"nsTypeScriptComponent"}
 	u3 %v{4}
 	p
 	{
@@ -631,7 +631,7 @@ o
 o
 {
 	Uuid %id{u4{4394179687449699747,5023870066058624911}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -646,7 +646,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{"Cat1"}
 		VarArray %Tags
 		{
@@ -658,7 +658,7 @@ o
 o
 {
 	Uuid %id{u4{14183531316973776519,5065548135060279308}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -675,7 +675,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -687,7 +687,7 @@ o
 o
 {
 	Uuid %id{u4{12376645044119784608,5089276645161881009}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -702,7 +702,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{"Color"}
 		VarArray %Tags
 		{
@@ -714,7 +714,7 @@ o
 o
 {
 	Uuid %id{u4{18183358982397627282,5125091644535872423}}
-	s %t{"wdMeshComponent"}
+	s %t{"nsMeshComponent"}
 	u3 %v{3}
 	p
 	{
@@ -727,7 +727,7 @@ o
 o
 {
 	Uuid %id{u4{3055412880369440385,5126658866098270004}}
-	s %t{"wdSceneLayer"}
+	s %t{"nsSceneLayer"}
 	u3 %v{1}
 	p
 	{
@@ -737,7 +737,7 @@ o
 o
 {
 	Uuid %id{u4{2538916265937224081,5140912107128118538}}
-	s %t{"wdTypeScriptComponent"}
+	s %t{"nsTypeScriptComponent"}
 	u3 %v{4}
 	p
 	{
@@ -751,7 +751,7 @@ o
 o
 {
 	Uuid %id{u4{11103650838448788919,5170186803244375368}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -766,7 +766,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -778,7 +778,7 @@ o
 o
 {
 	Uuid %id{u4{8039601397929925551,5241018780551996829}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -793,7 +793,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{"A"}
 		VarArray %Tags
 		{
@@ -805,7 +805,7 @@ o
 o
 {
 	Uuid %id{u4{7607577296445734285,5266194358827816365}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -825,7 +825,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::ForceDynamic"}
+		s %Mode{"nsObjectMode::ForceDynamic"}
 		s %Name{"Child1"}
 		VarArray %Tags
 		{
@@ -837,7 +837,7 @@ o
 o
 {
 	Uuid %id{u4{4263333469666217109,5350127770785702351}}
-	s %t{"wdTypeScriptComponent"}
+	s %t{"nsTypeScriptComponent"}
 	u3 %v{4}
 	p
 	{
@@ -851,7 +851,7 @@ o
 o
 {
 	Uuid %id{u4{10489671881922674360,5359533953546367188}}
-	s %t{"wdTypeScriptComponent"}
+	s %t{"nsTypeScriptComponent"}
 	u3 %v{4}
 	p
 	{
@@ -865,7 +865,7 @@ o
 o
 {
 	Uuid %id{u4{3948931869947515807,5361920650517681416}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -877,7 +877,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x00000040}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{"A"}
 		VarArray %Tags
 		{
@@ -889,7 +889,7 @@ o
 o
 {
 	Uuid %id{u4{6185468482960480407,5370077640134023736}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -906,7 +906,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::ForceDynamic"}
+		s %Mode{"nsObjectMode::ForceDynamic"}
 		s %Name{"Component"}
 		VarArray %Tags
 		{
@@ -918,7 +918,7 @@ o
 o
 {
 	Uuid %id{u4{5420133256380106653,5426064401869965048}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -937,7 +937,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{"Utils"}
 		VarArray %Tags
 		{
@@ -949,7 +949,7 @@ o
 o
 {
 	Uuid %id{u4{15282221992427521956,5434194145477635072}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -961,7 +961,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{"A"}
 		VarArray %Tags
 		{
@@ -973,7 +973,7 @@ o
 o
 {
 	Uuid %id{u4{9214963156278969994,5448640199076468410}}
-	s %t{"wdTypeScriptComponent"}
+	s %t{"nsTypeScriptComponent"}
 	u3 %v{4}
 	p
 	{
@@ -987,7 +987,7 @@ o
 o
 {
 	Uuid %id{u4{17667951033826224261,5471718445680757409}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -1003,7 +1003,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{"Child2_Child1"}
 		VarArray %Tags
 		{
@@ -1015,7 +1015,7 @@ o
 o
 {
 	Uuid %id{u4{10481347052893203100,5493932028717236231}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -1043,7 +1043,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{"All Tests"}
 		VarArray %Tags
 		{
@@ -1055,7 +1055,7 @@ o
 o
 {
 	Uuid %id{u4{12225690567800865975,5502943587898199847}}
-	s %t{"wdPointLightComponent"}
+	s %t{"nsPointLightComponent"}
 	u3 %v{2}
 	p
 	{
@@ -1072,7 +1072,7 @@ o
 o
 {
 	Uuid %id{u4{4672520928128373651,5536152368640074946}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -1084,7 +1084,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::ForceDynamic"}
+		s %Mode{"nsObjectMode::ForceDynamic"}
 		s %Name{"A"}
 		VarArray %Tags
 		{
@@ -1096,7 +1096,7 @@ o
 o
 {
 	Uuid %id{u4{16846426226881301903,5565887378357660797}}
-	s %t{"wdDirectionalLightComponent"}
+	s %t{"nsDirectionalLightComponent"}
 	u3 %v{3}
 	p
 	{
@@ -1117,7 +1117,7 @@ o
 o
 {
 	Uuid %id{u4{11399748634316937359,5588952802069364096}}
-	s %t{"wdTypeScriptComponent"}
+	s %t{"nsTypeScriptComponent"}
 	u3 %v{4}
 	p
 	{
@@ -1131,7 +1131,7 @@ o
 o
 {
 	Uuid %id{u4{13805807809231857851,5643743896452467152}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -1146,7 +1146,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{"Helper"}
 		VarArray %Tags
 		{
@@ -1158,7 +1158,7 @@ o
 o
 {
 	Uuid %id{u4{4438065392404864425,5661077476881937773}}
-	s %t{"wdSkyBoxComponent"}
+	s %t{"nsSkyBoxComponent"}
 	u3 %v{4}
 	p
 	{
@@ -1173,7 +1173,7 @@ o
 o
 {
 	Uuid %id{u4{3097261670569276850,5719430358423715618}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -1188,7 +1188,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{"Prefab1"}
 		VarArray %Tags
 		{
@@ -1200,7 +1200,7 @@ o
 o
 {
 	Uuid %id{u4{1045479388755752590,5732003999000084825}}
-	s %t{"wdSceneDocumentSettings"}
+	s %t{"nsSceneDocumentSettings"}
 	u3 %v{2}
 	p
 	{
@@ -1213,7 +1213,7 @@ o
 o
 {
 	Uuid %id{u4{14124759593496088756,5750051866651660852}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -1229,7 +1229,7 @@ o
 		Quat %LocalRotation{f{0xBD2BA7BE,0xBD2BA73E,0xEC90203F,0xEC90203F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -1241,7 +1241,7 @@ o
 o
 {
 	Uuid %id{u4{12941285520877692338,5752840233490731628}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -1260,7 +1260,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{""}
 		VarArray %Tags
 		{
@@ -1272,7 +1272,7 @@ o
 o
 {
 	Uuid %id{u4{10590597928519418525,5762998801050855821}}
-	s %t{"wdTypeScriptComponent"}
+	s %t{"nsTypeScriptComponent"}
 	u3 %v{4}
 	p
 	{
@@ -1286,7 +1286,7 @@ o
 o
 {
 	Uuid %id{u4{9377940293345618569,6090033590628332983}}
-	s %t{"wdMarkerComponent"}
+	s %t{"nsMarkerComponent"}
 	u3 %v{1}
 	p
 	{
@@ -1298,7 +1298,7 @@ o
 o
 {
 	Uuid %id{u4{12022069449127426656,6119349651641289462}}
-	s %t{"wdMarkerComponent"}
+	s %t{"nsMarkerComponent"}
 	u3 %v{1}
 	p
 	{
@@ -1310,7 +1310,7 @@ o
 o
 {
 	Uuid %id{u4{8320743206483567218,6254585675859841794}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -1325,7 +1325,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{"Cat2"}
 		VarArray %Tags
 		{
@@ -1337,7 +1337,7 @@ o
 o
 {
 	Uuid %id{u4{10964872362265375305,6283901736872798273}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -1352,7 +1352,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{"Cat1"}
 		VarArray %Tags
 		{
@@ -1364,7 +1364,7 @@ o
 o
 {
 	Uuid %id{u4{18096612296587978288,6449934965513159559}}
-	s %t{"wdSceneDocumentRoot"}
+	s %t{"nsSceneDocumentRoot"}
 	u3 %v{2}
 	s %n{"ObjectTree"}
 	p
@@ -1384,7 +1384,7 @@ o
 o
 {
 	Uuid %id{u4{15426428651723658024,9440838584615982658}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -1399,7 +1399,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{"Vec3"}
 		VarArray %Tags
 		{
@@ -1411,7 +1411,7 @@ o
 o
 {
 	Uuid %id{u4{11189773026419108727,9649950224607633900}}
-	s %t{"wdMarkerComponent"}
+	s %t{"nsMarkerComponent"}
 	u3 %v{1}
 	p
 	{
@@ -1423,7 +1423,7 @@ o
 o
 {
 	Uuid %id{u4{10132575939557057376,9814502309839142711}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -1438,7 +1438,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{"Cat1"}
 		VarArray %Tags
 		{
@@ -1450,7 +1450,7 @@ o
 o
 {
 	Uuid %id{u4{9803323240131381309,9852238603377114575}}
-	s %t{"wdPrefabReferenceComponent"}
+	s %t{"nsPrefabReferenceComponent"}
 	u3 %v{4}
 	p
 	{
@@ -1469,7 +1469,7 @@ o
 o
 {
 	Uuid %id{u4{12497900811990745915,9923807962020928619}}
-	s %t{"wdTypeScriptComponent"}
+	s %t{"nsTypeScriptComponent"}
 	u3 %v{4}
 	p
 	{
@@ -1483,7 +1483,7 @@ o
 o
 {
 	Uuid %id{u4{5529947820878280531,10714781013263022517}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -1498,7 +1498,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{"Prefab2"}
 		VarArray %Tags
 		{
@@ -1510,7 +1510,7 @@ o
 o
 {
 	Uuid %id{u4{17295615906496800546,11569455816080503178}}
-	s %t{"wdMarkerComponent"}
+	s %t{"nsMarkerComponent"}
 	u3 %v{1}
 	p
 	{
@@ -1522,7 +1522,7 @@ o
 o
 {
 	Uuid %id{u4{16238418819634749195,11734007901312011989}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -1537,7 +1537,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{"Cat2"}
 		VarArray %Tags
 		{
@@ -1549,7 +1549,7 @@ o
 o
 {
 	Uuid %id{u4{2602970960231755031,14321555159893833488}}
-	s %t{"wdMarkerComponent"}
+	s %t{"nsMarkerComponent"}
 	u3 %v{1}
 	p
 	{
@@ -1561,7 +1561,7 @@ o
 o
 {
 	Uuid %id{u4{1545773873369703680,14486107245125342299}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -1576,7 +1576,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{"Cat1"}
 		VarArray %Tags
 		{
@@ -1588,7 +1588,7 @@ o
 o
 {
 	Uuid %id{u4{16303911065009692632,14573970529156427756}}
-	s %t{"wdTypeScriptComponent"}
+	s %t{"nsTypeScriptComponent"}
 	u3 %v{4}
 	p
 	{
@@ -1602,7 +1602,7 @@ o
 o
 {
 	Uuid %id{u4{12871296805183805920,14588864287069081962}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -1617,7 +1617,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{"Quat"}
 		VarArray %Tags
 		{
@@ -1629,7 +1629,7 @@ o
 o
 {
 	Uuid %id{u4{5130226270515844288,14622763502008205931}}
-	s %t{"wdTypeScriptComponent"}
+	s %t{"nsTypeScriptComponent"}
 	u3 %v{4}
 	p
 	{
@@ -1643,7 +1643,7 @@ o
 o
 {
 	Uuid %id{u4{14614247312493420018,14854869766455824189}}
-	s %t{"wdTypeScriptComponent"}
+	s %t{"nsTypeScriptComponent"}
 	u3 %v{4}
 	p
 	{
@@ -1657,7 +1657,7 @@ o
 o
 {
 	Uuid %id{u4{13029991707649374381,16539091653217053539}}
-	s %t{"wdMarkerComponent"}
+	s %t{"nsMarkerComponent"}
 	u3 %v{1}
 	p
 	{
@@ -1669,7 +1669,7 @@ o
 o
 {
 	Uuid %id{u4{11972794620787323030,16703643738448562350}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -1684,7 +1684,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{"Cat2"}
 		VarArray %Tags
 		{
@@ -1699,17 +1699,17 @@ Types
 o
 {
 	Uuid %id{u4{6914292285925798136,1108246313736053318}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Abstract|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Abstract|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdReflectedClass"}
+		s %ParentTypeName{"nsReflectedClass"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdComponent"}
+		s %TypeName{"nsComponent"}
 		u3 %TypeSize{48}
 		u3 %TypeVersion{1}
 	}
@@ -1717,17 +1717,17 @@ o
 o
 {
 	Uuid %id{u4{8577194213068516669,1439152778878942207}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdComponent"}
+		s %ParentTypeName{"nsComponent"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdMarkerComponent"}
+		s %TypeName{"nsMarkerComponent"}
 		u3 %TypeSize{72}
 		u3 %TypeVersion{1}
 	}
@@ -1735,17 +1735,17 @@ o
 o
 {
 	Uuid %id{u4{14633628111157529947,3328384510238863063}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdMeshComponentBase"}
+		s %ParentTypeName{"nsMeshComponentBase"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdMeshComponent"}
+		s %TypeName{"nsMeshComponent"}
 		u3 %TypeSize{104}
 		u3 %TypeVersion{3}
 	}
@@ -1753,17 +1753,17 @@ o
 o
 {
 	Uuid %id{u4{1168477127324465164,3417260966341483024}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdComponent"}
+		s %ParentTypeName{"nsComponent"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdPrefabReferenceComponent"}
+		s %TypeName{"nsPrefabReferenceComponent"}
 		u3 %TypeSize{96}
 		u3 %TypeVersion{4}
 	}
@@ -1771,17 +1771,17 @@ o
 o
 {
 	Uuid %id{u4{912538319015526284,3456678183054942297}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdComponent"}
+		s %ParentTypeName{"nsComponent"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdDebugTextComponent"}
+		s %TypeName{"nsDebugTextComponent"}
 		u3 %TypeSize{136}
 		u3 %TypeVersion{1}
 	}
@@ -1789,17 +1789,17 @@ o
 o
 {
 	Uuid %id{u4{5195345338716098525,5056385137718360950}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdReflectedClass"}
-		s %PluginName{"wdEditorPluginScene"}
+		s %ParentTypeName{"nsReflectedClass"}
+		s %PluginName{"nsEditorPluginScene"}
 		VarArray %Properties{}
-		s %TypeName{"wdSceneLayerBase"}
+		s %TypeName{"nsSceneLayerBase"}
 		u3 %TypeSize{16}
 		u3 %TypeVersion{1}
 	}
@@ -1807,17 +1807,17 @@ o
 o
 {
 	Uuid %id{u4{5837165590562654431,6019321076980052009}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdSceneLayerBase"}
-		s %PluginName{"wdEditorPluginScene"}
+		s %ParentTypeName{"nsSceneLayerBase"}
+		s %PluginName{"nsEditorPluginScene"}
 		VarArray %Properties{}
-		s %TypeName{"wdSceneLayer"}
+		s %TypeName{"nsSceneLayer"}
 		u3 %TypeSize{32}
 		u3 %TypeVersion{1}
 	}
@@ -1825,17 +1825,17 @@ o
 o
 {
 	Uuid %id{u4{5109955776826617296,6026817826851389185}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Abstract|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Abstract|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdComponent"}
+		s %ParentTypeName{"nsComponent"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdEventMessageHandlerComponent"}
+		s %TypeName{"nsEventMessageHandlerComponent"}
 		u3 %TypeSize{56}
 		u3 %TypeVersion{3}
 	}
@@ -1843,17 +1843,17 @@ o
 o
 {
 	Uuid %id{u4{7605758958972330253,6687734095884105025}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Abstract|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Abstract|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdRenderComponent"}
+		s %ParentTypeName{"nsRenderComponent"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdMeshComponentBase"}
+		s %TypeName{"nsMeshComponentBase"}
 		u3 %TypeSize{104}
 		u3 %TypeVersion{1}
 	}
@@ -1861,17 +1861,17 @@ o
 o
 {
 	Uuid %id{u4{13649880205026559927,7297274558339895637}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
 		s %ParentTypeName{""}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdGameObject"}
+		s %TypeName{"nsGameObject"}
 		u3 %TypeSize{128}
 		u3 %TypeVersion{1}
 	}
@@ -1879,17 +1879,17 @@ o
 o
 {
 	Uuid %id{u4{450943844669591006,7318511461061204347}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdSceneDocumentSettingsBase"}
-		s %PluginName{"wdEditorPluginScene"}
+		s %ParentTypeName{"nsSceneDocumentSettingsBase"}
+		s %PluginName{"nsEditorPluginScene"}
 		VarArray %Properties{}
-		s %TypeName{"wdSceneDocumentSettings"}
+		s %TypeName{"nsSceneDocumentSettings"}
 		u3 %TypeSize{40}
 		u3 %TypeVersion{2}
 	}
@@ -1897,17 +1897,17 @@ o
 o
 {
 	Uuid %id{u4{8781371220448777178,8391987746845008996}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdRenderComponent"}
+		s %ParentTypeName{"nsRenderComponent"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdSkyBoxComponent"}
+		s %TypeName{"nsSkyBoxComponent"}
 		u3 %TypeSize{88}
 		u3 %TypeVersion{4}
 	}
@@ -1915,17 +1915,17 @@ o
 o
 {
 	Uuid %id{u4{6089094783765586323,8705960867921430659}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdReflectedClass"}
+		s %ParentTypeName{"nsReflectedClass"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdDocumentRoot"}
+		s %TypeName{"nsDocumentRoot"}
 		u3 %TypeSize{72}
 		u3 %TypeVersion{1}
 	}
@@ -1933,17 +1933,17 @@ o
 o
 {
 	Uuid %id{u4{3251891958765718680,9159887340540620231}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdDocumentRoot"}
-		s %PluginName{"wdEditorPluginScene"}
+		s %ParentTypeName{"nsDocumentRoot"}
+		s %PluginName{"nsEditorPluginScene"}
 		VarArray %Properties{}
-		s %TypeName{"wdSceneDocumentRoot"}
+		s %TypeName{"nsSceneDocumentRoot"}
 		u3 %TypeSize{80}
 		u3 %TypeVersion{2}
 	}
@@ -1951,17 +1951,17 @@ o
 o
 {
 	Uuid %id{u4{14543630447052729839,9459039542380974471}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::IsEnum|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::IsEnum|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdEnumBase"}
+		s %ParentTypeName{"nsEnumBase"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdObjectMode"}
+		s %TypeName{"nsObjectMode"}
 		u3 %TypeSize{1}
 		u3 %TypeVersion{1}
 	}
@@ -1969,17 +1969,17 @@ o
 o
 {
 	Uuid %id{u4{14619222012368174598,9914418461412086272}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdLightComponent"}
+		s %ParentTypeName{"nsLightComponent"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdDirectionalLightComponent"}
+		s %TypeName{"nsDirectionalLightComponent"}
 		u3 %TypeSize{96}
 		u3 %TypeVersion{3}
 	}
@@ -1987,17 +1987,17 @@ o
 o
 {
 	Uuid %id{u4{11568452837770943362,10420668725217181016}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdEventMessageHandlerComponent"}
-		s %PluginName{"wdEditorPluginTypeScript"}
+		s %ParentTypeName{"nsEventMessageHandlerComponent"}
+		s %PluginName{"nsEditorPluginTypeScript"}
 		VarArray %Properties{}
-		s %TypeName{"wdTypeScriptComponent"}
+		s %TypeName{"nsTypeScriptComponent"}
 		u3 %TypeSize{200}
 		u3 %TypeVersion{4}
 	}
@@ -2005,17 +2005,17 @@ o
 o
 {
 	Uuid %id{u4{14700230518358869173,11472901527618371423}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdReflectedClass"}
-		s %PluginName{"wdEditorPluginScene"}
+		s %ParentTypeName{"nsReflectedClass"}
+		s %PluginName{"nsEditorPluginScene"}
 		VarArray %Properties{}
-		s %TypeName{"wdSceneDocumentSettingsBase"}
+		s %TypeName{"nsSceneDocumentSettingsBase"}
 		u3 %TypeSize{8}
 		u3 %TypeVersion{1}
 	}
@@ -2023,17 +2023,17 @@ o
 o
 {
 	Uuid %id{u4{13157915159061735959,12012078319048480294}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdLightComponent"}
+		s %ParentTypeName{"nsLightComponent"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdPointLightComponent"}
+		s %TypeName{"nsPointLightComponent"}
 		u3 %TypeSize{88}
 		u3 %TypeVersion{2}
 	}
@@ -2041,17 +2041,17 @@ o
 o
 {
 	Uuid %id{u4{14929650074649117491,12034915874076129355}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Abstract|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Abstract|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdComponent"}
+		s %ParentTypeName{"nsComponent"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdSettingsComponent"}
+		s %TypeName{"nsSettingsComponent"}
 		u3 %TypeSize{56}
 		u3 %TypeVersion{1}
 	}
@@ -2059,17 +2059,17 @@ o
 o
 {
 	Uuid %id{u4{16777871838542487558,12116962178824346014}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Abstract|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Abstract|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdComponent"}
+		s %ParentTypeName{"nsComponent"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdRenderComponent"}
+		s %TypeName{"nsRenderComponent"}
 		u3 %TypeSize{48}
 		u3 %TypeVersion{1}
 	}
@@ -2077,17 +2077,17 @@ o
 o
 {
 	Uuid %id{u4{3106992448854867606,14177809816119438754}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdLightComponent"}
+		s %ParentTypeName{"nsLightComponent"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdSpotLightComponent"}
+		s %TypeName{"nsSpotLightComponent"}
 		u3 %TypeSize{96}
 		u3 %TypeVersion{2}
 	}
@@ -2095,17 +2095,17 @@ o
 o
 {
 	Uuid %id{u4{12814930320360971966,14780945004767832345}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Abstract|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Abstract|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdRenderComponent"}
+		s %ParentTypeName{"nsRenderComponent"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdLightComponent"}
+		s %TypeName{"nsLightComponent"}
 		u3 %TypeSize{72}
 		u3 %TypeVersion{4}
 	}
@@ -2113,17 +2113,17 @@ o
 o
 {
 	Uuid %id{u4{2947336711354777548,15013008608905564043}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
 		s %ParentTypeName{""}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdEnumBase"}
+		s %TypeName{"nsEnumBase"}
 		u3 %TypeSize{1}
 		u3 %TypeVersion{1}
 	}
@@ -2131,17 +2131,17 @@ o
 o
 {
 	Uuid %id{u4{11081527203184866822,15735316544108576551}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdSettingsComponent"}
+		s %ParentTypeName{"nsSettingsComponent"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdAmbientLightComponent"}
+		s %TypeName{"nsAmbientLightComponent"}
 		u3 %TypeSize{72}
 		u3 %TypeVersion{2}
 	}
@@ -2149,17 +2149,17 @@ o
 o
 {
 	Uuid %id{u4{983387834180907111,17935407260904399048}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
 		s %ParentTypeName{""}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdReflectedClass"}
+		s %TypeName{"nsReflectedClass"}
 		u3 %TypeSize{8}
 		u3 %TypeVersion{1}
 	}

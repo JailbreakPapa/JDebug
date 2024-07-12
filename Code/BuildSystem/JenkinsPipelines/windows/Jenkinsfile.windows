@@ -1,0 +1,70 @@
+/// every main platform jenkins pipeline should run as so:
+/// 1. build v8
+/// 2. build libvpx
+/// 3. Upload any artifacts to our public github repo. (Console Agents should be uploaded to our private repo)
+/// 4. build Aperture UI
+/// 5. build & tests.
+/// 6. deploy to staging.
+
+pipeline {
+    environment {
+        CURRENT_WORKSPACE = '${WORKSPACE}/APUI'
+    }
+    stages {
+        stage('Build ThirdParty Modules') {
+            parallel {
+                steps {
+                    script {
+                        dir('Code/BuildSystem/JenkinsPipelines') {
+                            if (fileExists('Jenkinsfile.v8build')) {
+                                load 'Jenkinsfile.v8build'
+                        } else {
+                                echo 'No Jenkinsfile found in JenkinsPipeline directory. This may mean that Jenkins decided to be a jerk and not allow the pipeline to run or a programmer error.'
+                            }
+                        }
+                    }
+                }
+                /// NOTE: Only one platform/pipeline needs to run the v8build script. it should build & publish all of the v8_binaries by itself, then we can paralise the libvpx builds.
+                steps {
+                    script {
+                        dir('Code/BuildSystem/JenkinsPipelines/windows') {
+                            if (fileExists('Jenkinsfile.libvpxbuild')) {
+                                load 'Jenkinsfile.libvpxbuild'
+                        } else {
+                                echo 'No Jenkinsfile found in windows directory. This may mean that Jenkins decided to be a jerk and not allow the pipeline to run or a programmer error.'
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        stage('Build Aperture UI') {
+            steps {
+                stage('Run CMake') {
+                    steps {
+                        bat 'APUI\\GenerateWindows.bat'
+                    }
+                }
+                stage('Build Full Solution') {
+                    steps {
+                        bat 'msbuild %CURRENT_WORKSPACE%\\Workspace\\Win64vs2022\\APUI_vs2022x64.sln /p:Configuration=Shipping'
+                    }
+                }
+                stage('Artifact - Full Binaries') {
+                    when {
+                        expression { params.FULL_BINARIES_ARTIFACT }
+                    }
+                    steps {
+                        archiveArtifacts artifacts: '%CURRENT_WORKSPACE%\\Output\\Bin\\WinVs2022Dev64', onlyIfSuccessful: true, allowEmptyArchive: false
+                    }
+                }
+            }
+        }
+        stage('Run Tests')
+        {
+            steps {
+                bat '%CURRENT_WORKSPACE%\\Output\\Bin\\WinVs2022Dev64\\ToolsFoundationTest.exe -nosave -nogui -all -outputDir %CURRENT_WORKSPACE%\\Output\\Bin\\WinVs2022Dev64\\TestResults\\'
+            }
+        }
+    }
+}

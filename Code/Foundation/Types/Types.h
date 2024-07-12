@@ -2,69 +2,73 @@
 
 // ***** Definition of types *****
 
-using wdUInt8 = unsigned char;
-using wdUInt16 = unsigned short;
-using wdUInt32 = unsigned int;
-using wdUInt64 = unsigned long long;
+#include <cstdint>
 
-using wdInt8 = signed char;
-using wdInt16 = short;
-using wdInt32 = int;
-using wdInt64 = long long;
+using nsUInt8 = uint8_t;
+using nsUInt16 = uint16_t;
+using nsUInt32 = uint32_t;
+using nsUInt64 = unsigned long long;
+
+using nsInt8 = int8_t;
+using nsInt16 = int16_t;
+using nsInt32 = int32_t;
+using nsInt64 = long long;
 
 // no float-types, since those are well portable
 
 // Do some compile-time checks on the types
-WD_CHECK_AT_COMPILETIME(sizeof(bool) == 1);
-WD_CHECK_AT_COMPILETIME(sizeof(char) == 1);
-WD_CHECK_AT_COMPILETIME(sizeof(float) == 4);
-WD_CHECK_AT_COMPILETIME(sizeof(double) == 8);
-WD_CHECK_AT_COMPILETIME(sizeof(wdInt8) == 1);
-WD_CHECK_AT_COMPILETIME(sizeof(wdInt16) == 2);
-WD_CHECK_AT_COMPILETIME(sizeof(wdInt32) == 4);
-WD_CHECK_AT_COMPILETIME(sizeof(wdInt64) == 8); // must be defined in the specific compiler header
-WD_CHECK_AT_COMPILETIME(sizeof(wdUInt8) == 1);
-WD_CHECK_AT_COMPILETIME(sizeof(wdUInt16) == 2);
-WD_CHECK_AT_COMPILETIME(sizeof(wdUInt32) == 4);
-WD_CHECK_AT_COMPILETIME(sizeof(wdUInt64) == 8); // must be defined in the specific compiler header
-WD_CHECK_AT_COMPILETIME(sizeof(long long int) == 8);
+NS_CHECK_AT_COMPILETIME(sizeof(bool) == 1);
+NS_CHECK_AT_COMPILETIME(sizeof(char) == 1);
+NS_CHECK_AT_COMPILETIME(sizeof(float) == 4);
+NS_CHECK_AT_COMPILETIME(sizeof(double) == 8);
+NS_CHECK_AT_COMPILETIME(sizeof(nsInt8) == 1);
+NS_CHECK_AT_COMPILETIME(sizeof(nsInt16) == 2);
+NS_CHECK_AT_COMPILETIME(sizeof(nsInt32) == 4);
+NS_CHECK_AT_COMPILETIME(sizeof(nsInt64) == 8); // must be defined in the specific compiler header
+NS_CHECK_AT_COMPILETIME(sizeof(nsUInt8) == 1);
+NS_CHECK_AT_COMPILETIME(sizeof(nsUInt16) == 2);
+NS_CHECK_AT_COMPILETIME(sizeof(nsUInt32) == 4);
+NS_CHECK_AT_COMPILETIME(sizeof(nsUInt64) == 8); // must be defined in the specific compiler header
+NS_CHECK_AT_COMPILETIME(sizeof(long long int) == 8);
 
-#if WD_ENABLED(WD_PLATFORM_64BIT)
-#  define WD_ALIGNMENT_MINIMUM 8
-#elif WD_ENABLED(WD_PLATFORM_32BIT)
-#  define WD_ALIGNMENT_MINIMUM 4
+#if NS_ENABLED(NS_PLATFORM_64BIT)
+#  define NS_ALIGNMENT_MINIMUM 8
+#elif NS_ENABLED(NS_PLATFORM_32BIT)
+#  define NS_ALIGNMENT_MINIMUM 4
 #else
 #  error "Unknown pointer size."
 #endif
 
-WD_CHECK_AT_COMPILETIME(sizeof(void*) == WD_ALIGNMENT_MINIMUM);
+NS_CHECK_AT_COMPILETIME(sizeof(void*) == NS_ALIGNMENT_MINIMUM);
+NS_CHECK_AT_COMPILETIME(alignof(void*) == NS_ALIGNMENT_MINIMUM);
 
 /// \brief Enum values for success and failure. To be used by functions as return values mostly, instead of bool.
-enum wdResultEnum
+enum nsResultEnum
 {
-  WD_FAILURE,
-  WD_SUCCESS
+  NS_FAILURE,
+  NS_SUCCESS
 };
 
 /// \brief Default enum for returning failure or success, instead of using a bool.
-struct [[nodiscard]] WD_FOUNDATION_DLL wdResult
+struct [[nodiscard]] NS_FOUNDATION_DLL nsResult
 {
 public:
-  wdResult(wdResultEnum res)
+  nsResult(nsResultEnum res)
     : m_E(res)
   {
   }
 
-  void operator=(wdResultEnum rhs) { m_E = rhs; }
-  bool operator==(wdResultEnum cmp) const { return m_E == cmp; }
-  bool operator!=(wdResultEnum cmp) const { return m_E != cmp; }
+  void operator=(nsResultEnum rhs) { m_E = rhs; }
+  bool operator==(nsResultEnum cmp) const { return m_E == cmp; }
+  bool operator!=(nsResultEnum cmp) const { return m_E != cmp; }
 
-  [[nodiscard]] WD_ALWAYS_INLINE bool Succeeded() const { return m_E == WD_SUCCESS; }
-  [[nodiscard]] WD_ALWAYS_INLINE bool Failed() const { return m_E == WD_FAILURE; }
+  [[nodiscard]] NS_ALWAYS_INLINE bool Succeeded() const { return m_E == NS_SUCCESS; }
+  [[nodiscard]] NS_ALWAYS_INLINE bool Failed() const { return m_E == NS_FAILURE; }
 
   /// \brief Used to silence compiler warnings, when success or failure doesn't matter.
-  WD_ALWAYS_INLINE void IgnoreResult()
-  { /* dummy to be called when a return value is [[nodiscard]] but the result is not needed */
+  NS_ALWAYS_INLINE void IgnoreResult()
+  {
+    /* dummy to be called when a return value is [[nodiscard]] but the result is not needed */
   }
 
   /// \brief Asserts that the function succeeded. In case of failure, the program will terminate.
@@ -72,134 +76,116 @@ public:
   /// If \a msg is given, this will be the assert message. If \a details is provided, \a msg should contain a formatting element ({}), e.g. "Error: {}".
   void AssertSuccess(const char* szMsg = nullptr, const char* szDetails = nullptr) const;
 
-  /// \brief Same as 'Succeeded()'.
-  ///
-  /// Allows wdResult to be used in if statements:
-  ///  - if (r)
-  ///  - if (!r)
-  ///  - if (r1 && r2)
-  ///  - if (r1 || r2)
-  ///
-  /// Disallows anything else implicitly, e.g. all these won't compile:
-  ///   - if (r == true)
-  ///   - bool b = r;
-  ///   - void* p = r;
-  ///   - return r; // with bool return type
-  explicit operator bool() const { return m_E == WD_SUCCESS; }
-
-  /// \brief Special case to prevent this from working: "bool b = !r"
-  wdResult operator!() const { return wdResult((m_E == WD_SUCCESS) ? WD_FAILURE : WD_SUCCESS); }
-
 private:
-  wdResultEnum m_E;
+  nsResultEnum m_E;
 };
 
-/// \brief Explicit conversion to wdResult, can be overloaded for arbitrary types.
+/// \brief Explicit conversion to nsResult, can be overloaded for arbitrary types.
 ///
 /// This is intentionally not done via casting operator overload (or even additional constructors) since this usually comes with a
 /// considerable data loss.
-WD_ALWAYS_INLINE wdResult wdToResult(wdResult result)
+NS_ALWAYS_INLINE nsResult nsToResult(nsResult result)
 {
   return result;
 }
 
-/// \brief Helper macro to call functions that return wdStatus or wdResult in a function that returns wdStatus (or wdResult) as well.
+/// \brief Helper macro to call functions that return nsStatus or nsResult in a function that returns nsStatus (or nsResult) as well.
 /// If the called function fails, its return value is returned from the calling scope.
-#define WD_SUCCEED_OR_RETURN(code) \
+#define NS_SUCCEED_OR_RETURN(code) \
   do                               \
   {                                \
     auto s = (code);               \
-    if (wdToResult(s).Failed())    \
+    if (nsToResult(s).Failed())    \
       return s;                    \
   } while (false)
 
-/// \brief Like WD_SUCCEED_OR_RETURN, but with error logging.
-#define WD_SUCCEED_OR_RETURN_LOG(code)                                    \
+/// \brief Like NS_SUCCEED_OR_RETURN, but with error logging.
+#define NS_SUCCEED_OR_RETURN_LOG(code)                                    \
   do                                                                      \
   {                                                                       \
     auto s = (code);                                                      \
-    if (wdToResult(s).Failed())                                           \
+    if (nsToResult(s).Failed())                                           \
     {                                                                     \
-      wdLog::Error("Call '{0}' failed with: {1}", WD_STRINGIZE(code), s); \
+      nsLog::Error("Call '{0}' failed with: {1}", NS_STRINGIZE(code), s); \
       return s;                                                           \
     }                                                                     \
   } while (false)
 
-/// \brief Like WD_SUCCEED_OR_RETURN, but with custom error logging.
-#define WD_SUCCEED_OR_RETURN_CUSTOM_LOG(code, log)                          \
+/// \brief Like NS_SUCCEED_OR_RETURN, but with custom error logging.
+#define NS_SUCCEED_OR_RETURN_CUSTOM_LOG(code, log)                          \
   do                                                                        \
   {                                                                         \
     auto s = (code);                                                        \
-    if (wdToResult(s).Failed())                                             \
+    if (nsToResult(s).Failed())                                             \
     {                                                                       \
-      wdLog::Error("Call '{0}' failed with: {1}", WD_STRINGIZE(code), log); \
+      nsLog::Error("Call '{0}' failed with: {1}", NS_STRINGIZE(code), log); \
       return s;                                                             \
     }                                                                       \
   } while (false)
 
 //////////////////////////////////////////////////////////////////////////
 
-class wdRTTI;
+class nsRTTI;
 
 /// \brief Dummy type to pass to templates and macros that expect a base type for a class that has no base.
-class wdNoBase
+class nsNoBase
 {
 public:
-  static const wdRTTI* GetStaticRTTI() { return nullptr; }
+  static const nsRTTI* GetStaticRTTI() { return nullptr; }
 };
 
 /// \brief Dummy type to pass to templates and macros that expect a base type for an enum class.
-class wdEnumBase
+class nsEnumBase
 {
 };
 
 /// \brief Dummy type to pass to templates and macros that expect a base type for an bitflags class.
-class wdBitflagsBase
+class nsBitflagsBase
 {
 };
 
 /// \brief Helper struct to get a storage type from a size in byte.
 template <size_t SizeInByte>
-struct wdSizeToType;
+struct nsSizeToType;
 /// \cond
 template <>
-struct wdSizeToType<1>
+struct nsSizeToType<1>
 {
-  using Type = wdUInt8;
+  using Type = nsUInt8;
 };
 template <>
-struct wdSizeToType<2>
+struct nsSizeToType<2>
 {
-  using Type = wdUInt16;
+  using Type = nsUInt16;
 };
 template <>
-struct wdSizeToType<3>
+struct nsSizeToType<3>
 {
-  using Type = wdUInt32;
+  using Type = nsUInt32;
 };
 template <>
-struct wdSizeToType<4>
+struct nsSizeToType<4>
 {
-  using Type = wdUInt32;
+  using Type = nsUInt32;
 };
 template <>
-struct wdSizeToType<5>
+struct nsSizeToType<5>
 {
-  using Type = wdUInt64;
+  using Type = nsUInt64;
 };
 template <>
-struct wdSizeToType<6>
+struct nsSizeToType<6>
 {
-  using Type = wdUInt64;
+  using Type = nsUInt64;
 };
 template <>
-struct wdSizeToType<7>
+struct nsSizeToType<7>
 {
-  using Type = wdUInt64;
+  using Type = nsUInt64;
 };
 template <>
-struct wdSizeToType<8>
+struct nsSizeToType<8>
 {
-  using Type = wdUInt64;
+  using Type = nsUInt64;
 };
 /// \endcond

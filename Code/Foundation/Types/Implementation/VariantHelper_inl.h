@@ -1,14 +1,14 @@
 
 
 // for some reason MSVC does not accept the template keyword here
-#if WD_ENABLED(WD_COMPILER_MSVC_PURE)
+#if NS_ENABLED(NS_COMPILER_MSVC_PURE)
 #  define CALL_FUNCTOR(functor, type) return functor.operator()<type>(std::forward<Args>(args)...)
 #else
 #  define CALL_FUNCTOR(functor, type) return functor.template operator()<type>(std::forward<Args>(args)...)
 #endif
 
 template <typename Functor, class... Args>
-auto wdVariant::DispatchTo(Functor& ref_functor, Type::Enum type, Args&&... args)
+auto nsVariant::DispatchTo(Functor& ref_functor, Type::Enum type, Args&&... args)
 {
   switch (type)
   {
@@ -17,35 +17,35 @@ auto wdVariant::DispatchTo(Functor& ref_functor, Type::Enum type, Args&&... args
       break;
 
     case Type::Int8:
-      CALL_FUNCTOR(ref_functor, wdInt8);
+      CALL_FUNCTOR(ref_functor, nsInt8);
       break;
 
     case Type::UInt8:
-      CALL_FUNCTOR(ref_functor, wdUInt8);
+      CALL_FUNCTOR(ref_functor, nsUInt8);
       break;
 
     case Type::Int16:
-      CALL_FUNCTOR(ref_functor, wdInt16);
+      CALL_FUNCTOR(ref_functor, nsInt16);
       break;
 
     case Type::UInt16:
-      CALL_FUNCTOR(ref_functor, wdUInt16);
+      CALL_FUNCTOR(ref_functor, nsUInt16);
       break;
 
     case Type::Int32:
-      CALL_FUNCTOR(ref_functor, wdInt32);
+      CALL_FUNCTOR(ref_functor, nsInt32);
       break;
 
     case Type::UInt32:
-      CALL_FUNCTOR(ref_functor, wdUInt32);
+      CALL_FUNCTOR(ref_functor, nsUInt32);
       break;
 
     case Type::Int64:
-      CALL_FUNCTOR(ref_functor, wdInt64);
+      CALL_FUNCTOR(ref_functor, nsInt64);
       break;
 
     case Type::UInt64:
-      CALL_FUNCTOR(ref_functor, wdUInt64);
+      CALL_FUNCTOR(ref_functor, nsUInt64);
       break;
 
     case Type::Float:
@@ -57,275 +57,265 @@ auto wdVariant::DispatchTo(Functor& ref_functor, Type::Enum type, Args&&... args
       break;
 
     case Type::Color:
-      CALL_FUNCTOR(ref_functor, wdColor);
+      CALL_FUNCTOR(ref_functor, nsColor);
       break;
 
     case Type::ColorGamma:
-      CALL_FUNCTOR(ref_functor, wdColorGammaUB);
+      CALL_FUNCTOR(ref_functor, nsColorGammaUB);
       break;
 
     case Type::Vector2:
-      CALL_FUNCTOR(ref_functor, wdVec2);
+      CALL_FUNCTOR(ref_functor, nsVec2);
       break;
 
     case Type::Vector3:
-      CALL_FUNCTOR(ref_functor, wdVec3);
+      CALL_FUNCTOR(ref_functor, nsVec3);
       break;
 
     case Type::Vector4:
-      CALL_FUNCTOR(ref_functor, wdVec4);
+      CALL_FUNCTOR(ref_functor, nsVec4);
       break;
 
     case Type::Vector2I:
-      CALL_FUNCTOR(ref_functor, wdVec2I32);
+      CALL_FUNCTOR(ref_functor, nsVec2I32);
       break;
 
     case Type::Vector3I:
-      CALL_FUNCTOR(ref_functor, wdVec3I32);
+      CALL_FUNCTOR(ref_functor, nsVec3I32);
       break;
 
     case Type::Vector4I:
-      CALL_FUNCTOR(ref_functor, wdVec4I32);
+      CALL_FUNCTOR(ref_functor, nsVec4I32);
       break;
 
     case Type::Vector2U:
-      CALL_FUNCTOR(ref_functor, wdVec2U32);
+      CALL_FUNCTOR(ref_functor, nsVec2U32);
       break;
 
     case Type::Vector3U:
-      CALL_FUNCTOR(ref_functor, wdVec3U32);
+      CALL_FUNCTOR(ref_functor, nsVec3U32);
       break;
 
     case Type::Vector4U:
-      CALL_FUNCTOR(ref_functor, wdVec4U32);
+      CALL_FUNCTOR(ref_functor, nsVec4U32);
       break;
 
     case Type::Quaternion:
-      CALL_FUNCTOR(ref_functor, wdQuat);
+      CALL_FUNCTOR(ref_functor, nsQuat);
       break;
 
     case Type::Matrix3:
-      CALL_FUNCTOR(ref_functor, wdMat3);
+      CALL_FUNCTOR(ref_functor, nsMat3);
       break;
 
     case Type::Matrix4:
-      CALL_FUNCTOR(ref_functor, wdMat4);
+      CALL_FUNCTOR(ref_functor, nsMat4);
       break;
 
     case Type::Transform:
-      CALL_FUNCTOR(ref_functor, wdTransform);
+      CALL_FUNCTOR(ref_functor, nsTransform);
       break;
 
     case Type::String:
-      CALL_FUNCTOR(ref_functor, wdString);
+      CALL_FUNCTOR(ref_functor, nsString);
       break;
 
     case Type::StringView:
-      CALL_FUNCTOR(ref_functor, wdStringView);
+      CALL_FUNCTOR(ref_functor, nsStringView);
       break;
 
     case Type::DataBuffer:
-      CALL_FUNCTOR(ref_functor, wdDataBuffer);
+      CALL_FUNCTOR(ref_functor, nsDataBuffer);
       break;
 
     case Type::Time:
-      CALL_FUNCTOR(ref_functor, wdTime);
+      CALL_FUNCTOR(ref_functor, nsTime);
       break;
 
     case Type::Uuid:
-      CALL_FUNCTOR(ref_functor, wdUuid);
+      CALL_FUNCTOR(ref_functor, nsUuid);
       break;
 
     case Type::Angle:
-      CALL_FUNCTOR(ref_functor, wdAngle);
+      CALL_FUNCTOR(ref_functor, nsAngle);
+      break;
+
+    case Type::HashedString:
+      CALL_FUNCTOR(ref_functor, nsHashedString);
+      break;
+
+    case Type::TempHashedString:
+      CALL_FUNCTOR(ref_functor, nsTempHashedString);
       break;
 
     case Type::VariantArray:
-      CALL_FUNCTOR(ref_functor, wdVariantArray);
+      CALL_FUNCTOR(ref_functor, nsVariantArray);
       break;
 
     case Type::VariantDictionary:
-      CALL_FUNCTOR(ref_functor, wdVariantDictionary);
+      CALL_FUNCTOR(ref_functor, nsVariantDictionary);
       break;
 
     case Type::TypedObject:
-      CALL_FUNCTOR(ref_functor, wdTypedObject);
+      CALL_FUNCTOR(ref_functor, nsTypedObject);
       break;
 
     default:
-      WD_REPORT_FAILURE("Could not dispatch type '{0}'", type);
+      NS_REPORT_FAILURE("Could not dispatch type '{0}'", type);
       // Intended fall through to disable warning.
     case Type::TypedPointer:
-      CALL_FUNCTOR(ref_functor, wdTypedPointer);
+      CALL_FUNCTOR(ref_functor, nsTypedPointer);
       break;
   }
 }
 
 #undef CALL_FUNCTOR
 
-class wdVariantHelper
+class nsVariantHelper
 {
-  friend class wdVariant;
+  friend class nsVariant;
   friend struct ConvertFunc;
 
-  template <typename T>
-  WD_ALWAYS_INLINE static bool CompareFloat(const wdVariant& v, const T& other, wdTraitInt<1>)
-  {
-    return v.ConvertNumber<double>() == static_cast<double>(other);
-  }
-
-  template <typename T>
-  WD_ALWAYS_INLINE static bool CompareFloat(const wdVariant& v, const T& other, wdTraitInt<0>)
-  {
-    return false;
-  }
-
-  template <typename T>
-  WD_ALWAYS_INLINE static bool CompareNumber(const wdVariant& v, const T& other, wdTraitInt<1>)
-  {
-    return v.ConvertNumber<wdInt64>() == static_cast<wdInt64>(other);
-  }
-
-  template <typename T>
-  WD_ALWAYS_INLINE static bool CompareNumber(const wdVariant& v, const T& other, wdTraitInt<0>)
-  {
-    return false;
-  }
-
-  static void To(const wdVariant& value, bool& result, bool& bSuccessful)
+  static void To(const nsVariant& value, bool& result, bool& bSuccessful)
   {
     bSuccessful = true;
 
-    if (value.GetType() <= wdVariant::Type::Double)
-      result = value.ConvertNumber<wdInt32>() != 0;
-    else if (value.GetType() == wdVariant::Type::String)
+    if (value.GetType() <= nsVariant::Type::Double)
+      result = value.ConvertNumber<nsInt32>() != 0;
+    else if (value.GetType() == nsVariant::Type::String || value.GetType() == nsVariant::Type::HashedString)
     {
-      if (wdConversionUtils::StringToBool(value.Cast<wdString>().GetData(), result) == WD_FAILURE)
+      nsStringView s = value.IsA<nsString>() ? value.Cast<nsString>().GetView() : value.Cast<nsHashedString>().GetView();
+      if (nsConversionUtils::StringToBool(s, result) == NS_FAILURE)
       {
         result = false;
         bSuccessful = false;
       }
     }
     else
-      WD_REPORT_FAILURE("Conversion to bool failed");
+      NS_REPORT_FAILURE("Conversion to bool failed");
   }
 
-  static void To(const wdVariant& value, wdInt8& result, bool& bSuccessful)
+  static void To(const nsVariant& value, nsInt8& result, bool& bSuccessful)
   {
-    wdInt32 tempResult;
+    nsInt32 tempResult = 0;
     To(value, tempResult, bSuccessful);
-    result = (wdInt8)tempResult;
+    result = (nsInt8)tempResult;
   }
 
-  static void To(const wdVariant& value, wdUInt8& result, bool& bSuccessful)
+  static void To(const nsVariant& value, nsUInt8& result, bool& bSuccessful)
   {
-    wdUInt32 tempResult;
+    nsUInt32 tempResult = 0;
     To(value, tempResult, bSuccessful);
-    result = (wdUInt8)tempResult;
+    result = (nsUInt8)tempResult;
   }
 
-  static void To(const wdVariant& value, wdInt16& result, bool& bSuccessful)
+  static void To(const nsVariant& value, nsInt16& result, bool& bSuccessful)
   {
-    wdInt32 tempResult;
+    nsInt32 tempResult = 0;
     To(value, tempResult, bSuccessful);
-    result = (wdInt16)tempResult;
+    result = (nsInt16)tempResult;
   }
 
-  static void To(const wdVariant& value, wdUInt16& result, bool& bSuccessful)
+  static void To(const nsVariant& value, nsUInt16& result, bool& bSuccessful)
   {
-    wdUInt32 tempResult;
+    nsUInt32 tempResult = 0;
     To(value, tempResult, bSuccessful);
-    result = (wdUInt16)tempResult;
+    result = (nsUInt16)tempResult;
   }
 
-  static void To(const wdVariant& value, wdInt32& result, bool& bSuccessful)
+  static void To(const nsVariant& value, nsInt32& result, bool& bSuccessful)
   {
     bSuccessful = true;
 
-    if (value.GetType() <= wdVariant::Type::Double)
-      result = value.ConvertNumber<wdInt32>();
-    else if (value.GetType() == wdVariant::Type::String)
+    if (value.GetType() <= nsVariant::Type::Double)
+      result = value.ConvertNumber<nsInt32>();
+    else if (value.GetType() == nsVariant::Type::String || value.GetType() == nsVariant::Type::HashedString)
     {
-      if (wdConversionUtils::StringToInt(value.Cast<wdString>().GetData(), result) == WD_FAILURE)
+      nsStringView s = value.IsA<nsString>() ? value.Cast<nsString>().GetView() : value.Cast<nsHashedString>().GetView();
+      if (nsConversionUtils::StringToInt(s, result) == NS_FAILURE)
       {
         result = 0;
         bSuccessful = false;
       }
     }
     else
-      WD_REPORT_FAILURE("Conversion to int failed");
+      NS_REPORT_FAILURE("Conversion to int failed");
   }
 
-  static void To(const wdVariant& value, wdUInt32& result, bool& bSuccessful)
+  static void To(const nsVariant& value, nsUInt32& result, bool& bSuccessful)
   {
     bSuccessful = true;
 
-    if (value.GetType() <= wdVariant::Type::Double)
-      result = value.ConvertNumber<wdUInt32>();
-    else if (value.GetType() == wdVariant::Type::String)
+    if (value.GetType() <= nsVariant::Type::Double)
+      result = value.ConvertNumber<nsUInt32>();
+    else if (value.GetType() == nsVariant::Type::String || value.GetType() == nsVariant::Type::HashedString)
     {
-      wdInt64 tmp = result;
-      if (wdConversionUtils::StringToInt64(value.Cast<wdString>().GetData(), tmp) == WD_FAILURE)
-      {
-        result = 0;
-        bSuccessful = false;
-      }
-      else
-        result = (wdUInt32)tmp;
-    }
-    else
-      WD_REPORT_FAILURE("Conversion to uint failed");
-  }
-
-  static void To(const wdVariant& value, wdInt64& result, bool& bSuccessful)
-  {
-    bSuccessful = true;
-
-    if (value.GetType() <= wdVariant::Type::Double)
-      result = value.ConvertNumber<wdInt64>();
-    else if (value.GetType() == wdVariant::Type::String)
-    {
-      if (wdConversionUtils::StringToInt64(value.Cast<wdString>().GetData(), result) == WD_FAILURE)
-      {
-        result = 0;
-        bSuccessful = false;
-      }
-    }
-    else
-      WD_REPORT_FAILURE("Conversion to int64 failed");
-  }
-
-  static void To(const wdVariant& value, wdUInt64& result, bool& bSuccessful)
-  {
-    bSuccessful = true;
-
-    if (value.GetType() <= wdVariant::Type::Double)
-      result = value.ConvertNumber<wdUInt64>();
-    else if (value.GetType() == wdVariant::Type::String)
-    {
-      wdInt64 tmp = result;
-      if (wdConversionUtils::StringToInt64(value.Cast<wdString>().GetData(), tmp) == WD_FAILURE)
+      nsStringView s = value.IsA<nsString>() ? value.Cast<nsString>().GetView() : value.Cast<nsHashedString>().GetView();
+      nsInt64 tmp = result;
+      if (nsConversionUtils::StringToInt64(s, tmp) == NS_FAILURE)
       {
         result = 0;
         bSuccessful = false;
       }
       else
-        result = (wdUInt64)tmp;
+        result = (nsUInt32)tmp;
     }
     else
-      WD_REPORT_FAILURE("Conversion to uint64 failed");
+      NS_REPORT_FAILURE("Conversion to uint failed");
   }
 
-  static void To(const wdVariant& value, float& result, bool& bSuccessful)
+  static void To(const nsVariant& value, nsInt64& result, bool& bSuccessful)
   {
     bSuccessful = true;
 
-    if (value.GetType() <= wdVariant::Type::Double)
+    if (value.GetType() <= nsVariant::Type::Double)
+      result = value.ConvertNumber<nsInt64>();
+    else if (value.GetType() == nsVariant::Type::String || value.GetType() == nsVariant::Type::HashedString)
+    {
+      nsStringView s = value.IsA<nsString>() ? value.Cast<nsString>().GetView() : value.Cast<nsHashedString>().GetView();
+      if (nsConversionUtils::StringToInt64(s, result) == NS_FAILURE)
+      {
+        result = 0;
+        bSuccessful = false;
+      }
+    }
+    else
+      NS_REPORT_FAILURE("Conversion to int64 failed");
+  }
+
+  static void To(const nsVariant& value, nsUInt64& result, bool& bSuccessful)
+  {
+    bSuccessful = true;
+
+    if (value.GetType() <= nsVariant::Type::Double)
+      result = value.ConvertNumber<nsUInt64>();
+    else if (value.GetType() == nsVariant::Type::String || value.GetType() == nsVariant::Type::HashedString)
+    {
+      nsStringView s = value.IsA<nsString>() ? value.Cast<nsString>().GetView() : value.Cast<nsHashedString>().GetView();
+      nsInt64 tmp = result;
+      if (nsConversionUtils::StringToInt64(s, tmp) == NS_FAILURE)
+      {
+        result = 0;
+        bSuccessful = false;
+      }
+      else
+        result = (nsUInt64)tmp;
+    }
+    else
+      NS_REPORT_FAILURE("Conversion to uint64 failed");
+  }
+
+  static void To(const nsVariant& value, float& result, bool& bSuccessful)
+  {
+    bSuccessful = true;
+
+    if (value.GetType() <= nsVariant::Type::Double)
       result = value.ConvertNumber<float>();
-    else if (value.GetType() == wdVariant::Type::String)
+    else if (value.GetType() == nsVariant::Type::String || value.GetType() == nsVariant::Type::HashedString)
     {
+      nsStringView s = value.IsA<nsString>() ? value.Cast<nsString>().GetView() : value.Cast<nsHashedString>().GetView();
       double tmp = result;
-      if (wdConversionUtils::StringToFloat(value.Cast<wdString>().GetData(), tmp) == WD_FAILURE)
+      if (nsConversionUtils::StringToFloat(s, tmp) == NS_FAILURE)
       {
         result = 0.0f;
         bSuccessful = false;
@@ -334,171 +324,214 @@ class wdVariantHelper
         result = (float)tmp;
     }
     else
-      WD_REPORT_FAILURE("Conversion to float failed");
+      NS_REPORT_FAILURE("Conversion to float failed");
   }
 
-  static void To(const wdVariant& value, double& result, bool& bSuccessful)
+  static void To(const nsVariant& value, double& result, bool& bSuccessful)
   {
     bSuccessful = true;
 
-    if (value.GetType() <= wdVariant::Type::Double)
+    if (value.GetType() <= nsVariant::Type::Double)
       result = value.ConvertNumber<double>();
-    else if (value.GetType() == wdVariant::Type::String)
+    else if (value.GetType() == nsVariant::Type::String || value.GetType() == nsVariant::Type::HashedString)
     {
-      if (wdConversionUtils::StringToFloat(value.Cast<wdString>().GetData(), result) == WD_FAILURE)
+      nsStringView s = value.IsA<nsString>() ? value.Cast<nsString>().GetView() : value.Cast<nsHashedString>().GetView();
+      if (nsConversionUtils::StringToFloat(s, result) == NS_FAILURE)
       {
         result = 0.0;
         bSuccessful = false;
       }
     }
     else
-      WD_REPORT_FAILURE("Conversion to double failed");
+      NS_REPORT_FAILURE("Conversion to double failed");
   }
 
-  static void To(const wdVariant& value, wdString& result, bool& bSuccessful)
+  static void To(const nsVariant& value, nsString& result, bool& bSuccessful)
   {
     bSuccessful = true;
+
+    if (value.IsValid() == false)
+    {
+      result = "<Invalid>";
+      return;
+    }
 
     ToStringFunc toStringFunc;
     toStringFunc.m_pThis = &value;
     toStringFunc.m_pResult = &result;
 
-    wdVariant::DispatchTo(toStringFunc, value.GetType());
-    bSuccessful = true;
+    nsVariant::DispatchTo(toStringFunc, value.GetType());
   }
 
-  static void To(const wdVariant& value, wdTypedPointer& result, bool& bSuccessful)
-  {
-    bSuccessful = true;
-    WD_ASSERT_DEBUG(value.GetType() == wdVariant::Type::TypedPointer, "Only ptr can be converted to void*!");
-    result = value.Get<wdTypedPointer>();
-  }
-
-  static void To(const wdVariant& value, wdColor& result, bool& bSuccessful)
+  static void To(const nsVariant& value, nsStringView& result, bool& bSuccessful)
   {
     bSuccessful = true;
 
-    if (value.GetType() == wdVariant::Type::ColorGamma)
-      result = value.Get<wdColorGammaUB>();
+    result = value.IsA<nsString>() ? value.Get<nsString>().GetView() : value.Get<nsHashedString>().GetView();
+  }
+
+  static void To(const nsVariant& value, nsTypedPointer& result, bool& bSuccessful)
+  {
+    bSuccessful = true;
+    NS_ASSERT_DEBUG(value.GetType() == nsVariant::Type::TypedPointer, "Only ptr can be converted to void*!");
+    result = value.Cast<nsTypedPointer>();
+  }
+
+  static void To(const nsVariant& value, nsColor& result, bool& bSuccessful)
+  {
+    bSuccessful = true;
+
+    if (value.GetType() == nsVariant::Type::ColorGamma)
+      result = value.Cast<nsColorGammaUB>();
     else
-      WD_REPORT_FAILURE("Conversion to wdColor failed");
+      NS_REPORT_FAILURE("Conversion to nsColor failed");
   }
 
-  static void To(const wdVariant& value, wdColorGammaUB& result, bool& bSuccessful)
+  static void To(const nsVariant& value, nsColorGammaUB& result, bool& bSuccessful)
   {
     bSuccessful = true;
 
-    if (value.GetType() == wdVariant::Type::Color)
-      result = value.Get<wdColor>();
+    if (value.GetType() == nsVariant::Type::Color)
+      result = value.Cast<nsColor>();
     else
-      WD_REPORT_FAILURE("Conversion to wdColorGammaUB failed");
+      NS_REPORT_FAILURE("Conversion to nsColorGammaUB failed");
   }
 
   template <typename T, typename V1, typename V2>
-  static void ToVec2X(const wdVariant& value, T& result, bool& bSuccessful)
+  static void ToVec2X(const nsVariant& value, T& result, bool& bSuccessful)
   {
     bSuccessful = true;
 
     if (value.IsA<V1>())
     {
-      const V1& v = value.Get<V1>();
+      const V1& v = value.Cast<V1>();
       result = T(static_cast<typename T::ComponentType>(v.x), static_cast<typename T::ComponentType>(v.y));
     }
     else if (value.IsA<V2>())
     {
-      const V2& v = value.Get<V2>();
+      const V2& v = value.Cast<V2>();
       result = T(static_cast<typename T::ComponentType>(v.x), static_cast<typename T::ComponentType>(v.y));
     }
     else
     {
-      WD_REPORT_FAILURE("Conversion to wdVec2X failed");
+      NS_REPORT_FAILURE("Conversion to nsVec2X failed");
       bSuccessful = false;
     }
   }
 
-  static void To(const wdVariant& value, wdVec2& result, bool& bSuccessful) { ToVec2X<wdVec2, wdVec2I32, wdVec2U32>(value, result, bSuccessful); }
+  static void To(const nsVariant& value, nsVec2& result, bool& bSuccessful) { ToVec2X<nsVec2, nsVec2I32, nsVec2U32>(value, result, bSuccessful); }
 
-  static void To(const wdVariant& value, wdVec2I32& result, bool& bSuccessful) { ToVec2X<wdVec2I32, wdVec2, wdVec2U32>(value, result, bSuccessful); }
+  static void To(const nsVariant& value, nsVec2I32& result, bool& bSuccessful) { ToVec2X<nsVec2I32, nsVec2, nsVec2U32>(value, result, bSuccessful); }
 
-  static void To(const wdVariant& value, wdVec2U32& result, bool& bSuccessful) { ToVec2X<wdVec2U32, wdVec2I32, wdVec2>(value, result, bSuccessful); }
+  static void To(const nsVariant& value, nsVec2U32& result, bool& bSuccessful) { ToVec2X<nsVec2U32, nsVec2I32, nsVec2>(value, result, bSuccessful); }
 
   template <typename T, typename V1, typename V2>
-  static void ToVec3X(const wdVariant& value, T& result, bool& bSuccessful)
+  static void ToVec3X(const nsVariant& value, T& result, bool& bSuccessful)
   {
     bSuccessful = true;
 
     if (value.IsA<V1>())
     {
-      const V1& v = value.Get<V1>();
-      result =
-        T(static_cast<typename T::ComponentType>(v.x), static_cast<typename T::ComponentType>(v.y), static_cast<typename T::ComponentType>(v.z));
+      const V1& v = value.Cast<V1>();
+      result = T(static_cast<typename T::ComponentType>(v.x), static_cast<typename T::ComponentType>(v.y), static_cast<typename T::ComponentType>(v.z));
     }
     else if (value.IsA<V2>())
     {
-      const V2& v = value.Get<V2>();
-      result =
-        T(static_cast<typename T::ComponentType>(v.x), static_cast<typename T::ComponentType>(v.y), static_cast<typename T::ComponentType>(v.z));
+      const V2& v = value.Cast<V2>();
+      result = T(static_cast<typename T::ComponentType>(v.x), static_cast<typename T::ComponentType>(v.y), static_cast<typename T::ComponentType>(v.z));
     }
     else
     {
-      WD_REPORT_FAILURE("Conversion to wdVec3X failed");
+      NS_REPORT_FAILURE("Conversion to nsVec3X failed");
       bSuccessful = false;
     }
   }
 
-  static void To(const wdVariant& value, wdVec3& result, bool& bSuccessful) { ToVec3X<wdVec3, wdVec3I32, wdVec3U32>(value, result, bSuccessful); }
+  static void To(const nsVariant& value, nsVec3& result, bool& bSuccessful) { ToVec3X<nsVec3, nsVec3I32, nsVec3U32>(value, result, bSuccessful); }
 
-  static void To(const wdVariant& value, wdVec3I32& result, bool& bSuccessful) { ToVec3X<wdVec3I32, wdVec3, wdVec3U32>(value, result, bSuccessful); }
+  static void To(const nsVariant& value, nsVec3I32& result, bool& bSuccessful) { ToVec3X<nsVec3I32, nsVec3, nsVec3U32>(value, result, bSuccessful); }
 
-  static void To(const wdVariant& value, wdVec3U32& result, bool& bSuccessful) { ToVec3X<wdVec3U32, wdVec3I32, wdVec3>(value, result, bSuccessful); }
+  static void To(const nsVariant& value, nsVec3U32& result, bool& bSuccessful) { ToVec3X<nsVec3U32, nsVec3I32, nsVec3>(value, result, bSuccessful); }
 
   template <typename T, typename V1, typename V2>
-  static void ToVec4X(const wdVariant& value, T& result, bool& bSuccessful)
+  static void ToVec4X(const nsVariant& value, T& result, bool& bSuccessful)
   {
     bSuccessful = true;
 
     if (value.IsA<V1>())
     {
-      const V1& v = value.Get<V1>();
-      result = T(static_cast<typename T::ComponentType>(v.x), static_cast<typename T::ComponentType>(v.y),
-        static_cast<typename T::ComponentType>(v.z), static_cast<typename T::ComponentType>(v.w));
+      const V1& v = value.Cast<V1>();
+      result = T(static_cast<typename T::ComponentType>(v.x), static_cast<typename T::ComponentType>(v.y), static_cast<typename T::ComponentType>(v.z), static_cast<typename T::ComponentType>(v.w));
     }
     else if (value.IsA<V2>())
     {
-      const V2& v = value.Get<V2>();
-      result = T(static_cast<typename T::ComponentType>(v.x), static_cast<typename T::ComponentType>(v.y),
-        static_cast<typename T::ComponentType>(v.z), static_cast<typename T::ComponentType>(v.w));
+      const V2& v = value.Cast<V2>();
+      result = T(static_cast<typename T::ComponentType>(v.x), static_cast<typename T::ComponentType>(v.y), static_cast<typename T::ComponentType>(v.z), static_cast<typename T::ComponentType>(v.w));
     }
     else
     {
-      WD_REPORT_FAILURE("Conversion to wdVec4X failed");
+      NS_REPORT_FAILURE("Conversion to nsVec4X failed");
       bSuccessful = false;
     }
   }
 
-  static void To(const wdVariant& value, wdVec4& result, bool& bSuccessful) { ToVec4X<wdVec4, wdVec4I32, wdVec4U32>(value, result, bSuccessful); }
+  static void To(const nsVariant& value, nsVec4& result, bool& bSuccessful) { ToVec4X<nsVec4, nsVec4I32, nsVec4U32>(value, result, bSuccessful); }
 
-  static void To(const wdVariant& value, wdVec4I32& result, bool& bSuccessful) { ToVec4X<wdVec4I32, wdVec4, wdVec4U32>(value, result, bSuccessful); }
+  static void To(const nsVariant& value, nsVec4I32& result, bool& bSuccessful) { ToVec4X<nsVec4I32, nsVec4, nsVec4U32>(value, result, bSuccessful); }
 
-  static void To(const wdVariant& value, wdVec4U32& result, bool& bSuccessful) { ToVec4X<wdVec4U32, wdVec4I32, wdVec4>(value, result, bSuccessful); }
+  static void To(const nsVariant& value, nsVec4U32& result, bool& bSuccessful) { ToVec4X<nsVec4U32, nsVec4I32, nsVec4>(value, result, bSuccessful); }
+
+  static void To(const nsVariant& value, nsHashedString& result, bool& bSuccessful)
+  {
+    bSuccessful = true;
+
+    if (value.GetType() == nsVariantType::String)
+      result.Assign(value.Cast<nsString>());
+    else if (value.GetType() == nsVariantType::StringView)
+      result.Assign(value.Cast<nsStringView>());
+    else
+    {
+      nsString s;
+      To(value, s, bSuccessful);
+      result.Assign(s.GetView());
+    }
+  }
+
+  static void To(const nsVariant& value, nsTempHashedString& result, bool& bSuccessful)
+  {
+    bSuccessful = true;
+
+    if (value.GetType() == nsVariantType::String)
+      result = value.Cast<nsString>();
+    else if (value.GetType() == nsVariantType::StringView)
+      result = value.Cast<nsStringView>();
+    else if (value.GetType() == nsVariant::Type::HashedString)
+      result = value.Cast<nsHashedString>();
+    else
+    {
+      nsString s;
+      To(value, s, bSuccessful);
+      result = s.GetView();
+    }
+  }
 
   template <typename T>
-  static void To(const wdVariant& value, T& result, bool& bSuccessful)
+  static void To(const nsVariant& value, T& result, bool& bSuccessful)
   {
-    WD_REPORT_FAILURE("Conversion function not implemented for target type '{0}'", wdVariant::TypeDeduction<T>::value);
+    NS_REPORT_FAILURE("Conversion function not implemented for target type '{0}'", nsVariant::TypeDeduction<T>::value);
     bSuccessful = false;
   }
 
   struct ToStringFunc
   {
     template <typename T>
-    WD_ALWAYS_INLINE void operator()()
+    NS_ALWAYS_INLINE void operator()()
     {
-      wdStringBuilder tmp;
-      *m_pResult = wdConversionUtils::ToString(m_pThis->Cast<T>(), tmp);
+      nsStringBuilder tmp;
+      *m_pResult = nsConversionUtils::ToString(m_pThis->Cast<T>(), tmp);
     }
 
-    const wdVariant* m_pThis;
-    wdString* m_pResult;
+    const nsVariant* m_pThis;
+    nsString* m_pResult;
   };
 };

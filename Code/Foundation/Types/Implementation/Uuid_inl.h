@@ -1,34 +1,21 @@
 
-wdUuid::wdUuid()
+nsUuid::nsUuid()
   : m_uiHigh(0)
   , m_uiLow(0)
 {
 }
 
-void wdUuid::SetInvalid()
-{
-  m_uiHigh = 0;
-  m_uiLow = 0;
-}
-
-wdUuid wdUuid::CreateUuid()
-{
-  wdUuid guid;
-  guid.CreateNewUuid();
-  return guid;
-}
-
-bool wdUuid::operator==(const wdUuid& other) const
+bool nsUuid::operator==(const nsUuid& other) const
 {
   return m_uiHigh == other.m_uiHigh && m_uiLow == other.m_uiLow;
 }
 
-bool wdUuid::operator!=(const wdUuid& other) const
+bool nsUuid::operator!=(const nsUuid& other) const
 {
   return m_uiHigh != other.m_uiHigh || m_uiLow != other.m_uiLow;
 }
 
-bool wdUuid::operator<(const wdUuid& other) const
+bool nsUuid::operator<(const nsUuid& other) const
 {
   if (m_uiHigh < other.m_uiHigh)
     return true;
@@ -38,33 +25,33 @@ bool wdUuid::operator<(const wdUuid& other) const
   return m_uiLow < other.m_uiLow;
 }
 
-bool wdUuid::IsValid() const
+bool nsUuid::IsValid() const
 {
   return m_uiHigh != 0 || m_uiLow != 0;
 }
 
-void wdUuid::CombineWithSeed(const wdUuid& seed)
+void nsUuid::CombineWithSeed(const nsUuid& seed)
 {
   m_uiHigh += seed.m_uiHigh;
   m_uiLow += seed.m_uiLow;
 }
 
-void wdUuid::RevertCombinationWithSeed(const wdUuid& seed)
+void nsUuid::RevertCombinationWithSeed(const nsUuid& seed)
 {
   m_uiHigh -= seed.m_uiHigh;
   m_uiLow -= seed.m_uiLow;
 }
 
-void wdUuid::HashCombine(const wdUuid& guid)
+void nsUuid::HashCombine(const nsUuid& guid)
 {
-  m_uiHigh = wdHashingUtils::xxHash64(&guid.m_uiHigh, sizeof(wdUInt64), m_uiHigh);
-  m_uiLow = wdHashingUtils::xxHash64(&guid.m_uiLow, sizeof(wdUInt64), m_uiLow);
+  m_uiHigh = nsHashingUtils::xxHash64(&guid.m_uiHigh, sizeof(nsUInt64), m_uiHigh);
+  m_uiLow = nsHashingUtils::xxHash64(&guid.m_uiLow, sizeof(nsUInt64), m_uiLow);
 }
 
 template <>
-struct wdHashHelper<wdUuid>
+struct nsHashHelper<nsUuid>
 {
-  WD_ALWAYS_INLINE static wdUInt32 Hash(const wdUuid& value) { return wdHashingUtils::xxHash32(&value, sizeof(wdUuid)); }
+  NS_ALWAYS_INLINE static nsUInt32 Hash(const nsUuid& value) { return nsHashingUtils::xxHash32(&value, sizeof(nsUuid)); }
 
-  WD_ALWAYS_INLINE static bool Equal(const wdUuid& a, const wdUuid& b) { return a == b; }
+  NS_ALWAYS_INLINE static bool Equal(const nsUuid& a, const nsUuid& b) { return a == b; }
 };

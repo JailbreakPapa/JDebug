@@ -3,30 +3,58 @@
 
 #ifdef __clang__
 
-#  undef WD_COMPILER_CLANG
-#  define WD_COMPILER_CLANG WD_ON
+#  undef NS_COMPILER_CLANG
+#  define NS_COMPILER_CLANG NS_ON
 
-#  define WD_ALWAYS_INLINE __attribute__((always_inline)) inline
-#  if WD_ENABLED(WD_COMPILE_FOR_DEBUG)
-#    define WD_FORCE_INLINE inline
+#  define NS_ALWAYS_INLINE __attribute__((always_inline)) inline
+#  if NS_ENABLED(NS_COMPILE_FOR_DEBUG)
+#    define NS_FORCE_INLINE inline
 #  else
-#    define WD_FORCE_INLINE __attribute__((always_inline)) inline
+#    define NS_FORCE_INLINE __attribute__((always_inline)) inline
 #  endif
 
-#  define WD_ALIGNMENT_OF(type) WD_COMPILE_TIME_MAX(__alignof(type), WD_ALIGNMENT_MINIMUM)
+#  define NS_ALIGNMENT_OF(type) NS_COMPILE_TIME_MAX(__alignof(type), NS_ALIGNMENT_MINIMUM)
 
-#  define WD_DEBUG_BREAK \
-    {                    \
-      __builtin_trap();  \
-    }
+#  if __has_builtin(__builtin_debugtrap)
+#    define NS_DEBUG_BREAK     \
+      {                        \
+        __builtin_debugtrap(); \
+      }
+#  elif __has_builtin(__debugbreak)
+#    define NS_DEBUG_BREAK \
+      {                    \
+        __debugbreak();    \
+      }
+#  else
+#    include <signal.h>
+#    if defined(SIGTRAP)
+#      define NS_DEBUG_BREAK \
+        {                    \
+          raise(SIGTRAP);    \
+        }
+#    else
+#      define NS_DEBUG_BREAK \
+        {                    \
+          raise(SIGABRT);    \
+        }
+#    endif
+#  endif
 
-#  define WD_SOURCE_FUNCTION __PRETTY_FUNCTION__
-#  define WD_SOURCE_LINE __LINE__
-#  define WD_SOURCE_FILE __FILE__
+#  define NS_SOURCE_FUNCTION __PRETTY_FUNCTION__
+#  define NS_SOURCE_LINE __LINE__
+#  define NS_SOURCE_FILE __FILE__
 
 #  ifdef BUILDSYSTEM_BUILDTYPE_Debug
-#    undef WD_COMPILE_FOR_DEBUG
-#    define WD_COMPILE_FOR_DEBUG WD_ON
+#    undef NS_COMPILE_FOR_DEBUG
+#    define NS_COMPILE_FOR_DEBUG NS_ON
 #  endif
+
+#  define NS_WARNING_PUSH() _Pragma("clang diagnostic push")
+#  define NS_WARNING_POP() _Pragma("clang diagnostic pop")
+#  define NS_WARNING_DISABLE_CLANG(_x) _Pragma(NS_STRINGIZE(clang diagnostic ignored _x))
+
+#else
+
+#  define NS_WARNING_DISABLE_CLANG(_x)
 
 #endif

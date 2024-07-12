@@ -1,12 +1,10 @@
 
 template <typename T>
-WD_ALWAYS_INLINE wdUniquePtr<T>::wdUniquePtr()
-{
-}
+NS_ALWAYS_INLINE nsUniquePtr<T>::nsUniquePtr() = default;
 
 template <typename T>
 template <typename U>
-WD_ALWAYS_INLINE wdUniquePtr<T>::wdUniquePtr(const wdInternal::NewInstance<U>& instance)
+NS_ALWAYS_INLINE nsUniquePtr<T>::nsUniquePtr(const nsInternal::NewInstance<U>& instance)
 {
   m_pInstance = instance.m_pInstance;
   m_pAllocator = instance.m_pAllocator;
@@ -14,7 +12,7 @@ WD_ALWAYS_INLINE wdUniquePtr<T>::wdUniquePtr(const wdInternal::NewInstance<U>& i
 
 template <typename T>
 template <typename U>
-WD_ALWAYS_INLINE wdUniquePtr<T>::wdUniquePtr(U* pInstance, wdAllocatorBase* pAllocator)
+NS_ALWAYS_INLINE nsUniquePtr<T>::nsUniquePtr(U* pInstance, nsAllocator* pAllocator)
 {
   m_pInstance = pInstance;
   m_pAllocator = pAllocator;
@@ -22,7 +20,7 @@ WD_ALWAYS_INLINE wdUniquePtr<T>::wdUniquePtr(U* pInstance, wdAllocatorBase* pAll
 
 template <typename T>
 template <typename U>
-WD_ALWAYS_INLINE wdUniquePtr<T>::wdUniquePtr(wdUniquePtr<U>&& other)
+NS_ALWAYS_INLINE nsUniquePtr<T>::nsUniquePtr(nsUniquePtr<U>&& other)
 {
   m_pInstance = other.m_pInstance;
   m_pAllocator = other.m_pAllocator;
@@ -32,19 +30,19 @@ WD_ALWAYS_INLINE wdUniquePtr<T>::wdUniquePtr(wdUniquePtr<U>&& other)
 }
 
 template <typename T>
-WD_ALWAYS_INLINE wdUniquePtr<T>::wdUniquePtr(std::nullptr_t)
+NS_ALWAYS_INLINE nsUniquePtr<T>::nsUniquePtr(std::nullptr_t)
 {
 }
 
 template <typename T>
-WD_ALWAYS_INLINE wdUniquePtr<T>::~wdUniquePtr()
+NS_ALWAYS_INLINE nsUniquePtr<T>::~nsUniquePtr()
 {
   Clear();
 }
 
 template <typename T>
 template <typename U>
-WD_ALWAYS_INLINE wdUniquePtr<T>& wdUniquePtr<T>::operator=(const wdInternal::NewInstance<U>& instance)
+NS_ALWAYS_INLINE nsUniquePtr<T>& nsUniquePtr<T>::operator=(const nsInternal::NewInstance<U>& instance)
 {
   Clear();
 
@@ -56,7 +54,7 @@ WD_ALWAYS_INLINE wdUniquePtr<T>& wdUniquePtr<T>::operator=(const wdInternal::New
 
 template <typename T>
 template <typename U>
-WD_ALWAYS_INLINE wdUniquePtr<T>& wdUniquePtr<T>::operator=(wdUniquePtr<U>&& other)
+NS_ALWAYS_INLINE nsUniquePtr<T>& nsUniquePtr<T>::operator=(nsUniquePtr<U>&& other)
 {
   Clear();
 
@@ -70,7 +68,7 @@ WD_ALWAYS_INLINE wdUniquePtr<T>& wdUniquePtr<T>::operator=(wdUniquePtr<U>&& othe
 }
 
 template <typename T>
-WD_ALWAYS_INLINE wdUniquePtr<T>& wdUniquePtr<T>::operator=(std::nullptr_t)
+NS_ALWAYS_INLINE nsUniquePtr<T>& nsUniquePtr<T>::operator=(std::nullptr_t)
 {
   Clear();
 
@@ -78,7 +76,7 @@ WD_ALWAYS_INLINE wdUniquePtr<T>& wdUniquePtr<T>::operator=(std::nullptr_t)
 }
 
 template <typename T>
-WD_ALWAYS_INLINE T* wdUniquePtr<T>::Release()
+NS_ALWAYS_INLINE T* nsUniquePtr<T>::Release()
 {
   T* pInstance = m_pInstance;
 
@@ -89,7 +87,7 @@ WD_ALWAYS_INLINE T* wdUniquePtr<T>::Release()
 }
 
 template <typename T>
-WD_ALWAYS_INLINE T* wdUniquePtr<T>::Release(wdAllocatorBase*& out_pAllocator)
+NS_ALWAYS_INLINE T* nsUniquePtr<T>::Release(nsAllocator*& out_pAllocator)
 {
   T* pInstance = m_pInstance;
   out_pAllocator = m_pAllocator;
@@ -101,106 +99,109 @@ WD_ALWAYS_INLINE T* wdUniquePtr<T>::Release(wdAllocatorBase*& out_pAllocator)
 }
 
 template <typename T>
-WD_ALWAYS_INLINE T* wdUniquePtr<T>::Borrow() const
+NS_ALWAYS_INLINE T* nsUniquePtr<T>::Borrow() const
 {
   return m_pInstance;
 }
 
 template <typename T>
-WD_ALWAYS_INLINE void wdUniquePtr<T>::Clear()
+NS_ALWAYS_INLINE void nsUniquePtr<T>::Clear()
 {
-  WD_DELETE(m_pAllocator, m_pInstance);
+  if (m_pAllocator != nullptr)
+  {
+    NS_DELETE(m_pAllocator, m_pInstance);
+  }
 
   m_pInstance = nullptr;
   m_pAllocator = nullptr;
 }
 
 template <typename T>
-WD_ALWAYS_INLINE T& wdUniquePtr<T>::operator*() const
+NS_ALWAYS_INLINE T& nsUniquePtr<T>::operator*() const
 {
   return *m_pInstance;
 }
 
 template <typename T>
-WD_ALWAYS_INLINE T* wdUniquePtr<T>::operator->() const
+NS_ALWAYS_INLINE T* nsUniquePtr<T>::operator->() const
 {
   return m_pInstance;
 }
 
 template <typename T>
-WD_ALWAYS_INLINE wdUniquePtr<T>::operator bool() const
+NS_ALWAYS_INLINE nsUniquePtr<T>::operator bool() const
 {
   return m_pInstance != nullptr;
 }
 
 template <typename T>
-WD_ALWAYS_INLINE bool wdUniquePtr<T>::operator==(const wdUniquePtr<T>& rhs) const
+NS_ALWAYS_INLINE bool nsUniquePtr<T>::operator==(const nsUniquePtr<T>& rhs) const
 {
   return m_pInstance == rhs.m_pInstance;
 }
 
 template <typename T>
-WD_ALWAYS_INLINE bool wdUniquePtr<T>::operator!=(const wdUniquePtr<T>& rhs) const
+NS_ALWAYS_INLINE bool nsUniquePtr<T>::operator!=(const nsUniquePtr<T>& rhs) const
 {
   return m_pInstance != rhs.m_pInstance;
 }
 
 template <typename T>
-WD_ALWAYS_INLINE bool wdUniquePtr<T>::operator<(const wdUniquePtr<T>& rhs) const
+NS_ALWAYS_INLINE bool nsUniquePtr<T>::operator<(const nsUniquePtr<T>& rhs) const
 {
   return m_pInstance < rhs.m_pInstance;
 }
 
 template <typename T>
-WD_ALWAYS_INLINE bool wdUniquePtr<T>::operator<=(const wdUniquePtr<T>& rhs) const
+NS_ALWAYS_INLINE bool nsUniquePtr<T>::operator<=(const nsUniquePtr<T>& rhs) const
 {
   return !(rhs < *this);
 }
 
 template <typename T>
-WD_ALWAYS_INLINE bool wdUniquePtr<T>::operator>(const wdUniquePtr<T>& rhs) const
+NS_ALWAYS_INLINE bool nsUniquePtr<T>::operator>(const nsUniquePtr<T>& rhs) const
 {
   return rhs < *this;
 }
 
 template <typename T>
-WD_ALWAYS_INLINE bool wdUniquePtr<T>::operator>=(const wdUniquePtr<T>& rhs) const
+NS_ALWAYS_INLINE bool nsUniquePtr<T>::operator>=(const nsUniquePtr<T>& rhs) const
 {
   return !(*this < rhs);
 }
 
 template <typename T>
-WD_ALWAYS_INLINE bool wdUniquePtr<T>::operator==(std::nullptr_t) const
+NS_ALWAYS_INLINE bool nsUniquePtr<T>::operator==(std::nullptr_t) const
 {
   return m_pInstance == nullptr;
 }
 
 template <typename T>
-WD_ALWAYS_INLINE bool wdUniquePtr<T>::operator!=(std::nullptr_t) const
+NS_ALWAYS_INLINE bool nsUniquePtr<T>::operator!=(std::nullptr_t) const
 {
   return m_pInstance != nullptr;
 }
 
 template <typename T>
-WD_ALWAYS_INLINE bool wdUniquePtr<T>::operator<(std::nullptr_t) const
+NS_ALWAYS_INLINE bool nsUniquePtr<T>::operator<(std::nullptr_t) const
 {
   return m_pInstance < nullptr;
 }
 
 template <typename T>
-WD_ALWAYS_INLINE bool wdUniquePtr<T>::operator<=(std::nullptr_t) const
+NS_ALWAYS_INLINE bool nsUniquePtr<T>::operator<=(std::nullptr_t) const
 {
   return m_pInstance <= nullptr;
 }
 
 template <typename T>
-WD_ALWAYS_INLINE bool wdUniquePtr<T>::operator>(std::nullptr_t) const
+NS_ALWAYS_INLINE bool nsUniquePtr<T>::operator>(std::nullptr_t) const
 {
   return m_pInstance > nullptr;
 }
 
 template <typename T>
-WD_ALWAYS_INLINE bool wdUniquePtr<T>::operator>=(std::nullptr_t) const
+NS_ALWAYS_INLINE bool nsUniquePtr<T>::operator>=(std::nullptr_t) const
 {
   return m_pInstance >= nullptr;
 }
@@ -209,49 +210,49 @@ WD_ALWAYS_INLINE bool wdUniquePtr<T>::operator>=(std::nullptr_t) const
 // free functions
 
 template <typename T>
-WD_ALWAYS_INLINE bool operator==(const wdUniquePtr<T>& lhs, const T* rhs)
+NS_ALWAYS_INLINE bool operator==(const nsUniquePtr<T>& lhs, const T* rhs)
 {
   return lhs.Borrow() == rhs;
 }
 
 template <typename T>
-WD_ALWAYS_INLINE bool operator==(const wdUniquePtr<T>& lhs, T* rhs)
+NS_ALWAYS_INLINE bool operator==(const nsUniquePtr<T>& lhs, T* rhs)
 {
   return lhs.Borrow() == rhs;
 }
 
 template <typename T>
-WD_ALWAYS_INLINE bool operator!=(const wdUniquePtr<T>& lhs, const T* rhs)
+NS_ALWAYS_INLINE bool operator!=(const nsUniquePtr<T>& lhs, const T* rhs)
 {
   return lhs.Borrow() != rhs;
 }
 
 template <typename T>
-WD_ALWAYS_INLINE bool operator!=(const wdUniquePtr<T>& lhs, T* rhs)
+NS_ALWAYS_INLINE bool operator!=(const nsUniquePtr<T>& lhs, T* rhs)
 {
   return lhs.Borrow() != rhs;
 }
 
 template <typename T>
-WD_ALWAYS_INLINE bool operator==(const T* lhs, const wdUniquePtr<T>& rhs)
+NS_ALWAYS_INLINE bool operator==(const T* lhs, const nsUniquePtr<T>& rhs)
 {
   return lhs == rhs.Borrow();
 }
 
 template <typename T>
-WD_ALWAYS_INLINE bool operator==(T* lhs, const wdUniquePtr<T>& rhs)
+NS_ALWAYS_INLINE bool operator==(T* lhs, const nsUniquePtr<T>& rhs)
 {
   return lhs == rhs.Borrow();
 }
 
 template <typename T>
-WD_ALWAYS_INLINE bool operator!=(const T* lhs, const wdUniquePtr<T>& rhs)
+NS_ALWAYS_INLINE bool operator!=(const T* lhs, const nsUniquePtr<T>& rhs)
 {
   return lhs != rhs.Borrow();
 }
 
 template <typename T>
-WD_ALWAYS_INLINE bool operator!=(T* lhs, const wdUniquePtr<T>& rhs)
+NS_ALWAYS_INLINE bool operator!=(T* lhs, const nsUniquePtr<T>& rhs)
 {
   return lhs != rhs.Borrow();
 }

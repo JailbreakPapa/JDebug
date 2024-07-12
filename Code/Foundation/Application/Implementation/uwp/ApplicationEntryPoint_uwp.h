@@ -9,18 +9,18 @@
 // Disable C++/CX adds.
 #pragma warning(disable : 4447)
 
-class wdApplication;
-extern WD_FOUNDATION_DLL wdResult wdUWPRun(wdApplication* pApp);
+class nsApplication;
+extern NS_FOUNDATION_DLL nsResult nsUWPRun(nsApplication* pApp);
 
-namespace wdApplicationDetails
+namespace nsApplicationDetails
 {
-  WD_FOUNDATION_DLL wdResult InitializeWinrt();
-  WD_FOUNDATION_DLL void UninitializeWinrt();
+  NS_FOUNDATION_DLL nsResult InitializeWinrt();
+  NS_FOUNDATION_DLL void UninitializeWinrt();
 
   template <typename AppClass, typename... Args>
   int EntryFunc(Args&&... arguments)
   {
-    alignas(WD_ALIGNMENT_OF(AppClass)) static char appBuffer[sizeof(AppClass)]; // Not on the stack to cope with smaller stacks.
+    alignas(NS_ALIGNMENT_OF(AppClass)) static char appBuffer[sizeof(AppClass)]; // Not on the stack to cope with smaller stacks.
 
     if (InitializeWinrt().Failed())
     {
@@ -29,7 +29,7 @@ namespace wdApplicationDetails
 
     AppClass* pApp = new (appBuffer) AppClass(std::forward<Args>(arguments)...);
 
-    wdUWPRun(pApp).IgnoreResult();
+    nsUWPRun(pApp).IgnoreResult();
 
     const int iReturnCode = pApp->GetReturnCode();
     if (iReturnCode != 0)
@@ -43,22 +43,25 @@ namespace wdApplicationDetails
 
     return iReturnCode;
   }
-} // namespace wdApplicationDetails
+} // namespace nsApplicationDetails
 
-/// \brief Same as WD_APPLICATION_ENTRY_POINT but should be used for applications that shall always show a console window.
-#define WD_CONSOLEAPP_ENTRY_POINT(AppClass, ...)                                                                                 \
-  alignas(WD_ALIGNMENT_OF(AppClass)) static char appBuffer[sizeof(AppClass)]; /* Not on the stack to cope with smaller stacks */ \
+/// \brief Same as NS_APPLICATION_ENTRY_POINT but should be used for applications that shall always show a console window.
+#define NS_CONSOLEAPP_ENTRY_POINT(AppClass, ...)                                                                                 \
+  alignas(NS_ALIGNMENT_OF(AppClass)) static char appBuffer[sizeof(AppClass)]; /* Not on the stack to cope with smaller stacks */ \
                                                                                                                                  \
-  WD_APPLICATION_ENTRY_POINT_CODE_INJECTION                                                                                      \
-  int main(int argc, const char** argv) { return ::wdApplicationDetails::EntryFunc<AppClass>(__VA_ARGS__); }
+  NS_APPLICATION_ENTRY_POINT_CODE_INJECTION                                                                                      \
+  int main(int argc, const char** argv)                                                                                          \
+  {                                                                                                                              \
+    return ::nsApplicationDetails::EntryFunc<AppClass>(__VA_ARGS__);                                                             \
+  }
 
 /// \brief This macro allows for easy creation of application entry points (since they can't be placed in DLLs)
 ///
-/// Just use the macro in a cpp file of your application and supply your app class (must be derived from wdApplication).
+/// Just use the macro in a cpp file of your application and supply your app class (must be derived from nsApplication).
 /// The additional (optional) parameters are passed to the constructor of your app class.
-#define WD_APPLICATION_ENTRY_POINT(AppClass, ...)                                                   \
-  WD_APPLICATION_ENTRY_POINT_CODE_INJECTION                                                         \
+#define NS_APPLICATION_ENTRY_POINT(AppClass, ...)                                                   \
+  NS_APPLICATION_ENTRY_POINT_CODE_INJECTION                                                         \
   int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) \
   {                                                                                                 \
-    return ::wdApplicationDetails::EntryFunc<AppClass>(__VA_ARGS__);                                \
+    return ::nsApplicationDetails::EntryFunc<AppClass>(__VA_ARGS__);                                \
   }

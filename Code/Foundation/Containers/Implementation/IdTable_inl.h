@@ -2,7 +2,7 @@
 // ***** Const Iterator *****
 
 template <typename IdType, typename ValueType>
-wdIdTableBase<IdType, ValueType>::ConstIterator::ConstIterator(const wdIdTableBase<IdType, ValueType>& idTable)
+nsIdTableBase<IdType, ValueType>::ConstIterator::ConstIterator(const nsIdTableBase<IdType, ValueType>& idTable)
   : m_IdTable(idTable)
   , m_CurrentIndex(0)
   , m_CurrentCount(0)
@@ -17,39 +17,39 @@ wdIdTableBase<IdType, ValueType>::ConstIterator::ConstIterator(const wdIdTableBa
 }
 
 template <typename IdType, typename ValueType>
-WD_ALWAYS_INLINE bool wdIdTableBase<IdType, ValueType>::ConstIterator::IsValid() const
+NS_ALWAYS_INLINE bool nsIdTableBase<IdType, ValueType>::ConstIterator::IsValid() const
 {
   return m_CurrentCount < m_IdTable.m_Count;
 }
 
 template <typename IdType, typename ValueType>
-WD_FORCE_INLINE bool wdIdTableBase<IdType, ValueType>::ConstIterator::operator==(
-  const typename wdIdTableBase<IdType, ValueType>::ConstIterator& it2) const
+NS_FORCE_INLINE bool nsIdTableBase<IdType, ValueType>::ConstIterator::operator==(
+  const typename nsIdTableBase<IdType, ValueType>::ConstIterator& it2) const
 {
   return m_IdTable.m_pEntries == it2.m_IdTable.m_pEntries && m_CurrentIndex == it2.m_CurrentIndex;
 }
 
 template <typename IdType, typename ValueType>
-WD_ALWAYS_INLINE bool wdIdTableBase<IdType, ValueType>::ConstIterator::operator!=(
-  const typename wdIdTableBase<IdType, ValueType>::ConstIterator& it2) const
+NS_ALWAYS_INLINE bool nsIdTableBase<IdType, ValueType>::ConstIterator::operator!=(
+  const typename nsIdTableBase<IdType, ValueType>::ConstIterator& it2) const
 {
   return !(*this == it2);
 }
 
 template <typename IdType, typename ValueType>
-WD_ALWAYS_INLINE IdType wdIdTableBase<IdType, ValueType>::ConstIterator::Id() const
+NS_ALWAYS_INLINE IdType nsIdTableBase<IdType, ValueType>::ConstIterator::Id() const
 {
   return m_IdTable.m_pEntries[m_CurrentIndex].id;
 }
 
 template <typename IdType, typename ValueType>
-WD_FORCE_INLINE const ValueType& wdIdTableBase<IdType, ValueType>::ConstIterator::Value() const
+NS_FORCE_INLINE const ValueType& nsIdTableBase<IdType, ValueType>::ConstIterator::Value() const
 {
   return m_IdTable.m_pEntries[m_CurrentIndex].value;
 }
 
 template <typename IdType, typename ValueType>
-void wdIdTableBase<IdType, ValueType>::ConstIterator::Next()
+void nsIdTableBase<IdType, ValueType>::ConstIterator::Next()
 {
   ++m_CurrentCount;
   if (m_CurrentCount == m_IdTable.m_Count)
@@ -62,7 +62,7 @@ void wdIdTableBase<IdType, ValueType>::ConstIterator::Next()
 }
 
 template <typename IdType, typename ValueType>
-WD_ALWAYS_INLINE void wdIdTableBase<IdType, ValueType>::ConstIterator::operator++()
+NS_ALWAYS_INLINE void nsIdTableBase<IdType, ValueType>::ConstIterator::operator++()
 {
   Next();
 }
@@ -71,22 +71,22 @@ WD_ALWAYS_INLINE void wdIdTableBase<IdType, ValueType>::ConstIterator::operator+
 // ***** Iterator *****
 
 template <typename IdType, typename ValueType>
-wdIdTableBase<IdType, ValueType>::Iterator::Iterator(const wdIdTableBase<IdType, ValueType>& idTable)
+nsIdTableBase<IdType, ValueType>::Iterator::Iterator(const nsIdTableBase<IdType, ValueType>& idTable)
   : ConstIterator(idTable)
 {
 }
 
 template <typename IdType, typename ValueType>
-WD_ALWAYS_INLINE ValueType& wdIdTableBase<IdType, ValueType>::Iterator::Value()
+NS_ALWAYS_INLINE ValueType& nsIdTableBase<IdType, ValueType>::Iterator::Value()
 {
   return this->m_IdTable.m_pEntries[this->m_CurrentIndex].value;
 }
 
 
-// ***** wdIdTableBase *****
+// ***** nsIdTableBase *****
 
 template <typename IdType, typename ValueType>
-wdIdTableBase<IdType, ValueType>::wdIdTableBase(wdAllocatorBase* pAllocator)
+nsIdTableBase<IdType, ValueType>::nsIdTableBase(nsAllocator* pAllocator)
 {
   m_pEntries = nullptr;
   m_Count = 0;
@@ -97,7 +97,7 @@ wdIdTableBase<IdType, ValueType>::wdIdTableBase(wdAllocatorBase* pAllocator)
 }
 
 template <typename IdType, typename ValueType>
-wdIdTableBase<IdType, ValueType>::wdIdTableBase(const wdIdTableBase<IdType, ValueType>& other, wdAllocatorBase* pAllocator)
+nsIdTableBase<IdType, ValueType>::nsIdTableBase(const nsIdTableBase<IdType, ValueType>& other, nsAllocator* pAllocator)
 {
   m_pEntries = nullptr;
   m_Count = 0;
@@ -110,22 +110,22 @@ wdIdTableBase<IdType, ValueType>::wdIdTableBase(const wdIdTableBase<IdType, Valu
 }
 
 template <typename IdType, typename ValueType>
-wdIdTableBase<IdType, ValueType>::~wdIdTableBase()
+nsIdTableBase<IdType, ValueType>::~nsIdTableBase()
 {
   for (IndexType i = 0; i < m_Capacity; ++i)
   {
     if (m_pEntries[i].id.m_InstanceIndex == i)
     {
-      wdMemoryUtils::Destruct(&m_pEntries[i].value, 1);
+      nsMemoryUtils::Destruct(&m_pEntries[i].value, 1);
     }
   }
 
-  WD_DELETE_RAW_BUFFER(m_pAllocator, m_pEntries);
+  NS_DELETE_RAW_BUFFER(m_pAllocator, m_pEntries);
   m_Capacity = 0;
 }
 
 template <typename IdType, typename ValueType>
-void wdIdTableBase<IdType, ValueType>::operator=(const wdIdTableBase<IdType, ValueType>& rhs)
+void nsIdTableBase<IdType, ValueType>::operator=(const nsIdTableBase<IdType, ValueType>& rhs)
 {
   Clear();
   Reserve(rhs.m_Capacity);
@@ -137,7 +137,7 @@ void wdIdTableBase<IdType, ValueType>::operator=(const wdIdTableBase<IdType, Val
     entry.id = rhs.m_pEntries[i].id;
     if (entry.id.m_InstanceIndex == i)
     {
-      wdMemoryUtils::CopyConstruct(&entry.value, rhs.m_pEntries[i].value, 1);
+      nsMemoryUtils::CopyConstruct(&entry.value, rhs.m_pEntries[i].value, 1);
     }
   }
 
@@ -146,18 +146,18 @@ void wdIdTableBase<IdType, ValueType>::operator=(const wdIdTableBase<IdType, Val
 }
 
 template <typename IdType, typename ValueType>
-void wdIdTableBase<IdType, ValueType>::Reserve(IndexType capacity)
+void nsIdTableBase<IdType, ValueType>::Reserve(IndexType capacity)
 {
   if (m_Capacity >= capacity + CAPACITY_ALIGNMENT)
     return;
 
-  const wdUInt64 uiCurCap64 = static_cast<wdUInt64>(this->m_Capacity);
-  wdUInt64 uiNewCapacity64 = uiCurCap64 + (uiCurCap64 / 2);
+  const nsUInt64 uiCurCap64 = static_cast<nsUInt64>(this->m_Capacity);
+  nsUInt64 uiNewCapacity64 = uiCurCap64 + (uiCurCap64 / 2);
 
-  uiNewCapacity64 = wdMath::Max<wdUInt64>(uiNewCapacity64, capacity + CAPACITY_ALIGNMENT);
+  uiNewCapacity64 = nsMath::Max<nsUInt64>(uiNewCapacity64, capacity + CAPACITY_ALIGNMENT);
 
   // the maximum value must leave room for the capacity alignment computation below (without overflowing the 32 bit range)
-  uiNewCapacity64 = wdMath::Min<wdUInt64>(uiNewCapacity64, 0xFFFFFFFFllu - (CAPACITY_ALIGNMENT - 1));
+  uiNewCapacity64 = nsMath::Min<nsUInt64>(uiNewCapacity64, 0xFFFFFFFFllu - (CAPACITY_ALIGNMENT - 1));
 
   uiNewCapacity64 = (uiNewCapacity64 + (CAPACITY_ALIGNMENT - 1)) & ~(CAPACITY_ALIGNMENT - 1);
 
@@ -165,19 +165,19 @@ void wdIdTableBase<IdType, ValueType>::Reserve(IndexType capacity)
 }
 
 template <typename IdType, typename ValueType>
-WD_ALWAYS_INLINE typename wdIdTableBase<IdType, ValueType>::IndexType wdIdTableBase<IdType, ValueType>::GetCount() const
+NS_ALWAYS_INLINE typename nsIdTableBase<IdType, ValueType>::IndexType nsIdTableBase<IdType, ValueType>::GetCount() const
 {
   return m_Count;
 }
 
 template <typename IdType, typename ValueType>
-WD_ALWAYS_INLINE bool wdIdTableBase<IdType, ValueType>::IsEmpty() const
+NS_ALWAYS_INLINE bool nsIdTableBase<IdType, ValueType>::IsEmpty() const
 {
   return m_Count == 0;
 }
 
 template <typename IdType, typename ValueType>
-void wdIdTableBase<IdType, ValueType>::Clear()
+void nsIdTableBase<IdType, ValueType>::Clear()
 {
   for (IndexType i = 0; i < m_Capacity; ++i)
   {
@@ -185,7 +185,7 @@ void wdIdTableBase<IdType, ValueType>::Clear()
 
     if (entry.id.m_InstanceIndex == i)
     {
-      wdMemoryUtils::Destruct(&entry.value, 1);
+      nsMemoryUtils::Destruct(&entry.value, 1);
       ++entry.id.m_Generation;
     }
 
@@ -198,7 +198,7 @@ void wdIdTableBase<IdType, ValueType>::Clear()
 }
 
 template <typename IdType, typename ValueType>
-IdType wdIdTableBase<IdType, ValueType>::Insert(const ValueType& value)
+IdType nsIdTableBase<IdType, ValueType>::Insert(const ValueType& value)
 {
   Reserve(m_Count + 1);
 
@@ -208,7 +208,7 @@ IdType wdIdTableBase<IdType, ValueType>::Insert(const ValueType& value)
   m_FreelistDequeue = entry.id.m_InstanceIndex;
   entry.id.m_InstanceIndex = static_cast<decltype(entry.id.m_InstanceIndex)>(uiNewIndex);
 
-  wdMemoryUtils::CopyConstruct(&entry.value, value, 1);
+  nsMemoryUtils::CopyConstruct(&entry.value, value, 1);
 
   ++m_Count;
 
@@ -216,7 +216,7 @@ IdType wdIdTableBase<IdType, ValueType>::Insert(const ValueType& value)
 }
 
 template <typename IdType, typename ValueType>
-IdType wdIdTableBase<IdType, ValueType>::Insert(ValueType&& value)
+IdType nsIdTableBase<IdType, ValueType>::Insert(ValueType&& value)
 {
   Reserve(m_Count + 1);
 
@@ -226,7 +226,7 @@ IdType wdIdTableBase<IdType, ValueType>::Insert(ValueType&& value)
   m_FreelistDequeue = entry.id.m_InstanceIndex;
   entry.id.m_InstanceIndex = static_cast<decltype(entry.id.m_InstanceIndex)>(uiNewIndex);
 
-  wdMemoryUtils::MoveConstruct<ValueType>(&entry.value, std::move(value));
+  nsMemoryUtils::MoveConstruct<ValueType>(&entry.value, std::move(value));
 
   ++m_Count;
 
@@ -234,7 +234,7 @@ IdType wdIdTableBase<IdType, ValueType>::Insert(ValueType&& value)
 }
 
 template <typename IdType, typename ValueType>
-bool wdIdTableBase<IdType, ValueType>::Remove(const IdType id, ValueType* out_pOldValue /*= nullptr*/)
+bool nsIdTableBase<IdType, ValueType>::Remove(const IdType id, ValueType* out_pOldValue /*= nullptr*/)
 {
   if (m_Capacity <= id.m_InstanceIndex)
     return false;
@@ -247,7 +247,7 @@ bool wdIdTableBase<IdType, ValueType>::Remove(const IdType id, ValueType* out_pO
   if (out_pOldValue != nullptr)
     *out_pOldValue = std::move(m_pEntries[uiIndex].value);
 
-  wdMemoryUtils::Destruct(&entry.value, 1);
+  nsMemoryUtils::Destruct(&entry.value, 1);
 
   entry.id.m_InstanceIndex = m_pEntries[m_FreelistEnqueue].id.m_InstanceIndex;
   ++entry.id.m_Generation;
@@ -264,7 +264,7 @@ bool wdIdTableBase<IdType, ValueType>::Remove(const IdType id, ValueType* out_pO
 }
 
 template <typename IdType, typename ValueType>
-WD_FORCE_INLINE bool wdIdTableBase<IdType, ValueType>::TryGetValue(const IdType id, ValueType& out_value) const
+NS_FORCE_INLINE bool nsIdTableBase<IdType, ValueType>::TryGetValue(const IdType id, ValueType& out_value) const
 {
   const IndexType index = id.m_InstanceIndex;
   if (index < m_Capacity && m_pEntries[index].id.IsIndexAndGenerationEqual(id))
@@ -276,7 +276,7 @@ WD_FORCE_INLINE bool wdIdTableBase<IdType, ValueType>::TryGetValue(const IdType 
 }
 
 template <typename IdType, typename ValueType>
-WD_FORCE_INLINE bool wdIdTableBase<IdType, ValueType>::TryGetValue(const IdType id, ValueType*& out_pValue) const
+NS_FORCE_INLINE bool nsIdTableBase<IdType, ValueType>::TryGetValue(const IdType id, ValueType*& out_pValue) const
 {
   const IndexType index = id.m_InstanceIndex;
   if (index < m_Capacity && m_pEntries[index].id.IsIndexAndGenerationEqual(id))
@@ -288,72 +288,69 @@ WD_FORCE_INLINE bool wdIdTableBase<IdType, ValueType>::TryGetValue(const IdType 
 }
 
 template <typename IdType, typename ValueType>
-WD_FORCE_INLINE const ValueType& wdIdTableBase<IdType, ValueType>::operator[](const IdType id) const
+NS_FORCE_INLINE const ValueType& nsIdTableBase<IdType, ValueType>::operator[](const IdType id) const
 {
-  WD_ASSERT_DEV(id.m_InstanceIndex < m_Capacity, "Out of bounds access. Table has {0} elements, trying to access element at index {1}.",
+  NS_ASSERT_DEBUG(id.m_InstanceIndex < m_Capacity, "Out of bounds access. Table has {0} elements, trying to access element at index {1}.",
     m_Capacity, id.m_InstanceIndex);
   const Entry& entry = m_pEntries[id.m_InstanceIndex];
-  WD_ASSERT_DEV(entry.id.IsIndexAndGenerationEqual(id),
-    "Stale access. Trying to access a value (generation: {0}) that has been removed and replaced by a new value (generation: {1})",
-    entry.id.m_Generation, id.m_Generation);
+  NS_ASSERT_DEBUG(entry.id.IsIndexAndGenerationEqual(id), "Stale access. Trying to access a value (generation: {0}) that has been removed and replaced by a new value (generation: {1})", entry.id.m_Generation, id.m_Generation);
 
   return entry.value;
 }
 
 template <typename IdType, typename ValueType>
-WD_FORCE_INLINE ValueType& wdIdTableBase<IdType, ValueType>::operator[](const IdType id)
+NS_FORCE_INLINE ValueType& nsIdTableBase<IdType, ValueType>::operator[](const IdType id)
 {
-  WD_ASSERT_DEV(id.m_InstanceIndex < m_Capacity, "Out of bounds access. Table has {0} elements, trying to access element at index {1}.",
-    m_Capacity, id.m_InstanceIndex);
+  NS_ASSERT_DEBUG(id.m_InstanceIndex < m_Capacity, "Out of bounds access. Table has {0} elements, trying to access element at index {1}.", m_Capacity, id.m_InstanceIndex);
+
   Entry& entry = m_pEntries[id.m_InstanceIndex];
-  WD_ASSERT_DEV(entry.id.IsIndexAndGenerationEqual(id),
-    "Stale access. Trying to access a value (generation: {0}) that has been removed and replaced by a new value (generation: {1})",
-    static_cast<int>(entry.id.m_Generation), id.m_Generation);
+
+  NS_ASSERT_DEBUG(entry.id.IsIndexAndGenerationEqual(id), "Stale access. Trying to access a value (generation: {0}) that has been removed and replaced by a new value (generation: {1})", static_cast<int>(entry.id.m_Generation), id.m_Generation);
 
   return entry.value;
 }
 
 template <typename IdType, typename ValueType>
-WD_FORCE_INLINE const ValueType& wdIdTableBase<IdType, ValueType>::GetValueUnchecked(const IndexType index) const
+NS_FORCE_INLINE const ValueType& nsIdTableBase<IdType, ValueType>::GetValueUnchecked(const IndexType index) const
 {
-  WD_ASSERT_DEV(index < m_Capacity, "Out of bounds access. Table has {0} elements, trying to access element at index {1}.", m_Capacity, index);
+  NS_ASSERT_DEBUG(index < m_Capacity, "Out of bounds access. Table has {0} elements, trying to access element at index {1}.", m_Capacity, index);
   return m_pEntries[index].value;
 }
 
 template <typename IdType, typename ValueType>
-WD_FORCE_INLINE ValueType& wdIdTableBase<IdType, ValueType>::GetValueUnchecked(const IndexType index)
+NS_FORCE_INLINE ValueType& nsIdTableBase<IdType, ValueType>::GetValueUnchecked(const IndexType index)
 {
-  WD_ASSERT_DEV(index < m_Capacity, "Out of bounds access. Table has {0} elements, trying to access element at index {1}.", m_Capacity, index);
+  NS_ASSERT_DEBUG(index < m_Capacity, "Out of bounds access. Table has {0} elements, trying to access element at index {1}.", m_Capacity, index);
   return m_pEntries[index].value;
 }
 
 template <typename IdType, typename ValueType>
-WD_FORCE_INLINE bool wdIdTableBase<IdType, ValueType>::Contains(const IdType id) const
+NS_FORCE_INLINE bool nsIdTableBase<IdType, ValueType>::Contains(const IdType id) const
 {
   const IndexType index = id.m_InstanceIndex;
   return index < m_Capacity && m_pEntries[index].id.IsIndexAndGenerationEqual(id);
 }
 
 template <typename IdType, typename ValueType>
-WD_ALWAYS_INLINE typename wdIdTableBase<IdType, ValueType>::Iterator wdIdTableBase<IdType, ValueType>::GetIterator()
+NS_ALWAYS_INLINE typename nsIdTableBase<IdType, ValueType>::Iterator nsIdTableBase<IdType, ValueType>::GetIterator()
 {
   return Iterator(*this);
 }
 
 template <typename IdType, typename ValueType>
-WD_ALWAYS_INLINE typename wdIdTableBase<IdType, ValueType>::ConstIterator wdIdTableBase<IdType, ValueType>::GetIterator() const
+NS_ALWAYS_INLINE typename nsIdTableBase<IdType, ValueType>::ConstIterator nsIdTableBase<IdType, ValueType>::GetIterator() const
 {
   return ConstIterator(*this);
 }
 
 template <typename IdType, typename ValueType>
-WD_ALWAYS_INLINE wdAllocatorBase* wdIdTableBase<IdType, ValueType>::GetAllocator() const
+NS_ALWAYS_INLINE nsAllocator* nsIdTableBase<IdType, ValueType>::GetAllocator() const
 {
   return m_pAllocator;
 }
 
 template <typename IdType, typename ValueType>
-bool wdIdTableBase<IdType, ValueType>::IsFreelistValid() const
+bool nsIdTableBase<IdType, ValueType>::IsFreelistValid() const
 {
   if (m_pEntries == nullptr)
     return true;
@@ -373,9 +370,9 @@ bool wdIdTableBase<IdType, ValueType>::IsFreelistValid() const
 
 // private methods
 template <typename IdType, typename ValueType>
-void wdIdTableBase<IdType, ValueType>::SetCapacity(IndexType uiCapacity)
+void nsIdTableBase<IdType, ValueType>::SetCapacity(IndexType uiCapacity)
 {
-  Entry* pNewEntries = WD_NEW_RAW_BUFFER(m_pAllocator, Entry, (size_t)uiCapacity);
+  Entry* pNewEntries = NS_NEW_RAW_BUFFER(m_pAllocator, Entry, (size_t)uiCapacity);
 
   for (IndexType i = 0; i < m_Capacity; ++i)
   {
@@ -383,11 +380,11 @@ void wdIdTableBase<IdType, ValueType>::SetCapacity(IndexType uiCapacity)
 
     if (m_pEntries[i].id.m_InstanceIndex == i)
     {
-      wdMemoryUtils::RelocateConstruct(&pNewEntries[i].value, &m_pEntries[i].value, 1);
+      nsMemoryUtils::RelocateConstruct(&pNewEntries[i].value, &m_pEntries[i].value, 1);
     }
   }
 
-  WD_DELETE_RAW_BUFFER(m_pAllocator, m_pEntries);
+  NS_DELETE_RAW_BUFFER(m_pAllocator, m_pEntries);
   m_pEntries = pNewEntries;
 
   InitializeFreelist(m_Capacity, uiCapacity);
@@ -395,7 +392,7 @@ void wdIdTableBase<IdType, ValueType>::SetCapacity(IndexType uiCapacity)
 }
 
 template <typename IdType, typename ValueType>
-inline void wdIdTableBase<IdType, ValueType>::InitializeFreelist(IndexType uiStart, IndexType uiEnd)
+inline void nsIdTableBase<IdType, ValueType>::InitializeFreelist(IndexType uiStart, IndexType uiEnd)
 {
   for (IndexType i = uiStart; i < uiEnd; ++i)
   {
@@ -408,37 +405,37 @@ inline void wdIdTableBase<IdType, ValueType>::InitializeFreelist(IndexType uiSta
 
 
 template <typename IdType, typename V, typename A>
-wdIdTable<IdType, V, A>::wdIdTable()
-  : wdIdTableBase<IdType, V>(A::GetAllocator())
+nsIdTable<IdType, V, A>::nsIdTable()
+  : nsIdTableBase<IdType, V>(A::GetAllocator())
 {
 }
 
 template <typename IdType, typename V, typename A>
-wdIdTable<IdType, V, A>::wdIdTable(wdAllocatorBase* pAllocator)
-  : wdIdTableBase<IdType, V>(pAllocator)
+nsIdTable<IdType, V, A>::nsIdTable(nsAllocator* pAllocator)
+  : nsIdTableBase<IdType, V>(pAllocator)
 {
 }
 
 template <typename IdType, typename V, typename A>
-wdIdTable<IdType, V, A>::wdIdTable(const wdIdTable<IdType, V, A>& other)
-  : wdIdTableBase<IdType, V>(other, A::GetAllocator())
+nsIdTable<IdType, V, A>::nsIdTable(const nsIdTable<IdType, V, A>& other)
+  : nsIdTableBase<IdType, V>(other, A::GetAllocator())
 {
 }
 
 template <typename IdType, typename V, typename A>
-wdIdTable<IdType, V, A>::wdIdTable(const wdIdTableBase<IdType, V>& other)
-  : wdIdTableBase<IdType, V>(other, A::GetAllocator())
+nsIdTable<IdType, V, A>::nsIdTable(const nsIdTableBase<IdType, V>& other)
+  : nsIdTableBase<IdType, V>(other, A::GetAllocator())
 {
 }
 
 template <typename IdType, typename V, typename A>
-void wdIdTable<IdType, V, A>::operator=(const wdIdTable<IdType, V, A>& rhs)
+void nsIdTable<IdType, V, A>::operator=(const nsIdTable<IdType, V, A>& rhs)
 {
-  wdIdTableBase<IdType, V>::operator=(rhs);
+  nsIdTableBase<IdType, V>::operator=(rhs);
 }
 
 template <typename IdType, typename V, typename A>
-void wdIdTable<IdType, V, A>::operator=(const wdIdTableBase<IdType, V>& rhs)
+void nsIdTable<IdType, V, A>::operator=(const nsIdTableBase<IdType, V>& rhs)
 {
-  wdIdTableBase<IdType, V>::operator=(rhs);
+  nsIdTableBase<IdType, V>::operator=(rhs);
 }

@@ -1,0 +1,4 @@
+/* Example of a gradient background */
+body {
+    background-image: linear-gradient(to bottom, #ff0000, #00ff00);
+}

@@ -1,7 +1,7 @@
 
 #include <Foundation/IO/Stream.h>
 
-namespace wdInternal
+namespace nsInternal
 {
   // This internal helper is needed to differentiate between reference and pointer which is not possible with regular function overloading
   // in this case.
@@ -16,92 +16,92 @@ namespace wdInternal
   {
     static const T* GetAddress(const T* pObj) { return pObj; }
   };
-} // namespace wdInternal
+} // namespace nsInternal
 
 template <typename T>
-WD_ALWAYS_INLINE wdResult wdDeduplicationWriteContext::WriteObject(wdStreamWriter& inout_stream, const T& obj)
+NS_ALWAYS_INLINE nsResult nsDeduplicationWriteContext::WriteObject(nsStreamWriter& inout_stream, const T& obj)
 {
-  return WriteObjectInternal(inout_stream, wdInternal::WriteObjectHelper<T>::GetAddress(obj));
+  return WriteObjectInternal(inout_stream, nsInternal::WriteObjectHelper<T>::GetAddress(obj));
 }
 
 template <typename T>
-WD_ALWAYS_INLINE wdResult wdDeduplicationWriteContext::WriteObject(wdStreamWriter& inout_stream, const wdSharedPtr<T>& pObject)
+NS_ALWAYS_INLINE nsResult nsDeduplicationWriteContext::WriteObject(nsStreamWriter& inout_stream, const nsSharedPtr<T>& pObject)
 {
   return WriteObjectInternal(inout_stream, pObject.Borrow());
 }
 
 template <typename T>
-WD_ALWAYS_INLINE wdResult wdDeduplicationWriteContext::WriteObject(wdStreamWriter& inout_stream, const wdUniquePtr<T>& pObject)
+NS_ALWAYS_INLINE nsResult nsDeduplicationWriteContext::WriteObject(nsStreamWriter& inout_stream, const nsUniquePtr<T>& pObject)
 {
   return WriteObjectInternal(inout_stream, pObject.Borrow());
 }
 
 template <typename ArrayType, typename ValueType>
-wdResult wdDeduplicationWriteContext::WriteArray(wdStreamWriter& inout_stream, const wdArrayBase<ValueType, ArrayType>& array)
+nsResult nsDeduplicationWriteContext::WriteArray(nsStreamWriter& inout_stream, const nsArrayBase<ValueType, ArrayType>& array)
 {
-  const wdUInt64 uiCount = array.GetCount();
-  WD_SUCCEED_OR_RETURN(inout_stream.WriteQWordValue(&uiCount));
+  const nsUInt64 uiCount = array.GetCount();
+  NS_SUCCEED_OR_RETURN(inout_stream.WriteQWordValue(&uiCount));
 
-  for (wdUInt32 i = 0; i < static_cast<wdUInt32>(uiCount); ++i)
+  for (nsUInt32 i = 0; i < static_cast<nsUInt32>(uiCount); ++i)
   {
-    WD_SUCCEED_OR_RETURN(WriteObject(inout_stream, array[i]));
+    NS_SUCCEED_OR_RETURN(WriteObject(inout_stream, array[i]));
   }
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
 template <typename KeyType, typename Comparer>
-wdResult wdDeduplicationWriteContext::WriteSet(wdStreamWriter& inout_stream, const wdSetBase<KeyType, Comparer>& set)
+nsResult nsDeduplicationWriteContext::WriteSet(nsStreamWriter& inout_stream, const nsSetBase<KeyType, Comparer>& set)
 {
-  const wdUInt64 uiWriteSize = set.GetCount();
-  WD_SUCCEED_OR_RETURN(inout_stream.WriteQWordValue(&uiWriteSize));
+  const nsUInt64 uiWriteSize = set.GetCount();
+  NS_SUCCEED_OR_RETURN(inout_stream.WriteQWordValue(&uiWriteSize));
 
   for (const auto& item : set)
   {
-    WD_SUCCEED_OR_RETURN(WriteObject(inout_stream, item));
+    NS_SUCCEED_OR_RETURN(WriteObject(inout_stream, item));
   }
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
 template <typename KeyType, typename ValueType, typename Comparer>
-wdResult wdDeduplicationWriteContext::WriteMap(wdStreamWriter& inout_stream, const wdMapBase<KeyType, ValueType, Comparer>& map, WriteMapMode mode)
+nsResult nsDeduplicationWriteContext::WriteMap(nsStreamWriter& inout_stream, const nsMapBase<KeyType, ValueType, Comparer>& map, WriteMapMode mode)
 {
-  const wdUInt64 uiWriteSize = map.GetCount();
-  WD_SUCCEED_OR_RETURN(inout_stream.WriteQWordValue(&uiWriteSize));
+  const nsUInt64 uiWriteSize = map.GetCount();
+  NS_SUCCEED_OR_RETURN(inout_stream.WriteQWordValue(&uiWriteSize));
 
   if (mode == WriteMapMode::DedupKey)
   {
     for (auto It = map.GetIterator(); It.IsValid(); ++It)
     {
-      WD_SUCCEED_OR_RETURN(WriteObject(inout_stream, It.Key()));
-      WD_SUCCEED_OR_RETURN(wdStreamWriterUtil::Serialize<ValueType>(inout_stream, It.Value()));
+      NS_SUCCEED_OR_RETURN(WriteObject(inout_stream, It.Key()));
+      NS_SUCCEED_OR_RETURN(nsStreamWriterUtil::Serialize<ValueType>(inout_stream, It.Value()));
     }
   }
   else if (mode == WriteMapMode::DedupValue)
   {
     for (auto It = map.GetIterator(); It.IsValid(); ++It)
     {
-      WD_SUCCEED_OR_RETURN(wdStreamWriterUtil::Serialize<KeyType>(inout_stream, It.Key()));
-      WD_SUCCEED_OR_RETURN(WriteObject(inout_stream, It.Value()));
+      NS_SUCCEED_OR_RETURN(nsStreamWriterUtil::Serialize<KeyType>(inout_stream, It.Key()));
+      NS_SUCCEED_OR_RETURN(WriteObject(inout_stream, It.Value()));
     }
   }
   else
   {
     for (auto It = map.GetIterator(); It.IsValid(); ++It)
     {
-      WD_SUCCEED_OR_RETURN(WriteObject(inout_stream, It.Key()));
-      WD_SUCCEED_OR_RETURN(WriteObject(inout_stream, It.Value()));
+      NS_SUCCEED_OR_RETURN(WriteObject(inout_stream, It.Key()));
+      NS_SUCCEED_OR_RETURN(WriteObject(inout_stream, It.Value()));
     }
   }
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
 template <typename T>
-wdResult wdDeduplicationWriteContext::WriteObjectInternal(wdStreamWriter& stream, const T* pObject)
+nsResult nsDeduplicationWriteContext::WriteObjectInternal(nsStreamWriter& stream, const T* pObject)
 {
-  wdUInt32 uiIndex = wdInvalidIndex;
+  nsUInt32 uiIndex = nsInvalidIndex;
 
   if (pObject)
   {
@@ -113,7 +113,7 @@ wdResult wdDeduplicationWriteContext::WriteObjectInternal(wdStreamWriter& stream
       uiIndex = m_Objects.GetCount();
       m_Objects.Insert(pObject, uiIndex);
 
-      return wdStreamWriterUtil::Serialize<T>(stream, *pObject);
+      return nsStreamWriterUtil::Serialize<T>(stream, *pObject);
     }
     else
     {
@@ -123,8 +123,8 @@ wdResult wdDeduplicationWriteContext::WriteObjectInternal(wdStreamWriter& stream
   else
   {
     stream << false;
-    stream << wdInvalidIndex;
+    stream << nsInvalidIndex;
   }
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }

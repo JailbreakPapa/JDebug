@@ -2,7 +2,7 @@
 
 #include <Foundation/Math/Declarations.h>
 
-namespace wdMath
+namespace nsMath
 {
   /// \brief Returns the natural constant Pi.
   template <typename TYPE>
@@ -63,8 +63,8 @@ namespace wdMath
 
   /// \brief Returns the number of bits in the given type. Mostly useful for unsigned integer types.
   template <typename TYPE>
-  constexpr wdUInt32 NumBits();
-} // namespace wdMath
+  constexpr nsUInt32 NumBits();
+} // namespace nsMath
 
 
 #include <Foundation/Math/Implementation/Constants_inl.h>

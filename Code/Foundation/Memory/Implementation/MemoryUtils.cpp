@@ -1,12 +1,12 @@
 #include <Foundation/FoundationPCH.h>
 
-#if WD_ENABLED(WD_PLATFORM_WINDOWS)
+#if NS_ENABLED(NS_PLATFORM_WINDOWS)
 #  include <Foundation/Basics/Platform/Win/IncludeWindows.h>
 #endif
 
-void wdMemoryUtils::ReserveLower4GBAddressSpace()
+void nsMemoryUtils::ReserveLower4GBAddressSpace()
 {
-#if WD_ENABLED(WD_PLATFORM_WINDOWS) && WD_ENABLED(WD_PLATFORM_64BIT)
+#if NS_ENABLED(NS_PLATFORM_WINDOWS) && NS_ENABLED(NS_PLATFORM_64BIT)
   // The following code was taken from http://randomascii.wordpress.com/2012/02/14/64-bit-made-easy/
   // and adapted to our coding guidelines.
 
@@ -96,11 +96,8 @@ void wdMemoryUtils::ReserveLower4GBAddressSpace()
   // Print diagnostics showing how many allocations we had to make in
   // order to reserve all of low memory, typically less than 200.
   char buffer[1000];
-  sprintf_s(buffer, "Reserved %1.3f MB (%u vallocs, %u heap allocs) of low-memory.\n", uiTotalReservation / (1024 * 1024.0), (wdUInt32)uiNumVAllocs,
-    (wdUInt32)uiNumHeapAllocs);
+  nsStringUtils::snprintf(buffer, 1000, "Reserved %1.3f MB (%u vallocs, %u heap allocs) of low-memory.\n", uiTotalReservation / (1024 * 1024.0), (nsUInt32)uiNumVAllocs,
+    (nsUInt32)uiNumHeapAllocs);
   OutputDebugStringA(buffer);
 #endif
 }
-
-
-WD_STATICLINK_FILE(Foundation, Foundation_Memory_Implementation_MemoryUtils);

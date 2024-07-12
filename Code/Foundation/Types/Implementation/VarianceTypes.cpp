@@ -6,49 +6,49 @@
 #include <Foundation/Types/VariantTypeRegistry.h>
 
 // clang-format off
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdVarianceTypeBase, wdNoBase, 1, wdRTTINoAllocator)
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsVarianceTypeBase, nsNoBase, 1, nsRTTINoAllocator)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("Variance", m_fVariance)
+    NS_MEMBER_PROPERTY("Variance", m_fVariance)
   }
-    WD_END_PROPERTIES;
+    NS_END_PROPERTIES;
 }
-WD_END_STATIC_REFLECTED_TYPE;
+NS_END_STATIC_REFLECTED_TYPE;
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdVarianceTypeFloat, wdVarianceTypeBase, 1, wdRTTIDefaultAllocator<wdVarianceTypeFloat>)
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsVarianceTypeFloat, nsVarianceTypeBase, 1, nsRTTIDefaultAllocator<nsVarianceTypeFloat>)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("Value", m_Value)
+    NS_MEMBER_PROPERTY("Value", m_Value)
   }
-    WD_END_PROPERTIES;
+    NS_END_PROPERTIES;
 }
-WD_END_STATIC_REFLECTED_TYPE;
+NS_END_STATIC_REFLECTED_TYPE;
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdVarianceTypeTime, wdVarianceTypeBase, 1, wdRTTIDefaultAllocator<wdVarianceTypeTime>)
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsVarianceTypeTime, nsVarianceTypeBase, 1, nsRTTIDefaultAllocator<nsVarianceTypeTime>)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("Value", m_Value)
+    NS_MEMBER_PROPERTY("Value", m_Value)
   }
-    WD_END_PROPERTIES;
+    NS_END_PROPERTIES;
 }
-WD_END_STATIC_REFLECTED_TYPE;
+NS_END_STATIC_REFLECTED_TYPE;
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdVarianceTypeAngle, wdVarianceTypeBase, 1, wdRTTIDefaultAllocator<wdVarianceTypeAngle>)
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsVarianceTypeAngle, nsVarianceTypeBase, 1, nsRTTIDefaultAllocator<nsVarianceTypeAngle>)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("Value", m_Value)
+    NS_MEMBER_PROPERTY("Value", m_Value)
   }
-    WD_END_PROPERTIES;
+    NS_END_PROPERTIES;
 }
-WD_END_STATIC_REFLECTED_TYPE;
+NS_END_STATIC_REFLECTED_TYPE;
 // clang-format on
 
-WD_DEFINE_CUSTOM_VARIANT_TYPE(wdVarianceTypeFloat);
-WD_DEFINE_CUSTOM_VARIANT_TYPE(wdVarianceTypeTime);
-WD_DEFINE_CUSTOM_VARIANT_TYPE(wdVarianceTypeAngle);
+NS_DEFINE_CUSTOM_VARIANT_TYPE(nsVarianceTypeFloat);
+NS_DEFINE_CUSTOM_VARIANT_TYPE(nsVarianceTypeTime);
+NS_DEFINE_CUSTOM_VARIANT_TYPE(nsVarianceTypeAngle);
 
-WD_STATICLINK_FILE(Foundation, Foundation_Types_Implementation_VarianceTypes);
+NS_STATICLINK_FILE(Foundation, Foundation_Types_Implementation_VarianceTypes);

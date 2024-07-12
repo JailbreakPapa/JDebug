@@ -1,5 +1,5 @@
 #include <Foundation/FoundationInternal.h>
-WD_FOUNDATION_INTERNAL_HEADER
+NS_FOUNDATION_INTERNAL_HEADER
 
 #include <dlfcn.h>
 
@@ -7,17 +7,23 @@ WD_FOUNDATION_INTERNAL_HEADER
 #include <Foundation/IO/OSFile.h>
 #include <Foundation/Logging/Log.h>
 #include <Foundation/Strings/StringBuilder.h>
+#include <Foundation/System/Process.h>
 
-typedef void* wdPluginModule;
+using nsPluginModule = void*;
 
-void wdPlugin::GetPluginPaths(const char* szPluginName, wdStringBuilder& sOriginalFile, wdStringBuilder& sCopiedFile, wdUInt8 uiFileCopyNumber)
+bool nsPlugin::PlatformNeedsPluginCopy()
 {
-  sOriginalFile = wdOSFile::GetApplicationDirectory();
-  sOriginalFile.AppendPath(szPluginName);
+  return false;
+}
+
+void nsPlugin::GetPluginPaths(nsStringView sPluginName, nsStringBuilder& sOriginalFile, nsStringBuilder& sCopiedFile, nsUInt8 uiFileCopyNumber)
+{
+  sOriginalFile = nsOSFile::GetApplicationDirectory();
+  sOriginalFile.AppendPath(sPluginName);
   sOriginalFile.Append(".so");
 
-  sCopiedFile = wdOSFile::GetApplicationDirectory();
-  sCopiedFile.AppendPath(szPluginName);
+  sCopiedFile = nsOSFile::GetApplicationDirectory();
+  sCopiedFile.AppendPath(sPluginName);
 
   if (uiFileCopyNumber > 0)
     sCopiedFile.AppendFormat("{0}", uiFileCopyNumber);
@@ -25,24 +31,26 @@ void wdPlugin::GetPluginPaths(const char* szPluginName, wdStringBuilder& sOrigin
   sCopiedFile.Append(".loaded");
 }
 
-wdResult UnloadPluginModule(wdPluginModule& Module, const char* szPluginFile)
+nsResult UnloadPluginModule(nsPluginModule& Module, nsStringView sPluginFile)
 {
   if (dlclose(Module) != 0)
   {
-    wdLog::Error("Could not unload plugin '{0}'. Error {1}", szPluginFile, static_cast<const char*>(dlerror()));
-    return WD_FAILURE;
+    nsStringBuilder tmp;
+    nsLog::Error("Could not unload plugin '{0}'. Error {1}", sPluginFile.GetData(tmp), static_cast<const char*>(dlerror()));
+    return NS_FAILURE;
   }
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
-wdResult LoadPluginModule(const char* szFileToLoad, wdPluginModule& Module, const char* szPluginFile)
+nsResult LoadPluginModule(nsStringView sFileToLoad, nsPluginModule& Module, nsStringView sPluginFile)
 {
-  Module = dlopen(szFileToLoad, RTLD_NOW | RTLD_GLOBAL);
+  nsStringBuilder tmp;
+  Module = dlopen(sFileToLoad.GetData(tmp), RTLD_NOW | RTLD_GLOBAL);
   if (Module == nullptr)
   {
-    wdLog::Error("Could not load plugin '{0}'. Error {1}.\nSet the environment variable LD_DEBUG=all to get more information.", szPluginFile, static_cast<const char*>(dlerror()));
-    return WD_FAILURE;
+    nsLog::Error("Could not load plugin '{0}'. Error {1}.\nSet the environment variable LD_DEBUG=all to get more information.", sPluginFile.GetData(tmp), static_cast<const char*>(dlerror()));
+    return NS_FAILURE;
   }
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }

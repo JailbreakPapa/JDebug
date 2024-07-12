@@ -7,110 +7,110 @@
 #include <Foundation/Types/VarianceTypes.h>
 #include <Foundation/Types/VariantTypeRegistry.h>
 
-// wdAllocatorBase::Stats
+// nsAllocator::Stats
 
-void operator<<(wdStreamWriter& inout_stream, const wdAllocatorBase::Stats& rhs)
+void operator<<(nsStreamWriter& inout_stream, const nsAllocator::Stats& rhs)
 {
   inout_stream << rhs.m_uiNumAllocations;
   inout_stream << rhs.m_uiNumDeallocations;
   inout_stream << rhs.m_uiAllocationSize;
 }
 
-void operator>>(wdStreamReader& inout_stream, wdAllocatorBase::Stats& rhs)
+void operator>>(nsStreamReader& inout_stream, nsAllocator::Stats& rhs)
 {
   inout_stream >> rhs.m_uiNumAllocations;
   inout_stream >> rhs.m_uiNumDeallocations;
   inout_stream >> rhs.m_uiAllocationSize;
 }
 
-// wdTime
+// nsTime
 
-void operator<<(wdStreamWriter& inout_stream, wdTime value)
+void operator<<(nsStreamWriter& inout_stream, nsTime value)
 {
   inout_stream << value.GetSeconds();
 }
 
-void operator>>(wdStreamReader& inout_stream, wdTime& ref_value)
+void operator>>(nsStreamReader& inout_stream, nsTime& ref_value)
 {
   double d = 0;
   inout_stream.ReadQWordValue(&d).IgnoreResult();
 
-  ref_value = wdTime::Seconds(d);
+  ref_value = nsTime::MakeFromSeconds(d);
 }
 
-// wdUuid
+// nsUuid
 
-void operator<<(wdStreamWriter& inout_stream, const wdUuid& value)
+void operator<<(nsStreamWriter& inout_stream, const nsUuid& value)
 {
   inout_stream << value.m_uiHigh;
   inout_stream << value.m_uiLow;
 }
 
-void operator>>(wdStreamReader& inout_stream, wdUuid& ref_value)
+void operator>>(nsStreamReader& inout_stream, nsUuid& ref_value)
 {
   inout_stream >> ref_value.m_uiHigh;
   inout_stream >> ref_value.m_uiLow;
 }
 
-// wdHashedString
+// nsHashedString
 
-void operator<<(wdStreamWriter& inout_stream, const wdHashedString& sValue)
+void operator<<(nsStreamWriter& inout_stream, const nsHashedString& sValue)
 {
   inout_stream.WriteString(sValue.GetView()).AssertSuccess();
 }
 
-void operator>>(wdStreamReader& inout_stream, wdHashedString& ref_sValue)
+void operator>>(nsStreamReader& inout_stream, nsHashedString& ref_sValue)
 {
-  wdStringBuilder sTemp;
+  nsStringBuilder sTemp;
   inout_stream >> sTemp;
   ref_sValue.Assign(sTemp);
 }
 
-// wdTempHashedString
+// nsTempHashedString
 
-void operator<<(wdStreamWriter& inout_stream, const wdTempHashedString& sValue)
+void operator<<(nsStreamWriter& inout_stream, const nsTempHashedString& sValue)
 {
-  inout_stream << (wdUInt64)sValue.GetHash();
+  inout_stream << (nsUInt64)sValue.GetHash();
 }
 
-void operator>>(wdStreamReader& inout_stream, wdTempHashedString& ref_sValue)
+void operator>>(nsStreamReader& inout_stream, nsTempHashedString& ref_sValue)
 {
-  wdUInt64 hash;
+  nsUInt64 hash;
   inout_stream >> hash;
-  ref_sValue = wdTempHashedString(hash);
+  ref_sValue = nsTempHashedString(hash);
 }
 
-// wdVariant
+// nsVariant
 
 struct WriteValueFunc
 {
   template <typename T>
-  WD_ALWAYS_INLINE void operator()()
+  NS_ALWAYS_INLINE void operator()()
   {
     (*m_pStream) << m_pValue->Get<T>();
   }
 
-  wdStreamWriter* m_pStream;
-  const wdVariant* m_pValue;
+  nsStreamWriter* m_pStream;
+  const nsVariant* m_pValue;
 };
 
 template <>
-WD_FORCE_INLINE void WriteValueFunc::operator()<wdVariantArray>()
+NS_FORCE_INLINE void WriteValueFunc::operator()<nsVariantArray>()
 {
-  const wdVariantArray& values = m_pValue->Get<wdVariantArray>();
-  const wdUInt32 iCount = values.GetCount();
+  const nsVariantArray& values = m_pValue->Get<nsVariantArray>();
+  const nsUInt32 iCount = values.GetCount();
   (*m_pStream) << iCount;
-  for (wdUInt32 i = 0; i < iCount; i++)
+  for (nsUInt32 i = 0; i < iCount; i++)
   {
     (*m_pStream) << values[i];
   }
 }
 
 template <>
-WD_FORCE_INLINE void WriteValueFunc::operator()<wdVariantDictionary>()
+NS_FORCE_INLINE void WriteValueFunc::operator()<nsVariantDictionary>()
 {
-  const wdVariantDictionary& values = m_pValue->Get<wdVariantDictionary>();
-  const wdUInt32 iCount = values.GetCount();
+  const nsVariantDictionary& values = m_pValue->Get<nsVariantDictionary>();
+  const nsUInt32 iCount = values.GetCount();
   (*m_pStream) << iCount;
   for (auto it = values.GetIterator(); it.IsValid(); ++it)
   {
@@ -120,38 +120,38 @@ WD_FORCE_INLINE void WriteValueFunc::operator()<wdVariantDictionary>()
 }
 
 template <>
-inline void WriteValueFunc::operator()<wdTypedPointer>()
+inline void WriteValueFunc::operator()<nsTypedPointer>()
 {
-  WD_REPORT_FAILURE("Type 'wdReflectedClass*' not supported in serialization.");
+  NS_REPORT_FAILURE("Type 'nsReflectedClass*' not supported in serialization.");
 }
 
 template <>
-inline void WriteValueFunc::operator()<wdTypedObject>()
+inline void WriteValueFunc::operator()<nsTypedObject>()
 {
-  wdTypedObject obj = m_pValue->Get<wdTypedObject>();
-  if (const wdVariantTypeInfo* pTypeInfo = wdVariantTypeRegistry::GetSingleton()->FindVariantTypeInfo(obj.m_pType))
+  nsTypedObject obj = m_pValue->Get<nsTypedObject>();
+  if (const nsVariantTypeInfo* pTypeInfo = nsVariantTypeRegistry::GetSingleton()->FindVariantTypeInfo(obj.m_pType))
   {
     (*m_pStream) << obj.m_pType->GetTypeName();
     pTypeInfo->Serialize(*m_pStream, obj.m_pObject);
   }
   else
   {
-    WD_REPORT_FAILURE("The type '{0}' was declared but not defined, add WD_DEFINE_CUSTOM_VARIANT_TYPE({0}); to a cpp to enable serialization of this variant type.", obj.m_pType->GetTypeName());
+    NS_REPORT_FAILURE("The type '{0}' was declared but not defined, add NS_DEFINE_CUSTOM_VARIANT_TYPE({0}); to a cpp to enable serialization of this variant type.", obj.m_pType->GetTypeName());
   }
 }
 
 template <>
-WD_FORCE_INLINE void WriteValueFunc::operator()<wdStringView>()
+NS_FORCE_INLINE void WriteValueFunc::operator()<nsStringView>()
 {
-  wdStringBuilder s = m_pValue->Get<wdStringView>();
+  nsStringBuilder s = m_pValue->Get<nsStringView>();
   (*m_pStream) << s;
 }
 
 template <>
-WD_FORCE_INLINE void WriteValueFunc::operator()<wdDataBuffer>()
+NS_FORCE_INLINE void WriteValueFunc::operator()<nsDataBuffer>()
 {
-  const wdDataBuffer& data = m_pValue->Get<wdDataBuffer>();
-  const wdUInt32 iCount = data.GetCount();
+  const nsDataBuffer& data = m_pValue->Get<nsDataBuffer>();
+  const nsUInt32 iCount = data.GetCount();
   (*m_pStream) << iCount;
   m_pStream->WriteBytes(data.GetData(), data.GetCount()).AssertSuccess();
 }
@@ -159,25 +159,25 @@ WD_FORCE_INLINE void WriteValueFunc::operator()<wdDataBuffer>()
 struct ReadValueFunc
 {
   template <typename T>
-  WD_FORCE_INLINE void operator()()
+  NS_FORCE_INLINE void operator()()
   {
     T value;
     (*m_pStream) >> value;
     *m_pValue = value;
   }
 
-  wdStreamReader* m_pStream;
-  wdVariant* m_pValue;
+  nsStreamReader* m_pStream;
+  nsVariant* m_pValue;
 };
 
 template <>
-WD_FORCE_INLINE void ReadValueFunc::operator()<wdVariantArray>()
+NS_FORCE_INLINE void ReadValueFunc::operator()<nsVariantArray>()
 {
-  wdVariantArray values;
-  wdUInt32 iCount;
+  nsVariantArray values;
+  nsUInt32 iCount;
   (*m_pStream) >> iCount;
   values.SetCount(iCount);
-  for (wdUInt32 i = 0; i < iCount; i++)
+  for (nsUInt32 i = 0; i < iCount; i++)
   {
     (*m_pStream) >> values[i];
   }
@@ -185,15 +185,15 @@ WD_FORCE_INLINE void ReadValueFunc::operator()<wdVariantArray>()
 }
 
 template <>
-WD_FORCE_INLINE void ReadValueFunc::operator()<wdVariantDictionary>()
+NS_FORCE_INLINE void ReadValueFunc::operator()<nsVariantDictionary>()
 {
-  wdVariantDictionary values;
-  wdUInt32 iCount;
+  nsVariantDictionary values;
+  nsUInt32 iCount;
   (*m_pStream) >> iCount;
-  for (wdUInt32 i = 0; i < iCount; i++)
+  for (nsUInt32 i = 0; i < iCount; i++)
   {
-    wdString key;
-    wdVariant value;
+    nsString key;
+    nsVariant value;
     (*m_pStream) >> key;
     (*m_pStream) >> value;
     values.Insert(key, value);
@@ -202,38 +202,38 @@ WD_FORCE_INLINE void ReadValueFunc::operator()<wdVariantDictionary>()
 }
 
 template <>
-inline void ReadValueFunc::operator()<wdTypedPointer>()
+inline void ReadValueFunc::operator()<nsTypedPointer>()
 {
-  WD_REPORT_FAILURE("Type 'wdTypedPointer' not supported in serialization.");
+  NS_REPORT_FAILURE("Type 'nsTypedPointer' not supported in serialization.");
 }
 
 template <>
-inline void ReadValueFunc::operator()<wdTypedObject>()
+inline void ReadValueFunc::operator()<nsTypedObject>()
 {
-  wdStringBuilder sType;
+  nsStringBuilder sType;
   (*m_pStream) >> sType;
-  const wdRTTI* pType = wdRTTI::FindTypeByName(sType);
-  WD_ASSERT_DEV(pType, "The type '{0}' could not be found.", sType);
-  const wdVariantTypeInfo* pTypeInfo = wdVariantTypeRegistry::GetSingleton()->FindVariantTypeInfo(pType);
-  WD_ASSERT_DEV(pTypeInfo, "The type '{0}' was declared but not defined, add WD_DEFINE_CUSTOM_VARIANT_TYPE({0}); to a cpp to enable serialization of this variant type.", sType);
-  WD_MSVC_ANALYSIS_ASSUME(pType != nullptr);
-  WD_MSVC_ANALYSIS_ASSUME(pTypeInfo != nullptr);
+  const nsRTTI* pType = nsRTTI::FindTypeByName(sType);
+  NS_ASSERT_DEV(pType, "The type '{0}' could not be found.", sType);
+  const nsVariantTypeInfo* pTypeInfo = nsVariantTypeRegistry::GetSingleton()->FindVariantTypeInfo(pType);
+  NS_ASSERT_DEV(pTypeInfo, "The type '{0}' was declared but not defined, add NS_DEFINE_CUSTOM_VARIANT_TYPE({0}); to a cpp to enable serialization of this variant type.", sType);
+  NS_MSVC_ANALYSIS_ASSUME(pType != nullptr);
+  NS_MSVC_ANALYSIS_ASSUME(pTypeInfo != nullptr);
   void* pObject = pType->GetAllocator()->Allocate<void>();
   pTypeInfo->Deserialize(*m_pStream, pObject);
   m_pValue->MoveTypedObject(pObject, pType);
 }
 
 template <>
-inline void ReadValueFunc::operator()<wdStringView>()
+inline void ReadValueFunc::operator()<nsStringView>()
 {
-  WD_REPORT_FAILURE("Type 'wdStringView' not supported in serialization.");
+  NS_REPORT_FAILURE("Type 'nsStringView' not supported in serialization.");
 }
 
 template <>
-WD_FORCE_INLINE void ReadValueFunc::operator()<wdDataBuffer>()
+NS_FORCE_INLINE void ReadValueFunc::operator()<nsDataBuffer>()
 {
-  wdDataBuffer data;
-  wdUInt32 iCount;
+  nsDataBuffer data;
+  nsUInt32 iCount;
   (*m_pStream) >> iCount;
   data.SetCountUninitialized(iCount);
 
@@ -241,101 +241,100 @@ WD_FORCE_INLINE void ReadValueFunc::operator()<wdDataBuffer>()
   *m_pValue = data;
 }
 
-void operator<<(wdStreamWriter& inout_stream, const wdVariant& value)
+void operator<<(nsStreamWriter& inout_stream, const nsVariant& value)
 {
-  wdUInt8 variantVersion = (wdUInt8)wdGetStaticRTTI<wdVariant>()->GetTypeVersion();
+  nsUInt8 variantVersion = (nsUInt8)nsGetStaticRTTI<nsVariant>()->GetTypeVersion();
   inout_stream << variantVersion;
-  wdVariant::Type::Enum type = value.GetType();
-  wdUInt8 typeStorage = type;
-  if (typeStorage == wdVariantType::StringView)
-    typeStorage = wdVariantType::String;
+  nsVariant::Type::Enum type = value.GetType();
+  nsUInt8 typeStorage = type;
+  if (typeStorage == nsVariantType::StringView)
+    typeStorage = nsVariantType::String;
   inout_stream << typeStorage;
 
-  if (type != wdVariant::Type::Invalid)
+  if (type != nsVariant::Type::Invalid)
   {
     WriteValueFunc func;
     func.m_pStream = &inout_stream;
     func.m_pValue = &value;
 
-    wdVariant::DispatchTo(func, type);
+    nsVariant::DispatchTo(func, type);
   }
 }
 
-void operator>>(wdStreamReader& inout_stream, wdVariant& ref_value)
+void operator>>(nsStreamReader& inout_stream, nsVariant& ref_value)
 {
-  wdUInt8 variantVersion;
+  nsUInt8 variantVersion;
   inout_stream >> variantVersion;
-  WD_ASSERT_DEBUG(wdGetStaticRTTI<wdVariant>()->GetTypeVersion() == variantVersion, "Older variant serialization not supported!");
+  NS_ASSERT_DEBUG(nsGetStaticRTTI<nsVariant>()->GetTypeVersion() == variantVersion, "Older variant serialization not supported!");
 
-  wdUInt8 typeStorage;
+  nsUInt8 typeStorage;
   inout_stream >> typeStorage;
-  wdVariant::Type::Enum type = (wdVariant::Type::Enum)typeStorage;
+  nsVariant::Type::Enum type = (nsVariant::Type::Enum)typeStorage;
 
-  if (type != wdVariant::Type::Invalid)
+  if (type != nsVariant::Type::Invalid)
   {
     ReadValueFunc func;
     func.m_pStream = &inout_stream;
     func.m_pValue = &ref_value;
 
-    wdVariant::DispatchTo(func, type);
+    nsVariant::DispatchTo(func, type);
   }
   else
   {
-    ref_value = wdVariant();
+    ref_value = nsVariant();
   }
 }
 
-// wdTimestamp
+// nsTimestamp
 
-void operator<<(wdStreamWriter& inout_stream, wdTimestamp value)
+void operator<<(nsStreamWriter& inout_stream, nsTimestamp value)
 {
-  inout_stream << value.GetInt64(wdSIUnitOfTime::Microsecond);
+  inout_stream << value.GetInt64(nsSIUnitOfTime::Microsecond);
 }
 
-void operator>>(wdStreamReader& inout_stream, wdTimestamp& ref_value)
+void operator>>(nsStreamReader& inout_stream, nsTimestamp& ref_value)
 {
-  wdInt64 value;
+  nsInt64 value;
   inout_stream >> value;
 
-  ref_value.SetInt64(value, wdSIUnitOfTime::Microsecond);
+  ref_value = nsTimestamp::MakeFromInt(value, nsSIUnitOfTime::Microsecond);
 }
 
-// wdVarianceTypeFloat
+// nsVarianceTypeFloat
 
-void operator<<(wdStreamWriter& inout_stream, const wdVarianceTypeFloat& value)
+void operator<<(nsStreamWriter& inout_stream, const nsVarianceTypeFloat& value)
 {
   inout_stream << value.m_fVariance;
   inout_stream << value.m_Value;
 }
-void operator>>(wdStreamReader& inout_stream, wdVarianceTypeFloat& ref_value)
+void operator>>(nsStreamReader& inout_stream, nsVarianceTypeFloat& ref_value)
 {
   inout_stream >> ref_value.m_fVariance;
   inout_stream >> ref_value.m_Value;
 }
 
-// wdVarianceTypeTime
+// nsVarianceTypeTime
 
-void operator<<(wdStreamWriter& inout_stream, const wdVarianceTypeTime& value)
+void operator<<(nsStreamWriter& inout_stream, const nsVarianceTypeTime& value)
 {
   inout_stream << value.m_fVariance;
   inout_stream << value.m_Value;
 }
-void operator>>(wdStreamReader& inout_stream, wdVarianceTypeTime& ref_value)
+void operator>>(nsStreamReader& inout_stream, nsVarianceTypeTime& ref_value)
 {
   inout_stream >> ref_value.m_fVariance;
   inout_stream >> ref_value.m_Value;
 }
 
-// wdVarianceTypeAngle
+// nsVarianceTypeAngle
 
-void operator<<(wdStreamWriter& inout_stream, const wdVarianceTypeAngle& value)
+void operator<<(nsStreamWriter& inout_stream, const nsVarianceTypeAngle& value)
 {
   inout_stream << value.m_fVariance;
   inout_stream << value.m_Value;
 }
-void operator>>(wdStreamReader& inout_stream, wdVarianceTypeAngle& ref_value)
+void operator>>(nsStreamReader& inout_stream, nsVarianceTypeAngle& ref_value)
 {
   inout_stream >> ref_value.m_fVariance;
   inout_stream >> ref_value.m_Value;
 }
-WD_STATICLINK_FILE(Foundation, Foundation_IO_Implementation_StreamOperationsOther);

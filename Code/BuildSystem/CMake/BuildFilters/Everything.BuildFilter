@@ -1,2 +1,2 @@
 # special case, having a single item (no matter what) means 'everything'
-set_property(GLOBAL PROPERTY WD_BUILD_FILTER_Everything "*")
+set_property(GLOBAL PROPERTY NS_BUILD_FILTER_Everything "*")

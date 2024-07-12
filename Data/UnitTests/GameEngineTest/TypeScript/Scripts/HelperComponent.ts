@@ -1,8 +1,8 @@
-import wd = require("TypeScript/wd")
-import WD_TEST = require("./TestFramework")
+import ns = require("TypeScript/ns")
+import NS_TEST = require("./TestFramework")
 import shared = require("./Shared")
 
-export class HelperComponent extends wd.TickedTypescriptComponent {
+export class HelperComponent extends ns.TickedTypescriptComponent {
 
     /* BEGIN AUTO-GENERATED: VARIABLES */
     /* END AUTO-GENERATED: VARIABLES */
@@ -13,7 +13,7 @@ export class HelperComponent extends wd.TickedTypescriptComponent {
 
     static RegisterMessageHandlers() {
 
-        wd.TypescriptComponent.RegisterMessageHandler(wd.MsgGenericEvent, "OnMsgGenericEvent");
+        ns.TypescriptComponent.RegisterMessageHandler(ns.MsgGenericEvent, "OnMsgGenericEvent");
     }
 
     // Initialize(): void { }
@@ -22,16 +22,16 @@ export class HelperComponent extends wd.TickedTypescriptComponent {
     // OnDeactivated(): void { }
 
     OnSimulationStarted(): void {
-        this.SetTickInterval(wd.Time.Milliseconds(0));
+        this.SetTickInterval(ns.Time.Milliseconds(0));
     }
 
     RaiseEvent(text: string): void {
-        let e = new wd.MsgGenericEvent;
+        let e = new ns.MsgGenericEvent;
         e.Message = text;
         this.BroadcastEvent(e);
     }
 
-    OnMsgGenericEvent(msg: wd.MsgGenericEvent): void {
+    OnMsgGenericEvent(msg: ns.MsgGenericEvent): void {
 
         if (msg.Message == "Event1") {
 
@@ -39,7 +39,7 @@ export class HelperComponent extends wd.TickedTypescriptComponent {
         }
 
         // should not reach itself
-        WD_TEST.BOOL(msg.Message != "e1");
+        NS_TEST.BOOL(msg.Message != "e1");
     }
 
     Tick(): void {

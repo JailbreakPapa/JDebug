@@ -1,13 +1,14 @@
-set_property(GLOBAL PROPERTY WD_BUILD_FILTER_UwpProjects
-	Texture
+set_property(GLOBAL PROPERTY NS_BUILD_FILTER_UwpProjects
 	Core
-    Foundation
-	FileservePlugin
-	InspectorPlugin
-    enet
-    zstd
-	stb_image
-	mikktspace
-	Lua
 	Duktape
+	enet
+	FileservePlugin
+	Foundation
+	InspectorPlugin
+	Lua
+	mikktspace
+	stb_image
+	Texture
+	zlib
+	zstd
 )

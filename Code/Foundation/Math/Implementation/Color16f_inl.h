@@ -1,7 +1,7 @@
 
-inline wdColorLinear16f::wdColorLinear16f() {}
+inline nsColorLinear16f::nsColorLinear16f() = default;
 
-inline wdColorLinear16f::wdColorLinear16f(wdFloat16 r, wdFloat16 g, wdFloat16 b, wdFloat16 a)
+inline nsColorLinear16f::nsColorLinear16f(nsFloat16 r, nsFloat16 g, nsFloat16 b, nsFloat16 a)
   : r(r)
   , g(g)
   , b(b)
@@ -9,7 +9,7 @@ inline wdColorLinear16f::wdColorLinear16f(wdFloat16 r, wdFloat16 g, wdFloat16 b,
 {
 }
 
-inline wdColorLinear16f::wdColorLinear16f(const wdColor& color)
+inline nsColorLinear16f::nsColorLinear16f(const nsColor& color)
   : r(color.r)
   , g(color.g)
   , b(color.b)
@@ -17,7 +17,7 @@ inline wdColorLinear16f::wdColorLinear16f(const wdColor& color)
 {
 }
 
-inline wdColor wdColorLinear16f::ToLinearFloat() const
+inline nsColor nsColorLinear16f::ToLinearFloat() const
 {
-  return wdColor(static_cast<float>(r), static_cast<float>(g), static_cast<float>(b), static_cast<float>(a));
+  return nsColor(static_cast<float>(r), static_cast<float>(g), static_cast<float>(b), static_cast<float>(a));
 }

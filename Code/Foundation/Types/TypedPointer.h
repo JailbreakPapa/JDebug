@@ -2,31 +2,31 @@
 
 #include <Foundation/Types/TypeTraits.h>
 
-class wdRTTI;
+class nsRTTI;
 
 /// \brief A typed raw pointer.
 ///
-/// Common use case is the storage of object pointers inside an wdVariant.
+/// Common use case is the storage of object pointers inside an nsVariant.
 /// Has the same lifetime concerns that any other raw pointer.
-/// \sa wdVariant
-struct wdTypedPointer
+/// \sa nsVariant
+struct nsTypedPointer
 {
-  WD_DECLARE_POD_TYPE();
+  NS_DECLARE_POD_TYPE();
   void* m_pObject = nullptr;
-  const wdRTTI* m_pType = nullptr;
+  const nsRTTI* m_pType = nullptr;
 
-  wdTypedPointer() = default;
-  wdTypedPointer(void* pObject, const wdRTTI* pType)
+  nsTypedPointer() = default;
+  nsTypedPointer(void* pObject, const nsRTTI* pType)
     : m_pObject(pObject)
     , m_pType(pType)
   {
   }
 
-  bool operator==(const wdTypedPointer& rhs) const
+  bool operator==(const nsTypedPointer& rhs) const
   {
     return m_pObject == rhs.m_pObject;
   }
-  bool operator!=(const wdTypedPointer& rhs) const
+  bool operator!=(const nsTypedPointer& rhs) const
   {
     return m_pObject != rhs.m_pObject;
   }

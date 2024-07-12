@@ -1,6 +1,6 @@
 
 template <typename T>
-WD_ALWAYS_INLINE wdSharedPtr<T>::wdSharedPtr()
+NS_ALWAYS_INLINE nsSharedPtr<T>::nsSharedPtr()
 {
   m_pInstance = nullptr;
   m_pAllocator = nullptr;
@@ -8,7 +8,7 @@ WD_ALWAYS_INLINE wdSharedPtr<T>::wdSharedPtr()
 
 template <typename T>
 template <typename U>
-WD_ALWAYS_INLINE wdSharedPtr<T>::wdSharedPtr(const wdInternal::NewInstance<U>& instance)
+NS_ALWAYS_INLINE nsSharedPtr<T>::nsSharedPtr(const nsInternal::NewInstance<U>& instance)
 {
   m_pInstance = instance.m_pInstance;
   m_pAllocator = instance.m_pAllocator;
@@ -18,7 +18,7 @@ WD_ALWAYS_INLINE wdSharedPtr<T>::wdSharedPtr(const wdInternal::NewInstance<U>& i
 
 template <typename T>
 template <typename U>
-WD_ALWAYS_INLINE wdSharedPtr<T>::wdSharedPtr(U* pInstance, wdAllocatorBase* pAllocator)
+NS_ALWAYS_INLINE nsSharedPtr<T>::nsSharedPtr(U* pInstance, nsAllocator* pAllocator)
 {
   m_pInstance = pInstance;
   m_pAllocator = pAllocator;
@@ -27,7 +27,7 @@ WD_ALWAYS_INLINE wdSharedPtr<T>::wdSharedPtr(U* pInstance, wdAllocatorBase* pAll
 }
 
 template <typename T>
-WD_ALWAYS_INLINE wdSharedPtr<T>::wdSharedPtr(const wdSharedPtr<T>& other)
+NS_ALWAYS_INLINE nsSharedPtr<T>::nsSharedPtr(const nsSharedPtr<T>& other)
 {
   m_pInstance = other.m_pInstance;
   m_pAllocator = other.m_pAllocator;
@@ -37,7 +37,7 @@ WD_ALWAYS_INLINE wdSharedPtr<T>::wdSharedPtr(const wdSharedPtr<T>& other)
 
 template <typename T>
 template <typename U>
-WD_ALWAYS_INLINE wdSharedPtr<T>::wdSharedPtr(const wdSharedPtr<U>& other)
+NS_ALWAYS_INLINE nsSharedPtr<T>::nsSharedPtr(const nsSharedPtr<U>& other)
 {
   m_pInstance = other.m_pInstance;
   m_pAllocator = other.m_pAllocator;
@@ -47,7 +47,7 @@ WD_ALWAYS_INLINE wdSharedPtr<T>::wdSharedPtr(const wdSharedPtr<U>& other)
 
 template <typename T>
 template <typename U>
-WD_ALWAYS_INLINE wdSharedPtr<T>::wdSharedPtr(wdSharedPtr<U>&& other)
+NS_ALWAYS_INLINE nsSharedPtr<T>::nsSharedPtr(nsSharedPtr<U>&& other)
 {
   m_pInstance = other.m_pInstance;
   m_pAllocator = other.m_pAllocator;
@@ -58,7 +58,7 @@ WD_ALWAYS_INLINE wdSharedPtr<T>::wdSharedPtr(wdSharedPtr<U>&& other)
 
 template <typename T>
 template <typename U>
-WD_ALWAYS_INLINE wdSharedPtr<T>::wdSharedPtr(wdUniquePtr<U>&& other)
+NS_ALWAYS_INLINE nsSharedPtr<T>::nsSharedPtr(nsUniquePtr<U>&& other)
 {
   m_pInstance = other.Release(m_pAllocator);
 
@@ -66,21 +66,21 @@ WD_ALWAYS_INLINE wdSharedPtr<T>::wdSharedPtr(wdUniquePtr<U>&& other)
 }
 
 template <typename T>
-WD_ALWAYS_INLINE wdSharedPtr<T>::wdSharedPtr(std::nullptr_t)
+NS_ALWAYS_INLINE nsSharedPtr<T>::nsSharedPtr(std::nullptr_t)
 {
   m_pInstance = nullptr;
   m_pAllocator = nullptr;
 }
 
 template <typename T>
-WD_ALWAYS_INLINE wdSharedPtr<T>::~wdSharedPtr()
+NS_ALWAYS_INLINE nsSharedPtr<T>::~nsSharedPtr()
 {
   ReleaseReferenceIfValid();
 }
 
 template <typename T>
 template <typename U>
-WD_ALWAYS_INLINE wdSharedPtr<T>& wdSharedPtr<T>::operator=(const wdInternal::NewInstance<U>& instance)
+NS_ALWAYS_INLINE nsSharedPtr<T>& nsSharedPtr<T>::operator=(const nsInternal::NewInstance<U>& instance)
 {
   ReleaseReferenceIfValid();
 
@@ -93,7 +93,7 @@ WD_ALWAYS_INLINE wdSharedPtr<T>& wdSharedPtr<T>::operator=(const wdInternal::New
 }
 
 template <typename T>
-WD_ALWAYS_INLINE wdSharedPtr<T>& wdSharedPtr<T>::operator=(const wdSharedPtr<T>& other)
+NS_ALWAYS_INLINE nsSharedPtr<T>& nsSharedPtr<T>::operator=(const nsSharedPtr<T>& other)
 {
   if (m_pInstance != other.m_pInstance)
   {
@@ -110,7 +110,7 @@ WD_ALWAYS_INLINE wdSharedPtr<T>& wdSharedPtr<T>::operator=(const wdSharedPtr<T>&
 
 template <typename T>
 template <typename U>
-WD_ALWAYS_INLINE wdSharedPtr<T>& wdSharedPtr<T>::operator=(const wdSharedPtr<U>& other)
+NS_ALWAYS_INLINE nsSharedPtr<T>& nsSharedPtr<T>::operator=(const nsSharedPtr<U>& other)
 {
   if (m_pInstance != other.m_pInstance)
   {
@@ -127,7 +127,7 @@ WD_ALWAYS_INLINE wdSharedPtr<T>& wdSharedPtr<T>::operator=(const wdSharedPtr<U>&
 
 template <typename T>
 template <typename U>
-WD_ALWAYS_INLINE wdSharedPtr<T>& wdSharedPtr<T>::operator=(wdSharedPtr<U>&& other)
+NS_ALWAYS_INLINE nsSharedPtr<T>& nsSharedPtr<T>::operator=(nsSharedPtr<U>&& other)
 {
   if (m_pInstance != other.m_pInstance)
   {
@@ -145,7 +145,7 @@ WD_ALWAYS_INLINE wdSharedPtr<T>& wdSharedPtr<T>::operator=(wdSharedPtr<U>&& othe
 
 template <typename T>
 template <typename U>
-WD_ALWAYS_INLINE wdSharedPtr<T>& wdSharedPtr<T>::operator=(wdUniquePtr<U>&& other)
+NS_ALWAYS_INLINE nsSharedPtr<T>& nsSharedPtr<T>::operator=(nsUniquePtr<U>&& other)
 {
   ReleaseReferenceIfValid();
 
@@ -157,7 +157,7 @@ WD_ALWAYS_INLINE wdSharedPtr<T>& wdSharedPtr<T>::operator=(wdUniquePtr<U>&& othe
 }
 
 template <typename T>
-WD_ALWAYS_INLINE wdSharedPtr<T>& wdSharedPtr<T>::operator=(std::nullptr_t)
+NS_ALWAYS_INLINE nsSharedPtr<T>& nsSharedPtr<T>::operator=(std::nullptr_t)
 {
   ReleaseReferenceIfValid();
 
@@ -165,121 +165,121 @@ WD_ALWAYS_INLINE wdSharedPtr<T>& wdSharedPtr<T>::operator=(std::nullptr_t)
 }
 
 template <typename T>
-WD_ALWAYS_INLINE T* wdSharedPtr<T>::Borrow() const
+NS_ALWAYS_INLINE T* nsSharedPtr<T>::Borrow() const
 {
   return m_pInstance;
 }
 
 template <typename T>
-WD_ALWAYS_INLINE void wdSharedPtr<T>::Clear()
+NS_ALWAYS_INLINE void nsSharedPtr<T>::Clear()
 {
   ReleaseReferenceIfValid();
 }
 
 template <typename T>
-WD_ALWAYS_INLINE T& wdSharedPtr<T>::operator*() const
+NS_ALWAYS_INLINE T& nsSharedPtr<T>::operator*() const
 {
   return *m_pInstance;
 }
 
 template <typename T>
-WD_ALWAYS_INLINE T* wdSharedPtr<T>::operator->() const
+NS_ALWAYS_INLINE T* nsSharedPtr<T>::operator->() const
 {
   return m_pInstance;
 }
 
 template <typename T>
-WD_ALWAYS_INLINE wdSharedPtr<T>::operator const T*() const
+NS_ALWAYS_INLINE nsSharedPtr<T>::operator const T*() const
 {
   return m_pInstance;
 }
 
 template <typename T>
-WD_ALWAYS_INLINE wdSharedPtr<T>::operator T*()
+NS_ALWAYS_INLINE nsSharedPtr<T>::operator T*()
 {
   return m_pInstance;
 }
 
 template <typename T>
-WD_ALWAYS_INLINE wdSharedPtr<T>::operator bool() const
+NS_ALWAYS_INLINE nsSharedPtr<T>::operator bool() const
 {
   return m_pInstance != nullptr;
 }
 
 template <typename T>
-WD_ALWAYS_INLINE bool wdSharedPtr<T>::operator==(const wdSharedPtr<T>& rhs) const
+NS_ALWAYS_INLINE bool nsSharedPtr<T>::operator==(const nsSharedPtr<T>& rhs) const
 {
   return m_pInstance == rhs.m_pInstance;
 }
 
 template <typename T>
-WD_ALWAYS_INLINE bool wdSharedPtr<T>::operator!=(const wdSharedPtr<T>& rhs) const
+NS_ALWAYS_INLINE bool nsSharedPtr<T>::operator!=(const nsSharedPtr<T>& rhs) const
 {
   return m_pInstance != rhs.m_pInstance;
 }
 
 template <typename T>
-WD_ALWAYS_INLINE bool wdSharedPtr<T>::operator<(const wdSharedPtr<T>& rhs) const
+NS_ALWAYS_INLINE bool nsSharedPtr<T>::operator<(const nsSharedPtr<T>& rhs) const
 {
   return m_pInstance < rhs.m_pInstance;
 }
 
 template <typename T>
-WD_ALWAYS_INLINE bool wdSharedPtr<T>::operator<=(const wdSharedPtr<T>& rhs) const
+NS_ALWAYS_INLINE bool nsSharedPtr<T>::operator<=(const nsSharedPtr<T>& rhs) const
 {
   return !(rhs < *this);
 }
 
 template <typename T>
-WD_ALWAYS_INLINE bool wdSharedPtr<T>::operator>(const wdSharedPtr<T>& rhs) const
+NS_ALWAYS_INLINE bool nsSharedPtr<T>::operator>(const nsSharedPtr<T>& rhs) const
 {
   return rhs < *this;
 }
 
 template <typename T>
-WD_ALWAYS_INLINE bool wdSharedPtr<T>::operator>=(const wdSharedPtr<T>& rhs) const
+NS_ALWAYS_INLINE bool nsSharedPtr<T>::operator>=(const nsSharedPtr<T>& rhs) const
 {
   return !(*this < rhs);
 }
 
 template <typename T>
-WD_ALWAYS_INLINE bool wdSharedPtr<T>::operator==(std::nullptr_t) const
+NS_ALWAYS_INLINE bool nsSharedPtr<T>::operator==(std::nullptr_t) const
 {
   return m_pInstance == nullptr;
 }
 
 template <typename T>
-WD_ALWAYS_INLINE bool wdSharedPtr<T>::operator!=(std::nullptr_t) const
+NS_ALWAYS_INLINE bool nsSharedPtr<T>::operator!=(std::nullptr_t) const
 {
   return m_pInstance != nullptr;
 }
 
 template <typename T>
-WD_ALWAYS_INLINE bool wdSharedPtr<T>::operator<(std::nullptr_t) const
+NS_ALWAYS_INLINE bool nsSharedPtr<T>::operator<(std::nullptr_t) const
 {
   return m_pInstance < nullptr;
 }
 
 template <typename T>
-WD_ALWAYS_INLINE bool wdSharedPtr<T>::operator<=(std::nullptr_t) const
+NS_ALWAYS_INLINE bool nsSharedPtr<T>::operator<=(std::nullptr_t) const
 {
   return m_pInstance <= nullptr;
 }
 
 template <typename T>
-WD_ALWAYS_INLINE bool wdSharedPtr<T>::operator>(std::nullptr_t) const
+NS_ALWAYS_INLINE bool nsSharedPtr<T>::operator>(std::nullptr_t) const
 {
   return m_pInstance > nullptr;
 }
 
 template <typename T>
-WD_ALWAYS_INLINE bool wdSharedPtr<T>::operator>=(std::nullptr_t) const
+NS_ALWAYS_INLINE bool nsSharedPtr<T>::operator>=(std::nullptr_t) const
 {
   return m_pInstance >= nullptr;
 }
 
 template <typename T>
-WD_ALWAYS_INLINE void wdSharedPtr<T>::AddReferenceIfValid()
+NS_ALWAYS_INLINE void nsSharedPtr<T>::AddReferenceIfValid()
 {
   if (m_pInstance != nullptr)
   {
@@ -288,14 +288,14 @@ WD_ALWAYS_INLINE void wdSharedPtr<T>::AddReferenceIfValid()
 }
 
 template <typename T>
-WD_ALWAYS_INLINE void wdSharedPtr<T>::ReleaseReferenceIfValid()
+NS_ALWAYS_INLINE void nsSharedPtr<T>::ReleaseReferenceIfValid()
 {
   if (m_pInstance != nullptr)
   {
     if (m_pInstance->ReleaseRef() == 0)
     {
-      auto pNonConstInstance = const_cast<typename wdTypeTraits<T>::NonConstType*>(m_pInstance);
-      WD_DELETE(m_pAllocator, pNonConstInstance);
+      auto pNonConstInstance = const_cast<typename nsTypeTraits<T>::NonConstType*>(m_pInstance);
+      NS_DELETE(m_pAllocator, pNonConstInstance);
     }
 
     m_pInstance = nullptr;

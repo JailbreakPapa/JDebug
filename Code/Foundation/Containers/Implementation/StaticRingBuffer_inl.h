@@ -1,15 +1,15 @@
 #pragma once
 
-template <typename T, wdUInt32 C>
-wdStaticRingBuffer<T, C>::wdStaticRingBuffer()
+template <typename T, nsUInt32 C>
+nsStaticRingBuffer<T, C>::nsStaticRingBuffer()
 {
   m_pElements = GetStaticArray();
   m_uiFirstElement = 0;
   m_uiCount = 0;
 }
 
-template <typename T, wdUInt32 C>
-wdStaticRingBuffer<T, C>::wdStaticRingBuffer(const wdStaticRingBuffer<T, C>& rhs)
+template <typename T, nsUInt32 C>
+nsStaticRingBuffer<T, C>::nsStaticRingBuffer(const nsStaticRingBuffer<T, C>& rhs)
 {
   m_pElements = GetStaticArray();
   m_uiFirstElement = 0;
@@ -18,28 +18,28 @@ wdStaticRingBuffer<T, C>::wdStaticRingBuffer(const wdStaticRingBuffer<T, C>& rhs
   *this = rhs;
 }
 
-template <typename T, wdUInt32 C>
-wdStaticRingBuffer<T, C>::~wdStaticRingBuffer()
+template <typename T, nsUInt32 C>
+nsStaticRingBuffer<T, C>::~nsStaticRingBuffer()
 {
   Clear();
 }
 
-template <typename T, wdUInt32 C>
-void wdStaticRingBuffer<T, C>::operator=(const wdStaticRingBuffer<T, C>& rhs)
+template <typename T, nsUInt32 C>
+void nsStaticRingBuffer<T, C>::operator=(const nsStaticRingBuffer<T, C>& rhs)
 {
   Clear();
 
-  for (wdUInt32 i = 0; i < rhs.GetCount(); ++i)
+  for (nsUInt32 i = 0; i < rhs.GetCount(); ++i)
     PushBack(rhs[i]);
 }
 
-template <typename T, wdUInt32 C>
-bool wdStaticRingBuffer<T, C>::operator==(const wdStaticRingBuffer<T, C>& rhs) const
+template <typename T, nsUInt32 C>
+bool nsStaticRingBuffer<T, C>::operator==(const nsStaticRingBuffer<T, C>& rhs) const
 {
   if (GetCount() != rhs.GetCount())
     return false;
 
-  for (wdUInt32 i = 0; i < m_uiCount; ++i)
+  for (nsUInt32 i = 0; i < m_uiCount; ++i)
   {
     if ((*this)[i] != rhs[i])
       return false;
@@ -48,60 +48,54 @@ bool wdStaticRingBuffer<T, C>::operator==(const wdStaticRingBuffer<T, C>& rhs) c
   return true;
 }
 
-template <typename T, wdUInt32 C>
-WD_ALWAYS_INLINE bool wdStaticRingBuffer<T, C>::operator!=(const wdStaticRingBuffer<T, C>& rhs) const
+template <typename T, nsUInt32 C>
+void nsStaticRingBuffer<T, C>::PushBack(const T& element)
 {
-  return !(*this == rhs);
-}
+  NS_ASSERT_DEV(CanAppend(), "The ring-buffer is full, no elements can be appended before removing one.");
 
-template <typename T, wdUInt32 C>
-void wdStaticRingBuffer<T, C>::PushBack(const T& element)
-{
-  WD_ASSERT_DEV(CanAppend(), "The ring-buffer is full, no elements can be appended before removing one.");
+  const nsUInt32 uiLastElement = (m_uiFirstElement + m_uiCount) % C;
 
-  const wdUInt32 uiLastElement = (m_uiFirstElement + m_uiCount) % C;
-
-  wdMemoryUtils::CopyConstruct(&m_pElements[uiLastElement], element, 1);
+  nsMemoryUtils::CopyConstruct(&m_pElements[uiLastElement], element, 1);
   ++m_uiCount;
 }
 
-template <typename T, wdUInt32 C>
-void wdStaticRingBuffer<T, C>::PushBack(T&& element)
+template <typename T, nsUInt32 C>
+void nsStaticRingBuffer<T, C>::PushBack(T&& element)
 {
-  WD_ASSERT_DEV(CanAppend(), "The ring-buffer is full, no elements can be appended before removing one.");
+  NS_ASSERT_DEV(CanAppend(), "The ring-buffer is full, no elements can be appended before removing one.");
 
-  const wdUInt32 uiLastElement = (m_uiFirstElement + m_uiCount) % C;
+  const nsUInt32 uiLastElement = (m_uiFirstElement + m_uiCount) % C;
 
-  wdMemoryUtils::MoveConstruct(&m_pElements[uiLastElement], std::move(element));
+  nsMemoryUtils::MoveConstruct(&m_pElements[uiLastElement], std::move(element));
   ++m_uiCount;
 }
 
-template <typename T, wdUInt32 C>
-T& wdStaticRingBuffer<T, C>::PeekBack()
+template <typename T, nsUInt32 C>
+T& nsStaticRingBuffer<T, C>::PeekBack()
 {
-  WD_ASSERT_DEV(!IsEmpty(), "The ring-buffer is empty, cannot peek at the last element.");
+  NS_ASSERT_DEV(!IsEmpty(), "The ring-buffer is empty, cannot peek at the last element.");
 
-  const wdUInt32 uiLastElement = (m_uiFirstElement + m_uiCount - 1) % C;
+  const nsUInt32 uiLastElement = (m_uiFirstElement + m_uiCount - 1) % C;
   return m_pElements[uiLastElement];
 }
 
-template <typename T, wdUInt32 C>
-const T& wdStaticRingBuffer<T, C>::PeekBack() const
+template <typename T, nsUInt32 C>
+const T& nsStaticRingBuffer<T, C>::PeekBack() const
 {
-  WD_ASSERT_DEV(!IsEmpty(), "The ring-buffer is empty, cannot peek at the last element.");
+  NS_ASSERT_DEV(!IsEmpty(), "The ring-buffer is empty, cannot peek at the last element.");
 
-  const wdUInt32 uiLastElement = (m_uiFirstElement + m_uiCount - 1) % C;
+  const nsUInt32 uiLastElement = (m_uiFirstElement + m_uiCount - 1) % C;
   return m_pElements[uiLastElement];
 }
 
-template <typename T, wdUInt32 C>
-void wdStaticRingBuffer<T, C>::PopFront(wdUInt32 uiElements)
+template <typename T, nsUInt32 C>
+void nsStaticRingBuffer<T, C>::PopFront(nsUInt32 uiElements)
 {
-  WD_ASSERT_DEV(m_uiCount >= uiElements, "The ring-buffer contains {0} elements, cannot remove {1} elements from it.", m_uiCount, uiElements);
+  NS_ASSERT_DEV(m_uiCount >= uiElements, "The ring-buffer contains {0} elements, cannot remove {1} elements from it.", m_uiCount, uiElements);
 
   while (uiElements > 0)
   {
-    wdMemoryUtils::Destruct(&m_pElements[m_uiFirstElement], 1);
+    nsMemoryUtils::Destruct(&m_pElements[m_uiFirstElement], 1);
     ++m_uiFirstElement;
     m_uiFirstElement %= C;
     --m_uiCount;
@@ -110,65 +104,65 @@ void wdStaticRingBuffer<T, C>::PopFront(wdUInt32 uiElements)
   }
 }
 
-template <typename T, wdUInt32 C>
-WD_FORCE_INLINE const T& wdStaticRingBuffer<T, C>::PeekFront() const
+template <typename T, nsUInt32 C>
+NS_FORCE_INLINE const T& nsStaticRingBuffer<T, C>::PeekFront() const
 {
-  WD_ASSERT_DEV(!IsEmpty(), "The ring-buffer is empty, cannot peek at the first element.");
+  NS_ASSERT_DEV(!IsEmpty(), "The ring-buffer is empty, cannot peek at the first element.");
 
   return m_pElements[m_uiFirstElement];
 }
 
-template <typename T, wdUInt32 C>
-WD_FORCE_INLINE T& wdStaticRingBuffer<T, C>::PeekFront()
+template <typename T, nsUInt32 C>
+NS_FORCE_INLINE T& nsStaticRingBuffer<T, C>::PeekFront()
 {
-  WD_ASSERT_DEV(!IsEmpty(), "The ring-buffer is empty, cannot peek at the first element.");
+  NS_ASSERT_DEV(!IsEmpty(), "The ring-buffer is empty, cannot peek at the first element.");
 
   return m_pElements[m_uiFirstElement];
 }
 
-template <typename T, wdUInt32 C>
-WD_FORCE_INLINE const T& wdStaticRingBuffer<T, C>::operator[](wdUInt32 uiIndex) const
+template <typename T, nsUInt32 C>
+NS_FORCE_INLINE const T& nsStaticRingBuffer<T, C>::operator[](nsUInt32 uiIndex) const
 {
-  WD_ASSERT_DEV(uiIndex < m_uiCount, "The ring-buffer only has {0} elements, cannot access element {1}.", m_uiCount, uiIndex);
+  NS_ASSERT_DEBUG(uiIndex < m_uiCount, "The ring-buffer only has {0} elements, cannot access element {1}.", m_uiCount, uiIndex);
 
   return m_pElements[(m_uiFirstElement + uiIndex) % C];
 }
 
-template <typename T, wdUInt32 C>
-WD_FORCE_INLINE T& wdStaticRingBuffer<T, C>::operator[](wdUInt32 uiIndex)
+template <typename T, nsUInt32 C>
+NS_FORCE_INLINE T& nsStaticRingBuffer<T, C>::operator[](nsUInt32 uiIndex)
 {
-  WD_ASSERT_DEV(uiIndex < m_uiCount, "The ring-buffer only has {0} elements, cannot access element {1}.", m_uiCount, uiIndex);
+  NS_ASSERT_DEBUG(uiIndex < m_uiCount, "The ring-buffer only has {0} elements, cannot access element {1}.", m_uiCount, uiIndex);
 
   return m_pElements[(m_uiFirstElement + uiIndex) % C];
 }
 
-template <typename T, wdUInt32 C>
-WD_ALWAYS_INLINE wdUInt32 wdStaticRingBuffer<T, C>::GetCount() const
+template <typename T, nsUInt32 C>
+NS_ALWAYS_INLINE nsUInt32 nsStaticRingBuffer<T, C>::GetCount() const
 {
   return m_uiCount;
 }
 
-template <typename T, wdUInt32 C>
-WD_ALWAYS_INLINE bool wdStaticRingBuffer<T, C>::IsEmpty() const
+template <typename T, nsUInt32 C>
+NS_ALWAYS_INLINE bool nsStaticRingBuffer<T, C>::IsEmpty() const
 {
   return m_uiCount == 0;
 }
 
-template <typename T, wdUInt32 C>
-WD_ALWAYS_INLINE bool wdStaticRingBuffer<T, C>::CanAppend(wdUInt32 uiElements)
+template <typename T, nsUInt32 C>
+NS_ALWAYS_INLINE bool nsStaticRingBuffer<T, C>::CanAppend(nsUInt32 uiElements)
 {
   return (m_uiCount + uiElements) <= C;
 }
 
-template <typename T, wdUInt32 C>
-void wdStaticRingBuffer<T, C>::Clear()
+template <typename T, nsUInt32 C>
+void nsStaticRingBuffer<T, C>::Clear()
 {
   while (!IsEmpty())
     PopFront();
 }
 
-template <typename T, wdUInt32 C>
-WD_ALWAYS_INLINE T* wdStaticRingBuffer<T, C>::GetStaticArray()
+template <typename T, nsUInt32 C>
+NS_ALWAYS_INLINE T* nsStaticRingBuffer<T, C>::GetStaticArray()
 {
   return reinterpret_cast<T*>(m_Data);
 }

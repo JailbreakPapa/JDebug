@@ -7,33 +7,33 @@
 
 #ifdef BUILDSYSTEM_ENABLE_ZSTD_SUPPORT
 
-/// \brief A stream reader that will decompress data that was stored using the wdCompressedStreamWriterZstd.
+/// \brief A stream reader that will decompress data that was stored using the nsCompressedStreamWriterZstd.
 ///
 /// The reader takes another reader as its source for the compressed data (e.g. a file or a memory stream).
-class WD_FOUNDATION_DLL wdCompressedStreamReaderZstd : public wdStreamReader
+class NS_FOUNDATION_DLL nsCompressedStreamReaderZstd : public nsStreamReader
 {
 public:
-  wdCompressedStreamReaderZstd(); // [tested]
+  nsCompressedStreamReaderZstd(); // [tested]
 
   /// \brief Takes an input stream as the source from which to read the compressed data.
-  wdCompressedStreamReaderZstd(wdStreamReader* pInputStream); // [tested]
+  nsCompressedStreamReaderZstd(nsStreamReader* pInputStream); // [tested]
 
-  ~wdCompressedStreamReaderZstd(); // [tested]
+  ~nsCompressedStreamReaderZstd();                            // [tested]
 
   /// \brief Configures the reader to decompress the data from the given input stream.
   ///
   /// Calling this a second time on the same instance is valid and allows to reuse the decoder, which is more efficient than creating a new
   /// one.
-  void SetInputStream(wdStreamReader* pInputStream); // [tested]
+  void SetInputStream(nsStreamReader* pInputStream); // [tested]
 
   /// \brief Reads either uiBytesToRead or the amount of remaining bytes in the stream into pReadBuffer.
   ///
   /// It is valid to pass nullptr for pReadBuffer, in this case the memory stream position is only advanced by the given number of bytes.
   /// However, since this is a compressed stream, the decompression still needs to be done, so this won't save any time.
-  virtual wdUInt64 ReadBytes(void* pReadBuffer, wdUInt64 uiBytesToRead) override; // [tested]
+  virtual nsUInt64 ReadBytes(void* pReadBuffer, nsUInt64 uiBytesToRead) override; // [tested]
 
 private:
-  wdResult RefillReadCache();
+  nsResult RefillReadCache();
 
   // local declaration to reduce #include dependencies
   struct InBufferImpl
@@ -44,8 +44,8 @@ private:
   };
 
   bool m_bReachedEnd = false;
-  wdDynamicArray<wdUInt8> m_CompressedCache;
-  wdStreamReader* m_pInputStream = nullptr;
+  nsDynamicArray<nsUInt8> m_CompressedCache;
+  nsStreamReader* m_pInputStream = nullptr;
   /*ZSTD_DStream*/ void* m_pZstdDStream = nullptr;
   /*ZSTD_inBuffer*/ InBufferImpl m_InBuffer;
 };
@@ -58,11 +58,11 @@ private:
 /// compression ratio and it should only be used to reduce output lag. However, there is absolutely no guarantee that all the data that was
 /// put into the stream will be readable from the output stream, after calling Flush(). In fact, it is quite likely that a large amount of
 /// data has still not been written to it, because it is still inside the compressor.
-class WD_FOUNDATION_DLL wdCompressedStreamWriterZstd : public wdStreamWriter
+class NS_FOUNDATION_DLL nsCompressedStreamWriterZstd final : public nsStreamWriter
 {
 public:
   /// \brief Specifies the compression level of the stream.
-  enum Compression
+  enum class Compression
   {
     Fastest = 1,
     Fast = 5,
@@ -73,15 +73,15 @@ public:
                       ///< considerably longer.
   };
 
-  wdCompressedStreamWriterZstd();
+  nsCompressedStreamWriterZstd();
 
   /// \brief The constructor takes another stream writer to pass the output into, and a compression level.
-  wdCompressedStreamWriterZstd(wdStreamWriter* pOutputStream, Compression ratio = Compression::Default); // [tested]
+  nsCompressedStreamWriterZstd(nsStreamWriter* pOutputStream, nsUInt32 uiMaxNumWorkerThreads, Compression ratio = Compression::Default, nsUInt32 uiCompressionCacheSizeKB = 4); // [tested]
 
   /// \brief Calls FinishCompressedStream() internally.
-  ~wdCompressedStreamWriterZstd(); // [tested]
+  ~nsCompressedStreamWriterZstd(); // [tested]
 
-  /// \brief Configures to which other wdStreamWriter the compressed data should be passed along.
+  /// \brief Configures to which other nsStreamWriter the compressed data should be passed along.
   ///
   /// Also configures how strong the compression should be and how much data (in KB) should be cached internally before passing it
   /// to the compressor. Adjusting this cache size is only of interest, if the compressed output needs to be consumed as quickly as possible
@@ -92,12 +92,12 @@ public:
   /// another stream. This can prevent internal allocations, if one wants to use compression on multiple streams consecutively. It also
   /// allows to create a compressor stream early, but decide at a later pointer whether or with which stream to use it, and it will only
   /// allocate internal structures once that final decision is made.
-  void SetOutputStream(wdStreamWriter* pOutputStream, Compression ratio = Compression::Default, wdUInt32 uiCompressionCacheSizeKB = 4); // [tested]
+  void SetOutputStream(nsStreamWriter* pOutputStream, nsUInt32 uiMaxNumWorkerThreads, Compression ratio = Compression::Default, nsUInt32 uiCompressionCacheSizeKB = 4); // [tested]
 
   /// \brief Compresses \a uiBytesToWrite from \a pWriteBuffer.
   ///
   /// Will output bursts of 256 bytes to the output stream every once in a while.
-  virtual wdResult WriteBytes(const void* pWriteBuffer, wdUInt64 uiBytesToWrite) override; // [tested]
+  virtual nsResult WriteBytes(const void* pWriteBuffer, nsUInt64 uiBytesToWrite) override; // [tested]
 
   /// \brief Finishes the stream and writes all remaining data to the output stream.
   ///
@@ -105,10 +105,10 @@ public:
   /// of the data.
   /// Note that this function is not the same as Flush(), since Flush() assumes that more data can be written to the stream afterwards,
   /// which is not the case for FinishCompressedStream().
-  wdResult FinishCompressedStream(); // [tested]
+  nsResult FinishCompressedStream(); // [tested]
 
   /// \brief Returns the size of the data in its uncompressed state.
-  wdUInt64 GetUncompressedSize() const { return m_uiUncompressedSize; } // [tested]
+  nsUInt64 GetUncompressedSize() const { return m_uiUncompressedSize; } // [tested]
 
   /// \brief Returns the current compressed size of the data.
   ///
@@ -116,12 +116,12 @@ public:
   /// data might still be cached and not yet accounted for. Note that GetCompressedSize() returns the compressed size of the data, not the
   /// size of the data that was written to the output stream, which will be larger (1 additional byte per 255 compressed bytes, plus one
   /// zero terminator byte).
-  wdUInt64 GetCompressedSize() const { return m_uiCompressedSize; } // [tested]
+  nsUInt64 GetCompressedSize() const { return m_uiCompressedSize; } // [tested]
 
   /// \brief Returns the exact number of bytes written to the output stream so far.
   ///
   /// This includes bytes written for bookkeeping. It is strictly larger than GetCompressedSize().
-  wdUInt64 GetWrittenBytes() const { return m_uiWrittenBytes; } // [tested]
+  nsUInt64 GetWrittenBytes() const { return m_uiWrittenBytes; } // [tested]
 
   /// \brief Flushes the internal compressor caches and writes the compressed data to the stream.
   ///
@@ -130,14 +130,14 @@ public:
   /// After a Flush() one may continue writing data to the compressed stream.
   ///
   /// \note Flushing the stream reduces compression effectiveness. Only in rare circumstances should it be necessary to call this manually.
-  virtual wdResult Flush() override; // [tested]
+  virtual nsResult Flush() override; // [tested]
 
 private:
-  wdResult FlushWriteCache();
+  nsResult FlushWriteCache();
 
-  wdUInt64 m_uiUncompressedSize = 0;
-  wdUInt64 m_uiCompressedSize = 0;
-  wdUInt64 m_uiWrittenBytes = 0;
+  nsUInt64 m_uiUncompressedSize = 0;
+  nsUInt64 m_uiCompressedSize = 0;
+  nsUInt64 m_uiWrittenBytes = 0;
 
   // local declaration to reduce #include dependencies
   struct OutBufferImpl
@@ -147,11 +147,11 @@ private:
     size_t pos;
   };
 
-  wdStreamWriter* m_pOutputStream = nullptr;
+  nsStreamWriter* m_pOutputStream = nullptr;
   /*ZSTD_CStream*/ void* m_pZstdCStream = nullptr;
   /*ZSTD_outBuffer*/ OutBufferImpl m_OutBuffer;
 
-  wdDynamicArray<wdUInt8> m_CompressedCache;
+  nsDynamicArray<nsUInt8> m_CompressedCache;
 };
 
 #endif // BUILDSYSTEM_ENABLE_ZSTD_SUPPORT

@@ -1,10 +1,10 @@
 Plugin
 {
-	string %Path{"wdGameComponentsPlugin"}
+	string %Path{"nsGameComponentsPlugin"}
 	bool %LoadCopy{false}
 }
 Plugin
 {
-	string %Path{"wdTypeScriptPlugin"}
+	string %Path{"nsTypeScriptPlugin"}
 	bool %LoadCopy{false}
 }

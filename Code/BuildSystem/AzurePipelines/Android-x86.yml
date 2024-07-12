@@ -12,21 +12,21 @@ jobs:
 - job: Job_2
   displayName: StartVM
   pool:
-    vmImage: 'windows-2019'
+    vmImage: 'windows-2022'
   steps:
   - checkout: none
   - task: AzureKeyVault@1
-    displayName: 'Azure Key Vault: ezKeys'
+    displayName: 'Azure Key Vault: nsKeys'
     inputs:
       ConnectedServiceName: a416236e-0672-4024-bca3-853beb235e5e
-      KeyVaultName: ezKeys
+      KeyVaultName: nsKeys
       SecretsFilter: AzureFunctionKey
   - task: PowerShell@2
     displayName: StartVM
     continueOnError: true
     inputs:
       targetType: inline
-      script: Invoke-RestMethod -Uri "https://ezengineci.azurewebsites.net/api/StartVM?code=$(AzureFunctionKey)&vmname=Windows10-1809"
+      script: Invoke-RestMethod -Uri "https://nsengineci.azurewebsites.net/api/StartVM?code=$(AzureFunctionKey)&vmname=Windows10-1809"
 - job: Job_1
   displayName: Android-x86
   timeoutInMinutes: 180
@@ -40,17 +40,17 @@ jobs:
     lfs: true
     clean: false
   - task: AzureKeyVault@1
-    displayName: 'Azure Key Vault: ezKeys'
+    displayName: 'Azure Key Vault: nsKeys'
     inputs:
       ConnectedServiceName: a416236e-0672-4024-bca3-853beb235e5e
-      KeyVaultName: ezKeys
+      KeyVaultName: nsKeys
       SecretsFilter: AzureBlobPW
   - task: CMake@1
     displayName: CMake x64
     enabled: False
     inputs:
       cwd: build\x64
-      cmakeArgs: -DCMAKE_PREFIX_PATH=$(System.DefaultWorkingDirectory)\ThirdPartyUWPx86\vs141x64 -DWD_QT_DIR="$(System.DefaultWorkingDirectory)\ThirdPartyUWPx86\vs141x64" -DWD_BUILD_PHYSX=0 -DWD_BUILD_FMOD=0 -DWD_BUILD_GAMES=0 -DWD_COMPILE_ENGINE_AS_DLL=1 -DWD_ENABLE_QT_SUPPORT=1 -DCMAKE_SYSTEM_VERSION=10.0.18362.0 -DCMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION=10.0.18362.0 -G "Visual Studio 16 2019 Win64" ../../
+      cmakeArgs: -DCMAKE_PREFIX_PATH=$(System.DefaultWorkingDirectory)\ThirdPartyUWPx86\vs141x64 -DNS_QT_DIR="$(System.DefaultWorkingDirectory)\ThirdPartyUWPx86\vs141x64" -DNS_BUILD_PHYSX=0 -DNS_BUILD_FMOD=0 -DNS_BUILD_GAMES=0 -DNS_COMPILE_ENGINE_AS_DLL=1 -DNS_ENABLE_QT_SUPPORT=1 -DCMAKE_SYSTEM_VERSION=10.0.18362.0 -DCMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION=10.0.18362.0 -G "Visual Studio 17 2022 Win64" ../../
   - task: CMake@1
     displayName: CMake build RemoteTestHarness
     enabled: False
@@ -61,7 +61,7 @@ jobs:
     displayName: CMake Android Ninja
     inputs:
       cwd: build\Android-x86-Dev
-      cmakeArgs: -G "Ninja" -DCMAKE_INSTALL_PREFIX:PATH="$(System.DefaultWorkingDirectory)\install\Android-x86-Dev"  -DCMAKE_TOOLCHAIN_FILE="$(ANDROID_NDK_HOME)\build\cmake\android.toolchain.cmake"  -DANDROID_ABI="x86"  -DANDROID_PLATFORM="23"  -DWD_ENABLE_QT_SUPPORT="0"  -DWD_BUILD_SAMPLES="0"  -DCMAKE_BUILD_TYPE="Dev" -DCMAKE_MAKE_PROGRAM="C:\Program Files\CMake\bin\ninja.exe" ../../
+      cmakeArgs: -G "Ninja" -DCMAKE_INSTALL_PREFIX:PATH="$(System.DefaultWorkingDirectory)\install\Android-x86-Dev"  -DCMAKE_TOOLCHAIN_FILE="$(ANDROID_NDK_HOME)\build\cmake\android.toolchain.cmake"  -DANDROID_ABI="x86"  -DANDROID_PLATFORM="23"  -DNS_ENABLE_QT_SUPPORT="0"  -DNS_BUILD_SAMPLES="0"  -DCMAKE_BUILD_TYPE="Dev" -DCMAKE_MAKE_PROGRAM="C:\Program Files\CMake\bin\ninja.exe" ../../
   - task: CmdLine@2
     displayName: Build
     inputs:

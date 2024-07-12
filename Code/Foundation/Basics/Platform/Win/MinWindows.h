@@ -1,25 +1,25 @@
 #pragma once
 
-namespace wdMinWindows
+namespace nsMinWindows
 {
   using BOOL = int;
   using DWORD = unsigned long;
   using UINT = unsigned int;
   using LPSTR = char*;
-  struct wdHINSTANCE;
-  using HINSTANCE = wdHINSTANCE*;
+  struct nsHINSTANCE;
+  using HINSTANCE = nsHINSTANCE*;
   using HMODULE = HINSTANCE;
-  struct wdHWND;
-  using HWND = wdHWND*;
+  struct nsHWND;
+  using HWND = nsHWND*;
   using HRESULT = long;
   using HANDLE = void*;
 
-#if WD_ENABLED(WD_PLATFORM_64BIT)
-  using WPARAM = wdUInt64;
-  using LPARAM = wdUInt64;
+#if NS_ENABLED(NS_PLATFORM_64BIT)
+  using WPARAM = nsUInt64;
+  using LPARAM = nsUInt64;
 #else
-  typedef wdUInt32 WPARAM;
-  typedef wdUInt32 LPARAM;
+  using WPARAM = nsUInt32;
+  using LPARAM = nsUInt32;
 #endif
 
   template <typename T>
@@ -32,22 +32,22 @@ namespace wdMinWindows
   {
   };
 
-  /// Helper function to convert wdMinWindows types into native windows.h types.
+  /// Helper function to convert nsMinWindows types into native windows.h types.
   /// Include IncludeWindows.h before using it.
   template <typename T>
-  WD_ALWAYS_INLINE typename ToNativeImpl<T>::type ToNative(T t)
+  NS_ALWAYS_INLINE typename ToNativeImpl<T>::type ToNative(T t)
   {
     return ToNativeImpl<T>::ToNative(t);
   }
 
-  /// Helper function to native windows.h types to wdMinWindows types.
+  /// Helper function to native windows.h types to nsMinWindows types.
   /// Include IncludeWindows.h before using it.
   template <typename T>
-  WD_ALWAYS_INLINE typename FromNativeImpl<T>::type FromNative(T t)
+  NS_ALWAYS_INLINE typename FromNativeImpl<T>::type FromNative(T t)
   {
     return FromNativeImpl<T>::FromNative(t);
   }
-} // namespace wdMinWindows
-#define WD_WINDOWS_CALLBACK __stdcall
-#define WD_WINDOWS_WINAPI __stdcall
-#define WD_WINDOWS_INVALID_HANDLE_VALUE ((void*)(long long)-1)
+} // namespace nsMinWindows
+#define NS_WINDOWS_CALLBACK __stdcall
+#define NS_WINDOWS_WINAPI __stdcall
+#define NS_WINDOWS_INVALID_HANDLE_VALUE ((void*)(long long)-1)

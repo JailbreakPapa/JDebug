@@ -1,10 +1,10 @@
 #include <Foundation/FoundationPCH.h>
 
-#if WD_ENABLED(WD_SUPPORTS_PROCESSES)
+#if NS_ENABLED(NS_SUPPORTS_PROCESSES)
 // Include inline file
-#  if WD_ENABLED(WD_PLATFORM_WINDOWS)
+#  if NS_ENABLED(NS_PLATFORM_WINDOWS)
 #    include <Foundation/System/Implementation/Win/Process_win.h>
-#  elif WD_ENABLED(WD_PLATFORM_LINUX) || WD_ENABLED(WD_PLATFORM_ANDROID) || WD_ENABLED(WD_PLATFORM_OSX)
+#  elif NS_ENABLED(NS_PLATFORM_LINUX) || NS_ENABLED(NS_PLATFORM_ANDROID) || NS_ENABLED(NS_PLATFORM_OSX)
 #    include <Foundation/System/Implementation/Posix/Process_posix.h>
 #  else
 #    error "Process functions are not implemented on current platform"
@@ -12,22 +12,22 @@
 
 #  include <Foundation/Strings/Implementation/StringIterator.h>
 
-wdProcess::wdProcess(wdProcess&& rhs) = default;
+nsProcess::nsProcess(nsProcess&& rhs) = default;
 
-void wdProcessOptions::AddArgument(const wdFormatString& arg)
+void nsProcessOptions::AddArgument(const nsFormatString& arg)
 {
-  wdStringBuilder formatted, tmp;
+  nsStringBuilder formatted, tmp;
   formatted = arg.GetText(tmp);
   formatted.Trim(" \t\n");
 
   m_Arguments.PushBack(formatted);
 }
 
-void wdProcessOptions::AddCommandLine(const char* szCmdLine)
+void nsProcessOptions::AddCommandLine(nsStringView sCmdLine)
 {
-  wdStringBuilder curArg;
+  nsStringBuilder curArg;
 
-  wdStringView cmdView(szCmdLine);
+  nsStringView cmdView = sCmdLine;
 
   bool isInString = false;
 
@@ -80,7 +80,7 @@ void wdProcessOptions::AddCommandLine(const char* szCmdLine)
   }
 }
 
-wdInt32 wdProcess::GetExitCode() const
+nsInt32 nsProcess::GetExitCode() const
 {
   if (m_iExitCode == -0xFFFF)
   {
@@ -91,11 +91,11 @@ wdInt32 wdProcess::GetExitCode() const
   return m_iExitCode;
 }
 
-void wdProcessOptions::BuildCommandLineString(wdStringBuilder& ref_sCmd) const
+void nsProcessOptions::BuildCommandLineString(nsStringBuilder& ref_sCmd) const
 {
   for (const auto& arg0 : m_Arguments)
   {
-    wdStringView arg = arg0;
+    nsStringView arg = arg0;
 
     while (arg.StartsWith("\""))
       arg.ChopAwayFirstCharacterAscii();
@@ -120,13 +120,11 @@ void wdProcessOptions::BuildCommandLineString(wdStringBuilder& ref_sCmd) const
   ref_sCmd.Trim(" ");
 }
 
-void wdProcess::BuildFullCommandLineString(const wdProcessOptions& opt, const char* szProcess, wdStringBuilder& cmd) const
+void nsProcess::BuildFullCommandLineString(const nsProcessOptions& opt, nsStringView sProcess, nsStringBuilder& cmd) const
 {
   // have to set the full path to the process as the very first argument
-  cmd.Set("\"", szProcess, "\"");
+  cmd.Set("\"", sProcess, "\"");
 
   opt.BuildCommandLineString(cmd);
 }
 #endif
-
-WD_STATICLINK_FILE(Foundation, Foundation_System_Implementation_Process);

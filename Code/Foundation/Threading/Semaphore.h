@@ -3,7 +3,7 @@
 #include <Foundation/Basics.h>
 #include <Foundation/Threading/Implementation/ThreadingDeclarations.h>
 
-/// \brief A semaphore is used to synchronize threads, similar to a mutex (see wdMutex).
+/// \brief A semaphore is used to synchronize threads, similar to a mutex (see nsMutex).
 ///
 /// There are three main differences to a mutex:
 /// 1. The thread that acquires a token from a semaphore and the one that returns a token, don't have to be the same.
@@ -12,26 +12,26 @@
 ///
 /// Semaphores are quite a bit slower than mutexes (10x or so), so don't use them unless you need the added flexibility.
 ///
-/// \sa wdMutex, wdConditionVariable
-class WD_FOUNDATION_DLL wdSemaphore
+/// \sa nsMutex, nsConditionVariable
+class NS_FOUNDATION_DLL nsSemaphore
 {
-  WD_DISALLOW_COPY_AND_ASSIGN(wdSemaphore);
+  NS_DISALLOW_COPY_AND_ASSIGN(nsSemaphore);
 
 public:
-  wdSemaphore();
-  ~wdSemaphore();
+  nsSemaphore();
+  ~nsSemaphore();
 
   /// \brief Attempts to create a new semaphore with an initial number of available tokens.
   ///
   /// If szSharedName is a non-empty string, a 'named' semaphore is created, which can be opened on other processes as well.
   ///
-  /// This call can fail, if a semaphore with the same name already exists. Use wdSemaphore::Open() instead.
-  wdResult Create(wdUInt32 uiInitialTokenCount = 0, wdStringView sSharedName = wdStringView());
+  /// This call can fail, if a semaphore with the same name already exists. Use nsSemaphore::Open() instead.
+  nsResult Create(nsUInt32 uiInitialTokenCount = 0, nsStringView sSharedName = nsStringView());
 
   /// \brief Attempts to open an existing named semaphore.
   ///
   /// Fails if no such semaphore exists.
-  wdResult Open(wdStringView sSharedName);
+  nsResult Open(nsStringView sSharedName);
 
   /// \brief Waits until a token is available and acquires it.
   ///
@@ -44,9 +44,9 @@ public:
   /// AcquireToken() and ReturnToken() may be called from different threads.
   void ReturnToken();
 
-  /// \brief Same as AcquireToken() but returns immediately with WD_FAILURE, if currently not tokens are available.
-  wdResult TryAcquireToken();
+  /// \brief Same as AcquireToken() but returns immediately with NS_FAILURE, if currently not tokens are available.
+  nsResult TryAcquireToken();
 
 private:
-  wdSemaphoreHandle m_hSemaphore = {};
+  nsSemaphoreHandle m_hSemaphore = {};
 };

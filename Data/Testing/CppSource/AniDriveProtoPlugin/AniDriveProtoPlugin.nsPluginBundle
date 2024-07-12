@@ -1,0 +1,13 @@
+PluginInfo
+{
+	bool %Mandatory{false}
+	string %DisplayName{"AniDriveProto"}
+	string %Description{"C++ code for the AniDriveProto project."}
+	string %EditorPlugins{}
+	string %EditorEnginePlugins{}
+	string %RuntimePlugins{"AniDriveProtoPlugin"}
+	string %PackageDependencies{}
+	string %RequiredPlugins{}
+	string %ExclusiveFeatures{"ProjectPlugin"}
+	string %EnabledInTemplates{}
+}

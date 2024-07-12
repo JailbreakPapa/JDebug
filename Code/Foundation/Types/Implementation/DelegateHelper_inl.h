@@ -1,70 +1,70 @@
 
-/// \brief [Internal] Storage for lambdas with captures in wdDelegate.
-struct WD_FOUNDATION_DLL wdLambdaDelegateStorageBase
+/// \brief [Internal] Storage for lambdas with captures in nsDelegate.
+struct NS_FOUNDATION_DLL nsLambdaDelegateStorageBase
 {
-  wdLambdaDelegateStorageBase() = default;
-  virtual ~wdLambdaDelegateStorageBase() = default;
-  virtual wdLambdaDelegateStorageBase* Clone(wdAllocatorBase* pAllocator) const = 0;
-  virtual void InplaceCopy(wdUInt8* pBuffer) const = 0;
-  virtual void InplaceMove(wdUInt8* pBuffer) = 0;
+  nsLambdaDelegateStorageBase() = default;
+  virtual ~nsLambdaDelegateStorageBase() = default;
+  virtual nsLambdaDelegateStorageBase* Clone(nsAllocator* pAllocator) const = 0;
+  virtual void InplaceCopy(nsUInt8* pBuffer) const = 0;
+  virtual void InplaceMove(nsUInt8* pBuffer) = 0;
 
 private:
-  wdLambdaDelegateStorageBase(const wdLambdaDelegateStorageBase&) = delete;
-  wdLambdaDelegateStorageBase& operator=(const wdLambdaDelegateStorageBase&) = delete;
-  wdLambdaDelegateStorageBase(wdLambdaDelegateStorageBase&&) = delete;
-  wdLambdaDelegateStorageBase& operator=(wdLambdaDelegateStorageBase&&) = delete;
+  nsLambdaDelegateStorageBase(const nsLambdaDelegateStorageBase&) = delete;
+  nsLambdaDelegateStorageBase& operator=(const nsLambdaDelegateStorageBase&) = delete;
+  nsLambdaDelegateStorageBase(nsLambdaDelegateStorageBase&&) = delete;
+  nsLambdaDelegateStorageBase& operator=(nsLambdaDelegateStorageBase&&) = delete;
 };
 
 template <typename Function>
-struct wdLambdaDelegateStorage : public wdLambdaDelegateStorageBase
+struct nsLambdaDelegateStorage : public nsLambdaDelegateStorageBase
 {
-  wdLambdaDelegateStorage(Function&& func)
+  nsLambdaDelegateStorage(Function&& func)
     : m_func(std::move(func))
   {
   }
 
 private:
   template <typename = typename std::enable_if<std::is_copy_constructible<Function>::value>>
-  wdLambdaDelegateStorage(const Function& func)
+  nsLambdaDelegateStorage(const Function& func)
     : m_func(func)
   {
   }
 
 public:
-  virtual wdLambdaDelegateStorageBase* Clone(wdAllocatorBase* pAllocator) const override
+  virtual nsLambdaDelegateStorageBase* Clone(nsAllocator* pAllocator) const override
   {
     if constexpr (std::is_copy_constructible<Function>::value)
     {
-      return WD_NEW(pAllocator, wdLambdaDelegateStorage<Function>, m_func);
+      return NS_NEW(pAllocator, nsLambdaDelegateStorage<Function>, m_func);
     }
     else
     {
-      WD_REPORT_FAILURE("The wdDelegate stores a lambda that is not copyable. Copying this wdDelegate is not supported.");
+      NS_REPORT_FAILURE("The nsDelegate stores a lambda that is not copyable. Copying this nsDelegate is not supported.");
       return nullptr;
     }
   }
 
-  virtual void InplaceCopy(wdUInt8* pBuffer) const override
+  virtual void InplaceCopy(nsUInt8* pBuffer) const override
   {
     if constexpr (std::is_copy_constructible<Function>::value)
     {
-      new (pBuffer) wdLambdaDelegateStorage<Function>(m_func);
+      new (pBuffer) nsLambdaDelegateStorage<Function>(m_func);
     }
     else
     {
-      WD_REPORT_FAILURE("The wdDelegate stores a lambda that is not copyable. Copying this wdDelegate is not supported.");
+      NS_REPORT_FAILURE("The nsDelegate stores a lambda that is not copyable. Copying this nsDelegate is not supported.");
     }
   }
 
-  virtual void InplaceMove(wdUInt8* pBuffer) override
+  virtual void InplaceMove(nsUInt8* pBuffer) override
   {
     if constexpr (std::is_move_constructible<Function>::value)
     {
-      new (pBuffer) wdLambdaDelegateStorage<Function>(std::move(m_func));
+      new (pBuffer) nsLambdaDelegateStorage<Function>(std::move(m_func));
     }
     else
     {
-      WD_REPORT_FAILURE("The wdDelegate stores a lambda that is not movable. Moving this wdDelegate is not supported.");
+      NS_REPORT_FAILURE("The nsDelegate stores a lambda that is not movable. Moving this nsDelegate is not supported.");
     }
   }
 
@@ -72,27 +72,27 @@ public:
 };
 
 
-template <typename R, class... Args, wdUInt32 DataSize>
-struct wdDelegate<R(Args...), DataSize> : public wdDelegateBase
+template <typename R, class... Args, nsUInt32 DataSize>
+struct nsDelegate<R(Args...), DataSize> : public nsDelegateBase
 {
 private:
-  using SelfType = wdDelegate<R(Args...), DataSize>;
+  using SelfType = nsDelegate<R(Args...), DataSize>;
   constexpr const void* HeapLambda() const { return reinterpret_cast<const void*>((size_t)-1); }
   constexpr const void* InplaceLambda() const { return reinterpret_cast<const void*>((size_t)-2); }
 
 public:
-  WD_ALWAYS_INLINE wdDelegate()
+  NS_ALWAYS_INLINE nsDelegate()
     : m_DispatchFunction(nullptr)
   {
   }
 
-  WD_ALWAYS_INLINE wdDelegate(const SelfType& other) { *this = other; }
+  NS_ALWAYS_INLINE nsDelegate(const SelfType& other) { *this = other; }
 
-  WD_ALWAYS_INLINE wdDelegate(SelfType&& other) { *this = std::move(other); }
+  NS_ALWAYS_INLINE nsDelegate(SelfType&& other) { *this = std::move(other); }
 
   /// \brief Constructs the delegate from a member function type and takes the class instance on which to call the function later.
   template <typename Method, typename Class>
-  WD_FORCE_INLINE wdDelegate(Method method, Class* pInstance)
+  NS_FORCE_INLINE nsDelegate(Method method, Class* pInstance)
   {
     CopyMemberFunctionToInplaceStorage(method);
 
@@ -102,7 +102,7 @@ public:
 
   /// \brief Constructs the delegate from a member function type and takes the (const) class instance on which to call the function later.
   template <typename Method, typename Class>
-  WD_FORCE_INLINE wdDelegate(Method method, const Class* pInstance)
+  NS_FORCE_INLINE nsDelegate(Method method, const Class* pInstance)
   {
     CopyMemberFunctionToInplaceStorage(method);
 
@@ -112,13 +112,13 @@ public:
 
   /// \brief Constructs the delegate from a regular C function type.
   template <typename Function>
-  WD_FORCE_INLINE wdDelegate(Function function, wdAllocatorBase* pAllocator = wdFoundation::GetDefaultAllocator())
+  NS_FORCE_INLINE nsDelegate(Function function, nsAllocator* pAllocator = nsFoundation::GetDefaultAllocator())
   {
-    WD_CHECK_AT_COMPILETIME_MSG(DataSize >= 16, "DataSize must be at least 16 bytes");
+    NS_CHECK_AT_COMPILETIME_MSG(DataSize >= 16, "DataSize must be at least 16 bytes");
 
     // Pure function pointers or lambdas that can be cast into pure functions (no captures) can be
     // copied directly into the inplace storage of the delegate.
-    // Lambdas with captures need to be wrapped into an wdLambdaDelegateStorage object as they can
+    // Lambdas with captures need to be wrapped into an nsLambdaDelegateStorage object as they can
     // capture non-pod or non-memmoveable data. This wrapper can also be stored inplace if it is small enough,
     // otherwise it will be heap allocated with the specified allocator.
     constexpr size_t functionSize = sizeof(Function);
@@ -142,18 +142,18 @@ public:
     }
     else
     {
-      constexpr size_t storageSize = sizeof(wdLambdaDelegateStorage<Function>);
+      constexpr size_t storageSize = sizeof(nsLambdaDelegateStorage<Function>);
       if constexpr (storageSize <= DataSize)
       {
         m_Instance.m_ConstPtr = InplaceLambda();
-        new (m_Data) wdLambdaDelegateStorage<Function>(std::move(function));
+        new (m_Data) nsLambdaDelegateStorage<Function>(std::move(function));
         memset(m_Data + storageSize, 0, DataSize - storageSize);
         m_DispatchFunction = &DispatchToInplaceLambda<Function>;
       }
       else
       {
         m_Instance.m_ConstPtr = HeapLambda();
-        m_pLambdaStorage = WD_NEW(pAllocator, wdLambdaDelegateStorage<Function>, std::move(function));
+        m_pLambdaStorage = NS_NEW(pAllocator, nsLambdaDelegateStorage<Function>, std::move(function));
         m_pAllocator = pAllocator;
         memset(m_Data + 2 * sizeof(void*), 0, DataSize - 2 * sizeof(void*));
         m_DispatchFunction = &DispatchToHeapLambda<Function>;
@@ -161,10 +161,10 @@ public:
     }
   }
 
-  WD_ALWAYS_INLINE ~wdDelegate() { Invalidate(); }
+  NS_ALWAYS_INLINE ~nsDelegate() { Invalidate(); }
 
   /// \brief Copies the data from another delegate.
-  WD_FORCE_INLINE void operator=(const SelfType& other)
+  NS_FORCE_INLINE void operator=(const SelfType& other)
   {
     Invalidate();
 
@@ -175,7 +175,7 @@ public:
     }
     else if (other.IsInplaceLambda())
     {
-      auto pOtherLambdaStorage = reinterpret_cast<wdLambdaDelegateStorageBase*>(&other.m_Data);
+      auto pOtherLambdaStorage = reinterpret_cast<nsLambdaDelegateStorageBase*>(&other.m_Data);
       pOtherLambdaStorage->InplaceCopy(m_Data);
     }
     else
@@ -188,7 +188,7 @@ public:
   }
 
   /// \brief Moves the data from another delegate.
-  WD_FORCE_INLINE void operator=(SelfType&& other)
+  NS_FORCE_INLINE void operator=(SelfType&& other)
   {
     Invalidate();
     m_Instance = other.m_Instance;
@@ -196,7 +196,7 @@ public:
 
     if (other.IsInplaceLambda())
     {
-      auto pOtherLambdaStorage = reinterpret_cast<wdLambdaDelegateStorageBase*>(&other.m_Data);
+      auto pOtherLambdaStorage = reinterpret_cast<nsLambdaDelegateStorageBase*>(&other.m_Data);
       pOtherLambdaStorage->InplaceMove(m_Data);
     }
     else
@@ -210,47 +210,47 @@ public:
   }
 
   /// \brief Resets a delegate to an invalid state.
-  WD_FORCE_INLINE void operator=(std::nullptr_t) { Invalidate(); }
+  NS_FORCE_INLINE void operator=(std::nullptr_t) { Invalidate(); }
 
   /// \brief Function call operator. This will call the function that is bound to the delegate, or assert if nothing was bound.
-  WD_FORCE_INLINE R operator()(Args... params) const
+  NS_FORCE_INLINE R operator()(Args... params) const
   {
-    WD_ASSERT_DEBUG(m_DispatchFunction != nullptr, "Delegate is not bound.");
+    NS_ASSERT_DEBUG(m_DispatchFunction != nullptr, "Delegate is not bound.");
     return (*m_DispatchFunction)(*this, params...);
   }
 
   /// \brief This function only exists to make code compile, but it will assert when used. Use IsEqualIfNotHeapAllocated() instead.
-  WD_ALWAYS_INLINE bool operator==(const SelfType& other) const
+  NS_ALWAYS_INLINE bool operator==(const SelfType& other) const
   {
-    WD_REPORT_FAILURE("operator== for wdDelegate must not be used. Use IsEqualIfNotHeapAllocated() and read its documentation!");
+    NS_REPORT_FAILURE("operator== for nsDelegate must not be used. Use IsEqualIfNotHeapAllocated() and read its documentation!");
     return false;
   }
 
   /// \brief Checks whether two delegates are bound to the exact same function, including the class instance.
   /// \note If \a this or \a other or both return false for IsComparable(), the function returns always false!
-  /// Therefore, do not use this to search for delegates that are not comparable. wdEvent uses this function, but goes to great lengths to
+  /// Therefore, do not use this to search for delegates that are not comparable. nsEvent uses this function, but goes to great lengths to
   /// assert that it is used correctly. It is best to not use this function at all.
-  WD_ALWAYS_INLINE bool IsEqualIfComparable(const SelfType& other) const
+  NS_ALWAYS_INLINE bool IsEqualIfComparable(const SelfType& other) const
   {
     return m_Instance.m_Ptr == other.m_Instance.m_Ptr && m_DispatchFunction == other.m_DispatchFunction &&
            memcmp(m_Data, other.m_Data, DataSize) == 0;
   }
 
   /// \brief Returns true when the delegate is bound to a valid non-nullptr function.
-  WD_ALWAYS_INLINE bool IsValid() const { return m_DispatchFunction != nullptr; }
+  NS_ALWAYS_INLINE bool IsValid() const { return m_DispatchFunction != nullptr; }
 
   /// \brief Resets a delegate to an invalid state.
-  WD_FORCE_INLINE void Invalidate()
+  NS_FORCE_INLINE void Invalidate()
   {
     m_DispatchFunction = nullptr;
     if (IsHeapLambda())
     {
-      WD_DELETE(m_pAllocator, m_pLambdaStorage);
+      NS_DELETE(m_pAllocator, m_pLambdaStorage);
     }
     else if (IsInplaceLambda())
     {
-      auto pLambdaStorage = reinterpret_cast<wdLambdaDelegateStorageBase*>(&m_Data);
-      pLambdaStorage->~wdLambdaDelegateStorageBase();
+      auto pLambdaStorage = reinterpret_cast<nsLambdaDelegateStorageBase*>(&m_Data);
+      pLambdaStorage->~nsLambdaDelegateStorageBase();
     }
 
     m_Instance.m_Ptr = nullptr;
@@ -258,27 +258,27 @@ public:
   }
 
   /// \brief Returns the class instance that is used to call a member function pointer on.
-  WD_ALWAYS_INLINE void* GetClassInstance() const { return IsComparable() ? m_Instance.m_Ptr : nullptr; }
+  NS_ALWAYS_INLINE void* GetClassInstance() const { return IsComparable() ? m_Instance.m_Ptr : nullptr; }
 
   /// \brief Returns whether the delegate is comparable with other delegates of the same type. This is not the case for i.e. lambdas with captures.
-  WD_ALWAYS_INLINE bool IsComparable() const { return m_Instance.m_ConstPtr < InplaceLambda(); } // [tested]
+  NS_ALWAYS_INLINE bool IsComparable() const { return m_Instance.m_ConstPtr < InplaceLambda(); } // [tested]
 
 private:
   template <typename Function>
-  WD_FORCE_INLINE void CopyFunctionToInplaceStorage(Function function)
+  NS_FORCE_INLINE void CopyFunctionToInplaceStorage(Function function)
   {
-    WD_ASSERT_DEBUG(
-      wdMemoryUtils::IsAligned(&m_Data, WD_ALIGNMENT_OF(Function)), "Wrong alignment. Expected {0} bytes alignment", WD_ALIGNMENT_OF(Function));
+    NS_ASSERT_DEBUG(
+      nsMemoryUtils::IsAligned(&m_Data, NS_ALIGNMENT_OF(Function)), "Wrong alignment. Expected {0} bytes alignment", NS_ALIGNMENT_OF(Function));
 
     memcpy(m_Data, &function, sizeof(Function));
     memset(m_Data + sizeof(Function), 0, DataSize - sizeof(Function));
   }
 
   template <typename Method>
-  WD_FORCE_INLINE void CopyMemberFunctionToInplaceStorage(Method method)
+  NS_FORCE_INLINE void CopyMemberFunctionToInplaceStorage(Method method)
   {
-    WD_CHECK_AT_COMPILETIME_MSG(DataSize >= 16, "DataSize must be at least 16 bytes");
-    WD_CHECK_AT_COMPILETIME_MSG(sizeof(Method) <= DataSize, "Member function pointer must not be bigger than 16 bytes");
+    NS_CHECK_AT_COMPILETIME_MSG(DataSize >= 16, "DataSize must be at least 16 bytes");
+    NS_CHECK_AT_COMPILETIME_MSG(sizeof(Method) <= DataSize, "Member function pointer must not be bigger than 16 bytes");
 
     CopyFunctionToInplaceStorage(method);
 
@@ -287,46 +287,46 @@ private:
     // to the final location by copying 16 bytes. Thus the 4 byte padding get a random value (whatever is on the stack at that time).
     // To make the delegate comparable by memcmp we zero out those 4 byte padding.
     // Apparently clang does the same on windows but not on linux etc.
-#if WD_ENABLED(WD_COMPILER_MSVC) || (WD_ENABLED(WD_PLATFORM_WINDOWS) && WD_ENABLED(WD_COMPILER_CLANG))
-    *reinterpret_cast<wdUInt32*>(m_Data + 12) = 0;
+#if NS_ENABLED(NS_COMPILER_MSVC) || (NS_ENABLED(NS_PLATFORM_WINDOWS) && NS_ENABLED(NS_COMPILER_CLANG))
+    *reinterpret_cast<nsUInt32*>(m_Data + 12) = 0;
 #endif
   }
 
-  WD_ALWAYS_INLINE bool IsInplaceLambda() const { return m_Instance.m_ConstPtr == InplaceLambda(); }
-  WD_ALWAYS_INLINE bool IsHeapLambda() const { return m_Instance.m_ConstPtr == HeapLambda(); }
+  NS_ALWAYS_INLINE bool IsInplaceLambda() const { return m_Instance.m_ConstPtr == InplaceLambda(); }
+  NS_ALWAYS_INLINE bool IsHeapLambda() const { return m_Instance.m_ConstPtr == HeapLambda(); }
 
   template <typename Method, typename Class>
-  static WD_FORCE_INLINE R DispatchToMethod(const SelfType& self, Args... params)
+  static NS_FORCE_INLINE R DispatchToMethod(const SelfType& self, Args... params)
   {
-    WD_ASSERT_DEBUG(self.m_Instance.m_Ptr != nullptr, "Instance must not be null.");
+    NS_ASSERT_DEBUG(self.m_Instance.m_Ptr != nullptr, "Instance must not be null.");
     Method method = *reinterpret_cast<Method*>(&self.m_Data);
     return (static_cast<Class*>(self.m_Instance.m_Ptr)->*method)(params...);
   }
 
   template <typename Method, typename Class>
-  static WD_FORCE_INLINE R DispatchToConstMethod(const SelfType& self, Args... params)
+  static NS_FORCE_INLINE R DispatchToConstMethod(const SelfType& self, Args... params)
   {
-    WD_ASSERT_DEBUG(self.m_Instance.m_ConstPtr != nullptr, "Instance must not be null.");
+    NS_ASSERT_DEBUG(self.m_Instance.m_ConstPtr != nullptr, "Instance must not be null.");
     Method method = *reinterpret_cast<Method*>(&self.m_Data);
     return (static_cast<const Class*>(self.m_Instance.m_ConstPtr)->*method)(params...);
   }
 
   template <typename Function>
-  static WD_ALWAYS_INLINE R DispatchToFunction(const SelfType& self, Args... params)
+  static NS_ALWAYS_INLINE R DispatchToFunction(const SelfType& self, Args... params)
   {
     return (*reinterpret_cast<Function*>(&self.m_Data))(params...);
   }
 
   template <typename Function>
-  static WD_ALWAYS_INLINE R DispatchToHeapLambda(const SelfType& self, Args... params)
+  static NS_ALWAYS_INLINE R DispatchToHeapLambda(const SelfType& self, Args... params)
   {
-    return static_cast<wdLambdaDelegateStorage<Function>*>(self.m_pLambdaStorage)->m_func(params...);
+    return static_cast<nsLambdaDelegateStorage<Function>*>(self.m_pLambdaStorage)->m_func(params...);
   }
 
   template <typename Function>
-  static WD_ALWAYS_INLINE R DispatchToInplaceLambda(const SelfType& self, Args... params)
+  static NS_ALWAYS_INLINE R DispatchToInplaceLambda(const SelfType& self, Args... params)
   {
-    return reinterpret_cast<wdLambdaDelegateStorage<Function>*>(&self.m_Data)->m_func(params...);
+    return reinterpret_cast<nsLambdaDelegateStorage<Function>*>(&self.m_Data)->m_func(params...);
   }
 
   using DispatchFunction = R (*)(const SelfType&, Args...);
@@ -334,28 +334,28 @@ private:
 
   union
   {
-    mutable wdUInt8 m_Data[DataSize];
+    mutable nsUInt8 m_Data[DataSize];
     struct
     {
-      wdLambdaDelegateStorageBase* m_pLambdaStorage;
-      wdAllocatorBase* m_pAllocator;
+      nsLambdaDelegateStorageBase* m_pLambdaStorage;
+      nsAllocator* m_pAllocator;
     };
   };
 };
 
 template <typename T>
-struct wdMakeDelegateHelper
+struct nsMakeDelegateHelper
 {
 };
 
 template <typename Class, typename R, typename... Args>
-struct wdMakeDelegateHelper<R (Class::*)(Args...)>
+struct nsMakeDelegateHelper<R (Class::*)(Args...)>
 {
-  using DelegateType = wdDelegate<R(Args...)>;
+  using DelegateType = nsDelegate<R(Args...)>;
 };
 
 template <typename Class, typename R, typename... Args>
-struct wdMakeDelegateHelper<R (Class::*)(Args...) const>
+struct nsMakeDelegateHelper<R (Class::*)(Args...) const>
 {
-  using DelegateType = wdDelegate<R(Args...)>;
+  using DelegateType = nsDelegate<R(Args...)>;
 };

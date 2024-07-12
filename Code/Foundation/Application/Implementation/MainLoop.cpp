@@ -2,56 +2,71 @@
 
 #include <Foundation/Application/Application.h>
 #include <Foundation/Configuration/Startup.h>
-#include <Foundation/Profiling/Profiling.h>
-wdResult wdRun_Startup(wdApplication* pApplicationInstance)
-{
-  
 
-  WD_ASSERT_ALWAYS(pApplicationInstance != nullptr, "wdRun() requires a valid non-null application instance pointer.");
-  WD_ASSERT_ALWAYS(wdApplication::s_pApplicationInstance == nullptr, "There can only be one wdApplication.");
+#if defined(LIVEPP_ENABLED)
+#  include <LPP_API_x64_CPP.h>
+inline bool allow_hotreload = false;
+inline lpp::LppDefaultAgent lppAgent;
+#endif
+
+nsResult nsRun_Startup(nsApplication* pApplicationInstance)
+{
+#if NS_ENABLED(NS_COMPILE_FOR_DEVELOPMENT) && defined(LIVEPP_ENABLED)
+  // create a synchronized agent, loading the Live++ agent from the given path, e.g. "ThirdParty/LivePP"
+  lppAgent = lpp::LppCreateDefaultAgent(nullptr, L"LivePP");
+  // bail out in case the agent is not valid
+  if (!lpp::LppIsValidDefaultAgent(&lppAgent))
+  {
+    nsLog::Warning("Failed to create Live++ agent.");
+  }
+  else
+  {
+    nsLog::Info("Live++ agent created.");
+    allow_hotreload = true;
+    lppAgent.EnableModule(lpp::LppGetCurrentModulePath(), lpp::LPP_MODULES_OPTION_NONE, nullptr, nullptr);
+    // make Live++ handle dynamically loaded modules automatically, enabling them on load, disabling them on unload
+    lppAgent.EnableAutomaticHandlingOfDynamicallyLoadedModules(nullptr, nullptr);
+  }
+#endif
+  NS_ASSERT_ALWAYS(pApplicationInstance != nullptr, "nsRun() requires a valid non-null application instance pointer.");
+  NS_ASSERT_ALWAYS(nsApplication::s_pApplicationInstance == nullptr, "There can only be one nsApplication.");
 
   // Set application instance pointer to the supplied instance
-  wdApplication::s_pApplicationInstance = pApplicationInstance;
+  nsApplication::s_pApplicationInstance = pApplicationInstance;
 
-  WD_SUCCEED_OR_RETURN(pApplicationInstance->BeforeCoreSystemsStartup());
+  NS_SUCCEED_OR_RETURN(pApplicationInstance->BeforeCoreSystemsStartup());
 
   // this will startup all base and core systems
   // 'StartupHighLevelSystems' must not be done before a window is available (if at all)
   // so we don't do that here
-  wdStartup::StartupCoreSystems();
+  nsStartup::StartupCoreSystems();
 
   pApplicationInstance->AfterCoreSystemsStartup();
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
-void wdRun_MainLoop(wdApplication* pApplicationInstance)
+void nsRun_MainLoop(nsApplication* pApplicationInstance)
 {
-#ifdef USE_OPTICK
-    while (pApplicationInstance->Run() == wdApplication::Execution::Continue)
-    {
-      OPTICK_FRAME("MainThread")
-    }
-  #else
-    while (pApplicationInstance->Run() == wdApplication::Execution::Continue)
-    {
-    }
-  #endif
+  while (pApplicationInstance->Run() == nsApplication::Execution::Continue)
+  {
+    // do nothing
+  }
 }
 
-void wdRun_Shutdown(wdApplication* pApplicationInstance)
+void nsRun_Shutdown(nsApplication* pApplicationInstance)
 {
   // high level systems shutdown
   // may do nothing, if the high level systems were never initialized
   {
     pApplicationInstance->BeforeHighLevelSystemsShutdown();
-    wdStartup::ShutdownHighLevelSystems();
+    nsStartup::ShutdownHighLevelSystems();
     pApplicationInstance->AfterHighLevelSystemsShutdown();
   }
 
   // core systems shutdown
   {
     pApplicationInstance->BeforeCoreSystemsShutdown();
-    wdStartup::ShutdownCoreSystems();
+    nsStartup::ShutdownCoreSystems();
     pApplicationInstance->AfterCoreSystemsShutdown();
   }
 
@@ -61,26 +76,22 @@ void wdRun_Shutdown(wdApplication* pApplicationInstance)
 
   // Reset application instance so code running after the app will trigger asserts etc. to be cleaned up
   // Destructor is called by entry point function
-  wdApplication::s_pApplicationInstance = nullptr;
+  nsApplication::s_pApplicationInstance = nullptr;
+
+  #if NS_ENABLED(NS_COMPILE_FOR_DEVELOPMENT) && defined(LIVEPP_ENABLED)
+  // destroy the Live++ agent
+  lpp::LppDestroyDefaultAgent(&lppAgent);
+#endif
 
   // memory leak reporting cannot be done here, because the application instance is still alive and may still hold on to memory that needs
   // to be freed first
-
-  #ifdef USE_OPTICK
-    // Release Optick
-    OPTICK_SHUTDOWN();
-  #endif
 }
 
-void wdRun(wdApplication* pApplicationInstance)
+void nsRun(nsApplication* pApplicationInstance)
 {
-   WD_OPTICK_PROFILE_EVENT("Application Start")
-  if (wdRun_Startup(pApplicationInstance).Succeeded())
+  if (nsRun_Startup(pApplicationInstance).Succeeded())
   {
-    wdRun_MainLoop(pApplicationInstance);
+    nsRun_MainLoop(pApplicationInstance);
   }
-  WD_OPTICK_PROFILE_EVENT("Application Shutdown")
-  wdRun_Shutdown(pApplicationInstance);
+  nsRun_Shutdown(pApplicationInstance);
 }
-
-WD_STATICLINK_FILE(Foundation, Foundation_Application_Implementation_MainLoop);

@@ -6,12 +6,12 @@
 #include <Foundation/Threading/Implementation/TaskWorkerThread.h>
 #include <Foundation/Threading/TaskSystem.h>
 
-wdMutex wdTaskSystem::s_TaskSystemMutex;
-wdUniquePtr<wdTaskSystemState> wdTaskSystem::s_pState;
-wdUniquePtr<wdTaskSystemThreadState> wdTaskSystem::s_pThreadState;
+nsMutex nsTaskSystem::s_TaskSystemMutex;
+nsUniquePtr<nsTaskSystemState> nsTaskSystem::s_pState;
+nsUniquePtr<nsTaskSystemThreadState> nsTaskSystem::s_pThreadState;
 
 // clang-format off
-WD_BEGIN_SUBSYSTEM_DECLARATION(Foundation, TaskSystem)
+NS_BEGIN_SUBSYSTEM_DECLARATION(Foundation, TaskSystem)
 
   BEGIN_SUBSYSTEM_DEPENDENCIES
     "ThreadUtils",
@@ -20,40 +20,46 @@ WD_BEGIN_SUBSYSTEM_DECLARATION(Foundation, TaskSystem)
 
   ON_CORESYSTEMS_STARTUP
   {
-    wdTaskSystem::Startup();
+    if (nsStartup::HasApplicationTag("NoTaskSystem"))
+      return;
+
+    nsTaskSystem::Startup();
   }
 
   ON_CORESYSTEMS_SHUTDOWN
   {
-    wdTaskSystem::Shutdown();
+    nsTaskSystem::Shutdown();
   }
 
-WD_END_SUBSYSTEM_DECLARATION;
+NS_END_SUBSYSTEM_DECLARATION;
 // clang-format on
 
-void wdTaskSystem::Startup()
+void nsTaskSystem::Startup()
 {
-  s_pThreadState = WD_DEFAULT_NEW(wdTaskSystemThreadState);
-  s_pState = WD_DEFAULT_NEW(wdTaskSystemState);
+  s_pThreadState = NS_DEFAULT_NEW(nsTaskSystemThreadState);
+  s_pState = NS_DEFAULT_NEW(nsTaskSystemState);
 
-  tl_TaskWorkerInfo.m_WorkerType = wdWorkerThreadType::MainThread;
+  tl_TaskWorkerInfo.m_WorkerType = nsWorkerThreadType::MainThread;
   tl_TaskWorkerInfo.m_iWorkerIndex = 0;
 
   // initialize with the default number of worker threads
   SetWorkerThreadCount();
 }
 
-void wdTaskSystem::Shutdown()
+void nsTaskSystem::Shutdown()
 {
+  if (s_pThreadState == nullptr)
+    return;
+
   StopWorkerThreads();
 
   s_pState.Clear();
   s_pThreadState.Clear();
 }
 
-void wdTaskSystem::SetTargetFrameTime(wdTime targetFrameTime)
+void nsTaskSystem::SetTargetFrameTime(nsTime targetFrameTime)
 {
   s_pState->m_TargetFrameTime = targetFrameTime;
 }
 
-WD_STATICLINK_FILE(Foundation, Foundation_Threading_Implementation_TaskSystem);
+NS_STATICLINK_FILE(Foundation, Foundation_Threading_Implementation_TaskSystem);

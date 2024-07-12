@@ -3,32 +3,32 @@
 #include <Foundation/Communication/GlobalEvent.h>
 #include <Foundation/Logging/Log.h>
 
-WD_ENUMERABLE_CLASS_IMPLEMENTATION(wdGlobalEvent);
+NS_ENUMERABLE_CLASS_IMPLEMENTATION(nsGlobalEvent);
 
-wdGlobalEvent::EventMap wdGlobalEvent::s_KnownEvents;
+nsGlobalEvent::EventMap nsGlobalEvent::s_KnownEvents;
 
-wdGlobalEvent::EventData::EventData()
+nsGlobalEvent::EventData::EventData()
 {
   m_uiNumTimesFired = 0;
   m_uiNumEventHandlersOnce = 0;
   m_uiNumEventHandlersRegular = 0;
 }
 
-wdGlobalEvent::wdGlobalEvent(const char* szEventName, WD_GLOBAL_EVENT_HANDLER handler, bool bOnlyOnce)
+nsGlobalEvent::nsGlobalEvent(nsStringView sEventName, NS_GLOBAL_EVENT_HANDLER handler, bool bOnlyOnce)
 {
-  m_szEventName = szEventName;
+  m_sEventName = sEventName;
   m_bOnlyOnce = bOnlyOnce;
   m_bHasBeenFired = false;
   m_EventHandler = handler;
 }
 
-void wdGlobalEvent::Broadcast(const char* szEventName, wdVariant p1, wdVariant p2, wdVariant p3, wdVariant p4)
+void nsGlobalEvent::Broadcast(nsStringView sEventName, nsVariant p1, nsVariant p2, nsVariant p3, nsVariant p4)
 {
-  wdGlobalEvent* pHandler = wdGlobalEvent::GetFirstInstance();
+  nsGlobalEvent* pHandler = nsGlobalEvent::GetFirstInstance();
 
   while (pHandler)
   {
-    if (wdStringUtils::IsEqual(pHandler->m_szEventName, szEventName))
+    if (pHandler->m_sEventName == sEventName)
     {
       if (!pHandler->m_bOnlyOnce || !pHandler->m_bHasBeenFired)
       {
@@ -42,11 +42,11 @@ void wdGlobalEvent::Broadcast(const char* szEventName, wdVariant p1, wdVariant p
   }
 
 
-  EventData& ed = s_KnownEvents[szEventName]; // this will make sure to record all fired events, even if there are no handlers for them
+  EventData& ed = s_KnownEvents[sEventName]; // this will make sure to record all fired events, even if there are no handlers for them
   ed.m_uiNumTimesFired++;
 }
 
-void wdGlobalEvent::UpdateGlobalEventStatistics()
+void nsGlobalEvent::UpdateGlobalEventStatistics()
 {
   for (EventMap::Iterator it = s_KnownEvents.GetIterator(); it.IsValid(); ++it)
   {
@@ -54,11 +54,11 @@ void wdGlobalEvent::UpdateGlobalEventStatistics()
     it.Value().m_uiNumEventHandlersOnce = 0;
   }
 
-  wdGlobalEvent* pHandler = wdGlobalEvent::GetFirstInstance();
+  nsGlobalEvent* pHandler = nsGlobalEvent::GetFirstInstance();
 
   while (pHandler)
   {
-    EventData& ed = s_KnownEvents[pHandler->m_szEventName];
+    EventData& ed = s_KnownEvents[pHandler->m_sEventName];
 
     if (pHandler->m_bOnlyOnce)
       ++ed.m_uiNumEventHandlersOnce;
@@ -69,23 +69,19 @@ void wdGlobalEvent::UpdateGlobalEventStatistics()
   }
 }
 
-void wdGlobalEvent::PrintGlobalEventStatistics()
+void nsGlobalEvent::PrintGlobalEventStatistics()
 {
   UpdateGlobalEventStatistics();
 
-  WD_LOG_BLOCK("Global Event Statistics");
+  NS_LOG_BLOCK("Global Event Statistics");
 
   EventMap::Iterator it = s_KnownEvents.GetIterator();
 
   while (it.IsValid())
   {
-    wdLog::Info("Event: '{0}', Num Handlers Regular / Once: {1} / {2}, Num Times Fired: {3}", it.Key(), it.Value().m_uiNumEventHandlersRegular,
+    nsLog::Info("Event: '{0}', Num Handlers Regular / Once: {1} / {2}, Num Times Fired: {3}", it.Key(), it.Value().m_uiNumEventHandlersRegular,
       it.Value().m_uiNumEventHandlersOnce, it.Value().m_uiNumTimesFired);
 
     ++it;
   }
 }
-
-
-
-WD_STATICLINK_FILE(Foundation, Foundation_Communication_Implementation_GlobalEvent);

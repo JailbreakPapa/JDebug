@@ -3,75 +3,65 @@
 #include <Foundation/Profiling/Profiling.h>
 #include <Foundation/Threading/Thread.h>
 
-wdEvent<const wdThreadEvent&, wdMutex> wdThread::s_ThreadEvents;
+nsEvent<const nsThreadEvent&, nsMutex> nsThread::s_ThreadEvents;
 
-wdThread::wdThread(const char* szName /*= "wdThread"*/, wdUInt32 uiStackSize /*= 128 * 1024*/)
-  : wdOSThread(wdThreadClassEntryPoint, this, szName, uiStackSize)
-  , m_ThreadStatus(Created)
-  , m_sName(szName)
+thread_local nsThread* g_pCurrentThread = nullptr;
+
+const nsThread* nsThread::GetCurrentThread()
 {
-  wdThreadEvent e;
-  e.m_pThread = this;
-  e.m_Type = wdThreadEvent::Type::ThreadCreated;
-  wdThread::s_ThreadEvents.Broadcast(e, 255);
+  return g_pCurrentThread;
 }
 
-wdThread::~wdThread()
+nsThread::nsThread(nsStringView sName /*= "nsThread"*/, nsUInt32 uiStackSize /*= 128 * 1024*/)
+  : nsOSThread(nsThreadClassEntryPoint, this, sName, uiStackSize)
+  , m_sName(sName)
 {
-  WD_ASSERT_DEV(!IsRunning(), "Thread deletion while still running detected!");
-
-  wdThreadEvent e;
+  nsThreadEvent e;
   e.m_pThread = this;
-  e.m_Type = wdThreadEvent::Type::ThreadDestroyed;
-  wdThread::s_ThreadEvents.Broadcast(e, 255);
+  e.m_Type = nsThreadEvent::Type::ThreadCreated;
+  nsThread::s_ThreadEvents.Broadcast(e, 255);
 }
 
-// Deactivate Doxygen document generation for the following block.
-/// \cond
+nsThread::~nsThread()
+{
+  NS_ASSERT_DEV(!IsRunning(), "Thread deletion while still running detected!");
 
-wdUInt32 RunThread(wdThread* pThread)
+  nsThreadEvent e;
+  e.m_pThread = this;
+  e.m_Type = nsThreadEvent::Type::ThreadDestroyed;
+  nsThread::s_ThreadEvents.Broadcast(e, 255);
+}
+
+nsUInt32 RunThread(nsThread* pThread)
 {
   if (pThread == nullptr)
     return 0;
 
-  wdProfilingSystem::SetThreadName(pThread->m_sName.GetData());
+  g_pCurrentThread = pThread;
+  nsProfilingSystem::SetThreadName(pThread->m_sName.GetView());
 
   {
-    wdThreadEvent e;
+    nsThreadEvent e;
     e.m_pThread = pThread;
-    e.m_Type = wdThreadEvent::Type::StartingExecution;
-    wdThread::s_ThreadEvents.Broadcast(e, 255);
+    e.m_Type = nsThreadEvent::Type::StartingExecution;
+    nsThread::s_ThreadEvents.Broadcast(e, 255);
   }
 
-  pThread->m_ThreadStatus = wdThread::Running;
+  pThread->m_ThreadStatus = nsThread::Running;
 
   // Run the worker thread function
-  wdUInt32 uiReturnCode = pThread->Run();
+  nsUInt32 uiReturnCode = pThread->Run();
 
   {
-    wdThreadEvent e;
+    nsThreadEvent e;
     e.m_pThread = pThread;
-    e.m_Type = wdThreadEvent::Type::FinishedExecution;
-    wdThread::s_ThreadEvents.Broadcast(e, 255);
+    e.m_Type = nsThreadEvent::Type::FinishedExecution;
+    nsThread::s_ThreadEvents.Broadcast(e, 255);
   }
 
-  pThread->m_ThreadStatus = wdThread::Finished;
+  pThread->m_ThreadStatus = nsThread::Finished;
 
-  wdProfilingSystem::RemoveThread();
+  nsProfilingSystem::RemoveThread();
 
   return uiReturnCode;
 }
-
-/// \endcond
-
-// Include inline file
-#if WD_ENABLED(WD_PLATFORM_WINDOWS)
-#  include <Foundation/Threading/Implementation/Win/Thread_win.h>
-#elif WD_ENABLED(WD_PLATFORM_OSX) || WD_ENABLED(WD_PLATFORM_LINUX) || WD_ENABLED(WD_PLATFORM_ANDROID)
-#  include <Foundation/Threading/Implementation/Posix/Thread_posix.h>
-#else
-#  error "Runnable thread entry functions are not implemented on current platform"
-#endif
-
-
-WD_STATICLINK_FILE(Foundation, Foundation_Threading_Implementation_Thread);

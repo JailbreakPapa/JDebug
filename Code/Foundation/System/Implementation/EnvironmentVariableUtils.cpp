@@ -7,70 +7,59 @@
 #include <Foundation/Utilities/ConversionUtils.h>
 
 // The POSIX functions are not thread safe by definition.
-static wdMutex s_EnvVarMutex;
+static nsMutex s_EnvVarMutex;
 
 
-wdString wdEnvironmentVariableUtils::GetValueString(const char* szName, const char* szDefault /*= nullptr*/)
+nsString nsEnvironmentVariableUtils::GetValueString(nsStringView sName, nsStringView sDefault /*= nullptr*/)
 {
-  WD_ASSERT_DEV(!wdStringUtils::IsNullOrEmpty(szName), "Null or empty name passed to wdEnvironmentVariableUtils::GetValueString()");
+  NS_ASSERT_DEV(!sName.IsEmpty(), "Null or empty name passed to nsEnvironmentVariableUtils::GetValueString()");
 
-  WD_LOCK(s_EnvVarMutex);
+  NS_LOCK(s_EnvVarMutex);
 
-  return GetValueStringImpl(szName, szDefault);
+  return GetValueStringImpl(sName, sDefault);
 }
 
-wdResult wdEnvironmentVariableUtils::SetValueString(const char* szName, const char* szValue)
+nsResult nsEnvironmentVariableUtils::SetValueString(nsStringView sName, nsStringView sValue)
 {
-  WD_LOCK(s_EnvVarMutex);
+  NS_LOCK(s_EnvVarMutex);
 
-  return SetValueStringImpl(szName, szValue);
+  return SetValueStringImpl(sName, sValue);
 }
 
-wdInt32 wdEnvironmentVariableUtils::GetValueInt(const char* szName, wdInt32 iDefault /*= -1*/)
+nsInt32 nsEnvironmentVariableUtils::GetValueInt(nsStringView sName, nsInt32 iDefault /*= -1*/)
 {
-  WD_LOCK(s_EnvVarMutex);
+  NS_LOCK(s_EnvVarMutex);
 
-  wdString value = GetValueString(szName);
+  nsString value = GetValueString(sName);
 
   if (value.IsEmpty())
     return iDefault;
 
-  wdInt32 iRetVal = 0;
-  if (wdConversionUtils::StringToInt(value, iRetVal).Succeeded())
+  nsInt32 iRetVal = 0;
+  if (nsConversionUtils::StringToInt(value, iRetVal).Succeeded())
     return iRetVal;
   else
     return iDefault;
 }
 
-wdResult wdEnvironmentVariableUtils::SetValueInt(const char* szName, wdInt32 iValue)
+nsResult nsEnvironmentVariableUtils::SetValueInt(nsStringView sName, nsInt32 iValue)
 {
-  wdStringBuilder sb;
-  sb.Format("{}", iValue);
+  nsStringBuilder sb;
+  sb.SetFormat("{}", iValue);
 
-  return SetValueString(szName, sb);
+  return SetValueString(sName, sb);
 }
 
-bool wdEnvironmentVariableUtils::IsVariableSet(const char* szName)
+bool nsEnvironmentVariableUtils::IsVariableSet(nsStringView sName)
 {
-  WD_LOCK(s_EnvVarMutex);
+  NS_LOCK(s_EnvVarMutex);
 
-  return IsVariableSetImpl(szName);
+  return IsVariableSetImpl(sName);
 }
 
-wdResult wdEnvironmentVariableUtils::UnsetVariable(const char* szName)
+nsResult nsEnvironmentVariableUtils::UnsetVariable(nsStringView sName)
 {
-  WD_LOCK(s_EnvVarMutex);
+  NS_LOCK(s_EnvVarMutex);
 
-  return UnsetVariableImpl(szName);
+  return UnsetVariableImpl(sName);
 }
-
-#if WD_ENABLED(WD_PLATFORM_WINDOWS_DESKTOP)
-#  include <Foundation/System/Implementation/Win/EnvironmentVariableUtils_win.h>
-#elif WD_ENABLED(WD_PLATFORM_WINDOWS_UWP)
-#  include <Foundation/System/Implementation/Win/EnvironmentVariableUtils_win_uwp.h>
-#else
-#  include <Foundation/System/Implementation/Posix/EnvironmentVariableUtils_posix.h>
-#endif
-
-
-WD_STATICLINK_FILE(Foundation, Foundation_System_Implementation_EnvironmentVariableUtils);

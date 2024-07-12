@@ -3,39 +3,39 @@
 #include <Foundation/IO/FileSystem/FileWriter.h>
 #include <Foundation/Logging/Log.h>
 
-namespace wdLogWriter
+namespace nsLogWriter
 {
 
   /// \brief A log writer that writes out log messages to an HTML file.
   ///
-  /// Create an instance of this class, register the LogMessageHandler at wdLog and pass the pointer
+  /// Create an instance of this class, register the LogMessageHandler at nsLog and pass the pointer
   /// to the instance as the pPassThrough argument to it.
-  class WD_FOUNDATION_DLL HTML
+  class NS_FOUNDATION_DLL HTML
   {
   public:
     ~HTML();
 
-    /// \brief Register this at wdLog to write all log messages to an HTML file.
-    void LogMessageHandler(const wdLoggingEventData& eventData);
+    /// \brief Register this at nsLog to write all log messages to an HTML file.
+    void LogMessageHandler(const nsLoggingEventData& eventData);
 
     /// \brief Opens the given file for writing the log. From now on all incoming log messages are written into it.
-    void BeginLog(wdStringView sFile, wdStringView sAppTitle);
+    void BeginLog(nsStringView sFile, nsStringView sAppTitle);
 
     /// \brief Closes the HTML file and stops logging the incoming message.
     void EndLog();
 
     /// \brief Returns the name of the log-file that was really opened. Might be slightly different than what was given to BeginLog, to allow parallel
     /// execution of the same application.
-    const wdFileWriter& GetOpenedLogFile() const;
+    const nsFileWriter& GetOpenedLogFile() const;
 
     /// \brief Allows to indicate in what form timestamps should be added to log messages.
-    void SetTimestampMode(wdLog::TimestampMode mode);
+    void SetTimestampMode(nsLog::TimestampMode mode);
 
   private:
-    void WriteString(wdStringView sText, wdUInt32 uiColor);
+    void WriteString(nsStringView sText, nsUInt32 uiColor);
 
-    wdFileWriter m_File;
+    nsFileWriter m_File;
 
-    wdLog::TimestampMode m_TimestampMode = wdLog::TimestampMode::None;
+    nsLog::TimestampMode m_TimestampMode = nsLog::TimestampMode::None;
   };
-} // namespace wdLogWriter
+} // namespace nsLogWriter

@@ -1,11 +1,11 @@
 #include <Foundation/FoundationInternal.h>
-WD_FOUNDATION_INTERNAL_HEADER
+NS_FOUNDATION_INTERNAL_HEADER
 
 #include <Foundation/Logging/Log.h>
 #include <Foundation/System/Process.h>
 #include <future>
 
-struct wdPipeWin
+struct nsPipeWin
 {
   HANDLE m_pipeRead = nullptr;
   HANDLE m_pipeWrite = nullptr;
@@ -28,11 +28,11 @@ struct wdPipeWin
 
     // Create a pipe for the child process.
     if (!CreatePipe(&m_pipeRead, &m_pipeWrite, &saAttr, 0))
-      wdLog::Error("wdPipeWin: CreatePipe failed");
+      nsLog::Error("nsPipeWin: CreatePipe failed");
 
     // Ensure the read handle to the pipe is not inherited.
     if (!SetHandleInformation(m_pipeRead, HANDLE_FLAG_INHERIT, 0))
-      wdLog::Error("Stdout SetHandleInformation");
+      nsLog::Error("Stdout SetHandleInformation");
   }
 
   void Close()
@@ -51,17 +51,17 @@ struct wdPipeWin
     }
   }
 
-  static void ReportString(wdDelegate<void(wdStringView)> func, wdHybridArray<char, 256>& temp)
+  static void ReportString(nsDelegate<void(nsStringView)> func, nsHybridArray<char, 256>& ref_temp)
   {
-    wdStringBuilder result;
+    nsStringBuilder result;
 
-    wdUnicodeUtils::RepairNonUtf8Text(temp.GetData(), temp.GetData() + temp.GetCount(), result);
+    nsUnicodeUtils::RepairNonUtf8Text(ref_temp.GetData(), ref_temp.GetData() + ref_temp.GetCount(), result);
     func(result);
   }
 
-  static void ReportString(wdDelegate<void(wdStringView)> func, const char* szStart, const char* szEnd)
+  static void ReportString(nsDelegate<void(nsStringView)> func, const char* szStart, const char* szEnd)
   {
-    wdHybridArray<char, 256> tmp;
+    nsHybridArray<char, 256> tmp;
 
     while (szStart < szEnd)
     {
@@ -72,87 +72,88 @@ struct wdPipeWin
     ReportString(func, tmp);
   }
 
-  void StartRead(wdDelegate<void(wdStringView)>& ref_onStdOut)
+  void StartRead(nsDelegate<void(nsStringView)>& ref_onStdOut)
   {
     if (m_pipeWrite)
     {
       m_running = true;
-      m_readThread = std::thread([&]() {
-        wdHybridArray<char, 256> overflowBuffer;
-
-        constexpr int BUFSIZE = 512;
-        char chBuf[BUFSIZE];
-        while (true)
+      m_readThread = std::thread([&]()
         {
-          DWORD bytesRead = 0;
-          bool res = ReadFile(m_pipeRead, chBuf, BUFSIZE, &bytesRead, nullptr);
-          if (!res || bytesRead == 0)
-          {
-            if (!overflowBuffer.IsEmpty())
-            {
-              ReportString(ref_onStdOut, overflowBuffer);
-            }
-            break;
-          }
+          nsHybridArray<char, 256> overflowBuffer;
 
-          const char* szCurrentPos = chBuf;
-          const char* szEndPos = chBuf + bytesRead;
-
-          while (szCurrentPos < szEndPos)
+          constexpr int BUFSIZE = 512;
+          char chBuf[BUFSIZE];
+          while (true)
           {
-            const char* szFound = wdStringUtils::FindSubString(szCurrentPos, "\n", szEndPos);
-            if (szFound)
+            DWORD bytesRead = 0;
+            bool res = ReadFile(m_pipeRead, chBuf, BUFSIZE, &bytesRead, nullptr);
+            if (!res || bytesRead == 0)
             {
-              if (overflowBuffer.IsEmpty())
+              if (!overflowBuffer.IsEmpty())
               {
-                // If there is nothing in the overflow buffer this is a complete line and can be fired as is.
-                ReportString(ref_onStdOut, szCurrentPos, szFound + 1);
+                ReportString(ref_onStdOut, overflowBuffer);
+              }
+              break;
+            }
+
+            const char* szCurrentPos = chBuf;
+            const char* szEndPos = chBuf + bytesRead;
+
+            while (szCurrentPos < szEndPos)
+            {
+              const char* szFound = nsStringUtils::FindSubString(szCurrentPos, "\n", szEndPos);
+              if (szFound)
+              {
+                if (overflowBuffer.IsEmpty())
+                {
+                  // If there is nothing in the overflow buffer this is a complete line and can be fired as is.
+                  ReportString(ref_onStdOut, szCurrentPos, szFound + 1);
+                }
+                else
+                {
+                  // We have data in the overflow buffer so this is the final part of a partial line so we need to complete and fire the overflow buffer.
+
+                  while (szCurrentPos < szFound + 1)
+                  {
+                    overflowBuffer.PushBack(*szCurrentPos);
+                    ++szCurrentPos;
+                  }
+
+                  ReportString(ref_onStdOut, overflowBuffer);
+
+                  overflowBuffer.Clear();
+                }
+
+                szCurrentPos = szFound + 1;
               }
               else
               {
-                // We have data in the overflow buffer so this is the final part of a partial line so we need to complete and fire the overflow buffer.
+                // This is either the start or a middle segment of a line, append to overflow buffer.
 
-                while (szCurrentPos < szFound + 1)
+                while (szCurrentPos < szEndPos)
                 {
                   overflowBuffer.PushBack(*szCurrentPos);
                   ++szCurrentPos;
                 }
-
-                ReportString(ref_onStdOut, overflowBuffer);
-
-                overflowBuffer.Clear();
-              }
-
-              szCurrentPos = szFound + 1;
-            }
-            else
-            {
-              // This is either the start or a middle segment of a line, append to overflow buffer.
-
-              while (szCurrentPos < szEndPos)
-              {
-                overflowBuffer.PushBack(*szCurrentPos);
-                ++szCurrentPos;
               }
             }
           }
-        }
-        m_running = false;
-        //
-      });
+          m_running = false;
+          //
+        });
     }
   }
 };
 
-struct wdProcessImpl
+struct nsProcessImpl
 {
-  wdOsProcessHandle m_ProcessHandle = nullptr;
-  wdOsProcessHandle m_MainThreadHandle = nullptr;
-  wdOsProcessID m_ProcessID = 0;
-  wdPipeWin m_pipeStdOut;
-  wdPipeWin m_pipeStdErr;
+  nsOsProcessHandle m_ProcessHandle = nullptr;
+  nsOsProcessHandle m_MainThreadHandle = nullptr;
+  nsOsProcessID m_ProcessID = 0;
+  nsPipeWin m_pipeStdOut;
+  nsPipeWin m_pipeStdErr;
 
-  ~wdProcessImpl() { Close(); }
+  ~nsProcessImpl() { Close(); }
 
   void Close()
   {
@@ -173,16 +174,16 @@ struct wdProcessImpl
   }
 };
 
-wdProcess::wdProcess()
+nsProcess::nsProcess()
 {
-  m_pImpl = WD_DEFAULT_NEW(wdProcessImpl);
+  m_pImpl = NS_DEFAULT_NEW(nsProcessImpl);
 }
 
-wdProcess::~wdProcess()
+nsProcess::~nsProcess()
 {
-  if (GetState() == wdProcessState::Running)
+  if (GetState() == nsProcessState::Running)
   {
-    wdLog::Dev("Process still running - terminating '{}'", m_sProcess);
+    nsLog::Dev("Process still running - terminating '{}'", m_sProcess);
 
     Terminate().IgnoreResult();
   }
@@ -192,19 +193,19 @@ wdProcess::~wdProcess()
   m_pImpl.Clear();
 }
 
-wdOsProcessHandle wdProcess::GetProcessHandle() const
+nsOsProcessHandle nsProcess::GetProcessHandle() const
 {
   return m_pImpl->m_ProcessHandle;
 }
 
-wdOsProcessID wdProcess::GetProcessID() const
+nsOsProcessID nsProcess::GetProcessID() const
 {
   return m_pImpl->m_ProcessID;
 }
 
-wdOsProcessID wdProcess::GetCurrentProcessID()
+nsOsProcessID nsProcess::GetCurrentProcessID()
 {
-  const wdOsProcessID processID = GetCurrentProcessId();
+  const nsOsProcessID processID = GetCurrentProcessId();
   return processID;
 }
 
@@ -269,12 +270,12 @@ static BOOL CreateProcessWithExplicitHandles(LPCWSTR pApplicationName, LPWSTR pC
   return fSuccess;
 }
 
-wdResult wdProcess::Launch(const wdProcessOptions& opt, wdBitflags<wdProcessLaunchFlags> launchFlags /*= wdAsyncProcessFlags::None*/)
+nsResult nsProcess::Launch(const nsProcessOptions& opt, nsBitflags<nsProcessLaunchFlags> launchFlags /*= nsAsyncProcessFlags::None*/)
 {
-  WD_ASSERT_DEV(m_pImpl->m_ProcessHandle == nullptr, "Cannot reuse an instance of wdProcess");
-  WD_ASSERT_DEV(m_pImpl->m_ProcessID == 0, "Cannot reuse an instance of wdProcess");
+  NS_ASSERT_DEV(m_pImpl->m_ProcessHandle == nullptr, "Cannot reuse an instance of nsProcess");
+  NS_ASSERT_DEV(m_pImpl->m_ProcessID == 0, "Cannot reuse an instance of nsProcess");
 
-  wdStringBuilder sProcess = opt.m_sProcess;
+  nsStringBuilder sProcess = opt.m_sProcess;
   sProcess.MakeCleanPath();
   sProcess.ReplaceAll("/", "\\");
 
@@ -283,7 +284,7 @@ wdResult wdProcess::Launch(const wdProcessOptions& opt, wdBitflags<wdProcessLaun
   m_OnStdError = opt.m_onStdError;
 
   STARTUPINFOW si;
-  wdMemoryUtils::ZeroFill(&si, 1);
+  nsMemoryUtils::ZeroFill(&si, 1);
   si.cb = sizeof(si);
   si.dwFlags = STARTF_FORCEOFFFEEDBACK; // do not show a wait cursor while launching the process
 
@@ -291,7 +292,7 @@ wdResult wdProcess::Launch(const wdProcessOptions& opt, wdBitflags<wdProcessLaun
   // but CreateProcess will still return success
   // therefore we must ensure to only pass non-null handles to inherit
   HANDLE HandlesToInherit[2];
-  wdUInt32 uiNumHandlesToInherit = 0;
+  nsUInt32 uiNumHandlesToInherit = 0;
 
   if (m_OnStdOut.IsValid())
   {
@@ -308,11 +309,16 @@ wdResult wdProcess::Launch(const wdProcessOptions& opt, wdBitflags<wdProcessLaun
     HandlesToInherit[uiNumHandlesToInherit++] = m_pImpl->m_pipeStdErr.m_pipeWrite;
   }
 
+  // in theory this can be used to force the process's main window to be in the background,
+  // but except for SW_HIDE and SW_SHOWMINNOACTIVE this doesn't work, and those are not useful
+  // si.wShowWindow = SW_SHOWNOACTIVATE;
+  // si.dwFlags |= STARTF_USESHOWWINDOW;
+
   PROCESS_INFORMATION pi;
-  wdMemoryUtils::ZeroFill(&pi, 1);
+  nsMemoryUtils::ZeroFill(&pi, 1);
 
 
-  wdStringBuilder sCmdLine;
+  nsStringBuilder sCmdLine;
   BuildFullCommandLineString(opt, sProcess, sCmdLine);
 
   DWORD dwCreationFlags = NORMAL_PRIORITY_CLASS | CREATE_UNICODE_ENVIRONMENT;
@@ -322,30 +328,30 @@ wdResult wdProcess::Launch(const wdProcessOptions& opt, wdBitflags<wdProcessLaun
     dwCreationFlags |= CREATE_NO_WINDOW;
   }
 
-  if (launchFlags.IsSet(wdProcessLaunchFlags::Suspended))
+  if (launchFlags.IsSet(nsProcessLaunchFlags::Suspended))
   {
     dwCreationFlags |= CREATE_SUSPENDED;
   }
 
   // We pass nullptr as lpApplicationName as setting it would prevent OpenProcess to run system apps or apps in PATH.
   // Instead, the module name is pre-pended to lpCommandLine in BuildFullCommandLineString.
-  if (!CreateProcessWithExplicitHandles(nullptr, const_cast<wchar_t*>(wdStringWChar(sCmdLine).GetData()),
+  if (!CreateProcessWithExplicitHandles(nullptr, const_cast<wchar_t*>(nsStringWChar(sCmdLine).GetData()),
         nullptr,                                  // lpProcessAttributes
         nullptr,                                  // lpThreadAttributes
         uiNumHandlesToInherit > 0 ? TRUE : FALSE, // bInheritHandles
         dwCreationFlags,
-        nullptr, // lpEnvironment
-        opt.m_sWorkingDirectory.IsEmpty() ? nullptr : wdStringWChar(opt.m_sWorkingDirectory).GetData(),
-        &si,                   // lpStartupInfo
-        &pi,                   // lpProcessInformation
-        uiNumHandlesToInherit, // cHandlesToInherit
-        HandlesToInherit       // rgHandlesToInherit
+        nullptr,                                  // lpEnvironment
+        opt.m_sWorkingDirectory.IsEmpty() ? nullptr : nsStringWChar(opt.m_sWorkingDirectory).GetData(),
+        &si,                                      // lpStartupInfo
+        &pi,                                      // lpProcessInformation
+        uiNumHandlesToInherit,                    // cHandlesToInherit
+        HandlesToInherit                          // rgHandlesToInherit
         ))
   {
     m_pImpl->m_pipeStdOut.Close();
     m_pImpl->m_pipeStdErr.Close();
-    wdLog::Error("Failed to launch '{} {}' - {}", sProcess, wdArgSensitive(sCmdLine, "CommandLine"), wdArgErrorCode(GetLastError()));
-    return WD_FAILURE;
+    nsLog::Error("Failed to launch '{} {}' - {}", sProcess, nsArgSensitive(sCmdLine, "CommandLine"), nsArgErrorCode(GetLastError()));
+    return NS_FAILURE;
   }
   m_pImpl->m_pipeStdOut.StartRead(m_OnStdOut);
   m_pImpl->m_pipeStdErr.StartRead(m_OnStdError);
@@ -353,7 +359,7 @@ wdResult wdProcess::Launch(const wdProcessOptions& opt, wdBitflags<wdProcessLaun
   m_pImpl->m_ProcessHandle = pi.hProcess;
   m_pImpl->m_ProcessID = pi.dwProcessId;
 
-  if (launchFlags.IsSet(wdProcessLaunchFlags::Suspended))
+  if (launchFlags.IsSet(nsProcessLaunchFlags::Suspended))
   {
     // store the main thread handle for ResumeSuspended() later
     m_pImpl->m_MainThreadHandle = pi.hThread;
@@ -363,32 +369,35 @@ wdResult wdProcess::Launch(const wdProcessOptions& opt, wdBitflags<wdProcessLaun
     CloseHandle(pi.hThread);
   }
 
-  if (launchFlags.IsSet(wdProcessLaunchFlags::Detached))
+  if (launchFlags.IsSet(nsProcessLaunchFlags::Detached))
   {
     Detach();
   }
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
-wdResult wdProcess::ResumeSuspended()
+nsResult nsProcess::ResumeSuspended()
 {
   if (m_pImpl->m_ProcessHandle == nullptr || m_pImpl->m_MainThreadHandle == nullptr)
-    return WD_FAILURE;
+    return NS_FAILURE;
 
-  ResumeThread(m_pImpl->m_MainThreadHandle);
+  const DWORD prevSuspendCount = ResumeThread(m_pImpl->m_MainThreadHandle);
+  if (prevSuspendCount != 1)
+    nsLog::Warning("nsProcess::ResumeSuspended: Unexpected ResumeThread result ({})", nsUInt64(prevSuspendCount));
 
   // invalidate the thread handle, so that we cannot resume the process twice
-  CloseHandle(m_pImpl->m_MainThreadHandle);
+  if (!CloseHandle(m_pImpl->m_MainThreadHandle))
+    nsLog::Warning("nsProcess::ResumeSuspended: Failed to close handle");
   m_pImpl->m_MainThreadHandle = nullptr;
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
-wdResult wdProcess::WaitToFinish(wdTime timeout /*= wdTime::Zero()*/)
+nsResult nsProcess::WaitToFinish(nsTime timeout /*= nsTime::MakeZero()*/)
 {
-  WD_ASSERT_DEV(m_pImpl->m_ProcessHandle != nullptr, "Launch a process before waiting on it");
-  WD_ASSERT_DEV(m_pImpl->m_ProcessID != 0, "Launch a process before waiting on it");
+  NS_ASSERT_DEV(m_pImpl->m_ProcessHandle != nullptr, "Launch a process before waiting on it");
+  NS_ASSERT_DEV(m_pImpl->m_ProcessID != 0, "Launch a process before waiting on it");
 
   DWORD dwTimeout = INFINITE;
 
@@ -402,13 +411,13 @@ wdResult wdProcess::WaitToFinish(wdTime timeout /*= wdTime::Zero()*/)
   if (res == WAIT_TIMEOUT)
   {
     // the process is not yet finished, the timeout was reached
-    return WD_FAILURE;
+    return NS_FAILURE;
   }
 
   if (res == WAIT_FAILED)
   {
-    wdLog::Error("Failed to wait for '{}' - {}", m_sProcess, wdArgErrorCode(GetLastError()));
-    return WD_FAILURE;
+    nsLog::Error("Failed to wait for '{}' - {}", m_sProcess, nsArgErrorCode(GetLastError()));
+    return NS_FAILURE;
   }
 
   // the process has finished
@@ -418,70 +427,87 @@ wdResult wdProcess::WaitToFinish(wdTime timeout /*= wdTime::Zero()*/)
 
   GetExitCodeProcess(m_pImpl->m_ProcessHandle, reinterpret_cast<DWORD*>(&m_iExitCode));
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
-wdResult wdProcess::Execute(const wdProcessOptions& opt, wdInt32* out_pExitCode /*= nullptr*/)
+nsResult nsProcess::Execute(const nsProcessOptions& opt, nsInt32* out_pExitCode /*= nullptr*/)
 {
-  wdProcess proc;
+  nsProcess proc;
 
-  WD_SUCCEED_OR_RETURN(proc.Launch(opt));
-  WD_SUCCEED_OR_RETURN(proc.WaitToFinish());
+  NS_SUCCEED_OR_RETURN(proc.Launch(opt));
+  NS_SUCCEED_OR_RETURN(proc.WaitToFinish());
 
   if (out_pExitCode != nullptr)
   {
     *out_pExitCode = proc.GetExitCode();
   }
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
-wdResult wdProcess::Terminate()
+nsResult nsProcess::Terminate()
 {
-  WD_ASSERT_DEV(m_pImpl->m_ProcessHandle != nullptr, "Launch a process before terminating it");
-  WD_ASSERT_DEV(m_pImpl->m_ProcessID != 0, "Launch a process before terminating it");
+  NS_ASSERT_DEV(m_pImpl->m_ProcessHandle != nullptr, "Launch a process before terminating it");
+  NS_ASSERT_DEV(m_pImpl->m_ProcessID != 0, "Launch a process before terminating it");
 
   if (TerminateProcess(m_pImpl->m_ProcessHandle, 0xFFFFFFFF) == FALSE)
   {
-    wdLog::Error("Failed to terminate process '{}' - {}", m_sProcess, wdArgErrorCode(GetLastError()));
-    return WD_FAILURE;
+    const DWORD err = GetLastError();
+    if (err == ERROR_ACCESS_DENIED) // this means the process already terminated, so from our perspective the goal was achieved
+      return NS_SUCCESS;
+
+    nsLog::Error("Failed to terminate process '{}' - {}", m_sProcess, nsArgErrorCode(GetLastError()));
+    return NS_FAILURE;
   }
 
-  WD_SUCCEED_OR_RETURN(WaitToFinish());
+  NS_SUCCEED_OR_RETURN(WaitToFinish());
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
-wdProcessState wdProcess::GetState() const
+nsProcessState nsProcess::GetState() const
 {
   if (m_pImpl->m_ProcessHandle == 0)
-    return wdProcessState::NotStarted;
+    return nsProcessState::NotStarted;
 
   DWORD exitCode = 0;
   if (GetExitCodeProcess(m_pImpl->m_ProcessHandle, &exitCode) == FALSE)
   {
-    wdLog::Error("Failed to retrieve exit code for process '{}' - {}", m_sProcess, wdArgErrorCode(GetLastError()));
+    nsLog::Error("Failed to retrieve exit code for process '{}' - {}", m_sProcess, nsArgErrorCode(GetLastError()));
 
     // not sure what kind of errors can happen (probably access denied and such)
     // have to return something, so lets claim the process is finished
-    return wdProcessState::Finished;
+    return nsProcessState::Finished;
   }
 
   if (exitCode == STILL_ACTIVE)
-    return wdProcessState::Running;
+    return nsProcessState::Running;
+
+  if (m_ProcessExited.IsZero())
+  {
+    m_ProcessExited = nsTime::Now();
+  }
 
   // Do not consider a process finished if the pipe threads have not exited yet.
   if (m_pImpl->m_pipeStdOut.IsRunning() || m_pImpl->m_pipeStdErr.IsRunning())
-    return wdProcessState::Running;
+  {
+    if (nsTime::Now() - m_ProcessExited < nsTime::MakeFromSeconds(2))
+    {
+      return nsProcessState::Running;
+    }
 
-  m_iExitCode = (wdInt32)exitCode;
-  return wdProcessState::Finished;
+    m_pImpl->m_pipeStdOut.Close();
+    m_pImpl->m_pipeStdErr.Close();
+  }
+
+  m_iExitCode = (nsInt32)exitCode;
+  return nsProcessState::Finished;
 }
 
-void wdProcess::Detach()
+void nsProcess::Detach()
 {
-  // throw away the previous wdProcessImpl and create a blank one
-  m_pImpl = WD_DEFAULT_NEW(wdProcessImpl);
+  // throw away the previous nsProcessImpl and create a blank one
+  m_pImpl = NS_DEFAULT_NEW(nsProcessImpl);
 
   // reset the exit code to the default
   m_iExitCode = -0xFFFF;

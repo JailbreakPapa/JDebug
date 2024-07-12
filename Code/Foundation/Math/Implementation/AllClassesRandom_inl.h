@@ -5,7 +5,7 @@
 #include <Foundation/Math/Vec3.h>
 
 template <typename Type>
-wdVec3Template<Type> wdVec3Template<Type>::CreateRandomPointInSphere(wdRandom& inout_rng)
+NS_IMPLEMENT_IF_FLOAT_TYPE nsVec3Template<Type> nsVec3Template<Type>::MakeRandomPointInSphere(nsRandom& inout_rng)
 {
   double px, py, pz;
   double len = 0.0;
@@ -19,63 +19,62 @@ wdVec3Template<Type> wdVec3Template<Type>::CreateRandomPointInSphere(wdRandom& i
     len = (px * px) + (py * py) + (pz * pz);
   } while (len > 1.0 || len <= 0.000001); // prevent the exact center
 
-  return wdVec3Template<Type>((Type)px, (Type)py, (Type)pz);
+  return nsVec3Template<Type>((Type)px, (Type)py, (Type)pz);
 }
 
 template <typename Type>
-wdVec3Template<Type> wdVec3Template<Type>::CreateRandomDirection(wdRandom& inout_rng)
+NS_IMPLEMENT_IF_FLOAT_TYPE nsVec3Template<Type> nsVec3Template<Type>::MakeRandomDirection(nsRandom& inout_rng)
 {
-  wdVec3Template<Type> vec = CreateRandomPointInSphere(inout_rng);
+  nsVec3Template<Type> vec = MakeRandomPointInSphere(inout_rng);
   vec.Normalize();
   return vec;
 }
 
 template <typename Type>
-wdVec3Template<Type> wdVec3Template<Type>::CreateRandomDeviationX(wdRandom& inout_rng, const wdAngle& maxDeviation)
+NS_IMPLEMENT_IF_FLOAT_TYPE nsVec3Template<Type> nsVec3Template<Type>::MakeRandomDeviationX(nsRandom& inout_rng, const nsAngle& maxDeviation)
 {
-  const double twoPi = 2.0 * wdMath::Pi<double>();
+  const double twoPi = 2.0 * nsMath::Pi<double>();
 
-  const double cosAngle = wdMath::Cos(maxDeviation);
+  const double cosAngle = nsMath::Cos(maxDeviation);
 
   const double x = inout_rng.DoubleZeroToOneInclusive() * (1 - cosAngle) + cosAngle;
-  const wdAngle phi = wdAngle::Radian((float)(inout_rng.DoubleZeroToOneInclusive() * twoPi));
-  const double invSqrt = wdMath::Sqrt(1 - (x * x));
-  const double y = invSqrt * wdMath::Cos(phi);
-  const double z = invSqrt * wdMath::Sin(phi);
+  const nsAngle phi = nsAngle::MakeFromRadian((float)(inout_rng.DoubleZeroToOneInclusive() * twoPi));
+  const double invSqrt = nsMath::Sqrt(1 - (x * x));
+  const double y = invSqrt * nsMath::Cos(phi);
+  const double z = invSqrt * nsMath::Sin(phi);
 
-  return wdVec3Template<Type>((Type)x, (Type)y, (Type)z);
+  return nsVec3Template<Type>((Type)x, (Type)y, (Type)z);
 }
 
 template <typename Type>
-wdVec3Template<Type> wdVec3Template<Type>::CreateRandomDeviationY(wdRandom& inout_rng, const wdAngle& maxDeviation)
+NS_IMPLEMENT_IF_FLOAT_TYPE nsVec3Template<Type> nsVec3Template<Type>::MakeRandomDeviationY(nsRandom& inout_rng, const nsAngle& maxDeviation)
 {
-  wdVec3Template<Type> vec = CreateRandomDeviationX(inout_rng, maxDeviation);
-  wdMath::Swap(vec.x, vec.y);
+  nsVec3Template<Type> vec = MakeRandomDeviationX(inout_rng, maxDeviation);
+  nsMath::Swap(vec.x, vec.y);
   return vec;
 }
 
 template <typename Type>
-wdVec3Template<Type> wdVec3Template<Type>::CreateRandomDeviationZ(wdRandom& inout_rng, const wdAngle& maxDeviation)
+NS_IMPLEMENT_IF_FLOAT_TYPE nsVec3Template<Type> nsVec3Template<Type>::MakeRandomDeviationZ(nsRandom& inout_rng, const nsAngle& maxDeviation)
 {
-  wdVec3Template<Type> vec = CreateRandomDeviationX(inout_rng, maxDeviation);
-  wdMath::Swap(vec.x, vec.z);
+  nsVec3Template<Type> vec = MakeRandomDeviationX(inout_rng, maxDeviation);
+  nsMath::Swap(vec.x, vec.z);
   return vec;
 }
 
 template <typename Type>
-wdVec3Template<Type> wdVec3Template<Type>::CreateRandomDeviation(wdRandom& inout_rng, const wdAngle& maxDeviation, const wdVec3Template<Type>& vNormal)
+NS_IMPLEMENT_IF_FLOAT_TYPE nsVec3Template<Type> nsVec3Template<Type>::MakeRandomDeviation(nsRandom& inout_rng, const nsAngle& maxDeviation, const nsVec3Template<Type>& vNormal)
 {
   // If you need to do this very often:
   // *** Pre-compute this once: ***
 
   // how to get from the X axis to our desired basis
-  wdQuatTemplate<Type> qRotXtoDir;
-  qRotXtoDir.SetShortestRotation(wdVec3Template<Type>(1, 0, 0), vNormal);
+  nsQuatTemplate<Type> qRotXtoDir = nsQuat::MakeShortestRotation(nsVec3Template<Type>(1, 0, 0), vNormal);
 
   // *** Then call this with the precomputed value as often as needed: ***
 
   // create a random vector along X
-  wdVec3Template<Type> vec = CreateRandomDeviationX(inout_rng, maxDeviation);
+  nsVec3Template<Type> vec = MakeRandomDeviationX(inout_rng, maxDeviation);
   // rotate from X to our basis
   return qRotXtoDir * vec;
 }

@@ -6,39 +6,39 @@
 #include <Foundation/Serialization/RttiConverter.h>
 
 // clang-format off
-WD_BEGIN_STATIC_REFLECTED_ENUM(wdObjectChangeType, 1)
-  WD_ENUM_CONSTANTS(wdObjectChangeType::NodeAdded, wdObjectChangeType::NodeRemoved)
-  WD_ENUM_CONSTANTS(wdObjectChangeType::PropertySet, wdObjectChangeType::PropertyInserted, wdObjectChangeType::PropertyRemoved)
-WD_END_STATIC_REFLECTED_ENUM;
+NS_BEGIN_STATIC_REFLECTED_ENUM(nsObjectChangeType, 1)
+  NS_ENUM_CONSTANTS(nsObjectChangeType::NodeAdded, nsObjectChangeType::NodeRemoved)
+  NS_ENUM_CONSTANTS(nsObjectChangeType::PropertySet, nsObjectChangeType::PropertyInserted, nsObjectChangeType::PropertyRemoved)
+NS_END_STATIC_REFLECTED_ENUM;
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdAbstractObjectNode, wdNoBase, 1, wdRTTIDefaultAllocator<wdAbstractObjectNode>)
-WD_END_STATIC_REFLECTED_TYPE;
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsAbstractObjectNode, nsNoBase, 1, nsRTTIDefaultAllocator<nsAbstractObjectNode>)
+NS_END_STATIC_REFLECTED_TYPE;
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdDiffOperation, wdNoBase, 1, wdRTTIDefaultAllocator<wdDiffOperation>)
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsDiffOperation, nsNoBase, 1, nsRTTIDefaultAllocator<nsDiffOperation>)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_ENUM_MEMBER_PROPERTY("Operation", wdObjectChangeType, m_Operation),
-    WD_MEMBER_PROPERTY("Node", m_Node),
-    WD_MEMBER_PROPERTY("Property", m_sProperty),
-    WD_MEMBER_PROPERTY("Index", m_Index),
-    WD_MEMBER_PROPERTY("Value", m_Value),
+    NS_ENUM_MEMBER_PROPERTY("Operation", nsObjectChangeType, m_Operation),
+    NS_MEMBER_PROPERTY("Node", m_Node),
+    NS_MEMBER_PROPERTY("Property", m_sProperty),
+    NS_MEMBER_PROPERTY("Index", m_Index),
+    NS_MEMBER_PROPERTY("Value", m_Value),
   }
-    WD_END_PROPERTIES;
+    NS_END_PROPERTIES;
 }
-WD_END_STATIC_REFLECTED_TYPE;
+NS_END_STATIC_REFLECTED_TYPE;
 // clang-format on
 
-wdAbstractObjectGraph::~wdAbstractObjectGraph()
+nsAbstractObjectGraph::~nsAbstractObjectGraph()
 {
   Clear();
 }
 
-void wdAbstractObjectGraph::Clear()
+void nsAbstractObjectGraph::Clear()
 {
   for (auto it = m_Nodes.GetIterator(); it.IsValid(); ++it)
   {
-    WD_DEFAULT_DELETE(it.Value());
+    NS_DEFAULT_DELETE(it.Value());
   }
   m_Nodes.Clear();
   m_NodesByName.Clear();
@@ -46,7 +46,7 @@ void wdAbstractObjectGraph::Clear()
 }
 
 
-wdAbstractObjectNode* wdAbstractObjectGraph::Clone(wdAbstractObjectGraph& ref_cloneTarget, const wdAbstractObjectNode* pRootNode, FilterFunction filter) const
+nsAbstractObjectNode* nsAbstractObjectGraph::Clone(nsAbstractObjectGraph& ref_cloneTarget, const nsAbstractObjectNode* pRootNode, FilterFunction filter) const
 {
   ref_cloneTarget.Clear();
 
@@ -67,11 +67,11 @@ wdAbstractObjectNode* wdAbstractObjectGraph::Clone(wdAbstractObjectGraph& ref_cl
   }
   else
   {
-    WD_ASSERT_DEV(pRootNode->GetOwner() == this, "The given root node must be part of this document");
-    wdSet<wdUuid> reachableNodes;
+    NS_ASSERT_DEV(pRootNode->GetOwner() == this, "The given root node must be part of this document");
+    nsSet<nsUuid> reachableNodes;
     FindTransitiveHull(pRootNode->GetGuid(), reachableNodes);
 
-    for (const wdUuid& guid : reachableNodes)
+    for (const nsUuid& guid : reachableNodes)
     {
       if (auto* pNode = GetNode(guid))
       {
@@ -90,164 +90,164 @@ wdAbstractObjectNode* wdAbstractObjectGraph::Clone(wdAbstractObjectGraph& ref_cl
   }
 }
 
-const char* wdAbstractObjectGraph::RegisterString(const char* szString)
+nsStringView nsAbstractObjectGraph::RegisterString(nsStringView sString)
 {
-  auto it = m_Strings.Insert(szString);
-  WD_ASSERT_DEV(it.IsValid(), "");
-  return it.Key().GetData();
+  auto it = m_Strings.Insert(sString);
+  NS_ASSERT_DEV(it.IsValid(), "");
+  return it.Key();
 }
 
-wdAbstractObjectNode* wdAbstractObjectGraph::GetNode(const wdUuid& guid)
+nsAbstractObjectNode* nsAbstractObjectGraph::GetNode(const nsUuid& guid)
 {
   return m_Nodes.GetValueOrDefault(guid, nullptr);
 }
 
-const wdAbstractObjectNode* wdAbstractObjectGraph::GetNode(const wdUuid& guid) const
+const nsAbstractObjectNode* nsAbstractObjectGraph::GetNode(const nsUuid& guid) const
 {
-  return const_cast<wdAbstractObjectGraph*>(this)->GetNode(guid);
+  return const_cast<nsAbstractObjectGraph*>(this)->GetNode(guid);
 }
 
-const wdAbstractObjectNode* wdAbstractObjectGraph::GetNodeByName(const char* szName) const
+const nsAbstractObjectNode* nsAbstractObjectGraph::GetNodeByName(nsStringView sName) const
 {
-  return const_cast<wdAbstractObjectGraph*>(this)->GetNodeByName(szName);
+  return const_cast<nsAbstractObjectGraph*>(this)->GetNodeByName(sName);
 }
 
-wdAbstractObjectNode* wdAbstractObjectGraph::GetNodeByName(const char* szName)
+nsAbstractObjectNode* nsAbstractObjectGraph::GetNodeByName(nsStringView sName)
 {
-  return m_NodesByName.GetValueOrDefault(szName, nullptr);
+  return m_NodesByName.GetValueOrDefault(sName, nullptr);
 }
 
-wdAbstractObjectNode* wdAbstractObjectGraph::AddNode(const wdUuid& guid, const char* szType, wdUInt32 uiTypeVersion, const char* szNodeName)
+nsAbstractObjectNode* nsAbstractObjectGraph::AddNode(const nsUuid& guid, nsStringView sType, nsUInt32 uiTypeVersion, nsStringView sNodeName)
 {
-  WD_ASSERT_DEV(!m_Nodes.Contains(guid), "object {0} must not yet exist", guid);
-  if (!wdStringUtils::IsNullOrEmpty(szNodeName))
+  NS_ASSERT_DEV(!m_Nodes.Contains(guid), "object {0} must not yet exist", guid);
+  if (!sNodeName.IsEmpty())
   {
-    szNodeName = RegisterString(szNodeName);
+    sNodeName = RegisterString(sNodeName);
   }
   else
   {
-    szNodeName = nullptr;
+    sNodeName = {};
   }
 
-  wdAbstractObjectNode* pNode = WD_DEFAULT_NEW(wdAbstractObjectNode);
+  nsAbstractObjectNode* pNode = NS_DEFAULT_NEW(nsAbstractObjectNode);
   pNode->m_Guid = guid;
   pNode->m_pOwner = this;
-  pNode->m_szType = RegisterString(szType);
+  pNode->m_sType = RegisterString(sType);
   pNode->m_uiTypeVersion = uiTypeVersion;
-  pNode->m_szNodeName = szNodeName;
+  pNode->m_sNodeName = sNodeName;
 
   m_Nodes[guid] = pNode;
 
-  if (!wdStringUtils::IsNullOrEmpty(szNodeName))
+  if (!sNodeName.IsEmpty())
   {
-    m_NodesByName[szNodeName] = pNode;
+    m_NodesByName[sNodeName] = pNode;
   }
 
   return pNode;
 }
 
-void wdAbstractObjectGraph::RemoveNode(const wdUuid& guid)
+void nsAbstractObjectGraph::RemoveNode(const nsUuid& guid)
 {
   auto it = m_Nodes.Find(guid);
 
   if (it.IsValid())
   {
-    wdAbstractObjectNode* pNode = it.Value();
-    if (pNode->m_szNodeName != nullptr)
-      m_NodesByName.Remove(pNode->m_szNodeName);
+    nsAbstractObjectNode* pNode = it.Value();
+    if (!pNode->m_sNodeName.IsEmpty())
+      m_NodesByName.Remove(pNode->m_sNodeName);
 
     m_Nodes.Remove(guid);
-    WD_DEFAULT_DELETE(pNode);
+    NS_DEFAULT_DELETE(pNode);
   }
 }
 
-void wdAbstractObjectNode::AddProperty(const char* szName, const wdVariant& value)
+void nsAbstractObjectNode::AddProperty(nsStringView sName, const nsVariant& value)
 {
   auto& prop = m_Properties.ExpandAndGetRef();
-  prop.m_szPropertyName = m_pOwner->RegisterString(szName);
+  prop.m_sPropertyName = m_pOwner->RegisterString(sName);
   prop.m_Value = value;
 }
 
-void wdAbstractObjectNode::ChangeProperty(const char* szName, const wdVariant& value)
+void nsAbstractObjectNode::ChangeProperty(nsStringView sName, const nsVariant& value)
 {
-  for (wdUInt32 i = 0; i < m_Properties.GetCount(); ++i)
+  for (nsUInt32 i = 0; i < m_Properties.GetCount(); ++i)
   {
-    if (wdStringUtils::IsEqual(m_Properties[i].m_szPropertyName, szName))
+    if (m_Properties[i].m_sPropertyName == sName)
     {
       m_Properties[i].m_Value = value;
       return;
     }
   }
 
-  WD_REPORT_FAILURE("Property '{0}' is unknown", szName);
+  NS_REPORT_FAILURE("Property '{0}' is unknown", sName);
 }
 
-void wdAbstractObjectNode::RenameProperty(const char* szOldName, const char* szNewName)
+void nsAbstractObjectNode::RenameProperty(nsStringView sOldName, nsStringView sNewName)
 {
-  for (wdUInt32 i = 0; i < m_Properties.GetCount(); ++i)
+  for (nsUInt32 i = 0; i < m_Properties.GetCount(); ++i)
   {
-    if (wdStringUtils::IsEqual(m_Properties[i].m_szPropertyName, szOldName))
+    if (m_Properties[i].m_sPropertyName == sOldName)
     {
-      m_Properties[i].m_szPropertyName = m_pOwner->RegisterString(szNewName);
+      m_Properties[i].m_sPropertyName = m_pOwner->RegisterString(sNewName);
       return;
     }
   }
 }
 
-void wdAbstractObjectNode::ClearProperties()
+void nsAbstractObjectNode::ClearProperties()
 {
   m_Properties.Clear();
 }
 
-wdResult wdAbstractObjectNode::InlineProperty(const char* szName)
+nsResult nsAbstractObjectNode::InlineProperty(nsStringView sName)
 {
-  for (wdUInt32 i = 0; i < m_Properties.GetCount(); ++i)
+  for (nsUInt32 i = 0; i < m_Properties.GetCount(); ++i)
   {
     Property& prop = m_Properties[i];
-    if (wdStringUtils::IsEqual(prop.m_szPropertyName, szName))
+    if (prop.m_sPropertyName == sName)
     {
-      if (!prop.m_Value.IsA<wdUuid>())
-        return WD_FAILURE;
+      if (!prop.m_Value.IsA<nsUuid>())
+        return NS_FAILURE;
 
-      wdUuid guid = prop.m_Value.Get<wdUuid>();
-      wdAbstractObjectNode* pNode = m_pOwner->GetNode(guid);
+      nsUuid guid = prop.m_Value.Get<nsUuid>();
+      nsAbstractObjectNode* pNode = m_pOwner->GetNode(guid);
       if (!pNode)
-        return WD_FAILURE;
+        return NS_FAILURE;
 
-      class InlineContext : public wdRttiConverterContext
+      class InlineContext : public nsRttiConverterContext
       {
       public:
-        void RegisterObject(const wdUuid& guid, const wdRTTI* pRtti, void* pObject) override
+        void RegisterObject(const nsUuid& guid, const nsRTTI* pRtti, void* pObject) override
         {
           m_SubTree.PushBack(guid);
         }
-        wdHybridArray<wdUuid, 1> m_SubTree;
+        nsHybridArray<nsUuid, 1> m_SubTree;
       };
 
       InlineContext context;
-      wdRttiConverterReader reader(m_pOwner, &context);
+      nsRttiConverterReader reader(m_pOwner, &context);
       void* pObject = reader.CreateObjectFromNode(pNode);
       if (!pObject)
-        return WD_FAILURE;
+        return NS_FAILURE;
 
-      prop.m_Value.MoveTypedObject(pObject, wdRTTI::FindTypeByName(pNode->GetType()));
+      prop.m_Value.MoveTypedObject(pObject, nsRTTI::FindTypeByName(pNode->GetType()));
 
       // Delete old objects.
-      for (wdUuid& uuid : context.m_SubTree)
+      for (nsUuid& uuid : context.m_SubTree)
       {
         m_pOwner->RemoveNode(uuid);
       }
-      return WD_SUCCESS;
+      return NS_SUCCESS;
     }
   }
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
-void wdAbstractObjectNode::RemoveProperty(const char* szName)
+void nsAbstractObjectNode::RemoveProperty(nsStringView sName)
 {
-  for (wdUInt32 i = 0; i < m_Properties.GetCount(); ++i)
+  for (nsUInt32 i = 0; i < m_Properties.GetCount(); ++i)
   {
-    if (wdStringUtils::IsEqual(m_Properties[i].m_szPropertyName, szName))
+    if (m_Properties[i].m_sPropertyName == sName)
     {
       m_Properties.RemoveAtAndSwap(i);
       return;
@@ -255,16 +255,16 @@ void wdAbstractObjectNode::RemoveProperty(const char* szName)
   }
 }
 
-void wdAbstractObjectNode::SetType(const char* szType)
+void nsAbstractObjectNode::SetType(nsStringView sType)
 {
-  m_szType = m_pOwner->RegisterString(szType);
+  m_sType = m_pOwner->RegisterString(sType);
 }
 
-const wdAbstractObjectNode::Property* wdAbstractObjectNode::FindProperty(const char* szName) const
+const nsAbstractObjectNode::Property* nsAbstractObjectNode::FindProperty(nsStringView sName) const
 {
-  for (wdUInt32 i = 0; i < m_Properties.GetCount(); ++i)
+  for (nsUInt32 i = 0; i < m_Properties.GetCount(); ++i)
   {
-    if (wdStringUtils::IsEqual(m_Properties[i].m_szPropertyName, szName))
+    if (m_Properties[i].m_sPropertyName == sName)
     {
       return &m_Properties[i];
     }
@@ -273,11 +273,11 @@ const wdAbstractObjectNode::Property* wdAbstractObjectNode::FindProperty(const c
   return nullptr;
 }
 
-wdAbstractObjectNode::Property* wdAbstractObjectNode::FindProperty(const char* szName)
+nsAbstractObjectNode::Property* nsAbstractObjectNode::FindProperty(nsStringView sName)
 {
-  for (wdUInt32 i = 0; i < m_Properties.GetCount(); ++i)
+  for (nsUInt32 i = 0; i < m_Properties.GetCount(); ++i)
   {
-    if (wdStringUtils::IsEqual(m_Properties[i].m_szPropertyName, szName))
+    if (m_Properties[i].m_sPropertyName == sName)
     {
       return &m_Properties[i];
     }
@@ -286,16 +286,16 @@ wdAbstractObjectNode::Property* wdAbstractObjectNode::FindProperty(const char* s
   return nullptr;
 }
 
-void wdAbstractObjectGraph::ReMapNodeGuids(const wdUuid& seedGuid, bool bRemapInverse /*= false*/)
+void nsAbstractObjectGraph::ReMapNodeGuids(const nsUuid& seedGuid, bool bRemapInverse /*= false*/)
 {
-  wdHybridArray<wdAbstractObjectNode*, 16> nodes;
+  nsHybridArray<nsAbstractObjectNode*, 16> nodes;
   nodes.Reserve(m_Nodes.GetCount());
-  wdHashTable<wdUuid, wdUuid> guidMap;
+  nsHashTable<nsUuid, nsUuid> guidMap;
   guidMap.Reserve(m_Nodes.GetCount());
 
   for (auto it = m_Nodes.GetIterator(); it.IsValid(); ++it)
   {
-    wdUuid newGuid = it.Key();
+    nsUuid newGuid = it.Key();
 
     if (bRemapInverse)
       newGuid.RevertCombinationWithSeed(seedGuid);
@@ -324,10 +324,10 @@ void wdAbstractObjectGraph::ReMapNodeGuids(const wdUuid& seedGuid, bool bRemapIn
 }
 
 
-void wdAbstractObjectGraph::ReMapNodeGuidsToMatchGraph(wdAbstractObjectNode* pRoot, const wdAbstractObjectGraph& rhsGraph, const wdAbstractObjectNode* pRhsRoot)
+void nsAbstractObjectGraph::ReMapNodeGuidsToMatchGraph(nsAbstractObjectNode* pRoot, const nsAbstractObjectGraph& rhsGraph, const nsAbstractObjectNode* pRhsRoot)
 {
-  wdHashTable<wdUuid, wdUuid> guidMap;
-  WD_ASSERT_DEV(wdStringUtils::IsEqual(pRoot->GetType(), pRhsRoot->GetType()), "Roots must have the same type to be able re-map guids!");
+  nsHashTable<nsUuid, nsUuid> guidMap;
+  NS_ASSERT_DEV(pRoot->GetType() == pRhsRoot->GetType(), "Roots must have the same type to be able re-map guids!");
 
   ReMapNodeGuidsToMatchGraphRecursive(guidMap, pRoot, rhsGraph, pRhsRoot);
 
@@ -343,9 +343,9 @@ void wdAbstractObjectGraph::ReMapNodeGuidsToMatchGraph(wdAbstractObjectNode* pRo
   }
 }
 
-void wdAbstractObjectGraph::ReMapNodeGuidsToMatchGraphRecursive(wdHashTable<wdUuid, wdUuid>& guidMap, wdAbstractObjectNode* lhs, const wdAbstractObjectGraph& rhsGraph, const wdAbstractObjectNode* rhs)
+void nsAbstractObjectGraph::ReMapNodeGuidsToMatchGraphRecursive(nsHashTable<nsUuid, nsUuid>& guidMap, nsAbstractObjectNode* lhs, const nsAbstractObjectGraph& rhsGraph, const nsAbstractObjectNode* rhs)
 {
-  if (!wdStringUtils::IsEqual(lhs->GetType(), rhs->GetType()))
+  if (lhs->GetType() != rhs->GetType())
   {
     // Types differ, remapping ends as this is a removal and add of a new object.
     return;
@@ -359,19 +359,19 @@ void wdAbstractObjectGraph::ReMapNodeGuidsToMatchGraphRecursive(wdHashTable<wdUu
     m_Nodes.Insert(rhs->GetGuid(), lhs);
   }
 
-  for (wdAbstractObjectNode::Property& prop : lhs->m_Properties)
+  for (nsAbstractObjectNode::Property& prop : lhs->m_Properties)
   {
-    if (prop.m_Value.IsA<wdUuid>() && prop.m_Value.Get<wdUuid>().IsValid())
+    if (prop.m_Value.IsA<nsUuid>() && prop.m_Value.Get<nsUuid>().IsValid())
     {
       // if the guid is an owned object in the graph, remap to rhs.
-      auto it = m_Nodes.Find(prop.m_Value.Get<wdUuid>());
+      auto it = m_Nodes.Find(prop.m_Value.Get<nsUuid>());
       if (it.IsValid())
       {
-        if (const wdAbstractObjectNode::Property* rhsProp = rhs->FindProperty(prop.m_szPropertyName))
+        if (const nsAbstractObjectNode::Property* rhsProp = rhs->FindProperty(prop.m_sPropertyName))
         {
-          if (rhsProp->m_Value.IsA<wdUuid>() && rhsProp->m_Value.Get<wdUuid>().IsValid())
+          if (rhsProp->m_Value.IsA<nsUuid>() && rhsProp->m_Value.Get<nsUuid>().IsValid())
           {
-            if (const wdAbstractObjectNode* rhsPropNode = rhsGraph.GetNode(rhsProp->m_Value.Get<wdUuid>()))
+            if (const nsAbstractObjectNode* rhsPropNode = rhsGraph.GetNode(rhsProp->m_Value.Get<nsUuid>()))
             {
               ReMapNodeGuidsToMatchGraphRecursive(guidMap, it.Value(), rhsGraph, rhsPropNode);
             }
@@ -380,29 +380,29 @@ void wdAbstractObjectGraph::ReMapNodeGuidsToMatchGraphRecursive(wdHashTable<wdUu
       }
     }
     // Arrays may be of owner guids and could be remapped.
-    else if (prop.m_Value.IsA<wdVariantArray>())
+    else if (prop.m_Value.IsA<nsVariantArray>())
     {
-      const wdVariantArray& values = prop.m_Value.Get<wdVariantArray>();
-      for (wdUInt32 i = 0; i < values.GetCount(); i++)
+      const nsVariantArray& values = prop.m_Value.Get<nsVariantArray>();
+      for (nsUInt32 i = 0; i < values.GetCount(); i++)
       {
         auto& subValue = values[i];
-        if (subValue.IsA<wdUuid>() && subValue.Get<wdUuid>().IsValid())
+        if (subValue.IsA<nsUuid>() && subValue.Get<nsUuid>().IsValid())
         {
           // if the guid is an owned object in the graph, remap to array element.
-          auto it = m_Nodes.Find(subValue.Get<wdUuid>());
+          auto it = m_Nodes.Find(subValue.Get<nsUuid>());
           if (it.IsValid())
           {
-            if (const wdAbstractObjectNode::Property* rhsProp = rhs->FindProperty(prop.m_szPropertyName))
+            if (const nsAbstractObjectNode::Property* rhsProp = rhs->FindProperty(prop.m_sPropertyName))
             {
-              if (rhsProp->m_Value.IsA<wdVariantArray>())
+              if (rhsProp->m_Value.IsA<nsVariantArray>())
               {
-                const wdVariantArray& rhsValues = rhsProp->m_Value.Get<wdVariantArray>();
+                const nsVariantArray& rhsValues = rhsProp->m_Value.Get<nsVariantArray>();
                 if (i < rhsValues.GetCount())
                 {
                   const auto& rhsElemValue = rhsValues[i];
-                  if (rhsElemValue.IsA<wdUuid>() && rhsElemValue.Get<wdUuid>().IsValid())
+                  if (rhsElemValue.IsA<nsUuid>() && rhsElemValue.Get<nsUuid>().IsValid())
                   {
-                    if (const wdAbstractObjectNode* rhsPropNode = rhsGraph.GetNode(rhsElemValue.Get<wdUuid>()))
+                    if (const nsAbstractObjectNode* rhsPropNode = rhsGraph.GetNode(rhsElemValue.Get<nsUuid>()))
                     {
                       ReMapNodeGuidsToMatchGraphRecursive(guidMap, it.Value(), rhsGraph, rhsPropNode);
                     }
@@ -415,29 +415,29 @@ void wdAbstractObjectGraph::ReMapNodeGuidsToMatchGraphRecursive(wdHashTable<wdUu
       }
     }
     // Maps may be of owner guids and could be remapped.
-    else if (prop.m_Value.IsA<wdVariantDictionary>())
+    else if (prop.m_Value.IsA<nsVariantDictionary>())
     {
-      const wdVariantDictionary& values = prop.m_Value.Get<wdVariantDictionary>();
+      const nsVariantDictionary& values = prop.m_Value.Get<nsVariantDictionary>();
       for (auto lhsIt = values.GetIterator(); lhsIt.IsValid(); ++lhsIt)
       {
         auto& subValue = lhsIt.Value();
-        if (subValue.IsA<wdUuid>() && subValue.Get<wdUuid>().IsValid())
+        if (subValue.IsA<nsUuid>() && subValue.Get<nsUuid>().IsValid())
         {
           // if the guid is an owned object in the graph, remap to map element.
-          auto it = m_Nodes.Find(subValue.Get<wdUuid>());
+          auto it = m_Nodes.Find(subValue.Get<nsUuid>());
           if (it.IsValid())
           {
-            if (const wdAbstractObjectNode::Property* rhsProp = rhs->FindProperty(prop.m_szPropertyName))
+            if (const nsAbstractObjectNode::Property* rhsProp = rhs->FindProperty(prop.m_sPropertyName))
             {
-              if (rhsProp->m_Value.IsA<wdVariantDictionary>())
+              if (rhsProp->m_Value.IsA<nsVariantDictionary>())
               {
-                const wdVariantDictionary& rhsValues = rhsProp->m_Value.Get<wdVariantDictionary>();
+                const nsVariantDictionary& rhsValues = rhsProp->m_Value.Get<nsVariantDictionary>();
                 if (rhsValues.Contains(lhsIt.Key()))
                 {
                   const auto& rhsElemValue = *rhsValues.GetValue(lhsIt.Key());
-                  if (rhsElemValue.IsA<wdUuid>() && rhsElemValue.Get<wdUuid>().IsValid())
+                  if (rhsElemValue.IsA<nsUuid>() && rhsElemValue.Get<nsUuid>().IsValid())
                   {
-                    if (const wdAbstractObjectNode* rhsPropNode = rhsGraph.GetNode(rhsElemValue.Get<wdUuid>()))
+                    if (const nsAbstractObjectNode* rhsPropNode = rhsGraph.GetNode(rhsElemValue.Get<nsUuid>()))
                     {
                       ReMapNodeGuidsToMatchGraphRecursive(guidMap, it.Value(), rhsGraph, rhsPropNode);
                     }
@@ -453,38 +453,38 @@ void wdAbstractObjectGraph::ReMapNodeGuidsToMatchGraphRecursive(wdHashTable<wdUu
 }
 
 
-void wdAbstractObjectGraph::FindTransitiveHull(const wdUuid& rootGuid, wdSet<wdUuid>& ref_reachableNodes) const
+void nsAbstractObjectGraph::FindTransitiveHull(const nsUuid& rootGuid, nsSet<nsUuid>& ref_reachableNodes) const
 {
   ref_reachableNodes.Clear();
-  wdSet<wdUuid> inProgress;
+  nsSet<nsUuid> inProgress;
   inProgress.Insert(rootGuid);
 
   while (!inProgress.IsEmpty())
   {
-    wdUuid current = *inProgress.GetIterator();
+    nsUuid current = *inProgress.GetIterator();
     auto it = m_Nodes.Find(current);
     if (it.IsValid())
     {
-      const wdAbstractObjectNode* pNode = it.Value();
+      const nsAbstractObjectNode* pNode = it.Value();
       for (auto& prop : pNode->m_Properties)
       {
-        if (prop.m_Value.IsA<wdUuid>())
+        if (prop.m_Value.IsA<nsUuid>())
         {
-          const wdUuid& guid = prop.m_Value.Get<wdUuid>();
+          const nsUuid& guid = prop.m_Value.Get<nsUuid>();
           if (!ref_reachableNodes.Contains(guid))
           {
             inProgress.Insert(guid);
           }
         }
         // Arrays may be of uuids
-        else if (prop.m_Value.IsA<wdVariantArray>())
+        else if (prop.m_Value.IsA<nsVariantArray>())
         {
-          const wdVariantArray& values = prop.m_Value.Get<wdVariantArray>();
+          const nsVariantArray& values = prop.m_Value.Get<nsVariantArray>();
           for (auto& subValue : values)
           {
-            if (subValue.IsA<wdUuid>())
+            if (subValue.IsA<nsUuid>())
             {
-              const wdUuid& guid = subValue.Get<wdUuid>();
+              const nsUuid& guid = subValue.Get<nsUuid>();
               if (!ref_reachableNodes.Contains(guid))
               {
                 inProgress.Insert(guid);
@@ -492,14 +492,14 @@ void wdAbstractObjectGraph::FindTransitiveHull(const wdUuid& rootGuid, wdSet<wdU
             }
           }
         }
-        else if (prop.m_Value.IsA<wdVariantDictionary>())
+        else if (prop.m_Value.IsA<nsVariantDictionary>())
         {
-          const wdVariantDictionary& values = prop.m_Value.Get<wdVariantDictionary>();
+          const nsVariantDictionary& values = prop.m_Value.Get<nsVariantDictionary>();
           for (auto& subValue : values)
           {
-            if (subValue.Value().IsA<wdUuid>())
+            if (subValue.Value().IsA<nsUuid>())
             {
-              const wdUuid& guid = subValue.Value().Get<wdUuid>();
+              const nsUuid& guid = subValue.Value().Get<nsUuid>();
               if (!ref_reachableNodes.Contains(guid))
               {
                 inProgress.Insert(guid);
@@ -515,13 +515,13 @@ void wdAbstractObjectGraph::FindTransitiveHull(const wdUuid& rootGuid, wdSet<wdU
   }
 }
 
-void wdAbstractObjectGraph::PruneGraph(const wdUuid& rootGuid)
+void nsAbstractObjectGraph::PruneGraph(const nsUuid& rootGuid)
 {
-  wdSet<wdUuid> reachableNodes;
+  nsSet<nsUuid> reachableNodes;
   FindTransitiveHull(rootGuid, reachableNodes);
 
   // Determine nodes to be removed by subtracting valid ones from all nodes.
-  wdSet<wdUuid> removeSet;
+  nsSet<nsUuid> removeSet;
   for (auto it = GetAllNodes().GetIterator(); it.IsValid(); ++it)
   {
     removeSet.Insert(it.Key());
@@ -529,29 +529,29 @@ void wdAbstractObjectGraph::PruneGraph(const wdUuid& rootGuid)
   removeSet.Difference(reachableNodes);
 
   // Remove nodes.
-  for (const wdUuid& guid : removeSet)
+  for (const nsUuid& guid : removeSet)
   {
     RemoveNode(guid);
   }
 }
 
-void wdAbstractObjectGraph::ModifyNodeViaNativeCounterpart(wdAbstractObjectNode* pRootNode, wdDelegate<void(void*, const wdRTTI*)> callback)
+void nsAbstractObjectGraph::ModifyNodeViaNativeCounterpart(nsAbstractObjectNode* pRootNode, nsDelegate<void(void*, const nsRTTI*)> callback)
 {
-  WD_ASSERT_DEV(pRootNode->GetOwner() == this, "Node must be from this graph.");
+  NS_ASSERT_DEV(pRootNode->GetOwner() == this, "Node must be from this graph.");
 
   // Clone sub graph
-  wdAbstractObjectGraph origGraph;
-  wdAbstractObjectNode* pOrigRootNode = nullptr;
+  nsAbstractObjectGraph origGraph;
+  nsAbstractObjectNode* pOrigRootNode = nullptr;
   {
     pOrigRootNode = Clone(origGraph, pRootNode);
   }
 
   // Create native object
-  wdRttiConverterContext context;
-  wdRttiConverterReader convRead(&origGraph, &context);
+  nsRttiConverterContext context;
+  nsRttiConverterReader convRead(&origGraph, &context);
   void* pNativeRoot = convRead.CreateObjectFromNode(pOrigRootNode);
-  const wdRTTI* pType = wdRTTI::FindTypeByName(pOrigRootNode->GetType());
-  WD_SCOPE_EXIT(pType->GetAllocator()->Deallocate(pNativeRoot););
+  const nsRTTI* pType = nsRTTI::FindTypeByName(pOrigRootNode->GetType());
+  NS_SCOPE_EXIT(pType->GetAllocator()->Deallocate(pNativeRoot););
 
   // Make changes to native object
   if (callback.IsValid())
@@ -560,35 +560,36 @@ void wdAbstractObjectGraph::ModifyNodeViaNativeCounterpart(wdAbstractObjectNode*
   }
 
   // Create native object graph
-  wdAbstractObjectGraph graph;
-  wdAbstractObjectNode* pRootNode2 = nullptr;
+  nsAbstractObjectGraph graph;
   {
-    // The wdApplyNativePropertyChangesContext takes care of generating guids for native pointers that match those
+    // The nsApplyNativePropertyChangesContext takes care of generating guids for native pointers that match those
     // of the object manager.
-    wdApplyNativePropertyChangesContext nativeChangesContext(context, origGraph);
-    wdRttiConverterWriter rttiConverter(&graph, &nativeChangesContext, true, true);
+    nsApplyNativePropertyChangesContext nativeChangesContext(context, origGraph);
+    nsRttiConverterWriter rttiConverter(&graph, &nativeChangesContext, true, true);
     nativeChangesContext.RegisterObject(pOrigRootNode->GetGuid(), pType, pNativeRoot);
-    pRootNode2 = rttiConverter.AddObjectToGraph(pType, pNativeRoot, "Object");
+    rttiConverter.AddObjectToGraph(pType, pNativeRoot, "Object");
   }
 
   // Create diff from native to cloned sub-graph and then apply the diff to the original graph.
-  wdDeque<wdAbstractGraphDiffOperation> diffResult;
+  nsDeque<nsAbstractGraphDiffOperation> diffResult;
   graph.CreateDiffWithBaseGraph(origGraph, diffResult);
 
   ApplyDiff(diffResult);
 }
 
-wdAbstractObjectNode* wdAbstractObjectGraph::CopyNodeIntoGraph(const wdAbstractObjectNode* pNode)
+nsAbstractObjectNode* nsAbstractObjectGraph::CopyNodeIntoGraph(const nsAbstractObjectNode* pNode)
 {
   auto pNewNode = AddNode(pNode->GetGuid(), pNode->GetType(), pNode->GetTypeVersion(), pNode->GetNodeName());
 
   for (const auto& props : pNode->GetProperties())
-    pNewNode->AddProperty(props.m_szPropertyName, props.m_Value);
+  {
+    pNewNode->AddProperty(props.m_sPropertyName, props.m_Value);
+  }
 
   return pNewNode;
 }
 
-wdAbstractObjectNode* wdAbstractObjectGraph::CopyNodeIntoGraph(const wdAbstractObjectNode* pNode, FilterFunction& ref_filter)
+nsAbstractObjectNode* nsAbstractObjectGraph::CopyNodeIntoGraph(const nsAbstractObjectNode* pNode, FilterFunction& ref_filter)
 {
   auto pNewNode = AddNode(pNode->GetGuid(), pNode->GetType(), pNode->GetTypeVersion(), pNode->GetNodeName());
 
@@ -598,19 +599,20 @@ wdAbstractObjectNode* wdAbstractObjectGraph::CopyNodeIntoGraph(const wdAbstractO
     {
       if (!ref_filter(pNode, &props))
         continue;
-      pNewNode->AddProperty(props.m_szPropertyName, props.m_Value);
+
+      pNewNode->AddProperty(props.m_sPropertyName, props.m_Value);
     }
   }
   else
   {
     for (const auto& props : pNode->GetProperties())
-      pNewNode->AddProperty(props.m_szPropertyName, props.m_Value);
+      pNewNode->AddProperty(props.m_sPropertyName, props.m_Value);
   }
 
   return pNewNode;
 }
 
-void wdAbstractObjectGraph::CreateDiffWithBaseGraph(const wdAbstractObjectGraph& base, wdDeque<wdAbstractGraphDiffOperation>& out_diffResult) const
+void nsAbstractObjectGraph::CreateDiffWithBaseGraph(const nsAbstractObjectGraph& base, nsDeque<nsAbstractGraphDiffOperation>& out_diffResult) const
 {
   out_diffResult.Clear();
 
@@ -621,11 +623,11 @@ void wdAbstractObjectGraph::CreateDiffWithBaseGraph(const wdAbstractObjectGraph&
       if (GetNode(itNodeBase.Key()) == nullptr)
       {
         // does not exist in this graph -> has been deleted from base
-        wdAbstractGraphDiffOperation op;
+        nsAbstractGraphDiffOperation op;
         op.m_Node = itNodeBase.Key();
-        op.m_Operation = wdAbstractGraphDiffOperation::Op::NodeRemoved;
-        op.m_sProperty = itNodeBase.Value()->m_szType;
-        op.m_Value = itNodeBase.Value()->m_szNodeName;
+        op.m_Operation = nsAbstractGraphDiffOperation::Op::NodeRemoved;
+        op.m_sProperty = itNodeBase.Value()->m_sType;
+        op.m_Value = itNodeBase.Value()->m_sNodeName;
 
         out_diffResult.PushBack(op);
       }
@@ -639,19 +641,19 @@ void wdAbstractObjectGraph::CreateDiffWithBaseGraph(const wdAbstractObjectGraph&
       if (base.GetNode(itNodeThis.Key()) == nullptr)
       {
         // does not exist in base graph -> has been added
-        wdAbstractGraphDiffOperation op;
+        nsAbstractGraphDiffOperation op;
         op.m_Node = itNodeThis.Key();
-        op.m_Operation = wdAbstractGraphDiffOperation::Op::NodeAdded;
-        op.m_sProperty = itNodeThis.Value()->m_szType;
-        op.m_Value = itNodeThis.Value()->m_szNodeName;
+        op.m_Operation = nsAbstractGraphDiffOperation::Op::NodeAdded;
+        op.m_sProperty = itNodeThis.Value()->m_sType;
+        op.m_Value = itNodeThis.Value()->m_sNodeName;
 
         out_diffResult.PushBack(op);
 
         // set all properties
         for (const auto& prop : itNodeThis.Value()->GetProperties())
         {
-          op.m_Operation = wdAbstractGraphDiffOperation::Op::PropertyChanged;
-          op.m_sProperty = prop.m_szPropertyName;
+          op.m_Operation = nsAbstractGraphDiffOperation::Op::PropertyChanged;
+          op.m_sProperty = prop.m_sPropertyName;
           op.m_Value = prop.m_Value;
 
           out_diffResult.PushBack(op);
@@ -669,13 +671,13 @@ void wdAbstractObjectGraph::CreateDiffWithBaseGraph(const wdAbstractObjectGraph&
       if (pBaseNode == nullptr)
         continue;
 
-      for (const wdAbstractObjectNode::Property& prop : itNodeThis.Value()->GetProperties())
+      for (const nsAbstractObjectNode::Property& prop : itNodeThis.Value()->GetProperties())
       {
         bool bDifferent = true;
 
-        for (const wdAbstractObjectNode::Property& baseProp : pBaseNode->GetProperties())
+        for (const nsAbstractObjectNode::Property& baseProp : pBaseNode->GetProperties())
         {
-          if (wdStringUtils::IsEqual(baseProp.m_szPropertyName, prop.m_szPropertyName))
+          if (baseProp.m_sPropertyName == prop.m_sPropertyName)
           {
             if (baseProp.m_Value == prop.m_Value)
             {
@@ -690,10 +692,10 @@ void wdAbstractObjectGraph::CreateDiffWithBaseGraph(const wdAbstractObjectGraph&
 
         if (bDifferent)
         {
-          wdAbstractGraphDiffOperation op;
+          nsAbstractGraphDiffOperation op;
           op.m_Node = itNodeThis.Key();
-          op.m_Operation = wdAbstractGraphDiffOperation::Op::PropertyChanged;
-          op.m_sProperty = prop.m_szPropertyName;
+          op.m_Operation = nsAbstractGraphDiffOperation::Op::PropertyChanged;
+          op.m_sProperty = prop.m_sPropertyName;
           op.m_Value = prop.m_Value;
 
           out_diffResult.PushBack(op);
@@ -704,25 +706,25 @@ void wdAbstractObjectGraph::CreateDiffWithBaseGraph(const wdAbstractObjectGraph&
 }
 
 
-void wdAbstractObjectGraph::ApplyDiff(wdDeque<wdAbstractGraphDiffOperation>& ref_diff)
+void nsAbstractObjectGraph::ApplyDiff(nsDeque<nsAbstractGraphDiffOperation>& ref_diff)
 {
   for (const auto& op : ref_diff)
   {
     switch (op.m_Operation)
     {
-      case wdAbstractGraphDiffOperation::Op::NodeAdded:
+      case nsAbstractGraphDiffOperation::Op::NodeAdded:
       {
-        AddNode(op.m_Node, op.m_sProperty, op.m_uiTypeVersion, op.m_Value.Get<wdString>());
+        AddNode(op.m_Node, op.m_sProperty, op.m_uiTypeVersion, op.m_Value.Get<nsString>());
       }
       break;
 
-      case wdAbstractGraphDiffOperation::Op::NodeRemoved:
+      case nsAbstractGraphDiffOperation::Op::NodeRemoved:
       {
         RemoveNode(op.m_Node);
       }
       break;
 
-      case wdAbstractGraphDiffOperation::Op::PropertyChanged:
+      case nsAbstractGraphDiffOperation::Op::PropertyChanged:
       {
         auto* pNode = GetNode(op.m_Node);
         if (pNode)
@@ -741,18 +743,18 @@ void wdAbstractObjectGraph::ApplyDiff(wdDeque<wdAbstractGraphDiffOperation>& ref
 }
 
 
-void wdAbstractObjectGraph::MergeDiffs(const wdDeque<wdAbstractGraphDiffOperation>& lhs, const wdDeque<wdAbstractGraphDiffOperation>& rhs, wdDeque<wdAbstractGraphDiffOperation>& ref_out) const
+void nsAbstractObjectGraph::MergeDiffs(const nsDeque<nsAbstractGraphDiffOperation>& lhs, const nsDeque<nsAbstractGraphDiffOperation>& rhs, nsDeque<nsAbstractGraphDiffOperation>& ref_out) const
 {
   struct Prop
   {
-    Prop() {}
-    Prop(wdUuid node, wdStringView sProperty)
+    Prop() = default;
+    Prop(nsUuid node, nsStringView sProperty)
+      : m_Node(node)
+      , m_sProperty(sProperty)
     {
-      m_Node = node;
-      m_sProperty = sProperty;
     }
-    wdUuid m_Node;
-    wdStringView m_sProperty;
+    nsUuid m_Node;
+    nsStringView m_sProperty;
 
     bool operator<(const Prop& rhs) const
     {
@@ -765,39 +767,39 @@ void wdAbstractObjectGraph::MergeDiffs(const wdDeque<wdAbstractGraphDiffOperatio
     bool operator==(const Prop& rhs) const { return m_Node == rhs.m_Node && m_sProperty == rhs.m_sProperty; }
   };
 
-  wdMap<Prop, wdHybridArray<const wdAbstractGraphDiffOperation*, 2>> propChanges;
-  wdSet<wdUuid> removed;
-  wdMap<wdUuid, wdUInt32> added;
-  for (const wdAbstractGraphDiffOperation& op : lhs)
+  nsMap<Prop, nsHybridArray<const nsAbstractGraphDiffOperation*, 2>> propChanges;
+  nsSet<nsUuid> removed;
+  nsMap<nsUuid, nsUInt32> added;
+  for (const nsAbstractGraphDiffOperation& op : lhs)
   {
-    if (op.m_Operation == wdAbstractGraphDiffOperation::Op::NodeRemoved)
+    if (op.m_Operation == nsAbstractGraphDiffOperation::Op::NodeRemoved)
     {
       removed.Insert(op.m_Node);
       ref_out.PushBack(op);
     }
-    else if (op.m_Operation == wdAbstractGraphDiffOperation::Op::NodeAdded)
+    else if (op.m_Operation == nsAbstractGraphDiffOperation::Op::NodeAdded)
     {
       added[op.m_Node] = ref_out.GetCount();
       ref_out.PushBack(op);
     }
-    else if (op.m_Operation == wdAbstractGraphDiffOperation::Op::PropertyChanged)
+    else if (op.m_Operation == nsAbstractGraphDiffOperation::Op::PropertyChanged)
     {
       auto it = propChanges.FindOrAdd(Prop(op.m_Node, op.m_sProperty));
       it.Value().PushBack(&op);
     }
   }
-  for (const wdAbstractGraphDiffOperation& op : rhs)
+  for (const nsAbstractGraphDiffOperation& op : rhs)
   {
-    if (op.m_Operation == wdAbstractGraphDiffOperation::Op::NodeRemoved)
+    if (op.m_Operation == nsAbstractGraphDiffOperation::Op::NodeRemoved)
     {
       if (!removed.Contains(op.m_Node))
         ref_out.PushBack(op);
     }
-    else if (op.m_Operation == wdAbstractGraphDiffOperation::Op::NodeAdded)
+    else if (op.m_Operation == nsAbstractGraphDiffOperation::Op::NodeAdded)
     {
       if (added.Contains(op.m_Node))
       {
-        wdAbstractGraphDiffOperation& leftOp = ref_out[added[op.m_Node]];
+        nsAbstractGraphDiffOperation& leftOp = ref_out[added[op.m_Node]];
         leftOp.m_sProperty = op.m_sProperty; // Take type from rhs.
       }
       else
@@ -805,7 +807,7 @@ void wdAbstractObjectGraph::MergeDiffs(const wdDeque<wdAbstractGraphDiffOperatio
         ref_out.PushBack(op);
       }
     }
-    else if (op.m_Operation == wdAbstractGraphDiffOperation::Op::PropertyChanged)
+    else if (op.m_Operation == nsAbstractGraphDiffOperation::Op::PropertyChanged)
     {
       auto it = propChanges.FindOrAdd(Prop(op.m_Node, op.m_sProperty));
       it.Value().PushBack(&op);
@@ -815,7 +817,7 @@ void wdAbstractObjectGraph::MergeDiffs(const wdDeque<wdAbstractGraphDiffOperatio
   for (auto it = propChanges.GetIterator(); it.IsValid(); ++it)
   {
     const Prop& key = it.Key();
-    const wdHybridArray<const wdAbstractGraphDiffOperation*, 2>& value = it.Value();
+    const nsHybridArray<const nsAbstractGraphDiffOperation*, 2>& value = it.Value();
 
     if (value.GetCount() == 1)
     {
@@ -823,24 +825,24 @@ void wdAbstractObjectGraph::MergeDiffs(const wdDeque<wdAbstractGraphDiffOperatio
     }
     else
     {
-      const wdAbstractGraphDiffOperation& leftProp = *value[0];
-      const wdAbstractGraphDiffOperation& rightProp = *value[1];
+      const nsAbstractGraphDiffOperation& leftProp = *value[0];
+      const nsAbstractGraphDiffOperation& rightProp = *value[1];
 
-      if (leftProp.m_Value.GetType() == wdVariantType::VariantArray && rightProp.m_Value.GetType() == wdVariantType::VariantArray)
+      if (leftProp.m_Value.GetType() == nsVariantType::VariantArray && rightProp.m_Value.GetType() == nsVariantType::VariantArray)
       {
-        const wdVariantArray& leftArray = leftProp.m_Value.Get<wdVariantArray>();
-        const wdVariantArray& rightArray = rightProp.m_Value.Get<wdVariantArray>();
+        const nsVariantArray& leftArray = leftProp.m_Value.Get<nsVariantArray>();
+        const nsVariantArray& rightArray = rightProp.m_Value.Get<nsVariantArray>();
 
-        const wdAbstractObjectNode* pNode = GetNode(key.m_Node);
+        const nsAbstractObjectNode* pNode = GetNode(key.m_Node);
         if (pNode)
         {
-          wdStringBuilder sTemp(key.m_sProperty);
-          const wdAbstractObjectNode::Property* pProperty = pNode->FindProperty(sTemp);
-          if (pProperty && pProperty->m_Value.GetType() == wdVariantType::VariantArray)
+          nsStringBuilder sTemp(key.m_sProperty);
+          const nsAbstractObjectNode::Property* pProperty = pNode->FindProperty(sTemp);
+          if (pProperty && pProperty->m_Value.GetType() == nsVariantType::VariantArray)
           {
             // Do 3-way array merge
-            const wdVariantArray& baseArray = pProperty->m_Value.Get<wdVariantArray>();
-            wdVariantArray res;
+            const nsVariantArray& baseArray = pProperty->m_Value.Get<nsVariantArray>();
+            nsVariantArray res;
             MergeArrays(baseArray, leftArray, rightArray, res);
             ref_out.PushBack(rightProp);
             ref_out.PeekBack().m_Value = res;
@@ -863,14 +865,14 @@ void wdAbstractObjectGraph::MergeDiffs(const wdDeque<wdAbstractGraphDiffOperatio
   }
 }
 
-void wdAbstractObjectGraph::RemapVariant(wdVariant& value, const wdHashTable<wdUuid, wdUuid>& guidMap)
+void nsAbstractObjectGraph::RemapVariant(nsVariant& value, const nsHashTable<nsUuid, nsUuid>& guidMap)
 {
-  wdStringBuilder tmp;
+  nsStringBuilder tmp;
 
   // if the property is a guid, we check if we need to remap it
-  if (value.IsA<wdUuid>())
+  if (value.IsA<nsUuid>())
   {
-    const wdUuid& guid = value.Get<wdUuid>();
+    const nsUuid& guid = value.Get<nsUuid>();
 
     // if we find the guid in our map, replace it by the new guid
     if (auto* found = guidMap.GetValue(guid))
@@ -878,34 +880,34 @@ void wdAbstractObjectGraph::RemapVariant(wdVariant& value, const wdHashTable<wdU
       value = *found;
     }
   }
-  else if (value.IsA<wdString>() && wdConversionUtils::IsStringUuid(value.Get<wdString>()))
+  else if (value.IsA<nsString>() && nsConversionUtils::IsStringUuid(value.Get<nsString>()))
   {
-    const wdUuid guid = wdConversionUtils::ConvertStringToUuid(value.Get<wdString>());
+    const nsUuid guid = nsConversionUtils::ConvertStringToUuid(value.Get<nsString>());
 
     // if we find the guid in our map, replace it by the new guid
     if (auto* found = guidMap.GetValue(guid))
     {
-      value = wdConversionUtils::ToString(*found, tmp).GetData();
+      value = nsConversionUtils::ToString(*found, tmp).GetData();
     }
   }
   // Arrays may be of uuids
-  else if (value.IsA<wdVariantArray>())
+  else if (value.IsA<nsVariantArray>())
   {
-    const wdVariantArray& values = value.Get<wdVariantArray>();
+    const nsVariantArray& values = value.Get<nsVariantArray>();
     bool bNeedToRemap = false;
     for (auto& subValue : values)
     {
-      if (subValue.IsA<wdUuid>() && guidMap.Contains(subValue.Get<wdUuid>()))
+      if (subValue.IsA<nsUuid>() && guidMap.Contains(subValue.Get<nsUuid>()))
       {
         bNeedToRemap = true;
         break;
       }
-      else if (subValue.IsA<wdString>() && wdConversionUtils::IsStringUuid(subValue.Get<wdString>()))
+      else if (subValue.IsA<nsString>() && nsConversionUtils::IsStringUuid(subValue.Get<nsString>()))
       {
         bNeedToRemap = true;
         break;
       }
-      else if (subValue.IsA<wdVariantArray>())
+      else if (subValue.IsA<nsVariantArray>())
       {
         bNeedToRemap = true;
         break;
@@ -914,7 +916,7 @@ void wdAbstractObjectGraph::RemapVariant(wdVariant& value, const wdHashTable<wdU
 
     if (bNeedToRemap)
     {
-      wdVariantArray newValues = values;
+      nsVariantArray newValues = values;
       for (auto& subValue : newValues)
       {
         RemapVariant(subValue, guidMap);
@@ -923,20 +925,20 @@ void wdAbstractObjectGraph::RemapVariant(wdVariant& value, const wdHashTable<wdU
     }
   }
   // Maps may be of uuids
-  else if (value.IsA<wdVariantDictionary>())
+  else if (value.IsA<nsVariantDictionary>())
   {
-    const wdVariantDictionary& values = value.Get<wdVariantDictionary>();
+    const nsVariantDictionary& values = value.Get<nsVariantDictionary>();
     bool bNeedToRemap = false;
     for (auto it = values.GetIterator(); it.IsValid(); ++it)
     {
-      const wdVariant& subValue = it.Value();
+      const nsVariant& subValue = it.Value();
 
-      if (subValue.IsA<wdUuid>() && guidMap.Contains(subValue.Get<wdUuid>()))
+      if (subValue.IsA<nsUuid>() && guidMap.Contains(subValue.Get<nsUuid>()))
       {
         bNeedToRemap = true;
         break;
       }
-      else if (subValue.IsA<wdString>() && wdConversionUtils::IsStringUuid(subValue.Get<wdString>()))
+      else if (subValue.IsA<nsString>() && nsConversionUtils::IsStringUuid(subValue.Get<nsString>()))
       {
         bNeedToRemap = true;
         break;
@@ -945,7 +947,7 @@ void wdAbstractObjectGraph::RemapVariant(wdVariant& value, const wdHashTable<wdU
 
     if (bNeedToRemap)
     {
-      wdVariantDictionary newValues = values;
+      nsVariantDictionary newValues = values;
       for (auto it = newValues.GetIterator(); it.IsValid(); ++it)
       {
         RemapVariant(it.Value(), guidMap);
@@ -955,46 +957,46 @@ void wdAbstractObjectGraph::RemapVariant(wdVariant& value, const wdHashTable<wdU
   }
 }
 
-void wdAbstractObjectGraph::MergeArrays(const wdDynamicArray<wdVariant>& baseArray, const wdDynamicArray<wdVariant>& leftArray, const wdDynamicArray<wdVariant>& rightArray, wdDynamicArray<wdVariant>& out) const
+void nsAbstractObjectGraph::MergeArrays(const nsDynamicArray<nsVariant>& baseArray, const nsDynamicArray<nsVariant>& leftArray, const nsDynamicArray<nsVariant>& rightArray, nsDynamicArray<nsVariant>& out) const
 {
   // Find element type.
-  wdVariantType::Enum type = wdVariantType::Invalid;
+  nsVariantType::Enum type = nsVariantType::Invalid;
   if (!baseArray.IsEmpty())
     type = baseArray[0].GetType();
-  if (type != wdVariantType::Invalid && !leftArray.IsEmpty())
+  if (type != nsVariantType::Invalid && !leftArray.IsEmpty())
     type = leftArray[0].GetType();
-  if (type != wdVariantType::Invalid && !rightArray.IsEmpty())
+  if (type != nsVariantType::Invalid && !rightArray.IsEmpty())
     type = rightArray[0].GetType();
 
-  if (type == wdVariantType::Invalid)
+  if (type == nsVariantType::Invalid)
     return;
 
   // For now, assume non-uuid types are arrays, uuids are sets.
-  if (type != wdVariantType::Uuid)
+  if (type != nsVariantType::Uuid)
   {
     // Any size changes?
-    wdUInt32 uiSize = baseArray.GetCount();
+    nsUInt32 uiSize = baseArray.GetCount();
     if (leftArray.GetCount() != baseArray.GetCount())
       uiSize = leftArray.GetCount();
     if (rightArray.GetCount() != baseArray.GetCount())
       uiSize = rightArray.GetCount();
 
     out.SetCount(uiSize);
-    for (wdUInt32 i = 0; i < uiSize; i++)
+    for (nsUInt32 i = 0; i < uiSize; i++)
     {
       if (i < baseArray.GetCount())
         out[i] = baseArray[i];
     }
 
-    wdUInt32 uiCountLeft = wdMath::Min(uiSize, leftArray.GetCount());
-    for (wdUInt32 i = 0; i < uiCountLeft; i++)
+    nsUInt32 uiCountLeft = nsMath::Min(uiSize, leftArray.GetCount());
+    for (nsUInt32 i = 0; i < uiCountLeft; i++)
     {
       if (leftArray[i] != baseArray[i])
         out[i] = leftArray[i];
     }
 
-    wdUInt32 uiCountRight = wdMath::Min(uiSize, rightArray.GetCount());
-    for (wdUInt32 i = 0; i < uiCountRight; i++)
+    nsUInt32 uiCountRight = nsMath::Min(uiSize, rightArray.GetCount());
+    for (nsUInt32 i = 0; i < uiCountRight; i++)
     {
       if (rightArray[i] != baseArray[i])
         out[i] = rightArray[i];
@@ -1005,40 +1007,40 @@ void wdAbstractObjectGraph::MergeArrays(const wdDynamicArray<wdVariant>& baseArr
   // Move distance is NP-complete so try greedy algorithm
   struct Element
   {
-    Element(const wdVariant* pValue = nullptr, wdInt32 iBaseIndex = -1, wdInt32 iLeftIndex = -1, wdInt32 iRightIndex = -1)
+    Element(const nsVariant* pValue = nullptr, nsInt32 iBaseIndex = -1, nsInt32 iLeftIndex = -1, nsInt32 iRightIndex = -1)
       : m_pValue(pValue)
       , m_iBaseIndex(iBaseIndex)
       , m_iLeftIndex(iLeftIndex)
       , m_iRightIndex(iRightIndex)
-      , m_fIndex(wdMath::MaxValue<float>())
+      , m_fIndex(nsMath::MaxValue<float>())
     {
     }
     bool IsDeleted() const { return m_iBaseIndex != -1 && (m_iLeftIndex == -1 || m_iRightIndex == -1); }
     bool operator<(const Element& rhs) const { return m_fIndex < rhs.m_fIndex; }
 
-    const wdVariant* m_pValue;
-    wdInt32 m_iBaseIndex;
-    wdInt32 m_iLeftIndex;
-    wdInt32 m_iRightIndex;
+    const nsVariant* m_pValue;
+    nsInt32 m_iBaseIndex;
+    nsInt32 m_iLeftIndex;
+    nsInt32 m_iRightIndex;
     float m_fIndex;
   };
-  wdDynamicArray<Element> baseOrder;
+  nsDynamicArray<Element> baseOrder;
   baseOrder.Reserve(leftArray.GetCount() + rightArray.GetCount());
 
   // First, add up all unique elements and their position in each array.
-  for (wdInt32 i = 0; i < (wdInt32)baseArray.GetCount(); i++)
+  for (nsInt32 i = 0; i < (nsInt32)baseArray.GetCount(); i++)
   {
     baseOrder.PushBack(Element(&baseArray[i], i));
     baseOrder.PeekBack().m_fIndex = (float)i;
   }
 
-  wdDynamicArray<wdInt32> leftOrder;
+  nsDynamicArray<nsInt32> leftOrder;
   leftOrder.SetCountUninitialized(leftArray.GetCount());
-  for (wdInt32 i = 0; i < (wdInt32)leftArray.GetCount(); i++)
+  for (nsInt32 i = 0; i < (nsInt32)leftArray.GetCount(); i++)
   {
-    const wdVariant& val = leftArray[i];
+    const nsVariant& val = leftArray[i];
     bool bFound = false;
-    for (wdInt32 j = 0; j < (wdInt32)baseOrder.GetCount(); j++)
+    for (nsInt32 j = 0; j < (nsInt32)baseOrder.GetCount(); j++)
     {
       Element& elem = baseOrder[j];
       if (elem.m_iLeftIndex == -1 && *elem.m_pValue == val)
@@ -1053,18 +1055,18 @@ void wdAbstractObjectGraph::MergeArrays(const wdDynamicArray<wdVariant>& baseArr
     if (!bFound)
     {
       // Added element.
-      leftOrder[i] = (wdInt32)baseOrder.GetCount();
+      leftOrder[i] = (nsInt32)baseOrder.GetCount();
       baseOrder.PushBack(Element(&leftArray[i], -1, i));
     }
   }
 
-  wdDynamicArray<wdInt32> rightOrder;
+  nsDynamicArray<nsInt32> rightOrder;
   rightOrder.SetCountUninitialized(rightArray.GetCount());
-  for (wdInt32 i = 0; i < (wdInt32)rightArray.GetCount(); i++)
+  for (nsInt32 i = 0; i < (nsInt32)rightArray.GetCount(); i++)
   {
-    const wdVariant& val = rightArray[i];
+    const nsVariant& val = rightArray[i];
     bool bFound = false;
-    for (wdInt32 j = 0; j < (wdInt32)baseOrder.GetCount(); j++)
+    for (nsInt32 j = 0; j < (nsInt32)baseOrder.GetCount(); j++)
     {
       Element& elem = baseOrder[j];
       if (elem.m_iRightIndex == -1 && *elem.m_pValue == val)
@@ -1079,21 +1081,21 @@ void wdAbstractObjectGraph::MergeArrays(const wdDynamicArray<wdVariant>& baseArr
     if (!bFound)
     {
       // Added element.
-      rightOrder[i] = (wdInt32)baseOrder.GetCount();
+      rightOrder[i] = (nsInt32)baseOrder.GetCount();
       baseOrder.PushBack(Element(&rightArray[i], -1, -1, i));
     }
   }
 
   // Re-order greedy
   float fLastElement = -0.5f;
-  for (wdInt32 i = 0; i < (wdInt32)leftOrder.GetCount(); i++)
+  for (nsInt32 i = 0; i < (nsInt32)leftOrder.GetCount(); i++)
   {
     Element& currentElem = baseOrder[leftOrder[i]];
     if (currentElem.IsDeleted())
       continue;
 
-    float fLowestSubsequent = wdMath::MaxValue<float>();
-    for (wdInt32 j = i + 1; j < (wdInt32)leftOrder.GetCount(); j++)
+    float fLowestSubsequent = nsMath::MaxValue<float>();
+    for (nsInt32 j = i + 1; j < (nsInt32)leftOrder.GetCount(); j++)
     {
       Element& elem = baseOrder[leftOrder[j]];
       if (elem.IsDeleted())
@@ -1114,14 +1116,14 @@ void wdAbstractObjectGraph::MergeArrays(const wdDynamicArray<wdVariant>& baseArr
   }
 
   fLastElement = -0.5f;
-  for (wdInt32 i = 0; i < (wdInt32)rightOrder.GetCount(); i++)
+  for (nsInt32 i = 0; i < (nsInt32)rightOrder.GetCount(); i++)
   {
     Element& currentElem = baseOrder[rightOrder[i]];
     if (currentElem.IsDeleted())
       continue;
 
-    float fLowestSubsequent = wdMath::MaxValue<float>();
-    for (wdInt32 j = i + 1; j < (wdInt32)rightOrder.GetCount(); j++)
+    float fLowestSubsequent = nsMath::MaxValue<float>();
+    for (nsInt32 j = i + 1; j < (nsInt32)rightOrder.GetCount(); j++)
     {
       Element& elem = baseOrder[rightOrder[j]];
       if (elem.IsDeleted())
@@ -1154,4 +1156,4 @@ void wdAbstractObjectGraph::MergeArrays(const wdDynamicArray<wdVariant>& baseArr
   }
 }
 
-WD_STATICLINK_FILE(Foundation, Foundation_Serialization_Implementation_AbstractObjectGraph);
+NS_STATICLINK_FILE(Foundation, Foundation_Serialization_Implementation_AbstractObjectGraph);

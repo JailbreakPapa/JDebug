@@ -1,0 +1,59 @@
+#pragma once
+
+#include <Foundation/Types/Status.h>
+#include <TestFramework/TestFrameworkDLL.h>
+#include <deque>
+#include <string>
+
+class nsTestFramework;
+class nsTestBaseClass;
+
+/// \brief Stores the identification of a sub-test.
+struct nsSubTestEntry
+{
+  nsSubTestEntry() = default;
+
+  nsInt32 m_iSubTestIdentifier = -1;
+  const char* m_szSubTestName = "";
+  bool m_bEnableTest = true;
+};
+
+/// \brief Stores the identification of a test.
+struct nsTestEntry
+{
+  nsTestEntry() = default;
+
+  nsTestBaseClass* m_pTest = nullptr;
+  const char* m_szTestName = "";
+  std::deque<nsSubTestEntry> m_SubTests;
+  std::string m_sNotAvailableReason;
+  bool m_bEnableTest = true;
+};
+
+enum class AssertOnTestFail
+{
+  DoNotAssert,
+  AssertIfDebuggerAttached,
+  AlwaysAssert,
+};
+struct TestSettings
+{
+  // The following settings are stored in the settings file.
+  AssertOnTestFail m_AssertOnTestFail = AssertOnTestFail::DoNotAssert;
+  bool m_bOpenHtmlOutputOnError = false;
+  bool m_bKeepConsoleOpen = false;
+  bool m_bShowTimestampsInLog = false;
+  bool m_bShowMessageBox = false;
+  bool m_bAutoDisableSuccessfulTests = false;
+
+  // The following settings are only set via command-line.
+  bool m_bRunTests = false;          /// Only needed for GUI applications, in console mode tests are always run automatically.
+  bool m_bNoAutomaticSaving = false; /// Allows to run the test with settings through the command line without saving those settings for later.
+  bool m_bCloseOnSuccess = false;    /// Closes the application upon success immediately.
+  bool m_bNoGUI = false;             /// Starts the tests in console mode, test are started automatically.
+  int m_iRevision = -1;              /// Revision in the RCS of this test run. Will be written into the test results json file for later reference.
+  std::string m_sJsonOutput;         /// Absolute path to the json file the results should be written to.
+  bool m_bEnableAllTests = false;    /// Enables all test.
+  std::string m_sTestFilter;         /// Filter that does a 'contains' test on each test name.
+  nsUInt8 m_uiFullPasses = 1;        /// All tests are done this often, to check whether some tests fail only when executed multiple times.
+};

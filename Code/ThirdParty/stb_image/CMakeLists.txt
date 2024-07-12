@@ -1,7 +1,7 @@
-wd_cmake_init()
+ns_cmake_init()
 
 # Get the name of this folder as the project name
 get_filename_component(PROJECT_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME_WE)
 
-wd_create_target(SHARED_LIBRARY ${PROJECT_NAME} NO_WD_PREFIX THIRD_PARTY)
+ns_create_target(LIBRARY ${PROJECT_NAME} NO_NS_PREFIX)
 

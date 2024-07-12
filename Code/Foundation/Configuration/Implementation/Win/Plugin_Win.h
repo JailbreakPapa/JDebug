@@ -1,8 +1,8 @@
 
 #include <Foundation/FoundationInternal.h>
-WD_FOUNDATION_INTERNAL_HEADER
+NS_FOUNDATION_INTERNAL_HEADER
 
-#if WD_ENABLED(WD_PLATFORM_WINDOWS)
+#if NS_ENABLED(NS_PLATFORM_WINDOWS)
 
 #  include <Foundation/Basics/Platform/Win/IncludeWindows.h>
 #  include <Foundation/Configuration/Plugin.h>
@@ -10,26 +10,29 @@ WD_FOUNDATION_INTERNAL_HEADER
 #  include <Foundation/Logging/Log.h>
 #  include <Foundation/Strings/StringBuilder.h>
 
-typedef HMODULE wdPluginModule;
+using nsPluginModule = HMODULE;
 
-void wdPlugin::GetPluginPaths(const char* szPluginName, wdStringBuilder& ref_sOriginalFile, wdStringBuilder& ref_sCopiedFile, wdUInt8 uiFileCopyNumber)
+bool nsPlugin::PlatformNeedsPluginCopy()
 {
-  auto sPluginName = wdStringView(szPluginName);
+  return true;
+}
 
-  ref_sOriginalFile = wdOSFile::GetApplicationDirectory();
+void nsPlugin::GetPluginPaths(nsStringView sPluginName, nsStringBuilder& ref_sOriginalFile, nsStringBuilder& ref_sCopiedFile, nsUInt8 uiFileCopyNumber)
+{
+  ref_sOriginalFile = nsOSFile::GetApplicationDirectory();
   ref_sOriginalFile.AppendPath(sPluginName);
   ref_sOriginalFile.Append(".dll");
 
-  ref_sCopiedFile = wdOSFile::GetApplicationDirectory();
+  ref_sCopiedFile = nsOSFile::GetApplicationDirectory();
   ref_sCopiedFile.AppendPath(sPluginName);
 
-  if (!wdOSFile::ExistsFile(ref_sOriginalFile))
+  if (!nsOSFile::ExistsFile(ref_sOriginalFile))
   {
-    ref_sOriginalFile = wdOSFile::GetCurrentWorkingDirectory();
+    ref_sOriginalFile = nsOSFile::GetCurrentWorkingDirectory();
     ref_sOriginalFile.AppendPath(sPluginName);
     ref_sOriginalFile.Append(".dll");
 
-    ref_sCopiedFile = wdOSFile::GetCurrentWorkingDirectory();
+    ref_sCopiedFile = nsOSFile::GetCurrentWorkingDirectory();
     ref_sCopiedFile.AppendPath(sPluginName);
   }
 
@@ -39,49 +42,49 @@ void wdPlugin::GetPluginPaths(const char* szPluginName, wdStringBuilder& ref_sOr
   ref_sCopiedFile.Append(".loaded");
 }
 
-wdResult UnloadPluginModule(wdPluginModule& ref_pModule, const char* szPluginFile)
+nsResult UnloadPluginModule(nsPluginModule& ref_pModule, nsStringView sPluginFile)
 {
   // reset last error code
   SetLastError(ERROR_SUCCESS);
 
   if (FreeLibrary(ref_pModule) == FALSE)
   {
-    wdLog::Error("Could not unload plugin '{0}'. Error-Code {1}", szPluginFile, wdArgErrorCode(GetLastError()));
-    return WD_FAILURE;
+    nsLog::Error("Could not unload plugin '{0}'. Error-Code {1}", sPluginFile, nsArgErrorCode(GetLastError()));
+    return NS_FAILURE;
   }
 
   ref_pModule = nullptr;
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
-wdResult LoadPluginModule(const char* szFileToLoad, wdPluginModule& ref_pModule, const char* szPluginFile)
+nsResult LoadPluginModule(nsStringView sFileToLoad, nsPluginModule& ref_pModule, nsStringView sPluginFile)
 {
   // reset last error code
   SetLastError(ERROR_SUCCESS);
 
-#  if WD_ENABLED(WD_PLATFORM_WINDOWS_UWP)
-  wdStringBuilder relativePath = szFileToLoad;
-  WD_SUCCEED_OR_RETURN(relativePath.MakeRelativeTo(wdOSFile::GetApplicationDirectory()));
-  ref_pModule = LoadPackagedLibrary(wdStringWChar(relativePath).GetData(), 0);
+#  if NS_ENABLED(NS_PLATFORM_WINDOWS_UWP)
+  nsStringBuilder relativePath = sFileToLoad;
+  NS_SUCCEED_OR_RETURN(relativePath.MakeRelativeTo(nsOSFile::GetApplicationDirectory()));
+  ref_pModule = LoadPackagedLibrary(nsStringWChar(relativePath).GetData(), 0);
 #  else
-  ref_pModule = LoadLibraryW(wdStringWChar(szFileToLoad).GetData());
+  ref_pModule = LoadLibraryW(nsStringWChar(sFileToLoad).GetData());
 #  endif
 
   if (ref_pModule == nullptr)
   {
     const DWORD err = GetLastError();
-    wdLog::Error("Could not load plugin '{0}'. Error-Code {1}", szPluginFile, wdArgErrorCode(err));
+    nsLog::Error("Could not load plugin '{0}'. Error-Code {1}", sPluginFile, nsArgErrorCode(err));
 
     if (err == 126)
     {
-      wdLog::Error("Please Note: This means that the plugin exists, but a DLL dependency of the plugin is missing. You probably need to copy 3rd "
+      nsLog::Error("Please Note: This means that the plugin exists, but a DLL dependency of the plugin is missing. You probably need to copy 3rd "
                    "party DLLs next to the plugin.");
     }
 
-    return WD_FAILURE;
+    return NS_FAILURE;
   }
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
 #else

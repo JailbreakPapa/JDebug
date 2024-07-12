@@ -7,27 +7,27 @@ namespace
 {
   struct AssignOperator
   {
-    wdStringView m_sName;
-    wdExpressionAST::NodeType::Enum m_NodeType;
+    nsStringView m_sName;
+    nsExpressionAST::NodeType::Enum m_NodeType;
   };
 
   static constexpr AssignOperator s_assignOperators[] = {
-    {"+="_wdsv, wdExpressionAST::NodeType::Add},
-    {"-="_wdsv, wdExpressionAST::NodeType::Subtract},
-    {"*="_wdsv, wdExpressionAST::NodeType::Multiply},
-    {"/="_wdsv, wdExpressionAST::NodeType::Divide},
-    {"%="_wdsv, wdExpressionAST::NodeType::Modulo},
-    {"<<="_wdsv, wdExpressionAST::NodeType::BitshiftLeft},
-    {">>="_wdsv, wdExpressionAST::NodeType::BitshiftRight},
-    {"&="_wdsv, wdExpressionAST::NodeType::BitwiseAnd},
-    {"^="_wdsv, wdExpressionAST::NodeType::BitwiseXor},
-    {"|="_wdsv, wdExpressionAST::NodeType::BitwiseOr},
+    {"+="_nssv, nsExpressionAST::NodeType::Add},
+    {"-="_nssv, nsExpressionAST::NodeType::Subtract},
+    {"*="_nssv, nsExpressionAST::NodeType::Multiply},
+    {"/="_nssv, nsExpressionAST::NodeType::Divide},
+    {"%="_nssv, nsExpressionAST::NodeType::Modulo},
+    {"<<="_nssv, nsExpressionAST::NodeType::BitshiftLeft},
+    {">>="_nssv, nsExpressionAST::NodeType::BitshiftRight},
+    {"&="_nssv, nsExpressionAST::NodeType::BitwiseAnd},
+    {"^="_nssv, nsExpressionAST::NodeType::BitwiseXor},
+    {"|="_nssv, nsExpressionAST::NodeType::BitwiseOr},
   };
 
   struct BinaryOperator
   {
-    wdStringView m_sName;
-    wdExpressionAST::NodeType::Enum m_NodeType;
+    nsStringView m_sName;
+    nsExpressionAST::NodeType::Enum m_NodeType;
     int m_iPrecedence;
   };
 
@@ -35,42 +35,61 @@ namespace
   // lower value means higher precedence
   // sorted by string length to simplify the test against a token stream
   static constexpr BinaryOperator s_binaryOperators[] = {
-    {"&&"_wdsv, wdExpressionAST::NodeType::LogicalAnd, 14},
-    {"||"_wdsv, wdExpressionAST::NodeType::LogicalOr, 15},
-    {"<<"_wdsv, wdExpressionAST::NodeType::BitshiftLeft, 7},
-    {">>"_wdsv, wdExpressionAST::NodeType::BitshiftRight, 7},
-    {"=="_wdsv, wdExpressionAST::NodeType::Equal, 10},
-    {"!="_wdsv, wdExpressionAST::NodeType::NotEqual, 10},
-    {"<="_wdsv, wdExpressionAST::NodeType::LessEqual, 9},
-    {">="_wdsv, wdExpressionAST::NodeType::GreaterEqual, 9},
-    {"<"_wdsv, wdExpressionAST::NodeType::Less, 9},
-    {">"_wdsv, wdExpressionAST::NodeType::Greater, 9},
-    {"&"_wdsv, wdExpressionAST::NodeType::BitwiseAnd, 11},
-    {"^"_wdsv, wdExpressionAST::NodeType::BitwiseXor, 12},
-    {"|"_wdsv, wdExpressionAST::NodeType::BitwiseOr, 13},
-    {"?"_wdsv, wdExpressionAST::NodeType::Select, 16},
-    {"+"_wdsv, wdExpressionAST::NodeType::Add, 6},
-    {"-"_wdsv, wdExpressionAST::NodeType::Subtract, 6},
-    {"*"_wdsv, wdExpressionAST::NodeType::Multiply, 5},
-    {"/"_wdsv, wdExpressionAST::NodeType::Divide, 5},
-    {"%"_wdsv, wdExpressionAST::NodeType::Modulo, 5},
+    {"&&"_nssv, nsExpressionAST::NodeType::LogicalAnd, 14},
+    {"||"_nssv, nsExpressionAST::NodeType::LogicalOr, 15},
+    {"<<"_nssv, nsExpressionAST::NodeType::BitshiftLeft, 7},
+    {">>"_nssv, nsExpressionAST::NodeType::BitshiftRight, 7},
+    {"=="_nssv, nsExpressionAST::NodeType::Equal, 10},
+    {"!="_nssv, nsExpressionAST::NodeType::NotEqual, 10},
+    {"<="_nssv, nsExpressionAST::NodeType::LessEqual, 9},
+    {">="_nssv, nsExpressionAST::NodeType::GreaterEqual, 9},
+    {"<"_nssv, nsExpressionAST::NodeType::Less, 9},
+    {">"_nssv, nsExpressionAST::NodeType::Greater, 9},
+    {"&"_nssv, nsExpressionAST::NodeType::BitwiseAnd, 11},
+    {"^"_nssv, nsExpressionAST::NodeType::BitwiseXor, 12},
+    {"|"_nssv, nsExpressionAST::NodeType::BitwiseOr, 13},
+    {"?"_nssv, nsExpressionAST::NodeType::Select, 16},
+    {"+"_nssv, nsExpressionAST::NodeType::Add, 6},
+    {"-"_nssv, nsExpressionAST::NodeType::Subtract, 6},
+    {"*"_nssv, nsExpressionAST::NodeType::Multiply, 5},
+    {"/"_nssv, nsExpressionAST::NodeType::Divide, 5},
+    {"%"_nssv, nsExpressionAST::NodeType::Modulo, 5},
   };
+
+  static nsHashTable<nsHashedString, nsEnum<nsExpressionAST::DataType>> s_KnownTypes;
+  static nsHashTable<nsHashedString, nsEnum<nsExpressionAST::NodeType>> s_BuiltinFunctions;
 
 } // namespace
 
-using namespace wdTokenParseUtils;
+using namespace nsTokenParseUtils;
 
-wdExpressionParser::wdExpressionParser()
+nsExpressionParser::nsExpressionParser()
 {
   RegisterKnownTypes();
   RegisterBuiltinFunctions();
 }
 
-wdExpressionParser::~wdExpressionParser() = default;
+nsExpressionParser::~nsExpressionParser() = default;
 
-void wdExpressionParser::RegisterFunction(const wdExpression::FunctionDesc& funcDesc)
+// static
+const nsHashTable<nsHashedString, nsEnum<nsExpressionAST::DataType>>& nsExpressionParser::GetKnownTypes()
 {
-  WD_ASSERT_DEV(funcDesc.m_uiNumRequiredInputs <= funcDesc.m_InputTypes.GetCount(), "Not enough input types defined. {} inputs are required but only {} types given.", funcDesc.m_uiNumRequiredInputs, funcDesc.m_InputTypes.GetCount());
+  RegisterKnownTypes();
+
+  return s_KnownTypes;
+}
+
+// static
+const nsHashTable<nsHashedString, nsEnum<nsExpressionAST::NodeType>>& nsExpressionParser::GetBuiltinFunctions()
+{
+  RegisterBuiltinFunctions();
+
+  return s_BuiltinFunctions;
+}
+
+void nsExpressionParser::RegisterFunction(const nsExpression::FunctionDesc& funcDesc)
+{
+  NS_ASSERT_DEV(funcDesc.m_uiNumRequiredInputs <= funcDesc.m_InputTypes.GetCount(), "Not enough input types defined. {} inputs are required but only {} types given.", funcDesc.m_uiNumRequiredInputs, funcDesc.m_InputTypes.GetCount());
 
   auto& functionDescs = m_FunctionDescs[funcDesc.m_sName];
   if (functionDescs.Contains(funcDesc) == false)
@@ -79,7 +98,7 @@ void wdExpressionParser::RegisterFunction(const wdExpression::FunctionDesc& func
   }
 }
 
-void wdExpressionParser::UnregisterFunction(const wdExpression::FunctionDesc& funcDesc)
+void nsExpressionParser::UnregisterFunction(const nsExpression::FunctionDesc& funcDesc)
 {
   if (auto pFunctionDescs = m_FunctionDescs.GetValue(funcDesc.m_sName))
   {
@@ -87,120 +106,130 @@ void wdExpressionParser::UnregisterFunction(const wdExpression::FunctionDesc& fu
   }
 }
 
-wdResult wdExpressionParser::Parse(wdStringView sCode, wdArrayPtr<wdExpression::StreamDesc> inputs, wdArrayPtr<wdExpression::StreamDesc> outputs, const Options& options, wdExpressionAST& out_ast)
+nsResult nsExpressionParser::Parse(nsStringView sCode, nsArrayPtr<nsExpression::StreamDesc> inputs, nsArrayPtr<nsExpression::StreamDesc> outputs, const Options& options, nsExpressionAST& out_ast)
 {
   if (sCode.IsEmpty())
-    return WD_FAILURE;
+    return NS_FAILURE;
 
   m_Options = options;
 
   m_pAST = &out_ast;
   SetupInAndOutputs(inputs, outputs);
 
-  wdTokenizer tokenizer;
-  tokenizer.Tokenize(wdArrayPtr<const wdUInt8>((const wdUInt8*)sCode.GetStartPointer(), sCode.GetElementCount()), wdLog::GetThreadLocalLogSystem());
+  nsTokenizer tokenizer;
+  tokenizer.Tokenize(nsArrayPtr<const nsUInt8>((const nsUInt8*)sCode.GetStartPointer(), sCode.GetElementCount()), nsLog::GetThreadLocalLogSystem());
 
-  wdUInt32 readTokens = 0;
+  nsUInt32 readTokens = 0;
   while (tokenizer.GetNextLine(readTokens, m_TokenStream).Succeeded())
   {
     m_uiCurrentToken = 0;
 
     while (m_uiCurrentToken < m_TokenStream.GetCount())
     {
-      WD_SUCCEED_OR_RETURN(ParseStatement());
+      NS_SUCCEED_OR_RETURN(ParseStatement());
 
       if (m_uiCurrentToken < m_TokenStream.GetCount() && AcceptStatementTerminator() == false)
       {
         auto pCurrentToken = m_TokenStream[m_uiCurrentToken];
-        ReportError(pCurrentToken, wdFmt("Syntax error, unexpected token '{}'", pCurrentToken->m_DataView));
-        return WD_FAILURE;
+        ReportError(pCurrentToken, nsFmt("Syntax error, unexpected token '{}'", pCurrentToken->m_DataView));
+        return NS_FAILURE;
       }
     }
   }
 
-  WD_SUCCEED_OR_RETURN(CheckOutputs());
+  NS_SUCCEED_OR_RETURN(CheckOutputs());
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
-void wdExpressionParser::RegisterKnownTypes()
+// static
+void nsExpressionParser::RegisterKnownTypes()
 {
-  m_KnownTypes.Insert(wdMakeHashedString("var"), wdExpressionAST::DataType::Unknown);
+  if (s_KnownTypes.IsEmpty() == false)
+    return;
 
-  m_KnownTypes.Insert(wdMakeHashedString("vec2"), wdExpressionAST::DataType::Float2);
-  m_KnownTypes.Insert(wdMakeHashedString("vec3"), wdExpressionAST::DataType::Float3);
-  m_KnownTypes.Insert(wdMakeHashedString("vec4"), wdExpressionAST::DataType::Float4);
+  s_KnownTypes.Insert(nsMakeHashedString("var"), nsExpressionAST::DataType::Unknown);
 
-  m_KnownTypes.Insert(wdMakeHashedString("vec2i"), wdExpressionAST::DataType::Int2);
-  m_KnownTypes.Insert(wdMakeHashedString("vec3i"), wdExpressionAST::DataType::Int3);
-  m_KnownTypes.Insert(wdMakeHashedString("vec4i"), wdExpressionAST::DataType::Int4);
+  s_KnownTypes.Insert(nsMakeHashedString("vec2"), nsExpressionAST::DataType::Float2);
+  s_KnownTypes.Insert(nsMakeHashedString("vec3"), nsExpressionAST::DataType::Float3);
+  s_KnownTypes.Insert(nsMakeHashedString("vec4"), nsExpressionAST::DataType::Float4);
 
-  wdStringBuilder sTypeName;
-  for (wdUInt32 type = wdExpressionAST::DataType::Bool; type < wdExpressionAST::DataType::Count; ++type)
+  s_KnownTypes.Insert(nsMakeHashedString("vec2i"), nsExpressionAST::DataType::Int2);
+  s_KnownTypes.Insert(nsMakeHashedString("vec3i"), nsExpressionAST::DataType::Int3);
+  s_KnownTypes.Insert(nsMakeHashedString("vec4i"), nsExpressionAST::DataType::Int4);
+
+  nsStringBuilder sTypeName;
+  for (nsUInt32 type = nsExpressionAST::DataType::Bool; type < nsExpressionAST::DataType::Count; ++type)
   {
-    sTypeName = wdExpressionAST::DataType::GetName(static_cast<wdExpressionAST::DataType::Enum>(type));
+    sTypeName = nsExpressionAST::DataType::GetName(static_cast<nsExpressionAST::DataType::Enum>(type));
     sTypeName.ToLower();
 
-    wdHashedString sTypeNameHashed;
+    nsHashedString sTypeNameHashed;
     sTypeNameHashed.Assign(sTypeName);
 
-    m_KnownTypes.Insert(sTypeNameHashed, static_cast<wdExpressionAST::DataType::Enum>(type));
+    s_KnownTypes.Insert(sTypeNameHashed, static_cast<nsExpressionAST::DataType::Enum>(type));
   }
 }
 
-void wdExpressionParser::RegisterBuiltinFunctions()
+void nsExpressionParser::RegisterBuiltinFunctions()
 {
+  if (s_BuiltinFunctions.IsEmpty() == false)
+    return;
+
   // Unary
-  m_BuiltinFunctions.Insert(wdMakeHashedString("abs"), wdExpressionAST::NodeType::Absolute);
-  m_BuiltinFunctions.Insert(wdMakeHashedString("saturate"), wdExpressionAST::NodeType::Saturate);
-  m_BuiltinFunctions.Insert(wdMakeHashedString("sqrt"), wdExpressionAST::NodeType::Sqrt);
-  m_BuiltinFunctions.Insert(wdMakeHashedString("exp"), wdExpressionAST::NodeType::Exp);
-  m_BuiltinFunctions.Insert(wdMakeHashedString("ln"), wdExpressionAST::NodeType::Ln);
-  m_BuiltinFunctions.Insert(wdMakeHashedString("log2"), wdExpressionAST::NodeType::Log2);
-  m_BuiltinFunctions.Insert(wdMakeHashedString("log10"), wdExpressionAST::NodeType::Log10);
-  m_BuiltinFunctions.Insert(wdMakeHashedString("pow2"), wdExpressionAST::NodeType::Pow2);
-  m_BuiltinFunctions.Insert(wdMakeHashedString("sin"), wdExpressionAST::NodeType::Sin);
-  m_BuiltinFunctions.Insert(wdMakeHashedString("cos"), wdExpressionAST::NodeType::Cos);
-  m_BuiltinFunctions.Insert(wdMakeHashedString("tan"), wdExpressionAST::NodeType::Tan);
-  m_BuiltinFunctions.Insert(wdMakeHashedString("asin"), wdExpressionAST::NodeType::ASin);
-  m_BuiltinFunctions.Insert(wdMakeHashedString("acos"), wdExpressionAST::NodeType::ACos);
-  m_BuiltinFunctions.Insert(wdMakeHashedString("atan"), wdExpressionAST::NodeType::ATan);
-  m_BuiltinFunctions.Insert(wdMakeHashedString("radToDeg"), wdExpressionAST::NodeType::RadToDeg);
-  m_BuiltinFunctions.Insert(wdMakeHashedString("rad_to_deg"), wdExpressionAST::NodeType::RadToDeg);
-  m_BuiltinFunctions.Insert(wdMakeHashedString("degToRad"), wdExpressionAST::NodeType::DegToRad);
-  m_BuiltinFunctions.Insert(wdMakeHashedString("deg_to_rad"), wdExpressionAST::NodeType::DegToRad);
-  m_BuiltinFunctions.Insert(wdMakeHashedString("round"), wdExpressionAST::NodeType::Round);
-  m_BuiltinFunctions.Insert(wdMakeHashedString("floor"), wdExpressionAST::NodeType::Floor);
-  m_BuiltinFunctions.Insert(wdMakeHashedString("ceil"), wdExpressionAST::NodeType::Ceil);
-  m_BuiltinFunctions.Insert(wdMakeHashedString("trunc"), wdExpressionAST::NodeType::Trunc);
-  m_BuiltinFunctions.Insert(wdMakeHashedString("frac"), wdExpressionAST::NodeType::Frac);
-  m_BuiltinFunctions.Insert(wdMakeHashedString("length"), wdExpressionAST::NodeType::Length);
-  m_BuiltinFunctions.Insert(wdMakeHashedString("normalize"), wdExpressionAST::NodeType::Normalize);
-  m_BuiltinFunctions.Insert(wdMakeHashedString("all"), wdExpressionAST::NodeType::All);
-  m_BuiltinFunctions.Insert(wdMakeHashedString("any"), wdExpressionAST::NodeType::Any);
+  s_BuiltinFunctions.Insert(nsMakeHashedString("abs"), nsExpressionAST::NodeType::Absolute);
+  s_BuiltinFunctions.Insert(nsMakeHashedString("saturate"), nsExpressionAST::NodeType::Saturate);
+  s_BuiltinFunctions.Insert(nsMakeHashedString("sqrt"), nsExpressionAST::NodeType::Sqrt);
+  s_BuiltinFunctions.Insert(nsMakeHashedString("exp"), nsExpressionAST::NodeType::Exp);
+  s_BuiltinFunctions.Insert(nsMakeHashedString("ln"), nsExpressionAST::NodeType::Ln);
+  s_BuiltinFunctions.Insert(nsMakeHashedString("log2"), nsExpressionAST::NodeType::Log2);
+  s_BuiltinFunctions.Insert(nsMakeHashedString("log10"), nsExpressionAST::NodeType::Log10);
+  s_BuiltinFunctions.Insert(nsMakeHashedString("pow2"), nsExpressionAST::NodeType::Pow2);
+  s_BuiltinFunctions.Insert(nsMakeHashedString("sin"), nsExpressionAST::NodeType::Sin);
+  s_BuiltinFunctions.Insert(nsMakeHashedString("cos"), nsExpressionAST::NodeType::Cos);
+  s_BuiltinFunctions.Insert(nsMakeHashedString("tan"), nsExpressionAST::NodeType::Tan);
+  s_BuiltinFunctions.Insert(nsMakeHashedString("asin"), nsExpressionAST::NodeType::ASin);
+  s_BuiltinFunctions.Insert(nsMakeHashedString("acos"), nsExpressionAST::NodeType::ACos);
+  s_BuiltinFunctions.Insert(nsMakeHashedString("atan"), nsExpressionAST::NodeType::ATan);
+  s_BuiltinFunctions.Insert(nsMakeHashedString("radToDeg"), nsExpressionAST::NodeType::RadToDeg);
+  s_BuiltinFunctions.Insert(nsMakeHashedString("rad_to_deg"), nsExpressionAST::NodeType::RadToDeg);
+  s_BuiltinFunctions.Insert(nsMakeHashedString("degToRad"), nsExpressionAST::NodeType::DegToRad);
+  s_BuiltinFunctions.Insert(nsMakeHashedString("deg_to_rad"), nsExpressionAST::NodeType::DegToRad);
+  s_BuiltinFunctions.Insert(nsMakeHashedString("round"), nsExpressionAST::NodeType::Round);
+  s_BuiltinFunctions.Insert(nsMakeHashedString("floor"), nsExpressionAST::NodeType::Floor);
+  s_BuiltinFunctions.Insert(nsMakeHashedString("ceil"), nsExpressionAST::NodeType::Ceil);
+  s_BuiltinFunctions.Insert(nsMakeHashedString("trunc"), nsExpressionAST::NodeType::Trunc);
+  s_BuiltinFunctions.Insert(nsMakeHashedString("frac"), nsExpressionAST::NodeType::Frac);
+  s_BuiltinFunctions.Insert(nsMakeHashedString("length"), nsExpressionAST::NodeType::Length);
+  s_BuiltinFunctions.Insert(nsMakeHashedString("normalize"), nsExpressionAST::NodeType::Normalize);
+  s_BuiltinFunctions.Insert(nsMakeHashedString("all"), nsExpressionAST::NodeType::All);
+  s_BuiltinFunctions.Insert(nsMakeHashedString("any"), nsExpressionAST::NodeType::Any);
 
   // Binary
-  m_BuiltinFunctions.Insert(wdMakeHashedString("mod"), wdExpressionAST::NodeType::Modulo);
-  m_BuiltinFunctions.Insert(wdMakeHashedString("log"), wdExpressionAST::NodeType::Log);
-  m_BuiltinFunctions.Insert(wdMakeHashedString("pow"), wdExpressionAST::NodeType::Pow);
-  m_BuiltinFunctions.Insert(wdMakeHashedString("min"), wdExpressionAST::NodeType::Min);
-  m_BuiltinFunctions.Insert(wdMakeHashedString("max"), wdExpressionAST::NodeType::Max);
-  m_BuiltinFunctions.Insert(wdMakeHashedString("dot"), wdExpressionAST::NodeType::Dot);
-  m_BuiltinFunctions.Insert(wdMakeHashedString("cross"), wdExpressionAST::NodeType::Cross);
-  m_BuiltinFunctions.Insert(wdMakeHashedString("reflect"), wdExpressionAST::NodeType::Reflect);
+  s_BuiltinFunctions.Insert(nsMakeHashedString("mod"), nsExpressionAST::NodeType::Modulo);
+  s_BuiltinFunctions.Insert(nsMakeHashedString("log"), nsExpressionAST::NodeType::Log);
+  s_BuiltinFunctions.Insert(nsMakeHashedString("pow"), nsExpressionAST::NodeType::Pow);
+  s_BuiltinFunctions.Insert(nsMakeHashedString("min"), nsExpressionAST::NodeType::Min);
+  s_BuiltinFunctions.Insert(nsMakeHashedString("max"), nsExpressionAST::NodeType::Max);
+  s_BuiltinFunctions.Insert(nsMakeHashedString("dot"), nsExpressionAST::NodeType::Dot);
+  s_BuiltinFunctions.Insert(nsMakeHashedString("cross"), nsExpressionAST::NodeType::Cross);
+  s_BuiltinFunctions.Insert(nsMakeHashedString("reflect"), nsExpressionAST::NodeType::Reflect);
 
   // Ternary
-  m_BuiltinFunctions.Insert(wdMakeHashedString("clamp"), wdExpressionAST::NodeType::Clamp);
-  m_BuiltinFunctions.Insert(wdMakeHashedString("lerp"), wdExpressionAST::NodeType::Lerp);
+  s_BuiltinFunctions.Insert(nsMakeHashedString("clamp"), nsExpressionAST::NodeType::Clamp);
+  s_BuiltinFunctions.Insert(nsMakeHashedString("lerp"), nsExpressionAST::NodeType::Lerp);
+  s_BuiltinFunctions.Insert(nsMakeHashedString("smoothstep"), nsExpressionAST::NodeType::SmoothStep);
+  s_BuiltinFunctions.Insert(nsMakeHashedString("smootherstep"), nsExpressionAST::NodeType::SmootherStep);
 }
 
-void wdExpressionParser::SetupInAndOutputs(wdArrayPtr<wdExpression::StreamDesc> inputs, wdArrayPtr<wdExpression::StreamDesc> outputs)
+void nsExpressionParser::SetupInAndOutputs(nsArrayPtr<nsExpression::StreamDesc> inputs, nsArrayPtr<nsExpression::StreamDesc> outputs)
 {
   m_KnownVariables.Clear();
 
   for (auto& inputDesc : inputs)
   {
     auto pInput = m_pAST->CreateInput(inputDesc);
+    m_pAST->m_InputNodes.PushBack(pInput);
     m_KnownVariables.Insert(inputDesc.m_sName, pInput);
   }
 
@@ -212,26 +241,26 @@ void wdExpressionParser::SetupInAndOutputs(wdArrayPtr<wdExpression::StreamDesc> 
   }
 }
 
-wdResult wdExpressionParser::ParseStatement()
+nsResult nsExpressionParser::ParseStatement()
 {
   SkipWhitespace(m_TokenStream, m_uiCurrentToken);
 
   if (AcceptStatementTerminator())
   {
     // empty statement
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
 
   if (m_uiCurrentToken >= m_TokenStream.GetCount())
-    return WD_FAILURE;
+    return NS_FAILURE;
 
-  const wdToken* pIdentifierToken = m_TokenStream[m_uiCurrentToken];
-  if (pIdentifierToken->m_iType != wdTokenType::Identifier)
+  const nsToken* pIdentifierToken = m_TokenStream[m_uiCurrentToken];
+  if (pIdentifierToken->m_iType != nsTokenType::Identifier)
   {
     ReportError(pIdentifierToken, "Syntax error, expected type or variable");
   }
 
-  wdEnum<wdExpressionAST::DataType> type;
+  nsEnum<nsExpressionAST::DataType> type;
   if (ParseType(pIdentifierToken->m_DataView, type).Succeeded())
   {
     return ParseVariableDefinition(type);
@@ -240,75 +269,75 @@ wdResult wdExpressionParser::ParseStatement()
   return ParseAssignment();
 }
 
-wdResult wdExpressionParser::ParseType(wdStringView sTypeName, wdEnum<wdExpressionAST::DataType>& out_type)
+nsResult nsExpressionParser::ParseType(nsStringView sTypeName, nsEnum<nsExpressionAST::DataType>& out_type)
 {
-  wdTempHashedString sTypeNameHashed(sTypeName);
-  if (m_KnownTypes.TryGetValue(sTypeNameHashed, out_type))
+  nsTempHashedString sTypeNameHashed(sTypeName);
+  if (s_KnownTypes.TryGetValue(sTypeNameHashed, out_type))
   {
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
-wdResult wdExpressionParser::ParseVariableDefinition(wdEnum<wdExpressionAST::DataType> type)
+nsResult nsExpressionParser::ParseVariableDefinition(nsEnum<nsExpressionAST::DataType> type)
 {
   // skip type
-  WD_SUCCEED_OR_RETURN(Expect(wdTokenType::Identifier));
+  NS_SUCCEED_OR_RETURN(Expect(nsTokenType::Identifier));
 
-  const wdToken* pIdentifierToken = nullptr;
-  WD_SUCCEED_OR_RETURN(Expect(wdTokenType::Identifier, &pIdentifierToken));
+  const nsToken* pIdentifierToken = nullptr;
+  NS_SUCCEED_OR_RETURN(Expect(nsTokenType::Identifier, &pIdentifierToken));
 
-  wdHashedString sHashedVarName;
+  nsHashedString sHashedVarName;
   sHashedVarName.Assign(pIdentifierToken->m_DataView);
 
-  wdExpressionAST::Node* pVariableNode;
+  nsExpressionAST::Node* pVariableNode;
   if (m_KnownVariables.TryGetValue(sHashedVarName, pVariableNode))
   {
     const char* szExisting = "a variable";
-    if (wdExpressionAST::NodeType::IsInput(pVariableNode->m_Type))
+    if (nsExpressionAST::NodeType::IsInput(pVariableNode->m_Type))
     {
       szExisting = "an input";
     }
-    else if (wdExpressionAST::NodeType::IsOutput(pVariableNode->m_Type))
+    else if (nsExpressionAST::NodeType::IsOutput(pVariableNode->m_Type))
     {
       szExisting = "an output";
     }
 
-    ReportError(pIdentifierToken, wdFmt("Local variable '{}' cannot be defined because {} of the same name already exists", pIdentifierToken->m_DataView, szExisting));
-    return WD_FAILURE;
+    ReportError(pIdentifierToken, nsFmt("Local variable '{}' cannot be defined because {} of the same name already exists", pIdentifierToken->m_DataView, szExisting));
+    return NS_FAILURE;
   }
 
-  WD_SUCCEED_OR_RETURN(Expect("="));
-  wdExpressionAST::Node* pExpression = ParseExpression();
+  NS_SUCCEED_OR_RETURN(Expect("="));
+  nsExpressionAST::Node* pExpression = ParseExpression();
   if (pExpression == nullptr)
-    return WD_FAILURE;
+    return NS_FAILURE;
 
   m_KnownVariables.Insert(sHashedVarName, EnsureExpectedType(pExpression, type));
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
-wdResult wdExpressionParser::ParseAssignment()
+nsResult nsExpressionParser::ParseAssignment()
 {
-  const wdToken* pIdentifierToken = nullptr;
-  WD_SUCCEED_OR_RETURN(Expect(wdTokenType::Identifier, &pIdentifierToken));
+  const nsToken* pIdentifierToken = nullptr;
+  NS_SUCCEED_OR_RETURN(Expect(nsTokenType::Identifier, &pIdentifierToken));
 
-  const wdStringView sIdentifier = pIdentifierToken->m_DataView;
-  wdExpressionAST::Node* pVarNode = GetVariable(sIdentifier);
+  const nsStringView sIdentifier = pIdentifierToken->m_DataView;
+  nsExpressionAST::Node* pVarNode = GetVariable(sIdentifier);
   if (pVarNode == nullptr)
   {
     ReportError(pIdentifierToken, "Syntax error, expected a valid variable");
-    return WD_FAILURE;
+    return NS_FAILURE;
   }
 
-  wdStringView sPartialAssignmentMask;
+  nsStringView sPartialAssignmentMask;
   if (Accept(m_TokenStream, m_uiCurrentToken, "."))
   {
-    const wdToken* pSwizzleToken = nullptr;
-    if (Expect(wdTokenType::Identifier, &pSwizzleToken).Failed())
+    const nsToken* pSwizzleToken = nullptr;
+    if (Expect(nsTokenType::Identifier, &pSwizzleToken).Failed())
     {
       ReportError(m_TokenStream[m_uiCurrentToken], "Invalid partial assignment");
-      return WD_FAILURE;
+      return NS_FAILURE;
     }
 
     sPartialAssignmentMask = pSwizzleToken->m_DataView;
@@ -316,8 +345,8 @@ wdResult wdExpressionParser::ParseAssignment()
 
   SkipWhitespace(m_TokenStream, m_uiCurrentToken);
 
-  wdExpressionAST::NodeType::Enum assignOperator = wdExpressionAST::NodeType::Invalid;
-  for (wdUInt32 i = 0; i < WD_ARRAY_SIZE(s_assignOperators); ++i)
+  nsExpressionAST::NodeType::Enum assignOperator = nsExpressionAST::NodeType::Invalid;
+  for (nsUInt32 i = 0; i < NS_ARRAY_SIZE(s_assignOperators); ++i)
   {
     auto& op = s_assignOperators[i];
     if (AcceptOperator(op.m_sName))
@@ -328,16 +357,16 @@ wdResult wdExpressionParser::ParseAssignment()
     }
   }
 
-  if (assignOperator == wdExpressionAST::NodeType::Invalid)
+  if (assignOperator == nsExpressionAST::NodeType::Invalid)
   {
-    WD_SUCCEED_OR_RETURN(Expect("="));
+    NS_SUCCEED_OR_RETURN(Expect("="));
   }
 
-  wdExpressionAST::Node* pExpression = ParseExpression();
+  nsExpressionAST::Node* pExpression = ParseExpression();
   if (pExpression == nullptr)
-    return WD_FAILURE;
+    return NS_FAILURE;
 
-  if (assignOperator != wdExpressionAST::NodeType::Invalid)
+  if (assignOperator != nsExpressionAST::NodeType::Invalid)
   {
     pExpression = m_pAST->CreateBinaryOperator(assignOperator, Unpack(pVarNode), pExpression);
   }
@@ -347,40 +376,38 @@ wdResult wdExpressionParser::ParseAssignment()
     auto pConstructor = m_pAST->CreateConstructorCall(Unpack(pVarNode, false), pExpression, sPartialAssignmentMask);
     if (pConstructor == nullptr)
     {
-      ReportError(pIdentifierToken, wdFmt("Invalid partial assignment .{} = {}", sPartialAssignmentMask, wdExpressionAST::DataType::GetName(pExpression->m_ReturnType)));
-      return WD_FAILURE;
+      ReportError(pIdentifierToken, nsFmt("Invalid partial assignment .{} = {}", sPartialAssignmentMask, nsExpressionAST::DataType::GetName(pExpression->m_ReturnType)));
+      return NS_FAILURE;
     }
 
     pExpression = pConstructor;
   }
 
-  if (wdExpressionAST::NodeType::IsInput(pVarNode->m_Type))
+  if (nsExpressionAST::NodeType::IsInput(pVarNode->m_Type))
   {
-    ReportError(pIdentifierToken, wdFmt("Input '{}' is not assignable", sIdentifier));
-    return WD_FAILURE;
+    ReportError(pIdentifierToken, nsFmt("Input '{}' is not assignable", sIdentifier));
+    return NS_FAILURE;
   }
-  else if (wdExpressionAST::NodeType::IsOutput(pVarNode->m_Type))
+  else if (nsExpressionAST::NodeType::IsOutput(pVarNode->m_Type))
   {
-    auto pOutput = static_cast<wdExpressionAST::Output*>(pVarNode);
+    auto pOutput = static_cast<nsExpressionAST::Output*>(pVarNode);
     pOutput->m_pExpression = pExpression;
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
 
-  wdHashedString sHashedVarName;
+  nsHashedString sHashedVarName;
   sHashedVarName.Assign(sIdentifier);
   m_KnownVariables[sHashedVarName] = EnsureExpectedType(pExpression, pVarNode->m_ReturnType);
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
-wdExpressionAST::Node* wdExpressionParser::ParseFactor()
+nsExpressionAST::Node* nsExpressionParser::ParseFactor()
 {
-  wdUInt32 uiIdentifierToken = 0;
-  if (Accept(m_TokenStream, m_uiCurrentToken, wdTokenType::Identifier, &uiIdentifierToken))
+  nsUInt32 uiIdentifierToken = 0;
+  if (Accept(m_TokenStream, m_uiCurrentToken, nsTokenType::Identifier, &uiIdentifierToken))
   {
     auto pIdentifierToken = m_TokenStream[uiIdentifierToken];
-    const wdStringView sIdentifier = pIdentifierToken->m_DataView;
-
-    wdExpressionAST::Node* pNode = nullptr;
+    const nsStringView sIdentifier = pIdentifierToken->m_DataView;
 
     if (Accept(m_TokenStream, m_uiCurrentToken, "("))
     {
@@ -388,54 +415,55 @@ wdExpressionAST::Node* wdExpressionParser::ParseFactor()
     }
     else if (sIdentifier == "true")
     {
-      return m_pAST->CreateConstant(true, wdExpressionAST::DataType::Bool);
+      return m_pAST->CreateConstant(true, nsExpressionAST::DataType::Bool);
     }
     else if (sIdentifier == "false")
     {
-      return m_pAST->CreateConstant(false, wdExpressionAST::DataType::Bool);
+      return m_pAST->CreateConstant(false, nsExpressionAST::DataType::Bool);
     }
     else if (sIdentifier == "PI")
     {
-      return m_pAST->CreateConstant(wdMath::Pi<float>(), wdExpressionAST::DataType::Float);
+      return m_pAST->CreateConstant(nsMath::Pi<float>(), nsExpressionAST::DataType::Float);
     }
     else
     {
       auto pVariable = GetVariable(sIdentifier);
       if (pVariable == nullptr)
       {
-        ReportError(pIdentifierToken, wdFmt("Undeclared identifier '{}'", sIdentifier));
+        ReportError(pIdentifierToken, nsFmt("Undeclared identifier '{}'", sIdentifier));
+        return nullptr;
       }
       return ParseSwizzle(Unpack(pVariable));
     }
   }
 
-  wdUInt32 uiValueToken = 0;
-  if (Accept(m_TokenStream, m_uiCurrentToken, wdTokenType::Integer, &uiValueToken))
+  nsUInt32 uiValueToken = 0;
+  if (Accept(m_TokenStream, m_uiCurrentToken, nsTokenType::Integer, &uiValueToken))
   {
-    const wdString sVal = m_TokenStream[uiValueToken]->m_DataView;
+    const nsString sVal = m_TokenStream[uiValueToken]->m_DataView;
 
-    wdInt64 iConstant = 0;
+    nsInt64 iConstant = 0;
     if (sVal.StartsWith_NoCase("0x"))
     {
-      wdUInt64 uiHexConstant = 0;
-      wdConversionUtils::ConvertHexStringToUInt64(sVal, uiHexConstant).IgnoreResult();
+      nsUInt64 uiHexConstant = 0;
+      nsConversionUtils::ConvertHexStringToUInt64(sVal, uiHexConstant).IgnoreResult();
       iConstant = uiHexConstant;
     }
     else
     {
-      wdConversionUtils::StringToInt64(sVal, iConstant).IgnoreResult();
+      nsConversionUtils::StringToInt64(sVal, iConstant).IgnoreResult();
     }
 
-    return m_pAST->CreateConstant((int)iConstant, wdExpressionAST::DataType::Int);
+    return m_pAST->CreateConstant((int)iConstant, nsExpressionAST::DataType::Int);
   }
-  else if (Accept(m_TokenStream, m_uiCurrentToken, wdTokenType::Float, &uiValueToken))
+  else if (Accept(m_TokenStream, m_uiCurrentToken, nsTokenType::Float, &uiValueToken))
   {
-    const wdString sVal = m_TokenStream[uiValueToken]->m_DataView;
+    const nsString sVal = m_TokenStream[uiValueToken]->m_DataView;
 
     double fConstant = 0;
-    wdConversionUtils::StringToFloat(sVal, fConstant).IgnoreResult();
+    nsConversionUtils::StringToFloat(sVal, fConstant).IgnoreResult();
 
-    return m_pAST->CreateConstant((float)fConstant, wdExpressionAST::DataType::Float);
+    return m_pAST->CreateConstant((float)fConstant, nsExpressionAST::DataType::Float);
   }
 
   if (Accept(m_TokenStream, m_uiCurrentToken, "("))
@@ -452,15 +480,15 @@ wdExpressionAST::Node* wdExpressionParser::ParseFactor()
 
 // Parsing the expression - recursive parser using "precedence climbing".
 // http://www.engr.mun.ca/~theo/Misc/exp_parsing.htm
-wdExpressionAST::Node* wdExpressionParser::ParseExpression(int iPrecedence /* = s_iLowestPrecedence*/)
+nsExpressionAST::Node* nsExpressionParser::ParseExpression(int iPrecedence /* = s_iLowestPrecedence*/)
 {
   auto pExpression = ParseUnaryExpression();
   if (pExpression == nullptr)
     return nullptr;
 
-  wdExpressionAST::NodeType::Enum binaryOp;
+  nsExpressionAST::NodeType::Enum binaryOp;
   int iBinaryOpPrecedence = 0;
-  wdUInt32 uiOperatorLength = 0;
+  nsUInt32 uiOperatorLength = 0;
   while (AcceptBinaryOperator(binaryOp, iBinaryOpPrecedence, uiOperatorLength) && iBinaryOpPrecedence < iPrecedence)
   {
     // Consume token.
@@ -470,7 +498,7 @@ wdExpressionAST::Node* wdExpressionParser::ParseExpression(int iPrecedence /* = 
     if (pSecondOperand == nullptr)
       return nullptr;
 
-    if (binaryOp == wdExpressionAST::NodeType::Select)
+    if (binaryOp == nsExpressionAST::NodeType::Select)
     {
       if (Expect(":").Failed())
         return nullptr;
@@ -479,7 +507,7 @@ wdExpressionAST::Node* wdExpressionParser::ParseExpression(int iPrecedence /* = 
       if (pThirdOperand == nullptr)
         return nullptr;
 
-      pExpression = m_pAST->CreateTernaryOperator(wdExpressionAST::NodeType::Select, pExpression, pSecondOperand, pThirdOperand);
+      pExpression = m_pAST->CreateTernaryOperator(nsExpressionAST::NodeType::Select, pExpression, pSecondOperand, pThirdOperand);
     }
     else
     {
@@ -490,7 +518,7 @@ wdExpressionAST::Node* wdExpressionParser::ParseExpression(int iPrecedence /* = 
   return pExpression;
 }
 
-wdExpressionAST::Node* wdExpressionParser::ParseUnaryExpression()
+nsExpressionAST::Node* nsExpressionParser::ParseUnaryExpression()
 {
   while (Accept(m_TokenStream, m_uiCurrentToken, "+"))
   {
@@ -502,7 +530,7 @@ wdExpressionAST::Node* wdExpressionParser::ParseUnaryExpression()
     if (pOperand == nullptr)
       return nullptr;
 
-    return m_pAST->CreateUnaryOperator(wdExpressionAST::NodeType::Negate, pOperand);
+    return m_pAST->CreateUnaryOperator(nsExpressionAST::NodeType::Negate, pOperand);
   }
   else if (Accept(m_TokenStream, m_uiCurrentToken, "~"))
   {
@@ -510,7 +538,7 @@ wdExpressionAST::Node* wdExpressionParser::ParseUnaryExpression()
     if (pOperand == nullptr)
       return nullptr;
 
-    return m_pAST->CreateUnaryOperator(wdExpressionAST::NodeType::BitwiseNot, pOperand);
+    return m_pAST->CreateUnaryOperator(nsExpressionAST::NodeType::BitwiseNot, pOperand);
   }
   else if (Accept(m_TokenStream, m_uiCurrentToken, "!"))
   {
@@ -518,18 +546,18 @@ wdExpressionAST::Node* wdExpressionParser::ParseUnaryExpression()
     if (pOperand == nullptr)
       return nullptr;
 
-    return m_pAST->CreateUnaryOperator(wdExpressionAST::NodeType::LogicalNot, pOperand);
+    return m_pAST->CreateUnaryOperator(nsExpressionAST::NodeType::LogicalNot, pOperand);
   }
 
   return ParseFactor();
 }
 
-wdExpressionAST::Node* wdExpressionParser::ParseFunctionCall(wdStringView sFunctionName)
+nsExpressionAST::Node* nsExpressionParser::ParseFunctionCall(nsStringView sFunctionName)
 {
   // "(" of the function call
-  const wdToken* pFunctionToken = m_TokenStream[m_uiCurrentToken - 1];
+  const nsToken* pFunctionToken = m_TokenStream[m_uiCurrentToken - 1];
 
-  wdSmallArray<wdExpressionAST::Node*, 8> arguments;
+  nsSmallArray<nsExpressionAST::Node*, 8> arguments;
   if (Accept(m_TokenStream, m_uiCurrentToken, ")") == false)
   {
     do
@@ -541,49 +569,50 @@ wdExpressionAST::Node* wdExpressionParser::ParseFunctionCall(wdStringView sFunct
       return nullptr;
   }
 
-  auto CheckArgumentCount = [&](wdUInt32 uiExpectedArgumentCount) -> wdResult {
+  auto CheckArgumentCount = [&](nsUInt32 uiExpectedArgumentCount) -> nsResult
+  {
     if (arguments.GetCount() != uiExpectedArgumentCount)
     {
-      ReportError(pFunctionToken, wdFmt("Invalid argument count for '{}'. Expected {} but got {}", sFunctionName, uiExpectedArgumentCount, arguments.GetCount()));
-      return WD_FAILURE;
+      ReportError(pFunctionToken, nsFmt("Invalid argument count for '{}'. Expected {} but got {}", sFunctionName, uiExpectedArgumentCount, arguments.GetCount()));
+      return NS_FAILURE;
     }
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   };
 
-  wdHashedString sHashedFuncName;
+  nsHashedString sHashedFuncName;
   sHashedFuncName.Assign(sFunctionName);
 
-  wdEnum<wdExpressionAST::DataType> dataType;
-  if (m_KnownTypes.TryGetValue(sHashedFuncName, dataType))
+  nsEnum<nsExpressionAST::DataType> dataType;
+  if (s_KnownTypes.TryGetValue(sHashedFuncName, dataType))
   {
-    wdUInt32 uiElementCount = wdExpressionAST::DataType::GetElementCount(dataType);
+    nsUInt32 uiElementCount = nsExpressionAST::DataType::GetElementCount(dataType);
     if (arguments.GetCount() > uiElementCount)
     {
-      ReportError(pFunctionToken, wdFmt("Invalid argument count for '{}'. Expected 0 - {} but got {}", sFunctionName, uiElementCount, arguments.GetCount()));
+      ReportError(pFunctionToken, nsFmt("Invalid argument count for '{}'. Expected 0 - {} but got {}", sFunctionName, uiElementCount, arguments.GetCount()));
       return nullptr;
     }
 
     return m_pAST->CreateConstructorCall(dataType, arguments);
   }
 
-  wdEnum<wdExpressionAST::NodeType> builtinType;
-  if (m_BuiltinFunctions.TryGetValue(sHashedFuncName, builtinType))
+  nsEnum<nsExpressionAST::NodeType> builtinType;
+  if (s_BuiltinFunctions.TryGetValue(sHashedFuncName, builtinType))
   {
-    if (wdExpressionAST::NodeType::IsUnary(builtinType))
+    if (nsExpressionAST::NodeType::IsUnary(builtinType))
     {
       if (CheckArgumentCount(1).Failed())
         return nullptr;
 
       return m_pAST->CreateUnaryOperator(builtinType, arguments[0]);
     }
-    else if (wdExpressionAST::NodeType::IsBinary(builtinType))
+    else if (nsExpressionAST::NodeType::IsBinary(builtinType))
     {
       if (CheckArgumentCount(2).Failed())
         return nullptr;
 
       return m_pAST->CreateBinaryOperator(builtinType, arguments[0], arguments[1]);
     }
-    else if (wdExpressionAST::NodeType::IsTernary(builtinType))
+    else if (nsExpressionAST::NodeType::IsTernary(builtinType))
     {
       if (CheckArgumentCount(3).Failed())
         return nullptr;
@@ -591,45 +620,45 @@ wdExpressionAST::Node* wdExpressionParser::ParseFunctionCall(wdStringView sFunct
       return m_pAST->CreateTernaryOperator(builtinType, arguments[0], arguments[1], arguments[2]);
     }
 
-    WD_ASSERT_NOT_IMPLEMENTED;
+    NS_ASSERT_NOT_IMPLEMENTED;
     return nullptr;
   }
 
   // external function
-  const wdHybridArray<wdExpression::FunctionDesc, 1>* pFunctionDescs = nullptr;
+  const nsHybridArray<nsExpression::FunctionDesc, 1>* pFunctionDescs = nullptr;
   if (m_FunctionDescs.TryGetValue(sHashedFuncName, pFunctionDescs))
   {
-    wdUInt32 uiMinArgumentCount = wdInvalidIndex;
+    nsUInt32 uiMinArgumentCount = nsInvalidIndex;
     for (auto& funcDesc : *pFunctionDescs)
     {
-      uiMinArgumentCount = wdMath::Min<wdUInt32>(uiMinArgumentCount, funcDesc.m_uiNumRequiredInputs);
+      uiMinArgumentCount = nsMath::Min<nsUInt32>(uiMinArgumentCount, funcDesc.m_uiNumRequiredInputs);
     }
 
     if (arguments.GetCount() < uiMinArgumentCount)
     {
-      ReportError(pFunctionToken, wdFmt("Invalid argument count for '{}'. Expected at least {} but got {}", sFunctionName, uiMinArgumentCount, arguments.GetCount()));
+      ReportError(pFunctionToken, nsFmt("Invalid argument count for '{}'. Expected at least {} but got {}", sFunctionName, uiMinArgumentCount, arguments.GetCount()));
       return nullptr;
     }
 
     return m_pAST->CreateFunctionCall(*pFunctionDescs, arguments);
   }
 
-  ReportError(pFunctionToken, wdFmt("Undeclared function '{}'", sFunctionName));
+  ReportError(pFunctionToken, nsFmt("Undeclared function '{}'", sFunctionName));
   return nullptr;
 }
 
-wdExpressionAST::Node* wdExpressionParser::ParseSwizzle(wdExpressionAST::Node* pExpression)
+nsExpressionAST::Node* nsExpressionParser::ParseSwizzle(nsExpressionAST::Node* pExpression)
 {
   if (Accept(m_TokenStream, m_uiCurrentToken, "."))
   {
-    const wdToken* pSwizzleToken = nullptr;
-    if (Expect(wdTokenType::Identifier, &pSwizzleToken).Failed())
+    const nsToken* pSwizzleToken = nullptr;
+    if (Expect(nsTokenType::Identifier, &pSwizzleToken).Failed())
       return nullptr;
 
     pExpression = m_pAST->CreateSwizzle(pSwizzleToken->m_DataView, pExpression);
     if (pExpression == nullptr)
     {
-      ReportError(pSwizzleToken, wdFmt("Invalid swizzle '{}'", pSwizzleToken->m_DataView));
+      ReportError(pSwizzleToken, nsFmt("Invalid swizzle '{}'", pSwizzleToken->m_DataView));
     }
   }
 
@@ -637,14 +666,14 @@ wdExpressionAST::Node* wdExpressionParser::ParseSwizzle(wdExpressionAST::Node* p
 }
 
 // Does NOT advance the current token beyond the operator!
-bool wdExpressionParser::AcceptOperator(wdStringView sName)
+bool nsExpressionParser::AcceptOperator(nsStringView sName)
 {
-  const wdUInt32 uiOperatorLength = sName.GetElementCount();
+  const nsUInt32 uiOperatorLength = sName.GetElementCount();
 
   if (m_uiCurrentToken + uiOperatorLength - 1 >= m_TokenStream.GetCount())
     return false;
 
-  for (wdUInt32 charIndex = 0; charIndex < uiOperatorLength; ++charIndex)
+  for (nsUInt32 charIndex = 0; charIndex < uiOperatorLength; ++charIndex)
   {
     if (m_TokenStream[m_uiCurrentToken + charIndex]->m_DataView.GetCharacter() != sName.GetStartPointer()[charIndex])
     {
@@ -656,11 +685,11 @@ bool wdExpressionParser::AcceptOperator(wdStringView sName)
 }
 
 // Does NOT advance the current token beyond the binary operator!
-bool wdExpressionParser::AcceptBinaryOperator(wdExpressionAST::NodeType::Enum& out_binaryOp, int& out_iOperatorPrecedence, wdUInt32& out_uiOperatorLength)
+bool nsExpressionParser::AcceptBinaryOperator(nsExpressionAST::NodeType::Enum& out_binaryOp, int& out_iOperatorPrecedence, nsUInt32& out_uiOperatorLength)
 {
   SkipWhitespace(m_TokenStream, m_uiCurrentToken);
 
-  for (wdUInt32 i = 0; i < WD_ARRAY_SIZE(s_binaryOperators); ++i)
+  for (nsUInt32 i = 0; i < NS_ARRAY_SIZE(s_binaryOperators); ++i)
   {
     auto& op = s_binaryOperators[i];
     if (AcceptOperator(op.m_sName))
@@ -675,51 +704,51 @@ bool wdExpressionParser::AcceptBinaryOperator(wdExpressionAST::NodeType::Enum& o
   return false;
 }
 
-wdExpressionAST::Node* wdExpressionParser::GetVariable(wdStringView sVarName)
+nsExpressionAST::Node* nsExpressionParser::GetVariable(nsStringView sVarName)
 {
-  wdHashedString sHashedVarName;
+  nsHashedString sHashedVarName;
   sHashedVarName.Assign(sVarName);
 
-  wdExpressionAST::Node* pVariableNode;
+  nsExpressionAST::Node* pVariableNode = nullptr;
   if (m_KnownVariables.TryGetValue(sHashedVarName, pVariableNode) == false && m_Options.m_bTreatUnknownVariablesAsInputs)
   {
-    pVariableNode = m_pAST->CreateInput({sHashedVarName, wdProcessingStream::DataType::Float});
+    pVariableNode = m_pAST->CreateInput({sHashedVarName, nsProcessingStream::DataType::Float});
     m_KnownVariables.Insert(sHashedVarName, pVariableNode);
   }
 
   return pVariableNode;
 }
 
-wdExpressionAST::Node* wdExpressionParser::EnsureExpectedType(wdExpressionAST::Node* pNode, wdExpressionAST::DataType::Enum expectedType)
+nsExpressionAST::Node* nsExpressionParser::EnsureExpectedType(nsExpressionAST::Node* pNode, nsExpressionAST::DataType::Enum expectedType)
 {
-  if (expectedType != wdExpressionAST::DataType::Unknown)
+  if (expectedType != nsExpressionAST::DataType::Unknown)
   {
-    const auto nodeRegisterType = wdExpressionAST::DataType::GetRegisterType(pNode->m_ReturnType);
-    const auto expectedRegisterType = wdExpressionAST::DataType::GetRegisterType(expectedType);
+    const auto nodeRegisterType = nsExpressionAST::DataType::GetRegisterType(pNode->m_ReturnType);
+    const auto expectedRegisterType = nsExpressionAST::DataType::GetRegisterType(expectedType);
     if (nodeRegisterType != expectedRegisterType)
     {
-      pNode = m_pAST->CreateUnaryOperator(wdExpressionAST::NodeType::TypeConversion, pNode, expectedType);
+      pNode = m_pAST->CreateUnaryOperator(nsExpressionAST::NodeType::TypeConversion, pNode, expectedType);
     }
 
-    const wdUInt32 nodeElementCount = wdExpressionAST::DataType::GetElementCount(pNode->m_ReturnType);
-    const wdUInt32 expectedElementCount = wdExpressionAST::DataType::GetElementCount(expectedType);
+    const nsUInt32 nodeElementCount = nsExpressionAST::DataType::GetElementCount(pNode->m_ReturnType);
+    const nsUInt32 expectedElementCount = nsExpressionAST::DataType::GetElementCount(expectedType);
     if (nodeElementCount < expectedElementCount)
     {
-      pNode = m_pAST->CreateConstructorCall(expectedType, wdMakeArrayPtr(&pNode, 1));
+      pNode = m_pAST->CreateConstructorCall(expectedType, nsMakeArrayPtr(&pNode, 1));
     }
   }
 
   return pNode;
 }
 
-wdExpressionAST::Node* wdExpressionParser::Unpack(wdExpressionAST::Node* pNode, bool bUnassignedError /*= true*/)
+nsExpressionAST::Node* nsExpressionParser::Unpack(nsExpressionAST::Node* pNode, bool bUnassignedError /*= true*/)
 {
-  if (wdExpressionAST::NodeType::IsOutput(pNode->m_Type))
+  if (nsExpressionAST::NodeType::IsOutput(pNode->m_Type))
   {
-    auto pOutput = static_cast<wdExpressionAST::Output*>(pNode);
+    auto pOutput = static_cast<nsExpressionAST::Output*>(pNode);
     if (pOutput->m_pExpression == nullptr && bUnassignedError)
     {
-      ReportError(m_TokenStream[m_uiCurrentToken], wdFmt("Output '{}' has not been assigned yet", pOutput->m_Desc.m_sName));
+      ReportError(m_TokenStream[m_uiCurrentToken], nsFmt("Output '{}' has not been assigned yet", pOutput->m_Desc.m_sName));
     }
 
     return pOutput->m_pExpression;
@@ -728,19 +757,16 @@ wdExpressionAST::Node* wdExpressionParser::Unpack(wdExpressionAST::Node* pNode, 
   return pNode;
 }
 
-wdResult wdExpressionParser::CheckOutputs()
+nsResult nsExpressionParser::CheckOutputs()
 {
   for (auto pOutputNode : m_pAST->m_OutputNodes)
   {
     if (pOutputNode->m_pExpression == nullptr)
     {
-      wdLog::Error("Output '{}' was never written", pOutputNode->m_Desc.m_sName);
-      return WD_FAILURE;
+      nsLog::Error("Output '{}' was never written", pOutputNode->m_Desc.m_sName);
+      return NS_FAILURE;
     }
   }
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
-
-
-WD_STATICLINK_FILE(Foundation, Foundation_CodeUtils_Expression_Implementation_ExpressionParser);

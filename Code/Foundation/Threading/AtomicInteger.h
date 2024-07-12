@@ -4,27 +4,58 @@
 
 #include <Foundation/Threading/AtomicUtils.h>
 
+template <int T>
+struct nsAtomicStorageType
+{
+};
+
+template <>
+struct nsAtomicStorageType<1>
+{
+  using Type = nsInt32;
+};
+
+template <>
+struct nsAtomicStorageType<2>
+{
+  using Type = nsInt32;
+};
+
+template <>
+struct nsAtomicStorageType<4>
+{
+  using Type = nsInt32;
+};
+
+template <>
+struct nsAtomicStorageType<8>
+{
+  using Type = nsInt64;
+};
+
 /// \brief Integer class that can be manipulated in an atomic (i.e. thread-safe) fashion.
 template <typename T>
-class wdAtomicInteger
+class nsAtomicInteger
 {
+  using UnderlyingType = typename nsAtomicStorageType<sizeof(T)>::Type;
+
 public:
-  WD_DECLARE_POD_TYPE();
+  NS_DECLARE_POD_TYPE();
 
   /// \brief Initializes the value to zero.
-  wdAtomicInteger(); // [tested]
+  nsAtomicInteger(); // [tested]
 
   /// \brief Initializes the object with a value
-  wdAtomicInteger(const T value); // [tested]
+  nsAtomicInteger(const T value); // [tested]
 
   /// \brief Copy-constructor
-  wdAtomicInteger(const wdAtomicInteger<T>& value); // [tested]
+  nsAtomicInteger(const nsAtomicInteger<T>& value); // [tested]
 
   /// \brief Assigns a new integer value to this object
-  wdAtomicInteger& operator=(T value); // [tested]
+  nsAtomicInteger& operator=(T value); // [tested]
 
   /// \brief Assignment operator
-  wdAtomicInteger& operator=(const wdAtomicInteger& value); // [tested]
+  nsAtomicInteger& operator=(const nsAtomicInteger& value); // [tested]
 
   /// \brief Increments the internal value and returns the incremented value
   T Increment(); // [tested]
@@ -36,17 +67,17 @@ public:
   T PostIncrement(); // [tested]
 
   /// \brief Decrements the internal value and returns the value immediately before the decrement
-  T PostDecrement(); // [tested]
+  T PostDecrement();  // [tested]
 
   void Add(T x);      // [tested]
   void Subtract(T x); // [tested]
 
-  void And(T x); // [tested]
-  void Or(T x);  // [tested]
-  void Xor(T x); // [tested]
+  void And(T x);      // [tested]
+  void Or(T x);       // [tested]
+  void Xor(T x);      // [tested]
 
-  void Min(T x); // [tested]
-  void Max(T x); // [tested]
+  void Min(T x);      // [tested]
+  void Max(T x);      // [tested]
 
   /// \brief Sets the internal value to x and returns the original internal value.
   T Set(T x); // [tested]
@@ -58,25 +89,25 @@ public:
   /// the modification.
   T CompareAndSwap(T expected, T x); // [tested]
 
-  operator T() const; // [tested]
+  operator T() const;                // [tested]
 
 private:
-  volatile T m_value;
+  UnderlyingType m_Value;
 };
 
 /// \brief An atomic boolean variable. This is just a wrapper around an atomic int32 for convenience.
-class wdAtomicBool
+class nsAtomicBool
 {
 public:
   /// \brief Initializes the bool to 'false'.
-  wdAtomicBool(); // [tested]
-  ~wdAtomicBool();
+  nsAtomicBool(); // [tested]
+  ~nsAtomicBool();
 
   /// \brief Initializes the object with a value
-  wdAtomicBool(bool value); // [tested]
+  nsAtomicBool(bool value); // [tested]
 
   /// \brief Copy-constructor
-  wdAtomicBool(const wdAtomicBool& rhs);
+  nsAtomicBool(const nsAtomicBool& rhs);
 
   /// \brief Sets the bool to the given value and returns its previous value.
   bool Set(bool value); // [tested]
@@ -85,7 +116,7 @@ public:
   void operator=(bool value); // [tested]
 
   /// \brief Sets the bool to the given value.
-  void operator=(const wdAtomicBool& rhs);
+  void operator=(const nsAtomicBool& rhs);
 
   /// \brief Returns the current value.
   operator bool() const; // [tested]
@@ -95,11 +126,13 @@ public:
   bool TestAndSet(bool bExpected, bool bNewValue);
 
 private:
-  wdAtomicInteger<wdInt32> m_iAtomicInt;
+  nsAtomicInteger<nsInt32> m_iAtomicInt;
 };
 
 // Include inline file
 #include <Foundation/Threading/Implementation/AtomicInteger_inl.h>
 
-using wdAtomicInteger32 = wdAtomicInteger<wdInt32>; // [tested]
-using wdAtomicInteger64 = wdAtomicInteger<wdInt64>; // [tested]
+using nsAtomicInteger32 = nsAtomicInteger<nsInt32>; // [tested]
+using nsAtomicInteger64 = nsAtomicInteger<nsInt64>; // [tested]
+static_assert(sizeof(nsAtomicInteger32) == sizeof(nsInt32));
+static_assert(sizeof(nsAtomicInteger64) == sizeof(nsInt64));

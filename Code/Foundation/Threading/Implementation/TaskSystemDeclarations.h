@@ -7,13 +7,13 @@
 #include <Foundation/Types/SharedPtr.h>
 #include <Foundation/Types/UniquePtr.h>
 
-class wdTask;
-class wdTaskGroup;
-class wdTaskWorkerThread;
-class wdTaskSystemState;
-class wdTaskSystemThreadState;
-class wdDGMLGraph;
-class wdAllocatorBase;
+class nsTask;
+class nsTaskGroup;
+class nsTaskWorkerThread;
+class nsTaskSystemState;
+class nsTaskSystemThreadState;
+class nsDGMLGraph;
+class nsAllocator;
 
 /// \brief Describes the priority with which to execute a task.
 ///
@@ -22,7 +22,7 @@ class wdAllocatorBase;
 /// However you should generally not rely on starting tasks in the same frame in which they need to finish.\n
 /// Instead prefer to start a task, whose result you need in the next frame or even later.\n
 /// For those tasks, use 'EarlyNextFrame', 'NextFrame', 'LateNextFrame' and 'InNFrames'.\n
-/// Once 'wdTaskSystem::FinishFrameTasks' is called, all those tasks will be moved into the 'XYZThisFrame' categories.\n
+/// Once 'nsTaskSystem::FinishFrameTasks' is called, all those tasks will be moved into the 'XYZThisFrame' categories.\n
 /// For tasks that run over a longer period (e.g. path searches, procedural data creation), use 'LongRunning'.
 /// Only use 'LongRunningHighPriority' for tasks that occur rarely, otherwise 'LongRunning' tasks might not get processed, at all.\n
 /// For tasks that need to access files, prefer to use 'FileAccess', this way all file accesses get executed sequentially.\n
@@ -34,10 +34,10 @@ class wdAllocatorBase;
 /// guarantee WHEN (within a frame) main thread tasks get executed. Most of them will get executed upon a 'FinishFrameTasks' call. However
 /// they are also run whenever the main thread needs to wait or cancel some other task and has nothing else to do. So tasks that get
 /// executed on the main thread should never assume a certain state of other systems.
-struct wdTaskPriority
+struct nsTaskPriority
 {
   // clang-format off
-  enum Enum : wdUInt8
+  enum Enum : nsUInt8
   {
     EarlyThisFrame,           ///< Highest priority, guaranteed to get finished in this frame.
     ThisFrame,                ///< Medium priority, guaranteed to get finished in this frame.
@@ -73,9 +73,9 @@ struct wdTaskPriority
 };
 
 /// \brief Enum that describes what to do when waiting for or canceling tasks, that have already started execution.
-struct wdOnTaskRunning
+struct nsOnTaskRunning
 {
-  enum Enum : wdUInt8
+  enum Enum : nsUInt8
   {
     WaitTillFinished,
     ReturnWithoutBlocking
@@ -83,94 +83,94 @@ struct wdOnTaskRunning
 };
 
 /// \internal Enum that lists the different task worker thread types.
-struct wdWorkerThreadType
+struct nsWorkerThreadType
 {
-  enum Enum : wdUInt8
+  enum Enum : nsUInt8
   {
-    Unknown,    ///< Default for all non-wdTaskSystem-worker threads. Will only execute short tasks.
-    MainThread, ///< May only be used by the main thread (automatically used by the wdTaskSystem)
+    Unknown,    ///< Default for all non-nsTaskSystem-worker threads. Will only execute short tasks.
+    MainThread, ///< May only be used by the main thread (automatically used by the nsTaskSystem)
     ShortTasks,
     LongTasks,
     FileAccess,
     ENUM_COUNT
   };
 
-  static const char* GetThreadTypeName(wdWorkerThreadType::Enum threadType);
+  static const char* GetThreadTypeName(nsWorkerThreadType::Enum threadType);
 };
 
-/// \brief Given out by wdTaskSystem::CreateTaskGroup to identify a task group.
-class WD_FOUNDATION_DLL wdTaskGroupID
+/// \brief Given out by nsTaskSystem::CreateTaskGroup to identify a task group.
+class NS_FOUNDATION_DLL nsTaskGroupID
 {
 public:
-  WD_ALWAYS_INLINE wdTaskGroupID() = default;
-  WD_ALWAYS_INLINE ~wdTaskGroupID() = default;
+  NS_ALWAYS_INLINE nsTaskGroupID() = default;
+  NS_ALWAYS_INLINE ~nsTaskGroupID() = default;
 
-  /// \brief Returns false, if the GroupID does not reference a valid wdTaskGroup
-  WD_ALWAYS_INLINE bool IsValid() const { return m_pTaskGroup != nullptr; }
+  /// \brief Returns false, if the GroupID does not reference a valid nsTaskGroup
+  NS_ALWAYS_INLINE bool IsValid() const { return m_pTaskGroup != nullptr; }
 
   /// \brief Resets the GroupID into an invalid state.
-  WD_ALWAYS_INLINE void Invalidate() { m_pTaskGroup = nullptr; }
+  NS_ALWAYS_INLINE void Invalidate() { m_pTaskGroup = nullptr; }
 
-  WD_ALWAYS_INLINE bool operator==(const wdTaskGroupID& other) const
+  NS_ALWAYS_INLINE bool operator==(const nsTaskGroupID& other) const
   {
     return m_pTaskGroup == other.m_pTaskGroup && m_uiGroupCounter == other.m_uiGroupCounter;
   }
-  WD_ALWAYS_INLINE bool operator!=(const wdTaskGroupID& other) const
+  NS_ALWAYS_INLINE bool operator!=(const nsTaskGroupID& other) const
   {
     return m_pTaskGroup != other.m_pTaskGroup || m_uiGroupCounter != other.m_uiGroupCounter;
   }
-  WD_ALWAYS_INLINE bool operator<(const wdTaskGroupID& other) const
+  NS_ALWAYS_INLINE bool operator<(const nsTaskGroupID& other) const
   {
     return m_pTaskGroup < other.m_pTaskGroup || (m_pTaskGroup == other.m_pTaskGroup && m_uiGroupCounter < other.m_uiGroupCounter);
   }
 
 private:
-  friend class wdTaskSystem;
-  friend class wdTaskGroup;
+  friend class nsTaskSystem;
+  friend class nsTaskGroup;
 
   // the counter is used to determine whether this group id references the 'same' group, as m_pTaskGroup.
   // if m_pTaskGroup->m_uiGroupCounter is different to this->m_uiGroupCounter, then the group ID is not valid anymore.
-  wdUInt32 m_uiGroupCounter = 0;
+  nsUInt32 m_uiGroupCounter = 0;
 
   // points to the actual task group object
-  wdTaskGroup* m_pTaskGroup = nullptr;
+  nsTaskGroup* m_pTaskGroup = nullptr;
 };
 
 /// \brief Callback type when a task group has been finished (or canceled).
-using wdOnTaskGroupFinishedCallback = wdDelegate<void(wdTaskGroupID)>;
+using nsOnTaskGroupFinishedCallback = nsDelegate<void(nsTaskGroupID)>;
 
 /// \brief Callback type when a task has been finished (or canceled).
-using wdOnTaskFinishedCallback = wdDelegate<void(const wdSharedPtr<wdTask>&)>;
+using nsOnTaskFinishedCallback = nsDelegate<void(const nsSharedPtr<nsTask>&)>;
 
-struct wdTaskGroupDependency
+struct nsTaskGroupDependency
 {
-  WD_DECLARE_POD_TYPE();
+  NS_DECLARE_POD_TYPE();
 
-  wdTaskGroupID m_TaskGroup;
-  wdTaskGroupID m_DependsOn;
+  nsTaskGroupID m_TaskGroup;
+  nsTaskGroupID m_DependsOn;
 };
 
 /// \brief Whether a task may wait for the completion of another task.
 ///
-/// This is an optimization hint for the wdTaskSystem. Tasks that never wait on other tasks
+/// This is an optimization hint for the nsTaskSystem. Tasks that never wait on other tasks
 /// can be executed more efficiently (without launching a dedicated thread), as they cannot produce
 /// circular dependencies.
 /// If the nesting specification is violated, the task system will assert.
-enum class wdTaskNesting
+enum class nsTaskNesting
 {
   Maybe,
   Never,
 };
 
-/// \brief Settings for wdTaskSystem::ParallelFor invocations.
-struct WD_FOUNDATION_DLL wdParallelForParams
+/// \brief Settings for nsTaskSystem::ParallelFor invocations.
+struct NS_FOUNDATION_DLL nsParallelForParams
 {
-  wdParallelForParams() {} // do not remove, needed for Clang
+  nsParallelForParams() = default; // do not remove, needed for Clang
 
   /// The minimum number of items that must be processed by a task instance.
   /// If the overall number of tasks lies below this value, all work will be executed purely serially
   /// without involving any tasks at all.
-  wdUInt32 m_uiBinSize = 1;
+  nsUInt32 m_uiBinSize = 1;
 
   /// Indicates how many tasks per thread may be spawned at most by a ParallelFor invocation.
   /// Higher numbers give the scheduler more leeway to balance work across available threads.
@@ -178,23 +178,23 @@ struct WD_FOUNDATION_DLL wdParallelForParams
   /// low numbers (usually 1) are recommended, while higher numbers (initially test with 2 or 3)
   /// might yield better results for workloads where task items may take vastly different amounts
   /// of time, such that scheduling in a balanced fashion becomes more difficult.
-  wdUInt32 m_uiMaxTasksPerThread = 2;
+  nsUInt32 m_uiMaxTasksPerThread = 2;
 
-  wdTaskNesting m_NestingMode = wdTaskNesting::Never;
+  nsTaskNesting m_NestingMode = nsTaskNesting::Never;
 
   /// The allocator used to for the tasks that the parallel-for uses internally. If null, will use the default allocator.
-  wdAllocatorBase* m_pTaskAllocator = nullptr;
+  nsAllocator* m_pTaskAllocator = nullptr;
 
-  void DetermineThreading(wdUInt64 uiNumItemsToExecute, wdUInt32& out_uiNumTasksToRun, wdUInt64& out_uiNumItemsPerTask) const;
+  void DetermineThreading(nsUInt64 uiNumItemsToExecute, nsUInt32& out_uiNumTasksToRun, nsUInt64& out_uiNumItemsPerTask) const;
 };
 
-using wdParallelForIndexedFunction32 = wdDelegate<void(wdUInt32, wdUInt32), 48>;
-using wdParallelForIndexedFunction64 = wdDelegate<void(wdUInt64, wdUInt64), 48>;
+using nsParallelForIndexedFunction32 = nsDelegate<void(nsUInt32, nsUInt32), 48>;
+using nsParallelForIndexedFunction64 = nsDelegate<void(nsUInt64, nsUInt64), 48>;
 
 template <typename ElemType>
-using wdParallelForFunction = wdDelegate<void(wdUInt32, wdArrayPtr<ElemType>), 48>;
+using nsParallelForFunction = nsDelegate<void(nsUInt32, nsArrayPtr<ElemType>), 48>;
 
-enum class wdTaskWorkerState
+enum class nsTaskWorkerState
 {
   Active = 0,
   Idle = 1,

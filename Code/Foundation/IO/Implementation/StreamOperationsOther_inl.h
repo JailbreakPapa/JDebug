@@ -1,80 +1,80 @@
 #pragma once
 
-/// \brief Operator to serialize wdIAllocator::Stats objects.
-WD_FOUNDATION_DLL void operator<<(wdStreamWriter& inout_stream, const wdAllocatorBase::Stats& rhs);
+/// \brief Operator to serialize nsIAllocator::Stats objects.
+NS_FOUNDATION_DLL void operator<<(nsStreamWriter& inout_stream, const nsAllocator::Stats& rhs);
 
-/// \brief Operator to serialize wdIAllocator::Stats objects.
-WD_FOUNDATION_DLL void operator>>(wdStreamReader& inout_stream, wdAllocatorBase::Stats& rhs);
+/// \brief Operator to serialize nsIAllocator::Stats objects.
+NS_FOUNDATION_DLL void operator>>(nsStreamReader& inout_stream, nsAllocator::Stats& rhs);
 
-struct wdTime;
+struct nsTime;
 
-/// \brief Operator to serialize wdTime objects.
-WD_FOUNDATION_DLL void operator<<(wdStreamWriter& inout_stream, wdTime value);
+/// \brief Operator to serialize nsTime objects.
+NS_FOUNDATION_DLL void operator<<(nsStreamWriter& inout_stream, nsTime value);
 
-/// \brief Operator to serialize wdTime objects.
-WD_FOUNDATION_DLL void operator>>(wdStreamReader& inout_stream, wdTime& ref_value);
+/// \brief Operator to serialize nsTime objects.
+NS_FOUNDATION_DLL void operator>>(nsStreamReader& inout_stream, nsTime& ref_value);
 
 
-class wdUuid;
+class nsUuid;
 
-/// \brief Operator to serialize wdUuid objects. [tested]
-WD_FOUNDATION_DLL void operator<<(wdStreamWriter& inout_stream, const wdUuid& value);
+/// \brief Operator to serialize nsUuid objects. [tested]
+NS_FOUNDATION_DLL void operator<<(nsStreamWriter& inout_stream, const nsUuid& value);
 
-/// \brief Operator to serialize wdUuid objects. [tested]
-WD_FOUNDATION_DLL void operator>>(wdStreamReader& inout_stream, wdUuid& ref_value);
+/// \brief Operator to serialize nsUuid objects. [tested]
+NS_FOUNDATION_DLL void operator>>(nsStreamReader& inout_stream, nsUuid& ref_value);
 
-class wdHashedString;
+class nsHashedString;
 
-/// \brief Operator to serialize wdHashedString objects. [tested]
-WD_FOUNDATION_DLL void operator<<(wdStreamWriter& inout_stream, const wdHashedString& sValue);
+/// \brief Operator to serialize nsHashedString objects. [tested]
+NS_FOUNDATION_DLL void operator<<(nsStreamWriter& inout_stream, const nsHashedString& sValue);
 
-/// \brief Operator to serialize wdHashedString objects. [tested]
-WD_FOUNDATION_DLL void operator>>(wdStreamReader& inout_stream, wdHashedString& ref_sValue);
+/// \brief Operator to serialize nsHashedString objects. [tested]
+NS_FOUNDATION_DLL void operator>>(nsStreamReader& inout_stream, nsHashedString& ref_sValue);
 
-class wdTempHashedString;
+class nsTempHashedString;
 
-/// \brief Operator to serialize wdHashedString objects.
-WD_FOUNDATION_DLL void operator<<(wdStreamWriter& inout_stream, const wdTempHashedString& sValue);
+/// \brief Operator to serialize nsHashedString objects.
+NS_FOUNDATION_DLL void operator<<(nsStreamWriter& inout_stream, const nsTempHashedString& sValue);
 
-/// \brief Operator to serialize wdHashedString objects.
-WD_FOUNDATION_DLL void operator>>(wdStreamReader& inout_stream, wdTempHashedString& ref_sValue);
+/// \brief Operator to serialize nsHashedString objects.
+NS_FOUNDATION_DLL void operator>>(nsStreamReader& inout_stream, nsTempHashedString& ref_sValue);
 
-class wdVariant;
+class nsVariant;
 
-/// \brief Operator to serialize wdVariant objects.
-WD_FOUNDATION_DLL void operator<<(wdStreamWriter& inout_stream, const wdVariant& value);
+/// \brief Operator to serialize nsVariant objects.
+NS_FOUNDATION_DLL void operator<<(nsStreamWriter& inout_stream, const nsVariant& value);
 
-/// \brief Operator to serialize wdVariant objects.
-WD_FOUNDATION_DLL void operator>>(wdStreamReader& inout_stream, wdVariant& ref_value);
+/// \brief Operator to serialize nsVariant objects.
+NS_FOUNDATION_DLL void operator>>(nsStreamReader& inout_stream, nsVariant& ref_value);
 
-class wdTimestamp;
+class nsTimestamp;
 
-/// \brief Operator to serialize wdTimestamp objects.
-WD_FOUNDATION_DLL void operator<<(wdStreamWriter& inout_stream, wdTimestamp value);
+/// \brief Operator to serialize nsTimestamp objects.
+NS_FOUNDATION_DLL void operator<<(nsStreamWriter& inout_stream, nsTimestamp value);
 
-/// \brief Operator to serialize wdTimestamp objects.
-WD_FOUNDATION_DLL void operator>>(wdStreamReader& inout_stream, wdTimestamp& ref_value);
+/// \brief Operator to serialize nsTimestamp objects.
+NS_FOUNDATION_DLL void operator>>(nsStreamReader& inout_stream, nsTimestamp& ref_value);
 
-struct wdVarianceTypeFloat;
+struct nsVarianceTypeFloat;
 
-/// \brief Operator to serialize wdTimestamp objects.
-WD_FOUNDATION_DLL void operator<<(wdStreamWriter& inout_stream, const wdVarianceTypeFloat& value);
+/// \brief Operator to serialize nsTimestamp objects.
+NS_FOUNDATION_DLL void operator<<(nsStreamWriter& inout_stream, const nsVarianceTypeFloat& value);
 
-/// \brief Operator to serialize wdTimestamp objects.
-WD_FOUNDATION_DLL void operator>>(wdStreamReader& inout_stream, wdVarianceTypeFloat& ref_value);
+/// \brief Operator to serialize nsTimestamp objects.
+NS_FOUNDATION_DLL void operator>>(nsStreamReader& inout_stream, nsVarianceTypeFloat& ref_value);
 
-struct wdVarianceTypeTime;
+struct nsVarianceTypeTime;
 
-/// \brief Operator to serialize wdTimestamp objects.
-WD_FOUNDATION_DLL void operator<<(wdStreamWriter& inout_stream, const wdVarianceTypeTime& value);
+/// \brief Operator to serialize nsTimestamp objects.
+NS_FOUNDATION_DLL void operator<<(nsStreamWriter& inout_stream, const nsVarianceTypeTime& value);
 
-/// \brief Operator to serialize wdTimestamp objects.
-WD_FOUNDATION_DLL void operator>>(wdStreamReader& inout_stream, wdVarianceTypeTime& ref_value);
+/// \brief Operator to serialize nsTimestamp objects.
+NS_FOUNDATION_DLL void operator>>(nsStreamReader& inout_stream, nsVarianceTypeTime& ref_value);
 
-struct wdVarianceTypeAngle;
+struct nsVarianceTypeAngle;
 
-/// \brief Operator to serialize wdTimestamp objects.
-WD_FOUNDATION_DLL void operator<<(wdStreamWriter& inout_stream, const wdVarianceTypeAngle& value);
+/// \brief Operator to serialize nsTimestamp objects.
+NS_FOUNDATION_DLL void operator<<(nsStreamWriter& inout_stream, const nsVarianceTypeAngle& value);
 
-/// \brief Operator to serialize wdTimestamp objects.
-WD_FOUNDATION_DLL void operator>>(wdStreamReader& inout_stream, wdVarianceTypeAngle& ref_value);
+/// \brief Operator to serialize nsTimestamp objects.
+NS_FOUNDATION_DLL void operator>>(nsStreamReader& inout_stream, nsVarianceTypeAngle& ref_value);

@@ -11,42 +11,61 @@
 #include <Foundation/Profiling/Profiling.h>
 #include <Foundation/Threading/ThreadUtils.h>
 
-#if WD_ENABLED(WD_USE_PROFILING)
+#if NS_ENABLED(NS_USE_PROFILING)
 
-class wdProfileCaptureDataTransfer : public wdDataTransfer
+class nsProfileCaptureDataTransfer : public nsDataTransfer
 {
 private:
   virtual void OnTransferRequest() override
   {
-    wdDataTransferObject dto(*this, "Capture", "application/json", "json");
+    nsDataTransferObject dto(*this, "Capture", "application/json", "json");
 
-    wdProfilingSystem::ProfilingData profilingData;
-    wdProfilingSystem::Capture(profilingData);
+    nsProfilingSystem::ProfilingData profilingData;
+    nsProfilingSystem::Capture(profilingData);
     profilingData.Write(dto.GetWriter()).IgnoreResult();
 
     dto.Transmit();
   }
 };
 
-static wdProfileCaptureDataTransfer s_ProfileCaptureDataTransfer;
+static nsProfileCaptureDataTransfer s_ProfileCaptureDataTransfer;
+
+namespace
+{
+  static nsEventSubscriptionID s_PluginEventSubscription = 0;
+  void PluginEvent(const nsPluginEvent& e)
+  {
+    if (e.m_EventType == nsPluginEvent::AfterUnloading)
+    {
+      // When a plugin is unloaded we need to clear all profiling data
+      // since they can contain pointers to function names that don't exist anymore.
+      nsProfilingSystem::Clear();
+    }
+  }
+} // namespace
 
 // clang-format off
-WD_BEGIN_SUBSYSTEM_DECLARATION(Foundation, ProfilingSystem)
+NS_BEGIN_SUBSYSTEM_DECLARATION(Foundation, ProfilingSystem)
 
   // no dependencies
 
   ON_BASESYSTEMS_STARTUP
   {
-    wdProfilingSystem::Initialize();
+    nsProfilingSystem::Initialize();
+  }
+  ON_CORESYSTEMS_STARTUP
+  { 
+    s_PluginEventSubscription = nsPlugin::Events().AddEventHandler(&PluginEvent);
     s_ProfileCaptureDataTransfer.EnableDataTransfer("Profiling Capture");
   }
   ON_CORESYSTEMS_SHUTDOWN
   {
     s_ProfileCaptureDataTransfer.DisableDataTransfer();
-    wdProfilingSystem::Reset();
+    nsPlugin::Events().RemoveEventHandler(s_PluginEventSubscription);
+    nsProfilingSystem::Reset();
   }
 
-WD_END_SUBSYSTEM_DECLARATION;
+NS_END_SUBSYSTEM_DECLARATION;
 // clang-format on
 
 namespace
@@ -62,70 +81,59 @@ namespace
     BUFFER_SIZE_FRAMES = 120 * 60,
   };
 
-  typedef wdStaticRingBuffer<wdProfilingSystem::GPUScope, BUFFER_SIZE_OTHER_THREAD / sizeof(wdProfilingSystem::GPUScope)> GPUScopesBuffer;
+  using GPUScopesBuffer = nsStaticRingBuffer<nsProfilingSystem::GPUScope, BUFFER_SIZE_OTHER_THREAD / sizeof(nsProfilingSystem::GPUScope)>;
 
-  static wdUInt64 s_MainThreadId = 0;
+  static nsUInt64 s_MainThreadId = 0;
 
   struct CpuScopesBufferBase
   {
     virtual ~CpuScopesBufferBase() = default;
 
-    wdUInt64 m_uiThreadId = 0;
+    nsUInt64 m_uiThreadId = 0;
     bool IsMainThread() const { return m_uiThreadId == s_MainThreadId; }
   };
 
-  template <wdUInt32 SizeInBytes>
+  template <nsUInt32 SizeInBytes>
   struct CpuScopesBuffer : public CpuScopesBufferBase
   {
-    wdStaticRingBuffer<wdProfilingSystem::CPUScope, SizeInBytes / sizeof(wdProfilingSystem::CPUScope)> m_Data;
+    nsStaticRingBuffer<nsProfilingSystem::CPUScope, SizeInBytes / sizeof(nsProfilingSystem::CPUScope)> m_Data;
   };
 
   CpuScopesBuffer<BUFFER_SIZE_MAIN_THREAD>* CastToMainThreadEventBuffer(CpuScopesBufferBase* pEventBuffer)
   {
-    WD_ASSERT_DEV(pEventBuffer->IsMainThread(), "Implementation error");
+    NS_ASSERT_DEV(pEventBuffer->IsMainThread(), "Implementation error");
     return static_cast<CpuScopesBuffer<BUFFER_SIZE_MAIN_THREAD>*>(pEventBuffer);
   }
 
   CpuScopesBuffer<BUFFER_SIZE_OTHER_THREAD>* CastToOtherThreadEventBuffer(CpuScopesBufferBase* pEventBuffer)
   {
-    WD_ASSERT_DEV(!pEventBuffer->IsMainThread(), "Implementation error");
+    NS_ASSERT_DEV(!pEventBuffer->IsMainThread(), "Implementation error");
     return static_cast<CpuScopesBuffer<BUFFER_SIZE_OTHER_THREAD>*>(pEventBuffer);
   }
 
-  wdCVarFloat cvar_ProfilingDiscardThresholdMS("Profiling.DiscardThresholdMS", 0.1f, wdCVarFlags::Default, "Discard profiling scopes if their duration is shorter than this in milliseconds.");
+  nsCVarFloat cvar_ProfilingDiscardThresholdMS("Profiling.DiscardThresholdMS", 0.1f, nsCVarFlags::Default, "Discard profiling scopes if their duration is shorter than this in milliseconds.");
 
-  wdStaticRingBuffer<wdTime, BUFFER_SIZE_FRAMES> s_FrameStartTimes;
-  wdUInt64 s_uiFrameCount = 0;
+  nsStaticRingBuffer<nsTime, BUFFER_SIZE_FRAMES> s_FrameStartTimes;
+  nsUInt64 s_uiFrameCount = 0;
 
-  static wdHybridArray<wdProfilingSystem::ThreadInfo, 16> s_ThreadInfos;
-  static wdHybridArray<wdUInt64, 16> s_DeadThreadIDs;
-  static wdMutex s_ThreadInfosMutex;
+  static nsHybridArray<nsProfilingSystem::ThreadInfo, 16> s_ThreadInfos;
+  static nsHybridArray<nsUInt64, 16> s_DeadThreadIDs;
+  static nsMutex s_ThreadInfosMutex;
 
-#  if WD_ENABLED(WD_PLATFORM_64BIT)
-  WD_CHECK_AT_COMPILETIME(sizeof(wdProfilingSystem::CPUScope) == 64);
-  WD_CHECK_AT_COMPILETIME(sizeof(wdProfilingSystem::GPUScope) == 64);
+#  if NS_ENABLED(NS_PLATFORM_64BIT)
+  NS_CHECK_AT_COMPILETIME(sizeof(nsProfilingSystem::CPUScope) == 64);
+  NS_CHECK_AT_COMPILETIME(sizeof(nsProfilingSystem::GPUScope) == 64);
 #  endif
 
   static thread_local CpuScopesBufferBase* s_CpuScopes = nullptr;
-  static wdDynamicArray<CpuScopesBufferBase*> s_AllCpuScopes;
-  static wdMutex s_AllCpuScopesMutex;
-  static wdProfilingSystem::ScopeTimeoutDelegate s_ScopeTimeoutCallback;
+  static nsDynamicArray<CpuScopesBufferBase*> s_AllCpuScopes;
+  static nsMutex s_AllCpuScopesMutex;
+  static nsProfilingSystem::ScopeTimeoutDelegate s_ScopeTimeoutCallback;
 
-  static wdDynamicArray<wdUniquePtr<GPUScopesBuffer>> s_GPUScopes;
-
-  static wdEventSubscriptionID s_PluginEventSubscription = 0;
-  void PluginEvent(const wdPluginEvent& e)
-  {
-    if (e.m_EventType == wdPluginEvent::AfterUnloading)
-    {
-      // When a plugin is unloaded we need to clear all profiling data
-      // since they can contain pointers to function names that don't exist anymore.
-      wdProfilingSystem::Clear();
-    }
-  }
+  static nsDynamicArray<nsUniquePtr<GPUScopesBuffer>> s_GPUScopes;
 } // namespace
 
-void wdProfilingSystem::ProfilingData::Clear()
+void nsProfilingSystem::ProfilingData::Clear()
 {
   m_uiFramesThreadID = 0;
   m_uiProcessID = 0;
@@ -137,7 +145,7 @@ void wdProfilingSystem::ProfilingData::Clear()
   m_ThreadInfos.Clear();
 }
 
-void wdProfilingSystem::ProfilingData::Merge(ProfilingData& out_merged, wdArrayPtr<const ProfilingData*> inputs)
+void nsProfilingSystem::ProfilingData::Merge(ProfilingData& out_merged, nsArrayPtr<const ProfilingData*> inputs)
 {
   out_merged.Clear();
 
@@ -149,8 +157,8 @@ void wdProfilingSystem::ProfilingData::Merge(ProfilingData& out_merged, wdArrayP
 
   // concatenate m_FrameStartTimes and m_GPUScopes and m_uiFrameCount
   {
-    wdUInt32 uiNumFrameStartTimes = 0;
-    wdUInt32 uiNumGpuScopes = 0;
+    nsUInt32 uiNumFrameStartTimes = 0;
+    nsUInt32 uiNumGpuScopes = 0;
 
     for (const auto& pd : inputs)
     {
@@ -172,7 +180,8 @@ void wdProfilingSystem::ProfilingData::Merge(ProfilingData& out_merged, wdArrayP
 
   // merge m_ThreadInfos
   {
-    auto threadInfoAlreadyKnown = [out_merged](wdUInt64 uiThreadId) -> bool {
+    auto threadInfoAlreadyKnown = [out_merged](nsUInt64 uiThreadId) -> bool
+    {
       for (const auto& ti : out_merged.m_ThreadInfos)
       {
         if (ti.m_uiThreadId == uiThreadId)
@@ -198,11 +207,11 @@ void wdProfilingSystem::ProfilingData::Merge(ProfilingData& out_merged, wdArrayP
   {
     struct CountAndIndex
     {
-      wdUInt32 m_uiCount = 0;
-      wdUInt32 m_uiIndex = 0xFFFFFFFF;
+      nsUInt32 m_uiCount = 0;
+      nsUInt32 m_uiIndex = 0xFFFFFFFF;
     };
 
-    wdMap<wdUInt64, CountAndIndex> eventBufferInfos;
+    nsMap<nsUInt64, CountAndIndex> eventBufferInfos;
 
     // gather info about required size of the output array
     for (const auto& pd : inputs)
@@ -211,7 +220,7 @@ void wdProfilingSystem::ProfilingData::Merge(ProfilingData& out_merged, wdArrayP
       {
         auto& ebInfo = eventBufferInfos[eb.m_uiThreadId];
 
-        ebInfo.m_uiIndex = wdMath::Min(ebInfo.m_uiIndex, eventBufferInfos.GetCount() - 1);
+        ebInfo.m_uiIndex = nsMath::Min(ebInfo.m_uiIndex, eventBufferInfos.GetCount() - 1);
         ebInfo.m_uiCount += eb.m_Data.GetCount();
       }
     }
@@ -241,10 +250,10 @@ void wdProfilingSystem::ProfilingData::Merge(ProfilingData& out_merged, wdArrayP
   }
 }
 
-wdResult wdProfilingSystem::ProfilingData::Write(wdStreamWriter& ref_outputStream) const
+nsResult nsProfilingSystem::ProfilingData::Write(nsStreamWriter& ref_outputStream) const
 {
-  wdStandardJSONWriter writer;
-  writer.SetWhitespaceMode(wdJSONWriter::WhitespaceMode::None);
+  nsStandardJSONWriter writer;
+  writer.SetWhitespaceMode(nsJSONWriter::WhitespaceMode::None);
   writer.SetOutputStream(&ref_outputStream);
 
   writer.BeginObject();
@@ -253,7 +262,7 @@ wdResult wdProfilingSystem::ProfilingData::Write(wdStreamWriter& ref_outputStrea
 
     // Process metadata
     {
-      wdApplication::GetApplicationInstance()->GetApplicationName();
+      nsApplication::GetApplicationInstance()->GetApplicationName();
 
       writer.BeginObject();
       {
@@ -263,7 +272,7 @@ wdResult wdProfilingSystem::ProfilingData::Write(wdStreamWriter& ref_outputStrea
         writer.AddVariableString("ph", "M");
 
         writer.BeginObject("args");
-        writer.AddVariableString("name", wdApplication::GetApplicationInstance() ? wdApplication::GetApplicationInstance()->GetApplicationName().GetData() : "wdEngine");
+        writer.AddVariableString("name", nsApplication::GetApplicationInstance() ? nsApplication::GetApplicationInstance()->GetApplicationName().GetData() : "nsEngine");
         writer.EndObject();
       }
       writer.EndObject();
@@ -314,14 +323,14 @@ wdResult wdProfilingSystem::ProfilingData::Write(wdStreamWriter& ref_outputStrea
 
       if (writer.HadWriteError())
       {
-        return WD_FAILURE;
+        return NS_FAILURE;
       }
     }
 
-    const wdUInt32 uiGpuCount = m_GPUScopes.GetCount();
+    const nsUInt32 uiGpuCount = m_GPUScopes.GetCount();
     // GPU thread metadata
     // Since there are no actual threads, we assign 1..uiGpuCount as the respective threadID
-    for (wdUInt32 gpuIndex = 1; gpuIndex <= uiGpuCount; ++gpuIndex)
+    for (nsUInt32 gpuIndex = 1; gpuIndex <= uiGpuCount; ++gpuIndex)
     {
       writer.BeginObject();
       {
@@ -331,7 +340,7 @@ wdResult wdProfilingSystem::ProfilingData::Write(wdStreamWriter& ref_outputStrea
         writer.AddVariableUInt64("tid", gpuIndex);
         writer.AddVariableString("ph", "M");
 
-        wdStringBuilder gpuNameBuilder;
+        nsStringBuilder gpuNameBuilder;
         gpuNameBuilder.AppendFormat("GPU {}", gpuIndex - 1);
 
         writer.BeginObject("args");
@@ -355,13 +364,13 @@ wdResult wdProfilingSystem::ProfilingData::Write(wdStreamWriter& ref_outputStrea
       writer.EndObject();
       if (writer.HadWriteError())
       {
-        return WD_FAILURE;
+        return NS_FAILURE;
       }
     }
 
     // thread metadata
     {
-      for (wdUInt32 threadIndex = 0; threadIndex < m_ThreadInfos.GetCount(); ++threadIndex)
+      for (nsUInt32 threadIndex = 0; threadIndex < m_ThreadInfos.GetCount(); ++threadIndex)
       {
         const ThreadInfo& info = m_ThreadInfos[threadIndex];
         writer.BeginObject();
@@ -394,32 +403,33 @@ wdResult wdProfilingSystem::ProfilingData::Write(wdStreamWriter& ref_outputStrea
 
         if (writer.HadWriteError())
         {
-          return WD_FAILURE;
+          return NS_FAILURE;
         }
       }
     }
 
     // scoped events
-    wdDynamicArray<CPUScope> sortedScopes;
+    nsDynamicArray<CPUScope> sortedScopes;
     for (const auto& eventBuffer : m_AllEventBuffers)
     {
       // Since we introduced fake thread IDs via the GPUs, we simply shift all real thread IDs to be in a different range to avoid collisions.
-      const wdUInt64 uiThreadId = eventBuffer.m_uiThreadId + uiGpuCount + 1;
+      const nsUInt64 uiThreadId = eventBuffer.m_uiThreadId + uiGpuCount + 1;
 
       // It seems that chrome does a stable sort by scope begin time. Now that we write complete scopes at the end of a scope
       // we actually write nested scopes before their corresponding parent scope to the file. If both start at the same quantized time stamp
       // chrome prints the nested scope first and then scrambles everything.
       // So we sort by duration to make sure that parent scopes are written first in the json file.
       sortedScopes = eventBuffer.m_Data;
-      sortedScopes.Sort([](const CPUScope& a, const CPUScope& b) { return (a.m_EndTime - a.m_BeginTime) > (b.m_EndTime - b.m_BeginTime); });
+      sortedScopes.Sort([](const CPUScope& a, const CPUScope& b)
+        { return (a.m_EndTime - a.m_BeginTime) > (b.m_EndTime - b.m_BeginTime); });
 
       for (const CPUScope& e : sortedScopes)
       {
         writer.BeginObject();
-        writer.AddVariableString("name", e.m_szName);
+        writer.AddVariableString("name", static_cast<const char*>(e.m_szName));
         writer.AddVariableUInt32("pid", m_uiProcessID);
         writer.AddVariableUInt64("tid", uiThreadId);
-        writer.AddVariableUInt64("ts", static_cast<wdUInt64>(e.m_BeginTime.GetMicroseconds()));
+        writer.AddVariableUInt64("ts", static_cast<nsUInt64>(e.m_BeginTime.GetMicroseconds()));
         writer.AddVariableString("ph", "B");
 
         if (e.m_szFunctionName != nullptr)
@@ -434,39 +444,39 @@ wdResult wdProfilingSystem::ProfilingData::Write(wdStreamWriter& ref_outputStrea
         if (e.m_EndTime.IsPositive())
         {
           writer.BeginObject();
-          writer.AddVariableString("name", e.m_szName);
+          writer.AddVariableString("name", static_cast<const char*>(e.m_szName));
           writer.AddVariableUInt32("pid", m_uiProcessID);
           writer.AddVariableUInt64("tid", uiThreadId);
-          writer.AddVariableUInt64("ts", static_cast<wdUInt64>(e.m_EndTime.GetMicroseconds()));
+          writer.AddVariableUInt64("ts", static_cast<nsUInt64>(e.m_EndTime.GetMicroseconds()));
           writer.AddVariableString("ph", "E");
           writer.EndObject();
         }
 
         if (writer.HadWriteError())
         {
-          return WD_FAILURE;
+          return NS_FAILURE;
         }
       }
     }
 
     // frame start/end
     {
-      wdStringBuilder sFrameName;
+      nsStringBuilder sFrameName;
 
-      const wdUInt32 uiNumFrames = m_FrameStartTimes.GetCount();
-      for (wdUInt32 i = 1; i < uiNumFrames; ++i)
+      const nsUInt32 uiNumFrames = m_FrameStartTimes.GetCount();
+      for (nsUInt32 i = 1; i < uiNumFrames; ++i)
       {
-        const wdTime t0 = m_FrameStartTimes[i - 1];
-        const wdTime t1 = m_FrameStartTimes[i];
+        const nsTime t0 = m_FrameStartTimes[i - 1];
+        const nsTime t1 = m_FrameStartTimes[i];
 
-        const wdUInt64 localFrameID = uiNumFrames - i - 1;
-        sFrameName.Format("Frame {}", m_uiFrameCount - localFrameID);
+        const nsUInt64 localFrameID = uiNumFrames - i - 1;
+        sFrameName.SetFormat("Frame {}", m_uiFrameCount - localFrameID);
 
         writer.BeginObject();
         writer.AddVariableString("name", sFrameName);
         writer.AddVariableUInt32("pid", m_uiProcessID);
         writer.AddVariableUInt64("tid", m_uiFramesThreadID);
-        writer.AddVariableUInt64("ts", static_cast<wdUInt64>(t0.GetMicroseconds()));
+        writer.AddVariableUInt64("ts", static_cast<nsUInt64>(t0.GetMicroseconds()));
         writer.AddVariableString("ph", "B");
         writer.EndObject();
 
@@ -474,12 +484,12 @@ wdResult wdProfilingSystem::ProfilingData::Write(wdStreamWriter& ref_outputStrea
         writer.AddVariableString("name", sFrameName);
         writer.AddVariableUInt32("pid", m_uiProcessID);
         writer.AddVariableUInt64("tid", m_uiFramesThreadID);
-        writer.AddVariableUInt64("ts", static_cast<wdUInt64>(t1.GetMicroseconds()));
+        writer.AddVariableUInt64("ts", static_cast<nsUInt64>(t1.GetMicroseconds()));
         writer.AddVariableString("ph", "E");
         writer.EndObject();
         if (writer.HadWriteError())
         {
-          return WD_FAILURE;
+          return NS_FAILURE;
         }
       }
     }
@@ -488,34 +498,35 @@ wdResult wdProfilingSystem::ProfilingData::Write(wdStreamWriter& ref_outputStrea
     // Since there are no actual threads, we assign 1..gpuCount as the respective threadID
     {
       // See comment on sortedScopes above.
-      wdDynamicArray<GPUScope> sortedGpuScopes;
-      for (wdUInt32 gpuIndex = 1; gpuIndex <= m_GPUScopes.GetCount(); ++gpuIndex)
+      nsDynamicArray<GPUScope> sortedGpuScopes;
+      for (nsUInt32 gpuIndex = 1; gpuIndex <= m_GPUScopes.GetCount(); ++gpuIndex)
       {
         sortedGpuScopes = m_GPUScopes[gpuIndex - 1];
-        sortedGpuScopes.Sort([](const GPUScope& a, const GPUScope& b) { return (a.m_EndTime - a.m_BeginTime) > (b.m_EndTime - b.m_BeginTime); });
+        sortedGpuScopes.Sort([](const GPUScope& a, const GPUScope& b)
+          { return (a.m_EndTime - a.m_BeginTime) > (b.m_EndTime - b.m_BeginTime); });
 
-        for (wdUInt32 i = 0; i < sortedGpuScopes.GetCount(); ++i)
+        for (nsUInt32 i = 0; i < sortedGpuScopes.GetCount(); ++i)
         {
           const auto& e = sortedGpuScopes[i];
 
           writer.BeginObject();
-          writer.AddVariableString("name", e.m_szName);
+          writer.AddVariableString("name", static_cast<const char*>(e.m_szName));
           writer.AddVariableUInt32("pid", m_uiProcessID);
           writer.AddVariableUInt64("tid", gpuIndex);
-          writer.AddVariableUInt64("ts", static_cast<wdUInt64>(e.m_BeginTime.GetMicroseconds()));
+          writer.AddVariableUInt64("ts", static_cast<nsUInt64>(e.m_BeginTime.GetMicroseconds()));
           writer.AddVariableString("ph", "B");
           writer.EndObject();
 
           writer.BeginObject();
-          writer.AddVariableString("name", e.m_szName);
+          writer.AddVariableString("name", static_cast<const char*>(e.m_szName));
           writer.AddVariableUInt32("pid", m_uiProcessID);
           writer.AddVariableUInt64("tid", gpuIndex);
-          writer.AddVariableUInt64("ts", static_cast<wdUInt64>(e.m_EndTime.GetMicroseconds()));
+          writer.AddVariableUInt64("ts", static_cast<nsUInt64>(e.m_EndTime.GetMicroseconds()));
           writer.AddVariableString("ph", "E");
           writer.EndObject();
           if (writer.HadWriteError())
           {
-            return WD_FAILURE;
+            return NS_FAILURE;
           }
         }
       }
@@ -525,14 +536,15 @@ wdResult wdProfilingSystem::ProfilingData::Write(wdStreamWriter& ref_outputStrea
   }
 
   writer.EndObject();
-  return writer.HadWriteError() ? WD_FAILURE : WD_SUCCESS;
+
+  return writer.HadWriteError() ? NS_FAILURE : NS_SUCCESS;
 }
 
 // static
-void wdProfilingSystem::Clear()
+void nsProfilingSystem::Clear()
 {
   {
-    WD_LOCK(s_AllCpuScopesMutex);
+    NS_LOCK(s_AllCpuScopesMutex);
     for (auto pEventBuffer : s_AllCpuScopes)
     {
       if (pEventBuffer->IsMainThread())
@@ -558,19 +570,19 @@ void wdProfilingSystem::Clear()
 }
 
 // static
-void wdProfilingSystem::Capture(wdProfilingSystem::ProfilingData& ref_profilingData, bool bClearAfterCapture)
+void nsProfilingSystem::Capture(nsProfilingSystem::ProfilingData& ref_profilingData, bool bClearAfterCapture)
 {
   ref_profilingData.Clear();
 
   ref_profilingData.m_uiFramesThreadID = 0;
-#  if WD_ENABLED(WD_SUPPORTS_PROCESSES)
-  ref_profilingData.m_uiProcessID = wdProcess::GetCurrentProcessID();
+#  if NS_ENABLED(NS_SUPPORTS_PROCESSES)
+  ref_profilingData.m_uiProcessID = nsProcess::GetCurrentProcessID();
 #  else
   ref_profilingData.m_uiProcessID = 0;
 #  endif
 
   {
-    WD_LOCK(s_ThreadInfosMutex);
+    NS_LOCK(s_ThreadInfosMutex);
 
     if (bClearAfterCapture)
     {
@@ -583,19 +595,19 @@ void wdProfilingSystem::Capture(wdProfilingSystem::ProfilingData& ref_profilingD
   }
 
   {
-    WD_LOCK(s_AllCpuScopesMutex);
+    NS_LOCK(s_AllCpuScopesMutex);
 
     ref_profilingData.m_AllEventBuffers.Reserve(s_AllCpuScopes.GetCount());
-    for (wdUInt32 i = 0; i < s_AllCpuScopes.GetCount(); ++i)
+    for (nsUInt32 i = 0; i < s_AllCpuScopes.GetCount(); ++i)
     {
       const auto& sourceEventBuffer = s_AllCpuScopes[i];
       CPUScopesBufferFlat& targetEventBuffer = ref_profilingData.m_AllEventBuffers.ExpandAndGetRef();
 
       targetEventBuffer.m_uiThreadId = sourceEventBuffer->m_uiThreadId;
 
-      wdUInt32 uiSourceCount = sourceEventBuffer->IsMainThread() ? CastToMainThreadEventBuffer(sourceEventBuffer)->m_Data.GetCount() : CastToOtherThreadEventBuffer(sourceEventBuffer)->m_Data.GetCount();
+      nsUInt32 uiSourceCount = sourceEventBuffer->IsMainThread() ? CastToMainThreadEventBuffer(sourceEventBuffer)->m_Data.GetCount() : CastToOtherThreadEventBuffer(sourceEventBuffer)->m_Data.GetCount();
       targetEventBuffer.m_Data.SetCountUninitialized(uiSourceCount);
-      for (wdUInt32 j = 0; j < uiSourceCount; ++j)
+      for (nsUInt32 j = 0; j < uiSourceCount; ++j)
       {
         const CPUScope& sourceEvent = sourceEventBuffer->IsMainThread() ? CastToMainThreadEventBuffer(sourceEventBuffer)->m_Data[j] : CastToOtherThreadEventBuffer(sourceEventBuffer)->m_Data[j];
 
@@ -603,7 +615,7 @@ void wdProfilingSystem::Capture(wdProfilingSystem::ProfilingData& ref_profilingD
         copiedEvent.m_szFunctionName = sourceEvent.m_szFunctionName;
         copiedEvent.m_BeginTime = sourceEvent.m_BeginTime;
         copiedEvent.m_EndTime = sourceEvent.m_EndTime;
-        wdStringUtils::Copy(copiedEvent.m_szName, CPUScope::NAME_SIZE, sourceEvent.m_szName);
+        nsStringUtils::Copy(copiedEvent.m_szName, CPUScope::NAME_SIZE, sourceEvent.m_szName);
       }
     }
   }
@@ -611,7 +623,7 @@ void wdProfilingSystem::Capture(wdProfilingSystem::ProfilingData& ref_profilingD
   ref_profilingData.m_uiFrameCount = s_uiFrameCount;
 
   ref_profilingData.m_FrameStartTimes.SetCountUninitialized(s_FrameStartTimes.GetCount());
-  for (wdUInt32 i = 0; i < s_FrameStartTimes.GetCount(); ++i)
+  for (nsUInt32 i = 0; i < s_FrameStartTimes.GetCount(); ++i)
   {
     ref_profilingData.m_FrameStartTimes[i] = s_FrameStartTimes[i];
   }
@@ -622,16 +634,16 @@ void wdProfilingSystem::Capture(wdProfilingSystem::ProfilingData& ref_profilingD
     {
       if (gpuScopes != nullptr)
       {
-        wdDynamicArray<GPUScope>& gpuScopesCopy = ref_profilingData.m_GPUScopes.ExpandAndGetRef();
+        nsDynamicArray<GPUScope>& gpuScopesCopy = ref_profilingData.m_GPUScopes.ExpandAndGetRef();
         gpuScopesCopy.SetCountUninitialized(gpuScopes->GetCount());
-        for (wdUInt32 i = 0; i < gpuScopes->GetCount(); ++i)
+        for (nsUInt32 i = 0; i < gpuScopes->GetCount(); ++i)
         {
           const GPUScope& sourceGpuDat = (*gpuScopes)[i];
 
           GPUScope& copiedGpuData = gpuScopesCopy[i];
           copiedGpuData.m_BeginTime = sourceGpuDat.m_BeginTime;
           copiedGpuData.m_EndTime = sourceGpuDat.m_EndTime;
-          wdStringUtils::Copy(copiedGpuData.m_szName, GPUScope::NAME_SIZE, sourceGpuDat.m_szName);
+          nsStringUtils::Copy(copiedGpuData.m_szName, GPUScope::NAME_SIZE, sourceGpuDat.m_szName);
         }
       }
     }
@@ -644,24 +656,24 @@ void wdProfilingSystem::Capture(wdProfilingSystem::ProfilingData& ref_profilingD
 }
 
 // static
-void wdProfilingSystem::SetDiscardThreshold(wdTime threshold)
+void nsProfilingSystem::SetDiscardThreshold(nsTime threshold)
 {
   cvar_ProfilingDiscardThresholdMS = static_cast<float>(threshold.GetMilliseconds());
 }
 
-void wdProfilingSystem::SetScopeTimeoutCallback(ScopeTimeoutDelegate callback)
+void nsProfilingSystem::SetScopeTimeoutCallback(ScopeTimeoutDelegate callback)
 {
   s_ScopeTimeoutCallback = callback;
 }
 
 // static
-wdUInt64 wdProfilingSystem::GetFrameCount()
+nsUInt64 nsProfilingSystem::GetFrameCount()
 {
   return s_uiFrameCount;
 }
 
 // static
-void wdProfilingSystem::StartNewFrame()
+void nsProfilingSystem::StartNewFrame()
 {
   ++s_uiFrameCount;
 
@@ -670,36 +682,38 @@ void wdProfilingSystem::StartNewFrame()
     s_FrameStartTimes.PopFront();
   }
 
-  s_FrameStartTimes.PushBack(wdTime::Now());
+  s_FrameStartTimes.PushBack(nsTime::Now());
+
+  NS_PROFILER_FRAME_MARKER();
 }
 
 // static
-void wdProfilingSystem::AddCPUScope(wdStringView sName, const char* szFunctionName, wdTime beginTime, wdTime endTime, wdTime scopeTimeout)
+void nsProfilingSystem::AddCPUScope(nsStringView sName, const char* szFunctionName, nsTime beginTime, nsTime endTime, nsTime scopeTimeout)
 {
-  const wdTime duration = endTime - beginTime;
+  const nsTime duration = endTime - beginTime;
 
   // discard?
-  if (duration < wdTime::Milliseconds(cvar_ProfilingDiscardThresholdMS))
+  if (duration < nsTime::MakeFromMilliseconds(cvar_ProfilingDiscardThresholdMS))
     return;
 
   ::CpuScopesBufferBase* pScopes = s_CpuScopes;
 
   if (pScopes == nullptr)
   {
-    if (wdThreadUtils::IsMainThread())
+    if (nsThreadUtils::IsMainThread())
     {
-      pScopes = WD_DEFAULT_NEW(::CpuScopesBuffer<BUFFER_SIZE_MAIN_THREAD>);
+      pScopes = NS_DEFAULT_NEW(::CpuScopesBuffer<BUFFER_SIZE_MAIN_THREAD>);
     }
     else
     {
-      pScopes = WD_DEFAULT_NEW(::CpuScopesBuffer<BUFFER_SIZE_OTHER_THREAD>);
+      pScopes = NS_DEFAULT_NEW(::CpuScopesBuffer<BUFFER_SIZE_OTHER_THREAD>);
     }
 
-    pScopes->m_uiThreadId = (wdUInt64)wdThreadUtils::GetCurrentThreadID();
+    pScopes->m_uiThreadId = (nsUInt64)nsThreadUtils::GetCurrentThreadID();
     s_CpuScopes = pScopes;
 
     {
-      WD_LOCK(s_AllCpuScopesMutex);
+      NS_LOCK(s_AllCpuScopesMutex);
       s_AllCpuScopes.PushBack(pScopes);
     }
   }
@@ -708,9 +722,9 @@ void wdProfilingSystem::AddCPUScope(wdStringView sName, const char* szFunctionNa
   scope.m_szFunctionName = szFunctionName;
   scope.m_BeginTime = beginTime;
   scope.m_EndTime = endTime;
-  wdStringUtils::Copy(scope.m_szName, WD_ARRAY_SIZE(scope.m_szName), sName.GetStartPointer(), sName.GetEndPointer());
+  nsStringUtils::Copy(scope.m_szName, NS_ARRAY_SIZE(scope.m_szName), sName.GetStartPointer(), sName.GetEndPointer());
 
-  if (wdThreadUtils::IsMainThread())
+  if (nsThreadUtils::IsMainThread())
   {
     auto pMainThreadBuffer = CastToMainThreadEventBuffer(pScopes);
     if (!pMainThreadBuffer->m_Data.CanAppend())
@@ -738,23 +752,22 @@ void wdProfilingSystem::AddCPUScope(wdStringView sName, const char* szFunctionNa
 }
 
 // static
-void wdProfilingSystem::Initialize()
+void nsProfilingSystem::Initialize()
 {
   SetThreadName("Main Thread");
-  s_MainThreadId = (wdUInt64)wdThreadUtils::GetCurrentThreadID();
 
-  s_PluginEventSubscription = wdPlugin::Events().AddEventHandler(&PluginEvent);
+  s_MainThreadId = (nsUInt64)nsThreadUtils::GetCurrentThreadID();
 }
 
 // static
-void wdProfilingSystem::Reset()
+void nsProfilingSystem::Reset()
 {
-  WD_LOCK(s_ThreadInfosMutex);
-  WD_LOCK(s_AllCpuScopesMutex);
-  for (wdUInt32 i = 0; i < s_DeadThreadIDs.GetCount(); i++)
+  NS_LOCK(s_ThreadInfosMutex);
+  NS_LOCK(s_AllCpuScopesMutex);
+  for (nsUInt32 i = 0; i < s_DeadThreadIDs.GetCount(); i++)
   {
-    wdUInt64 uiThreadId = s_DeadThreadIDs[i];
-    for (wdUInt32 k = 0; k < s_ThreadInfos.GetCount(); k++)
+    nsUInt64 uiThreadId = s_DeadThreadIDs[i];
+    for (nsUInt32 k = 0; k < s_ThreadInfos.GetCount(); k++)
     {
       if (s_ThreadInfos[k].m_uiThreadId == uiThreadId)
       {
@@ -765,42 +778,40 @@ void wdProfilingSystem::Reset()
         break;
       }
     }
-    for (wdUInt32 k = 0; k < s_AllCpuScopes.GetCount(); k++)
+    for (nsUInt32 k = 0; k < s_AllCpuScopes.GetCount(); k++)
     {
       CpuScopesBufferBase* pEventBuffer = s_AllCpuScopes[k];
       if (pEventBuffer->m_uiThreadId == uiThreadId)
       {
-        WD_DEFAULT_DELETE(pEventBuffer);
+        NS_DEFAULT_DELETE(pEventBuffer);
         // Forward order and no swap important, see comment above.
         s_AllCpuScopes.RemoveAtAndCopy(k);
       }
     }
   }
   s_DeadThreadIDs.Clear();
-
-  wdPlugin::Events().RemoveEventHandler(s_PluginEventSubscription);
 }
 
 // static
-void wdProfilingSystem::SetThreadName(wdStringView sThreadName)
+void nsProfilingSystem::SetThreadName(nsStringView sThreadName)
 {
-  WD_LOCK(s_ThreadInfosMutex);
+  NS_LOCK(s_ThreadInfosMutex);
 
   ThreadInfo& info = s_ThreadInfos.ExpandAndGetRef();
-  info.m_uiThreadId = (wdUInt64)wdThreadUtils::GetCurrentThreadID();
+  info.m_uiThreadId = (nsUInt64)nsThreadUtils::GetCurrentThreadID();
   info.m_sName = sThreadName;
 }
 
 // static
-void wdProfilingSystem::RemoveThread()
+void nsProfilingSystem::RemoveThread()
 {
-  WD_LOCK(s_ThreadInfosMutex);
+  NS_LOCK(s_ThreadInfosMutex);
 
-  s_DeadThreadIDs.PushBack((wdUInt64)wdThreadUtils::GetCurrentThreadID());
+  s_DeadThreadIDs.PushBack((nsUInt64)nsThreadUtils::GetCurrentThreadID());
 }
 
 // static
-void wdProfilingSystem::InitializeGPUData(wdUInt32 uiGpuCount)
+void nsProfilingSystem::InitializeGPUData(nsUInt32 uiGpuCount)
 {
   if (s_GPUScopes.GetCount() < uiGpuCount)
   {
@@ -811,15 +822,15 @@ void wdProfilingSystem::InitializeGPUData(wdUInt32 uiGpuCount)
   {
     if (gpuScopes == nullptr)
     {
-      gpuScopes = WD_DEFAULT_NEW(GPUScopesBuffer);
+      gpuScopes = NS_DEFAULT_NEW(GPUScopesBuffer);
     }
   }
 }
 
-void wdProfilingSystem::AddGPUScope(wdStringView sName, wdTime beginTime, wdTime endTime, wdUInt32 uiGpuIndex)
+void nsProfilingSystem::AddGPUScope(nsStringView sName, nsTime beginTime, nsTime endTime, nsUInt32 uiGpuIndex)
 {
   // discard?
-  if (endTime - beginTime < wdTime::Milliseconds(cvar_ProfilingDiscardThresholdMS))
+  if (endTime - beginTime < nsTime::MakeFromMilliseconds(cvar_ProfilingDiscardThresholdMS))
     return;
 
   if (!s_GPUScopes[uiGpuIndex]->CanAppend())
@@ -830,34 +841,34 @@ void wdProfilingSystem::AddGPUScope(wdStringView sName, wdTime beginTime, wdTime
   GPUScope scope;
   scope.m_BeginTime = beginTime;
   scope.m_EndTime = endTime;
-  wdStringUtils::Copy(scope.m_szName, WD_ARRAY_SIZE(scope.m_szName), sName.GetStartPointer(), sName.GetEndPointer());
+  nsStringUtils::Copy(scope.m_szName, NS_ARRAY_SIZE(scope.m_szName), sName.GetStartPointer(), sName.GetEndPointer());
 
   s_GPUScopes[uiGpuIndex]->PushBack(scope);
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-wdProfilingScope::wdProfilingScope(wdStringView sName, const char* szFunctionName, wdTime timeout)
+nsProfilingScope::nsProfilingScope(nsStringView sName, const char* szFunctionName, nsTime timeout)
   : m_sName(sName)
   , m_szFunction(szFunctionName)
-  , m_BeginTime(wdTime::Now())
+  , m_BeginTime(nsTime::Now())
   , m_Timeout(timeout)
 {
 }
 
-wdProfilingScope::~wdProfilingScope()
+nsProfilingScope::~nsProfilingScope()
 {
-  wdProfilingSystem::AddCPUScope(m_sName, m_szFunction, m_BeginTime, wdTime::Now(), m_Timeout);
+  nsProfilingSystem::AddCPUScope(m_sName, m_szFunction, m_BeginTime, nsTime::Now(), m_Timeout);
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-thread_local wdProfilingListScope* wdProfilingListScope::s_pCurrentList = nullptr;
+thread_local nsProfilingListScope* nsProfilingListScope::s_pCurrentList = nullptr;
 
-wdProfilingListScope::wdProfilingListScope(wdStringView sListName, wdStringView sFirstSectionName, const char* szFunctionName)
+nsProfilingListScope::nsProfilingListScope(nsStringView sListName, nsStringView sFirstSectionName, const char* szFunctionName)
   : m_sListName(sListName)
   , m_szListFunction(szFunctionName)
-  , m_ListBeginTime(wdTime::Now())
+  , m_ListBeginTime(nsTime::Now())
   , m_sCurSectionName(sFirstSectionName)
   , m_CurSectionBeginTime(m_ListBeginTime)
 {
@@ -865,22 +876,22 @@ wdProfilingListScope::wdProfilingListScope(wdStringView sListName, wdStringView 
   s_pCurrentList = this;
 }
 
-wdProfilingListScope::~wdProfilingListScope()
+nsProfilingListScope::~nsProfilingListScope()
 {
-  wdTime now = wdTime::Now();
-  wdProfilingSystem::AddCPUScope(m_sCurSectionName, nullptr, m_CurSectionBeginTime, now, wdTime::Zero());
-  wdProfilingSystem::AddCPUScope(m_sListName, m_szListFunction, m_ListBeginTime, now, wdTime::Zero());
+  nsTime now = nsTime::Now();
+  nsProfilingSystem::AddCPUScope(m_sCurSectionName, nullptr, m_CurSectionBeginTime, now, nsTime::MakeZero());
+  nsProfilingSystem::AddCPUScope(m_sListName, m_szListFunction, m_ListBeginTime, now, nsTime::MakeZero());
 
   s_pCurrentList = m_pPreviousList;
 }
 
 // static
-void wdProfilingListScope::StartNextSection(wdStringView sNextSectionName)
+void nsProfilingListScope::StartNextSection(nsStringView sNextSectionName)
 {
-  wdProfilingListScope* pCurScope = s_pCurrentList;
+  nsProfilingListScope* pCurScope = s_pCurrentList;
 
-  wdTime now = wdTime::Now();
-  wdProfilingSystem::AddCPUScope(pCurScope->m_sCurSectionName, nullptr, pCurScope->m_CurSectionBeginTime, now, wdTime::Zero());
+  nsTime now = nsTime::Now();
+  nsProfilingSystem::AddCPUScope(pCurScope->m_sCurSectionName, nullptr, pCurScope->m_CurSectionBeginTime, now, nsTime::MakeZero());
 
   pCurScope->m_sCurSectionName = sNextSectionName;
   pCurScope->m_CurSectionBeginTime = now;
@@ -888,35 +899,35 @@ void wdProfilingListScope::StartNextSection(wdStringView sNextSectionName)
 
 #else
 
-wdResult wdProfilingSystem::ProfilingData::Write(wdStreamWriter& outputStream) const
+nsResult nsProfilingSystem::ProfilingData::Write(nsStreamWriter& outputStream) const
 {
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
-void wdProfilingSystem::Clear() {}
+void nsProfilingSystem::Clear() {}
 
-void wdProfilingSystem::Capture(wdProfilingSystem::ProfilingData& out_Capture, bool bClearAfterCapture) {}
+void nsProfilingSystem::Capture(nsProfilingSystem::ProfilingData& out_Capture, bool bClearAfterCapture) {}
 
-void wdProfilingSystem::SetDiscardThreshold(wdTime threshold) {}
+void nsProfilingSystem::SetDiscardThreshold(nsTime threshold) {}
 
-void wdProfilingSystem::StartNewFrame() {}
+void nsProfilingSystem::StartNewFrame() {}
 
-void wdProfilingSystem::AddCPUScope(wdStringView sName, const char* szFunctionName, wdTime beginTime, wdTime endTime, wdTime scopeTimeout) {}
+void nsProfilingSystem::AddCPUScope(nsStringView sName, const char* szFunctionName, nsTime beginTime, nsTime endTime, nsTime scopeTimeout) {}
 
-void wdProfilingSystem::Initialize() {}
+void nsProfilingSystem::Initialize() {}
 
-void wdProfilingSystem::Reset() {}
+void nsProfilingSystem::Reset() {}
 
-void wdProfilingSystem::SetThreadName(wdStringView sThreadName) {}
+void nsProfilingSystem::SetThreadName(nsStringView sThreadName) {}
 
-void wdProfilingSystem::RemoveThread() {}
+void nsProfilingSystem::RemoveThread() {}
 
-void wdProfilingSystem::InitializeGPUData(wdUInt32 gpuCount) {}
+void nsProfilingSystem::InitializeGPUData(nsUInt32 gpuCount) {}
 
-void wdProfilingSystem::AddGPUScope(wdStringView sName, wdTime beginTime, wdTime endTime, wdUInt32 gpuIndex) {}
+void nsProfilingSystem::AddGPUScope(nsStringView sName, nsTime beginTime, nsTime endTime, nsUInt32 gpuIndex) {}
 
-void wdProfilingSystem::ProfilingData::Merge(ProfilingData& out_Merged, wdArrayPtr<const ProfilingData*> inputs) {}
+void nsProfilingSystem::ProfilingData::Merge(ProfilingData& out_Merged, nsArrayPtr<const ProfilingData*> inputs) {}
 
 #endif
 
-WD_STATICLINK_FILE(Foundation, Foundation_Profiling_Implementation_Profiling);
+NS_STATICLINK_FILE(Foundation, Foundation_Profiling_Implementation_Profiling);

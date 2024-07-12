@@ -2,196 +2,196 @@
 #include <Foundation/IO/Stream.h>
 
 template <typename T>
-WD_ALWAYS_INLINE wdResult wdDeduplicationReadContext::ReadObjectInplace(wdStreamReader& inout_stream, T& inout_obj)
+NS_ALWAYS_INLINE nsResult nsDeduplicationReadContext::ReadObjectInplace(nsStreamReader& inout_stream, T& inout_obj)
 {
   return ReadObject(inout_stream, inout_obj, nullptr);
 }
 
 template <typename T>
-wdResult wdDeduplicationReadContext::ReadObject(wdStreamReader& inout_stream, T& obj, wdAllocatorBase* pAllocator)
+nsResult nsDeduplicationReadContext::ReadObject(nsStreamReader& inout_stream, T& obj, nsAllocator* pAllocator)
 {
   bool bIsRealObject;
   inout_stream >> bIsRealObject;
 
-  WD_ASSERT_DEV(bIsRealObject, "Reading an object inplace only works for the first occurrence");
+  NS_ASSERT_DEV(bIsRealObject, "Reading an object inplace only works for the first occurrence");
 
-  WD_SUCCEED_OR_RETURN(wdStreamReaderUtil::Deserialize<T>(inout_stream, obj));
+  NS_SUCCEED_OR_RETURN(nsStreamReaderUtil::Deserialize<T>(inout_stream, obj));
 
   m_Objects.PushBack(&obj);
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
 template <typename T>
-wdResult wdDeduplicationReadContext::ReadObject(wdStreamReader& inout_stream, T*& ref_pObject, wdAllocatorBase* pAllocator)
+nsResult nsDeduplicationReadContext::ReadObject(nsStreamReader& inout_stream, T*& ref_pObject, nsAllocator* pAllocator)
 {
   bool bIsRealObject;
   inout_stream >> bIsRealObject;
 
   if (bIsRealObject)
   {
-    ref_pObject = WD_NEW(pAllocator, T);
-    WD_SUCCEED_OR_RETURN(wdStreamReaderUtil::Deserialize<T>(inout_stream, *ref_pObject));
+    ref_pObject = NS_NEW(pAllocator, T);
+    NS_SUCCEED_OR_RETURN(nsStreamReaderUtil::Deserialize<T>(inout_stream, *ref_pObject));
 
     m_Objects.PushBack(ref_pObject);
   }
   else
   {
-    wdUInt32 uiIndex;
+    nsUInt32 uiIndex;
     inout_stream >> uiIndex;
 
     if (uiIndex < m_Objects.GetCount())
     {
       ref_pObject = static_cast<T*>(m_Objects[uiIndex]);
     }
-    else if (uiIndex == wdInvalidIndex)
+    else if (uiIndex == nsInvalidIndex)
     {
       ref_pObject = nullptr;
     }
     else
     {
-      return WD_FAILURE;
+      return NS_FAILURE;
     }
   }
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
 template <typename T>
-wdResult wdDeduplicationReadContext::ReadObject(wdStreamReader& inout_stream, wdSharedPtr<T>& ref_pObject, wdAllocatorBase* pAllocator)
+nsResult nsDeduplicationReadContext::ReadObject(nsStreamReader& inout_stream, nsSharedPtr<T>& ref_pObject, nsAllocator* pAllocator)
 {
   T* ptr = nullptr;
   if (ReadObject(inout_stream, ptr, pAllocator).Succeeded())
   {
-    ref_pObject = wdSharedPtr<T>(ptr, pAllocator);
-    return WD_SUCCESS;
+    ref_pObject = nsSharedPtr<T>(ptr, pAllocator);
+    return NS_SUCCESS;
   }
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
 template <typename T>
-wdResult wdDeduplicationReadContext::ReadObject(wdStreamReader& inout_stream, wdUniquePtr<T>& ref_pObject, wdAllocatorBase* pAllocator)
+nsResult nsDeduplicationReadContext::ReadObject(nsStreamReader& inout_stream, nsUniquePtr<T>& ref_pObject, nsAllocator* pAllocator)
 {
   T* ptr = nullptr;
   if (ReadObject(inout_stream, ptr, pAllocator).Succeeded())
   {
-    ref_pObject = std::move(wdUniquePtr<T>(ptr, pAllocator));
-    return WD_SUCCESS;
+    ref_pObject = std::move(nsUniquePtr<T>(ptr, pAllocator));
+    return NS_SUCCESS;
   }
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
 template <typename ArrayType, typename ValueType>
-wdResult wdDeduplicationReadContext::ReadArray(wdStreamReader& inout_stream, wdArrayBase<ValueType, ArrayType>& ref_array, wdAllocatorBase* pAllocator)
+nsResult nsDeduplicationReadContext::ReadArray(nsStreamReader& inout_stream, nsArrayBase<ValueType, ArrayType>& ref_array, nsAllocator* pAllocator)
 {
-  wdUInt64 uiCount = 0;
-  WD_SUCCEED_OR_RETURN(inout_stream.ReadQWordValue(&uiCount));
+  nsUInt64 uiCount = 0;
+  NS_SUCCEED_OR_RETURN(inout_stream.ReadQWordValue(&uiCount));
 
-  WD_ASSERT_DEV(uiCount < std::numeric_limits<wdUInt32>::max(), "Containers currently use 32 bit for counts internally. Value from file is too large.");
+  NS_ASSERT_DEV(uiCount < std::numeric_limits<nsUInt32>::max(), "Containers currently use 32 bit for counts internally. Value from file is too large.");
 
   ref_array.Clear();
 
   if (uiCount > 0)
   {
-    static_cast<ArrayType&>(ref_array).Reserve(static_cast<wdUInt32>(uiCount));
+    static_cast<ArrayType&>(ref_array).Reserve(static_cast<nsUInt32>(uiCount));
 
-    for (wdUInt32 i = 0; i < static_cast<wdUInt32>(uiCount); ++i)
+    for (nsUInt32 i = 0; i < static_cast<nsUInt32>(uiCount); ++i)
     {
-      WD_SUCCEED_OR_RETURN(ReadObject(inout_stream, ref_array.ExpandAndGetRef(), pAllocator));
+      NS_SUCCEED_OR_RETURN(ReadObject(inout_stream, ref_array.ExpandAndGetRef(), pAllocator));
     }
   }
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
 template <typename KeyType, typename Comparer>
-wdResult wdDeduplicationReadContext::ReadSet(wdStreamReader& inout_stream, wdSetBase<KeyType, Comparer>& ref_set, wdAllocatorBase* pAllocator)
+nsResult nsDeduplicationReadContext::ReadSet(nsStreamReader& inout_stream, nsSetBase<KeyType, Comparer>& ref_set, nsAllocator* pAllocator)
 {
-  wdUInt64 uiCount = 0;
-  WD_SUCCEED_OR_RETURN(inout_stream.ReadQWordValue(&uiCount));
+  nsUInt64 uiCount = 0;
+  NS_SUCCEED_OR_RETURN(inout_stream.ReadQWordValue(&uiCount));
 
-  WD_ASSERT_DEV(uiCount < std::numeric_limits<wdUInt32>::max(), "Containers currently use 32 bit for counts internally. Value from file is too large.");
+  NS_ASSERT_DEV(uiCount < std::numeric_limits<nsUInt32>::max(), "Containers currently use 32 bit for counts internally. Value from file is too large.");
 
   ref_set.Clear();
 
-  for (wdUInt32 i = 0; i < static_cast<wdUInt32>(uiCount); ++i)
+  for (nsUInt32 i = 0; i < static_cast<nsUInt32>(uiCount); ++i)
   {
     KeyType key;
-    WD_SUCCEED_OR_RETURN(ReadObject(inout_stream, key, pAllocator));
+    NS_SUCCEED_OR_RETURN(ReadObject(inout_stream, key, pAllocator));
 
     ref_set.Insert(std::move(key));
   }
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
-namespace wdInternal
+namespace nsInternal
 {
   // Internal helper to prevent the compiler from trying to find a de-serialization method for pointer types or other types which don't have
   // one.
   struct DeserializeHelper
   {
     template <typename T>
-    static auto Deserialize(wdStreamReader& inout_stream, T& ref_obj, int) -> decltype(wdStreamReaderUtil::Deserialize(inout_stream, ref_obj))
+    static auto Deserialize(nsStreamReader& inout_stream, T& ref_obj, int) -> decltype(nsStreamReaderUtil::Deserialize(inout_stream, ref_obj))
     {
-      return wdStreamReaderUtil::Deserialize(inout_stream, ref_obj);
+      return nsStreamReaderUtil::Deserialize(inout_stream, ref_obj);
     }
 
     template <typename T>
-    static wdResult Deserialize(wdStreamReader& inout_stream, T& ref_obj, float)
+    static nsResult Deserialize(nsStreamReader& inout_stream, T& ref_obj, float)
     {
-      WD_REPORT_FAILURE("No deserialize method available");
-      return WD_FAILURE;
+      NS_REPORT_FAILURE("No deserialize method available");
+      return NS_FAILURE;
     }
   };
-} // namespace wdInternal
+} // namespace nsInternal
 
 template <typename KeyType, typename ValueType, typename Comparer>
-wdResult wdDeduplicationReadContext::ReadMap(wdStreamReader& inout_stream, wdMapBase<KeyType, ValueType, Comparer>& ref_map, ReadMapMode mode, wdAllocatorBase* pKeyAllocator, wdAllocatorBase* pValueAllocator)
+nsResult nsDeduplicationReadContext::ReadMap(nsStreamReader& inout_stream, nsMapBase<KeyType, ValueType, Comparer>& ref_map, ReadMapMode mode, nsAllocator* pKeyAllocator, nsAllocator* pValueAllocator)
 {
-  wdUInt64 uiCount = 0;
-  WD_SUCCEED_OR_RETURN(inout_stream.ReadQWordValue(&uiCount));
+  nsUInt64 uiCount = 0;
+  NS_SUCCEED_OR_RETURN(inout_stream.ReadQWordValue(&uiCount));
 
-  WD_ASSERT_DEV(uiCount < std::numeric_limits<wdUInt32>::max(), "Containers currently use 32 bit for counts internally. Value from file is too large.");
+  NS_ASSERT_DEV(uiCount < std::numeric_limits<nsUInt32>::max(), "Containers currently use 32 bit for counts internally. Value from file is too large.");
 
   ref_map.Clear();
 
   if (mode == ReadMapMode::DedupKey)
   {
-    for (wdUInt32 i = 0; i < static_cast<wdUInt32>(uiCount); ++i)
+    for (nsUInt32 i = 0; i < static_cast<nsUInt32>(uiCount); ++i)
     {
       KeyType key;
       ValueType value;
-      WD_SUCCEED_OR_RETURN(ReadObject(inout_stream, key, pKeyAllocator));
-      WD_SUCCEED_OR_RETURN(wdInternal::DeserializeHelper::Deserialize<ValueType>(inout_stream, value, 0));
+      NS_SUCCEED_OR_RETURN(ReadObject(inout_stream, key, pKeyAllocator));
+      NS_SUCCEED_OR_RETURN(nsInternal::DeserializeHelper::Deserialize<ValueType>(inout_stream, value, 0));
 
       ref_map.Insert(std::move(key), std::move(value));
     }
   }
   else if (mode == ReadMapMode::DedupValue)
   {
-    for (wdUInt32 i = 0; i < static_cast<wdUInt32>(uiCount); ++i)
+    for (nsUInt32 i = 0; i < static_cast<nsUInt32>(uiCount); ++i)
     {
       KeyType key;
       ValueType value;
-      WD_SUCCEED_OR_RETURN(wdInternal::DeserializeHelper::Deserialize<KeyType>(inout_stream, key, 0));
-      WD_SUCCEED_OR_RETURN(ReadObject(inout_stream, value, pValueAllocator));
+      NS_SUCCEED_OR_RETURN(nsInternal::DeserializeHelper::Deserialize<KeyType>(inout_stream, key, 0));
+      NS_SUCCEED_OR_RETURN(ReadObject(inout_stream, value, pValueAllocator));
 
       ref_map.Insert(std::move(key), std::move(value));
     }
   }
   else
   {
-    for (wdUInt32 i = 0; i < static_cast<wdUInt32>(uiCount); ++i)
+    for (nsUInt32 i = 0; i < static_cast<nsUInt32>(uiCount); ++i)
     {
       KeyType key;
       ValueType value;
-      WD_SUCCEED_OR_RETURN(ReadObject(inout_stream, key, pKeyAllocator));
-      WD_SUCCEED_OR_RETURN(ReadObject(inout_stream, value, pValueAllocator));
+      NS_SUCCEED_OR_RETURN(ReadObject(inout_stream, key, pKeyAllocator));
+      NS_SUCCEED_OR_RETURN(ReadObject(inout_stream, value, pValueAllocator));
 
       ref_map.Insert(std::move(key), std::move(value));
     }
   }
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }

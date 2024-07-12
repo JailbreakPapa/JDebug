@@ -4,7 +4,7 @@ $appPath = Find-EditorProcessor
 Write-Host "Using $appPath"
 
 # Transform all assets
-Get-ChildItem -Path $PSScriptRoot\..\..\. -Filter wdProject -Recurse -File | ForEach-Object {
+Get-ChildItem -Path $PSScriptRoot\..\..\. -Filter nsProject -Recurse -File | ForEach-Object {
     $projectDir = $_.Directory.FullName
     
     Write-Host "Transforming: -project $projectDir -transform PC"

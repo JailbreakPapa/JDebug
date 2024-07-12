@@ -6,21 +6,21 @@
 #include <pthread.h>
 #include <semaphore.h>
 
-using wdThreadHandle = pthread_t;
-using wdThreadID = pthread_t;
-using wdMutexHandle = pthread_mutex_t;
-using wdOSThreadEntryPoint = void* (*)(void* pThreadParameter);
+using nsThreadHandle = pthread_t;
+using nsThreadID = pthread_t;
+using nsMutexHandle = pthread_mutex_t;
+using nsOSThreadEntryPoint = void* (*)(void* pThreadParameter);
 
-struct wdSemaphoreHandle
+struct nsSemaphoreHandle
 {
   sem_t* m_pNamedOrUnnamed = nullptr;
   sem_t* m_pNamed = nullptr;
   sem_t m_Unnamed;
 };
 
-#define WD_THREAD_CLASS_ENTRY_POINT void* wdThreadClassEntryPoint(void* pThreadParameter);
+#define NS_THREAD_CLASS_ENTRY_POINT void* nsThreadClassEntryPoint(void* pThreadParameter);
 
-struct wdConditionVariableData
+struct nsConditionVariableData
 {
   pthread_cond_t m_ConditionVariable;
 };

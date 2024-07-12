@@ -6,11 +6,11 @@
 
 /// \brief Helper template class to iterate over stream elements.
 template <typename Type>
-class wdProcessingStreamIterator
+class nsProcessingStreamIterator
 {
 public:
   /// \brief Constructor.
-  wdProcessingStreamIterator(const wdProcessingStream* pStream, wdUInt64 uiNumElements, wdUInt64 uiStartIndex);
+  nsProcessingStreamIterator(const nsProcessingStream* pStream, nsUInt64 uiNumElements, nsUInt64 uiStartIndex);
 
   /// \brief Returns a reference to the current element. Note that the behavior is undefined if HasReachedEnd() is true!
   Type& Current() const;
@@ -22,15 +22,15 @@ public:
   void Advance();
 
   /// \brief Advances the current pointer by the given number of elements.
-  void Advance(wdUInt32 uiNumElements);
+  void Advance(nsUInt32 uiNumElements);
 
   // TODO: Add iterator interface? Only makes really sense for element spawners and processors which work on a single stream
 
 protected:
-  void* m_pCurrentPtr;
-  void* m_pEndPtr;
+  void* m_pCurrentPtr = nullptr;
+  void* m_pEndPtr = nullptr;
 
-  wdUInt64 m_uiElementStride;
+  nsUInt64 m_uiElementStride = 0;
 };
 
 #include <Foundation/DataProcessing/Stream/Implementation/ProcessingStreamIterator_inl.h>

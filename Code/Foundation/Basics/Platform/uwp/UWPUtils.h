@@ -1,6 +1,6 @@
 #pragma once
 
-#if WD_DISABLED(WD_PLATFORM_WINDOWS_UWP)
+#if NS_DISABLED(NS_PLATFORM_WINDOWS_UWP)
 #  error "uwp util header should only be included in UWP builds!"
 #endif
 
@@ -19,18 +19,18 @@
 #include <wrl/implements.h>
 #include <wrl/wrappers/corewrappers.h>
 
-class wdUuid;
+class nsUuid;
 
 using namespace Microsoft::WRL::Wrappers;
 using namespace Microsoft::WRL;
 
-namespace wdUwpUtils
+namespace nsUwpUtils
 {
   /// Helper function to iterate over all elements of a ABI::Windows::Foundation::Collections::IVectorView
   /// \param callback
   ///   Callable of signature bool(UINT index, const ComPtr<Interface>& pElement). Return value of false means discontinue.
   template <typename ElementQueryType, typename ElementType, typename Callback>
-  HRESULT wdWinRtIterateIVectorView(
+  HRESULT nsWinRtIterateIVectorView(
     const ComPtr<ABI::Windows::Foundation::Collections::IVectorView<ElementType>>& pVectorView, const Callback& callback)
   {
     UINT numElements = 0;
@@ -56,7 +56,7 @@ namespace wdUwpUtils
   /// \param callback
   ///   Callable of signature bool(const KeyType& key, const ValueInterfaceType& value). Return value of false means discontinue.
   template <typename ValueInterfaceType, typename KeyType, typename ValueType, typename Callback>
-  void wdWinRtIterateIMapView(const ComPtr<ABI::Windows::Foundation::Collections::IMapView<KeyType, ValueType>>& pMapView, const Callback& callback)
+  void nsWinRtIterateIMapView(const ComPtr<ABI::Windows::Foundation::Collections::IMapView<KeyType, ValueType>>& pMapView, const Callback& callback)
   {
     using namespace ABI::Windows::Foundation::Collections;
     using namespace ABI::Windows::Foundation::Internal;
@@ -66,7 +66,7 @@ namespace wdUwpUtils
     ComPtr<MapInterface> pIterable;
     pMapView->QueryInterface<MapInterface>(&pIterable);
 
-    WD_ASSERT_DEBUG(pIterable != nullptr, "Invalid map iteration interface");
+    NS_ASSERT_DEBUG(pIterable != nullptr, "Invalid map iteration interface");
 
     ComPtr<IIterator<IKeyValuePair<KeyType, ValueType>*>> iterator;
     pIterable->First(&iterator);
@@ -102,10 +102,11 @@ namespace wdUwpUtils
   ///
   /// Search the code for usage examples.
   template <typename AsyncCompletedType, typename AsyncResultType, typename Callback, typename ObjectType>
-  HRESULT wdWinRtPutCompleted(ObjectType& object, Callback callback)
+  HRESULT nsWinRtPutCompleted(ObjectType& object, Callback callback)
   {
     object->put_Completed(Microsoft::WRL::Callback<ABI::Windows::Foundation::IAsyncOperationCompletedHandler<AsyncCompletedType>>(
-      [callback](ABI::Windows::Foundation::IAsyncOperation<AsyncCompletedType>* pCompletion, AsyncStatus status) {
+      [callback](ABI::Windows::Foundation::IAsyncOperation<AsyncCompletedType>* pCompletion, AsyncStatus status)
+      {
         if (status != ABI::Windows::Foundation::AsyncStatus::Completed)
           return S_OK;
 
@@ -126,7 +127,7 @@ namespace wdUwpUtils
   {
     if (FAILED(ABI::Windows::Foundation::GetActivationFactory(HStringReference(szRuntimeClassName).Get(), &out_Ptr)))
     {
-      WD_REPORT_FAILURE("Failed to retrieve activation factory (statics) for '{0}'", wdStringUtf8(szRuntimeClassName).GetData());
+      NS_REPORT_FAILURE("Failed to retrieve activation factory (statics) for '{0}'", nsStringUtf8(szRuntimeClassName).GetData());
       out_Ptr = nullptr;
     }
   }
@@ -141,14 +142,14 @@ namespace wdUwpUtils
     ::RoActivateInstance(HStringReference(szRuntimeClassName).Get(), &out_Ptr);
   }
 
-  wdMat4 WD_FOUNDATION_DLL ConvertMat4(const ABI::Windows::Foundation::Numerics::Matrix4x4& in);
+  nsMat4 NS_FOUNDATION_DLL ConvertMat4(const ABI::Windows::Foundation::Numerics::Matrix4x4& in);
 
-  wdVec3 WD_FOUNDATION_DLL ConvertVec3(const ABI::Windows::Foundation::Numerics::Vector3& in);
-  void WD_FOUNDATION_DLL ConvertVec3(const wdVec3& in, ABI::Windows::Foundation::Numerics::Vector3& out);
+  nsVec3 NS_FOUNDATION_DLL ConvertVec3(const ABI::Windows::Foundation::Numerics::Vector3& in);
+  void NS_FOUNDATION_DLL ConvertVec3(const nsVec3& in, ABI::Windows::Foundation::Numerics::Vector3& out);
 
-  wdQuat WD_FOUNDATION_DLL ConvertQuat(const ABI::Windows::Foundation::Numerics::Quaternion& in);
-  void WD_FOUNDATION_DLL ConvertQuat(const wdQuat& in, ABI::Windows::Foundation::Numerics::Quaternion& out);
+  nsQuat NS_FOUNDATION_DLL ConvertQuat(const ABI::Windows::Foundation::Numerics::Quaternion& in);
+  void NS_FOUNDATION_DLL ConvertQuat(const nsQuat& in, ABI::Windows::Foundation::Numerics::Quaternion& out);
 
-  wdUuid WD_FOUNDATION_DLL ConvertGuid(const GUID& in);
-  void WD_FOUNDATION_DLL ConvertGuid(const wdUuid& in, GUID& out);
-} // namespace wdUwpUtils
+  nsUuid NS_FOUNDATION_DLL ConvertGuid(const GUID& in);
+  void NS_FOUNDATION_DLL ConvertGuid(const nsUuid& in, GUID& out);
+} // namespace nsUwpUtils

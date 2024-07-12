@@ -2,17 +2,17 @@
 
 #include <Foundation/Basics.h>
 
-#if WD_ENABLED(WD_SUPPORTS_DIRECTORY_WATCHER)
+#if NS_ENABLED(NS_SUPPORTS_DIRECTORY_WATCHER)
 
 #  include <Foundation/Basics.h>
 #  include <Foundation/Strings/String.h>
 #  include <Foundation/Types/Bitflags.h>
 #  include <Foundation/Types/Delegate.h>
 
-struct wdDirectoryWatcherImpl;
+struct nsDirectoryWatcherImpl;
 
 /// \brief Which action has been performed on a file.
-enum class wdDirectoryWatcherAction
+enum class nsDirectoryWatcherAction
 {
   None,           ///< Nothing happend
   Added,          ///< A file or directory was added
@@ -22,7 +22,7 @@ enum class wdDirectoryWatcherAction
   RenamedNewName, ///< A file or directory was renamed. The new name is provided second.
 };
 
-enum class wdDirectoryWatcherType
+enum class nsDirectoryWatcherType
 {
   File,
   Directory
@@ -30,23 +30,23 @@ enum class wdDirectoryWatcherType
 
 /// \brief
 ///   Watches file actions in a directory. Changes need to be polled.
-class WD_FOUNDATION_DLL wdDirectoryWatcher
+class NS_FOUNDATION_DLL nsDirectoryWatcher
 {
 public:
   /// \brief What to watch out for.
   struct Watch
   {
-    typedef wdUInt8 StorageType;
-    constexpr static wdUInt8 Default = 0;
+    using StorageType = nsUInt8;
+    constexpr static nsUInt8 Default = 0;
 
     /// \brief Enum values
     enum Enum
     {
-      Writes = WD_BIT(0),         ///< Watch for writes.
-      Creates = WD_BIT(1),        ///< Watch for newly created files.
-      Deletes = WD_BIT(2),        ///< Watch for deleted files.
-      Renames = WD_BIT(3),        ///< Watch for renames.
-      Subdirectories = WD_BIT(4), ///< Watch files in subdirectories recursively.
+      Writes = NS_BIT(0),         ///< Watch for writes.
+      Creates = NS_BIT(1),        ///< Watch for newly created files.
+      Deletes = NS_BIT(2),        ///< Watch for deleted files.
+      Renames = NS_BIT(3),        ///< Watch for renames.
+      Subdirectories = NS_BIT(4), ///< Watch files in subdirectories recursively.
     };
 
     struct Bits
@@ -59,14 +59,19 @@ public:
     };
   };
 
-  wdDirectoryWatcher();
-  ~wdDirectoryWatcher();
+  nsDirectoryWatcher();
+  nsDirectoryWatcher(const nsDirectoryWatcher&) = delete;
+  nsDirectoryWatcher(nsDirectoryWatcher&&) noexcept = delete;
+  ~nsDirectoryWatcher();
+
+  nsDirectoryWatcher& operator=(const nsDirectoryWatcher&) = delete;
+  nsDirectoryWatcher& operator=(nsDirectoryWatcher&&) noexcept = delete;
 
   /// \brief
   ///   Opens the directory at \p absolutePath for watching. \p whatToWatch controls what exactly should be watched.
   ///
-  /// \note A instance of wdDirectoryWatcher can only watch one directory at a time.
-  wdResult OpenDirectory(wdStringView sAbsolutePath, wdBitflags<Watch> whatToWatch);
+  /// \note A instance of nsDirectoryWatcher can only watch one directory at a time.
+  nsResult OpenDirectory(nsStringView sAbsolutePath, nsBitflags<Watch> whatToWatch);
 
   /// \brief
   ///   Closes the currently watched directory if any.
@@ -74,9 +79,9 @@ public:
 
   /// \brief
   ///   Returns the opened directory, will be empty if no directory was opened.
-  const char* GetDirectory() const { return m_sDirectoryPath; }
+  nsStringView GetDirectory() const { return m_sDirectoryPath; }
 
-  using EnumerateChangesFunction = wdDelegate<void(const char* filename, wdDirectoryWatcherAction action, wdDirectoryWatcherType type), 48>;
+  using EnumerateChangesFunction = nsDelegate<void(nsStringView sFilename, nsDirectoryWatcherAction action, nsDirectoryWatcherType type), 48>;
 
   /// \brief
   ///   Calls the callback \p func for each change since the last call. For each change the filename
@@ -84,17 +89,17 @@ public:
   ///   If waitUpToMilliseconds is greater than 0, blocks until either a change was observed or the timelimit is reached.
   ///
   /// \note There might be multiple changes on the same file reported.
-  void EnumerateChanges(EnumerateChangesFunction func, wdTime waitUpTo = wdTime::Zero());
+  void EnumerateChanges(EnumerateChangesFunction func, nsTime waitUpTo = nsTime::MakeZero());
 
   /// \brief
   ///   Same as the other EnumerateChanges function, but enumerates multiple watchers.
-  static void EnumerateChanges(wdArrayPtr<wdDirectoryWatcher*> watchers, EnumerateChangesFunction func, wdTime waitUpTo = wdTime::Zero());
+  static void EnumerateChanges(nsArrayPtr<nsDirectoryWatcher*> watchers, EnumerateChangesFunction func, nsTime waitUpTo = nsTime::MakeZero());
 
 private:
-  wdString m_sDirectoryPath;
-  wdDirectoryWatcherImpl* m_pImpl = nullptr;
+  nsString m_sDirectoryPath;
+  nsDirectoryWatcherImpl* m_pImpl = nullptr;
 };
 
-WD_DECLARE_FLAGS_OPERATORS(wdDirectoryWatcher::Watch);
+NS_DECLARE_FLAGS_OPERATORS(nsDirectoryWatcher::Watch);
 
 #endif

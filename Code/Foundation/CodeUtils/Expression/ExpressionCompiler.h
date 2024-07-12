@@ -3,49 +3,51 @@
 #include <Foundation/CodeUtils/Expression/ExpressionAST.h>
 #include <Foundation/Types/Delegate.h>
 
-class wdExpressionByteCode;
+class nsExpressionByteCode;
 
-class WD_FOUNDATION_DLL wdExpressionCompiler
+class NS_FOUNDATION_DLL nsExpressionCompiler
 {
 public:
-  wdExpressionCompiler();
-  ~wdExpressionCompiler();
+  nsExpressionCompiler();
+  ~nsExpressionCompiler();
 
-  wdResult Compile(wdExpressionAST& ref_ast, wdExpressionByteCode& out_byteCode, wdStringView sDebugAstOutputPath = wdStringView());
+  nsResult Compile(nsExpressionAST& ref_ast, nsExpressionByteCode& out_byteCode, nsStringView sDebugAstOutputPath = nsStringView());
 
 private:
-  wdResult TransformAndOptimizeAST(wdExpressionAST& ast, wdStringView sDebugAstOutputPath);
-  wdResult BuildNodeInstructions(const wdExpressionAST& ast);
-  wdResult UpdateRegisterLifetime(const wdExpressionAST& ast);
-  wdResult AssignRegisters();
-  wdResult GenerateByteCode(const wdExpressionAST& ast, wdExpressionByteCode& out_byteCode);
-  wdResult GenerateConstantByteCode(const wdExpressionAST::Constant* pConstant, wdExpressionByteCode& out_byteCode);
+  nsResult TransformAndOptimizeAST(nsExpressionAST& ast, nsStringView sDebugAstOutputPath);
+  nsResult BuildNodeInstructions(const nsExpressionAST& ast);
+  nsResult UpdateRegisterLifetime(const nsExpressionAST& ast);
+  nsResult AssignRegisters();
+  nsResult GenerateByteCode(const nsExpressionAST& ast, nsExpressionByteCode& out_byteCode);
+  nsResult GenerateConstantByteCode(const nsExpressionAST::Constant* pConstant);
 
-  using TransformFunc = wdDelegate<wdExpressionAST::Node*(wdExpressionAST::Node*)>;
-  wdResult TransformASTPreOrder(wdExpressionAST& ast, TransformFunc func);
-  wdResult TransformASTPostOrder(wdExpressionAST& ast, TransformFunc func);
-  wdResult TransformNode(wdExpressionAST::Node*& pNode, TransformFunc& func);
-  wdResult TransformOutputNode(wdExpressionAST::Output*& pOutputNode, TransformFunc& func);
+  using TransformFunc = nsDelegate<nsExpressionAST::Node*(nsExpressionAST::Node*)>;
+  nsResult TransformASTPreOrder(nsExpressionAST& ast, TransformFunc func);
+  nsResult TransformASTPostOrder(nsExpressionAST& ast, TransformFunc func);
+  nsResult TransformNode(nsExpressionAST::Node*& pNode, TransformFunc& func);
+  nsResult TransformOutputNode(nsExpressionAST::Output*& pOutputNode, TransformFunc& func);
 
-  void DumpAST(const wdExpressionAST& ast, wdStringView sOutputPath, wdStringView sSuffix);
+  void DumpAST(const nsExpressionAST& ast, nsStringView sOutputPath, nsStringView sSuffix);
 
-  wdHybridArray<wdExpressionAST::Node*, 64> m_NodeStack;
-  wdHybridArray<wdExpressionAST::Node*, 64> m_NodeInstructions;
-  wdHashTable<const wdExpressionAST::Node*, wdUInt32> m_NodeToRegisterIndex;
-  wdHashTable<wdExpressionAST::Node*, wdExpressionAST::Node*> m_TransformCache;
+  nsHybridArray<nsExpressionAST::Node*, 64> m_NodeStack;
+  nsHybridArray<nsExpressionAST::Node*, 64> m_NodeInstructions;
+  nsHashTable<const nsExpressionAST::Node*, nsUInt32> m_NodeToRegisterIndex;
+  nsHashTable<nsExpressionAST::Node*, nsExpressionAST::Node*> m_TransformCache;
 
-  wdHashTable<wdHashedString, wdUInt32> m_InputToIndex;
-  wdHashTable<wdHashedString, wdUInt32> m_OutputToIndex;
-  wdHashTable<wdHashedString, wdUInt32> m_FunctionToIndex;
+  nsHashTable<nsHashedString, nsUInt32> m_InputToIndex;
+  nsHashTable<nsHashedString, nsUInt32> m_OutputToIndex;
+  nsHashTable<nsHashedString, nsUInt32> m_FunctionToIndex;
+
+  nsDynamicArray<nsUInt32> m_ByteCode;
 
   struct LiveInterval
   {
-    WD_DECLARE_POD_TYPE();
+    NS_DECLARE_POD_TYPE();
 
-    wdUInt32 m_uiStart;
-    wdUInt32 m_uiEnd;
-    const wdExpressionAST::Node* m_pNode;
+    nsUInt32 m_uiStart;
+    nsUInt32 m_uiEnd;
+    const nsExpressionAST::Node* m_pNode;
   };
 
-  wdDynamicArray<LiveInterval> m_LiveIntervals;
+  nsDynamicArray<LiveInterval> m_LiveIntervals;
 };

@@ -7,64 +7,64 @@
 // Cannot put this into the Vec3_inl.h file, that would result in circular dependencies
 
 template <typename Type>
-WD_FORCE_INLINE const wdVec3Template<Type> wdVec2Template<Type>::GetAsVec3(Type z) const
+NS_FORCE_INLINE const nsVec3Template<Type> nsVec2Template<Type>::GetAsVec3(Type z) const
 {
-  WD_NAN_ASSERT(this);
+  NS_NAN_ASSERT(this);
 
-  return wdVec3Template<Type>(x, y, z);
+  return nsVec3Template<Type>(x, y, z);
 }
 
 template <typename Type>
-WD_FORCE_INLINE const wdVec4Template<Type> wdVec2Template<Type>::GetAsVec4(Type z, Type w) const
+NS_FORCE_INLINE const nsVec4Template<Type> nsVec2Template<Type>::GetAsVec4(Type z, Type w) const
 {
-  WD_NAN_ASSERT(this);
+  NS_NAN_ASSERT(this);
 
-  return wdVec4Template<Type>(x, y, z, w);
+  return nsVec4Template<Type>(x, y, z, w);
 }
 
 template <typename Type>
-WD_FORCE_INLINE const wdVec2Template<Type> wdVec3Template<Type>::GetAsVec2() const
+NS_FORCE_INLINE const nsVec2Template<Type> nsVec3Template<Type>::GetAsVec2() const
 {
   // don't assert here, as the 3rd and 4th component may be NaN when this is fine, e.g. during interop with the SIMD classes
-  // WD_NAN_ASSERT(this);
+  // NS_NAN_ASSERT(this);
 
-  return wdVec2Template<Type>(x, y);
+  return nsVec2Template<Type>(x, y);
 }
 
 template <typename Type>
-WD_FORCE_INLINE const wdVec4Template<Type> wdVec3Template<Type>::GetAsVec4(Type w) const
+NS_FORCE_INLINE const nsVec4Template<Type> nsVec3Template<Type>::GetAsVec4(Type w) const
 {
-  WD_NAN_ASSERT(this);
+  NS_NAN_ASSERT(this);
 
-  return wdVec4Template<Type>(x, y, z, w);
+  return nsVec4Template<Type>(x, y, z, w);
 }
 
 template <typename Type>
-WD_FORCE_INLINE const wdVec4Template<Type> wdVec3Template<Type>::GetAsPositionVec4() const
-{
-  // don't assert here, as the 4th component may be NaN when this is fine, e.g. during interop with the SIMD classes
-  // WD_NAN_ASSERT(this);
-
-  return wdVec4Template<Type>(x, y, z, 1);
-}
-
-template <typename Type>
-WD_FORCE_INLINE const wdVec4Template<Type> wdVec3Template<Type>::GetAsDirectionVec4() const
+NS_FORCE_INLINE const nsVec4Template<Type> nsVec3Template<Type>::GetAsPositionVec4() const
 {
   // don't assert here, as the 4th component may be NaN when this is fine, e.g. during interop with the SIMD classes
-  // WD_NAN_ASSERT(this);
+  // NS_NAN_ASSERT(this);
 
-  return wdVec4Template<Type>(x, y, z, 0);
+  return nsVec4Template<Type>(x, y, z, 1);
+}
+
+template <typename Type>
+NS_FORCE_INLINE const nsVec4Template<Type> nsVec3Template<Type>::GetAsDirectionVec4() const
+{
+  // don't assert here, as the 4th component may be NaN when this is fine, e.g. during interop with the SIMD classes
+  // NS_NAN_ASSERT(this);
+
+  return nsVec4Template<Type>(x, y, z, 0);
 }
 
 // *****************
 
 template <typename Type>
-WD_ALWAYS_INLINE wdVec4Template<Type>::wdVec4Template()
+NS_ALWAYS_INLINE nsVec4Template<Type>::nsVec4Template()
 {
-#if WD_ENABLED(WD_COMPILE_FOR_DEBUG)
+#if NS_ENABLED(NS_MATH_CHECK_FOR_NAN)
   // Initialize all data to NaN in debug mode to find problems with uninitialized data easier.
-  const Type TypeNaN = wdMath::NaN<Type>();
+  const Type TypeNaN = nsMath::NaN<Type>();
   x = TypeNaN;
   y = TypeNaN;
   z = 0;
@@ -73,7 +73,7 @@ WD_ALWAYS_INLINE wdVec4Template<Type>::wdVec4Template()
 }
 
 template <typename Type>
-WD_ALWAYS_INLINE wdVec4Template<Type>::wdVec4Template(Type x, Type y, Type z, Type w)
+NS_ALWAYS_INLINE nsVec4Template<Type>::nsVec4Template(Type x, Type y, Type z, Type w)
   : x(x)
   , y(y)
   , z(z)
@@ -82,7 +82,16 @@ WD_ALWAYS_INLINE wdVec4Template<Type>::wdVec4Template(Type x, Type y, Type z, Ty
 }
 
 template <typename Type>
-WD_ALWAYS_INLINE wdVec4Template<Type>::wdVec4Template(Type v)
+NS_ALWAYS_INLINE nsVec4Template<Type>::nsVec4Template(nsVec3Template<Type> vXyz, Type w)
+  : x(vXyz.x)
+  , y(vXyz.y)
+  , z(vXyz.z)
+  , w(w)
+{
+}
+
+template <typename Type>
+NS_ALWAYS_INLINE nsVec4Template<Type>::nsVec4Template(Type v)
   : x(v)
   , y(v)
   , z(v)
@@ -91,25 +100,25 @@ WD_ALWAYS_INLINE wdVec4Template<Type>::wdVec4Template(Type v)
 }
 
 template <typename Type>
-WD_FORCE_INLINE const wdVec2Template<Type> wdVec4Template<Type>::GetAsVec2() const
+NS_FORCE_INLINE const nsVec2Template<Type> nsVec4Template<Type>::GetAsVec2() const
 {
   // don't assert here, as the 4th component may be NaN when this is fine, e.g. during interop with the SIMD classes
-  // WD_NAN_ASSERT(this);
+  // NS_NAN_ASSERT(this);
 
-  return wdVec2Template<Type>(x, y);
+  return nsVec2Template<Type>(x, y);
 }
 
 template <typename Type>
-WD_FORCE_INLINE const wdVec3Template<Type> wdVec4Template<Type>::GetAsVec3() const
+NS_FORCE_INLINE const nsVec3Template<Type> nsVec4Template<Type>::GetAsVec3() const
 {
   // don't assert here, as the 4th component may be NaN when this is fine, e.g. during interop with the SIMD classes
-  // WD_NAN_ASSERT(this);
+  // NS_NAN_ASSERT(this);
 
-  return wdVec3Template<Type>(x, y, z);
+  return nsVec3Template<Type>(x, y, z);
 }
 
 template <typename Type>
-WD_ALWAYS_INLINE void wdVec4Template<Type>::Set(Type xyzw)
+NS_ALWAYS_INLINE void nsVec4Template<Type>::Set(Type xyzw)
 {
   x = xyzw;
   y = xyzw;
@@ -118,7 +127,7 @@ WD_ALWAYS_INLINE void wdVec4Template<Type>::Set(Type xyzw)
 }
 
 template <typename Type>
-WD_ALWAYS_INLINE void wdVec4Template<Type>::Set(Type inX, Type inY, Type inZ, Type inW)
+NS_ALWAYS_INLINE void nsVec4Template<Type>::Set(Type inX, Type inY, Type inZ, Type inW)
 {
   x = inX;
   y = inY;
@@ -127,27 +136,27 @@ WD_ALWAYS_INLINE void wdVec4Template<Type>::Set(Type inX, Type inY, Type inZ, Ty
 }
 
 template <typename Type>
-inline void wdVec4Template<Type>::SetZero()
+inline void nsVec4Template<Type>::SetZero()
 {
   x = y = z = w = 0;
 }
 
 template <typename Type>
-WD_ALWAYS_INLINE Type wdVec4Template<Type>::GetLength() const
+NS_IMPLEMENT_IF_FLOAT_TYPE NS_ALWAYS_INLINE Type nsVec4Template<Type>::GetLength() const
 {
-  return (wdMath::Sqrt(GetLengthSquared()));
+  return (nsMath::Sqrt(GetLengthSquared()));
 }
 
 template <typename Type>
-WD_FORCE_INLINE Type wdVec4Template<Type>::GetLengthSquared() const
+NS_FORCE_INLINE Type nsVec4Template<Type>::GetLengthSquared() const
 {
-  WD_NAN_ASSERT(this);
+  NS_NAN_ASSERT(this);
 
   return (x * x + y * y + z * z + w * w);
 }
 
 template <typename Type>
-WD_FORCE_INLINE Type wdVec4Template<Type>::GetLengthAndNormalize()
+NS_IMPLEMENT_IF_FLOAT_TYPE NS_FORCE_INLINE Type nsVec4Template<Type>::GetLengthAndNormalize()
 {
   const Type fLength = GetLength();
   *this /= fLength;
@@ -155,292 +164,308 @@ WD_FORCE_INLINE Type wdVec4Template<Type>::GetLengthAndNormalize()
 }
 
 template <typename Type>
-WD_FORCE_INLINE const wdVec4Template<Type> wdVec4Template<Type>::GetNormalized() const
+NS_IMPLEMENT_IF_FLOAT_TYPE NS_FORCE_INLINE const nsVec4Template<Type> nsVec4Template<Type>::GetNormalized() const
 {
   const Type fLen = GetLength();
 
-  const Type fLengthInv = wdMath::Invert(fLen);
-  return wdVec4Template<Type>(x * fLengthInv, y * fLengthInv, z * fLengthInv, w * fLengthInv);
+  const Type fLengthInv = nsMath::Invert(fLen);
+  return nsVec4Template<Type>(x * fLengthInv, y * fLengthInv, z * fLengthInv, w * fLengthInv);
 }
 
 template <typename Type>
-WD_ALWAYS_INLINE void wdVec4Template<Type>::Normalize()
+NS_IMPLEMENT_IF_FLOAT_TYPE NS_ALWAYS_INLINE void nsVec4Template<Type>::Normalize()
 {
   *this /= GetLength();
 }
 
 template <typename Type>
-inline wdResult wdVec4Template<Type>::NormalizeIfNotZero(const wdVec4Template<Type>& vFallback, Type fEpsilon)
+NS_IMPLEMENT_IF_FLOAT_TYPE inline nsResult nsVec4Template<Type>::NormalizeIfNotZero(const nsVec4Template<Type>& vFallback, Type fEpsilon)
 {
-  WD_NAN_ASSERT(&vFallback);
+  NS_NAN_ASSERT(&vFallback);
 
   const Type fLength = GetLength();
 
-  if (!wdMath::IsFinite(fLength) || wdMath::IsZero(fLength, fEpsilon))
+  if (!nsMath::IsFinite(fLength) || nsMath::IsZero(fLength, fEpsilon))
   {
     *this = vFallback;
-    return WD_FAILURE;
+    return NS_FAILURE;
   }
 
   *this /= fLength;
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
 /*! \note Normalization, especially with SSE is not very precise. So this function checks whether the (squared)
   length is between a lower and upper limit.
 */
 template <typename Type>
-inline bool wdVec4Template<Type>::IsNormalized(Type fEpsilon /* = wdMath::HugeEpsilon<Type>() */) const
+NS_IMPLEMENT_IF_FLOAT_TYPE inline bool nsVec4Template<Type>::IsNormalized(Type fEpsilon /* = nsMath::HugeEpsilon<Type>() */) const
 {
   const Type t = GetLengthSquared();
-  return wdMath::IsEqual(t, (Type)1, fEpsilon);
+  return nsMath::IsEqual(t, (Type)1, fEpsilon);
 }
 
 template <typename Type>
-inline bool wdVec4Template<Type>::IsZero() const
+inline bool nsVec4Template<Type>::IsZero() const
 {
-  WD_NAN_ASSERT(this);
+  NS_NAN_ASSERT(this);
 
   return ((x == 0.0f) && (y == 0.0f) && (z == 0.0f) && (w == 0.0f));
 }
 
 template <typename Type>
-inline bool wdVec4Template<Type>::IsZero(Type fEpsilon) const
+inline bool nsVec4Template<Type>::IsZero(Type fEpsilon) const
 {
-  WD_NAN_ASSERT(this);
+  NS_NAN_ASSERT(this);
 
-  return (wdMath::IsZero(x, fEpsilon) && wdMath::IsZero(y, fEpsilon) && wdMath::IsZero(z, fEpsilon) && wdMath::IsZero(w, fEpsilon));
+  return (nsMath::IsZero(x, fEpsilon) && nsMath::IsZero(y, fEpsilon) && nsMath::IsZero(z, fEpsilon) && nsMath::IsZero(w, fEpsilon));
 }
 
 template <typename Type>
-inline bool wdVec4Template<Type>::IsNaN() const
+inline bool nsVec4Template<Type>::IsNaN() const
 {
-  if (wdMath::IsNaN(x))
+  if (nsMath::IsNaN(x))
     return true;
-  if (wdMath::IsNaN(y))
+  if (nsMath::IsNaN(y))
     return true;
-  if (wdMath::IsNaN(z))
+  if (nsMath::IsNaN(z))
     return true;
-  if (wdMath::IsNaN(w))
+  if (nsMath::IsNaN(w))
     return true;
 
   return false;
 }
 
 template <typename Type>
-inline bool wdVec4Template<Type>::IsValid() const
+inline bool nsVec4Template<Type>::IsValid() const
 {
-  if (!wdMath::IsFinite(x))
+  if (!nsMath::IsFinite(x))
     return false;
-  if (!wdMath::IsFinite(y))
+  if (!nsMath::IsFinite(y))
     return false;
-  if (!wdMath::IsFinite(z))
+  if (!nsMath::IsFinite(z))
     return false;
-  if (!wdMath::IsFinite(w))
+  if (!nsMath::IsFinite(w))
     return false;
 
   return true;
 }
 
 template <typename Type>
-WD_FORCE_INLINE const wdVec4Template<Type> wdVec4Template<Type>::operator-() const
+NS_FORCE_INLINE const nsVec4Template<Type> nsVec4Template<Type>::operator-() const
 {
-  WD_NAN_ASSERT(this);
+  NS_NAN_ASSERT(this);
 
-  return wdVec4Template<Type>(-x, -y, -z, -w);
+  return nsVec4Template<Type>(-x, -y, -z, -w);
 }
 
 template <typename Type>
-WD_FORCE_INLINE void wdVec4Template<Type>::operator+=(const wdVec4Template<Type>& vCc)
+NS_FORCE_INLINE void nsVec4Template<Type>::operator+=(const nsVec4Template<Type>& vCc)
 {
   x += vCc.x;
   y += vCc.y;
   z += vCc.z;
   w += vCc.w;
 
-  WD_NAN_ASSERT(this);
+  NS_NAN_ASSERT(this);
 }
 
 template <typename Type>
-WD_FORCE_INLINE void wdVec4Template<Type>::operator-=(const wdVec4Template<Type>& vCc)
+NS_FORCE_INLINE void nsVec4Template<Type>::operator-=(const nsVec4Template<Type>& vCc)
 {
   x -= vCc.x;
   y -= vCc.y;
   z -= vCc.z;
   w -= vCc.w;
 
-  WD_NAN_ASSERT(this);
+  NS_NAN_ASSERT(this);
 }
 
 template <typename Type>
-WD_FORCE_INLINE void wdVec4Template<Type>::operator*=(Type f)
+NS_FORCE_INLINE void nsVec4Template<Type>::operator*=(Type f)
 {
   x *= f;
   y *= f;
   z *= f;
   w *= f;
 
-  WD_NAN_ASSERT(this);
+  NS_NAN_ASSERT(this);
 }
 
 template <typename Type>
-WD_FORCE_INLINE void wdVec4Template<Type>::operator/=(Type f)
+NS_FORCE_INLINE void nsVec4Template<Type>::operator/=(Type f)
 {
-  const Type f_inv = wdMath::Invert(f);
+  if constexpr (std::is_floating_point_v<Type>)
+  {
+    const Type f_inv = nsMath::Invert(f);
+    x *= f_inv;
+    y *= f_inv;
+    z *= f_inv;
+    w *= f_inv;
+  }
+  else
+  {
+    x /= f;
+    y /= f;
+    z /= f;
+    w /= f;
+  }
 
-  x *= f_inv;
-  y *= f_inv;
-  z *= f_inv;
-  w *= f_inv;
-
-  WD_NAN_ASSERT(this);
+  NS_NAN_ASSERT(this);
 }
 
 template <typename Type>
-WD_FORCE_INLINE Type wdVec4Template<Type>::Dot(const wdVec4Template<Type>& rhs) const
+NS_FORCE_INLINE Type nsVec4Template<Type>::Dot(const nsVec4Template<Type>& rhs) const
 {
-  WD_NAN_ASSERT(this);
-  WD_NAN_ASSERT(&rhs);
+  NS_NAN_ASSERT(this);
+  NS_NAN_ASSERT(&rhs);
 
   return ((x * rhs.x) + (y * rhs.y) + (z * rhs.z) + (w * rhs.w));
 }
 
 template <typename Type>
-inline const wdVec4Template<Type> wdVec4Template<Type>::CompMin(const wdVec4Template<Type>& rhs) const
+inline const nsVec4Template<Type> nsVec4Template<Type>::CompMin(const nsVec4Template<Type>& rhs) const
 {
-  WD_NAN_ASSERT(this);
-  WD_NAN_ASSERT(&rhs);
+  NS_NAN_ASSERT(this);
+  NS_NAN_ASSERT(&rhs);
 
-  return wdVec4Template<Type>(wdMath::Min(x, rhs.x), wdMath::Min(y, rhs.y), wdMath::Min(z, rhs.z), wdMath::Min(w, rhs.w));
+  return nsVec4Template<Type>(nsMath::Min(x, rhs.x), nsMath::Min(y, rhs.y), nsMath::Min(z, rhs.z), nsMath::Min(w, rhs.w));
 }
 
 template <typename Type>
-inline const wdVec4Template<Type> wdVec4Template<Type>::CompMax(const wdVec4Template<Type>& rhs) const
+inline const nsVec4Template<Type> nsVec4Template<Type>::CompMax(const nsVec4Template<Type>& rhs) const
 {
-  WD_NAN_ASSERT(this);
-  WD_NAN_ASSERT(&rhs);
+  NS_NAN_ASSERT(this);
+  NS_NAN_ASSERT(&rhs);
 
-  return wdVec4Template<Type>(wdMath::Max(x, rhs.x), wdMath::Max(y, rhs.y), wdMath::Max(z, rhs.z), wdMath::Max(w, rhs.w));
+  return nsVec4Template<Type>(nsMath::Max(x, rhs.x), nsMath::Max(y, rhs.y), nsMath::Max(z, rhs.z), nsMath::Max(w, rhs.w));
 }
 
 template <typename Type>
-inline const wdVec4Template<Type> wdVec4Template<Type>::CompClamp(const wdVec4Template& vLow, const wdVec4Template& vHigh) const
+inline const nsVec4Template<Type> nsVec4Template<Type>::CompClamp(const nsVec4Template& vLow, const nsVec4Template& vHigh) const
 {
-  WD_NAN_ASSERT(this);
-  WD_NAN_ASSERT(&vLow);
-  WD_NAN_ASSERT(&vHigh);
+  NS_NAN_ASSERT(this);
+  NS_NAN_ASSERT(&vLow);
+  NS_NAN_ASSERT(&vHigh);
 
-  return wdVec4Template<Type>(wdMath::Clamp(x, vLow.x, vHigh.x), wdMath::Clamp(y, vLow.y, vHigh.y), wdMath::Clamp(z, vLow.z, vHigh.z), wdMath::Clamp(w, vLow.w, vHigh.w));
+  return nsVec4Template<Type>(nsMath::Clamp(x, vLow.x, vHigh.x), nsMath::Clamp(y, vLow.y, vHigh.y), nsMath::Clamp(z, vLow.z, vHigh.z), nsMath::Clamp(w, vLow.w, vHigh.w));
 }
 
 template <typename Type>
-inline const wdVec4Template<Type> wdVec4Template<Type>::CompMul(const wdVec4Template<Type>& rhs) const
+inline const nsVec4Template<Type> nsVec4Template<Type>::CompMul(const nsVec4Template<Type>& rhs) const
 {
-  WD_NAN_ASSERT(this);
-  WD_NAN_ASSERT(&rhs);
+  NS_NAN_ASSERT(this);
+  NS_NAN_ASSERT(&rhs);
 
-  return wdVec4Template<Type>(x * rhs.x, y * rhs.y, z * rhs.z, w * rhs.w);
+  return nsVec4Template<Type>(x * rhs.x, y * rhs.y, z * rhs.z, w * rhs.w);
 }
 
-WD_MSVC_ANALYSIS_WARNING_PUSH
-WD_MSVC_ANALYSIS_WARNING_DISABLE(4723)
+NS_MSVC_ANALYSIS_WARNING_PUSH
+NS_MSVC_ANALYSIS_WARNING_DISABLE(4723)
 template <typename Type>
-inline const wdVec4Template<Type> wdVec4Template<Type>::CompDiv(const wdVec4Template<Type>& rhs) const
+inline const nsVec4Template<Type> nsVec4Template<Type>::CompDiv(const nsVec4Template<Type>& rhs) const
 {
-  WD_NAN_ASSERT(this);
-  WD_NAN_ASSERT(&rhs);
+  NS_NAN_ASSERT(this);
+  NS_NAN_ASSERT(&rhs);
 
-  return wdVec4Template<Type>(x / rhs.x, y / rhs.y, z / rhs.z, w / rhs.w);
+  return nsVec4Template<Type>(x / rhs.x, y / rhs.y, z / rhs.z, w / rhs.w);
 }
-WD_MSVC_ANALYSIS_WARNING_POP
+NS_MSVC_ANALYSIS_WARNING_POP
 
 template <typename Type>
-inline const wdVec4Template<Type> wdVec4Template<Type>::Abs() const
+inline const nsVec4Template<Type> nsVec4Template<Type>::Abs() const
 {
-  WD_NAN_ASSERT(this);
+  NS_NAN_ASSERT(this);
 
-  return wdVec4Template<Type>(wdMath::Abs(x), wdMath::Abs(y), wdMath::Abs(z), wdMath::Abs(w));
-}
-
-template <typename Type>
-WD_FORCE_INLINE const wdVec4Template<Type> operator+(const wdVec4Template<Type>& v1, const wdVec4Template<Type>& v2)
-{
-  WD_NAN_ASSERT(&v1);
-  WD_NAN_ASSERT(&v2);
-
-  return wdVec4Template<Type>(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z, v1.w + v2.w);
+  return nsVec4Template<Type>(nsMath::Abs(x), nsMath::Abs(y), nsMath::Abs(z), nsMath::Abs(w));
 }
 
 template <typename Type>
-WD_FORCE_INLINE const wdVec4Template<Type> operator-(const wdVec4Template<Type>& v1, const wdVec4Template<Type>& v2)
+NS_FORCE_INLINE const nsVec4Template<Type> operator+(const nsVec4Template<Type>& v1, const nsVec4Template<Type>& v2)
 {
-  WD_NAN_ASSERT(&v1);
-  WD_NAN_ASSERT(&v2);
+  NS_NAN_ASSERT(&v1);
+  NS_NAN_ASSERT(&v2);
 
-  return wdVec4Template<Type>(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z, v1.w - v2.w);
+  return nsVec4Template<Type>(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z, v1.w + v2.w);
 }
 
 template <typename Type>
-WD_FORCE_INLINE const wdVec4Template<Type> operator*(Type f, const wdVec4Template<Type>& v)
+NS_FORCE_INLINE const nsVec4Template<Type> operator-(const nsVec4Template<Type>& v1, const nsVec4Template<Type>& v2)
 {
-  WD_NAN_ASSERT(&v);
+  NS_NAN_ASSERT(&v1);
+  NS_NAN_ASSERT(&v2);
 
-  return wdVec4Template<Type>(v.x * f, v.y * f, v.z * f, v.w * f);
+  return nsVec4Template<Type>(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z, v1.w - v2.w);
 }
 
 template <typename Type>
-WD_FORCE_INLINE const wdVec4Template<Type> operator*(const wdVec4Template<Type>& v, Type f)
+NS_FORCE_INLINE const nsVec4Template<Type> operator*(Type f, const nsVec4Template<Type>& v)
 {
-  WD_NAN_ASSERT(&v);
+  NS_NAN_ASSERT(&v);
 
-  return wdVec4Template<Type>(v.x * f, v.y * f, v.z * f, v.w * f);
+  return nsVec4Template<Type>(v.x * f, v.y * f, v.z * f, v.w * f);
 }
 
 template <typename Type>
-WD_FORCE_INLINE const wdVec4Template<Type> operator/(const wdVec4Template<Type>& v, Type f)
+NS_FORCE_INLINE const nsVec4Template<Type> operator*(const nsVec4Template<Type>& v, Type f)
 {
-  WD_NAN_ASSERT(&v);
+  NS_NAN_ASSERT(&v);
 
-  // multiplication is much faster than division
-  const Type f_inv = wdMath::Invert(f);
-  return wdVec4Template<Type>(v.x * f_inv, v.y * f_inv, v.z * f_inv, v.w * f_inv);
+  return nsVec4Template<Type>(v.x * f, v.y * f, v.z * f, v.w * f);
 }
 
 template <typename Type>
-inline bool wdVec4Template<Type>::IsIdentical(const wdVec4Template<Type>& rhs) const
+NS_FORCE_INLINE const nsVec4Template<Type> operator/(const nsVec4Template<Type>& v, Type f)
 {
-  WD_NAN_ASSERT(this);
-  WD_NAN_ASSERT(&rhs);
+  NS_NAN_ASSERT(&v);
+
+  if constexpr (std::is_floating_point_v<Type>)
+  {
+    // multiplication is much faster than division
+    const Type f_inv = nsMath::Invert(f);
+    return nsVec4Template<Type>(v.x * f_inv, v.y * f_inv, v.z * f_inv, v.w * f_inv);
+  }
+  else
+  {
+    return nsVec4Template<Type>(v.x / f, v.y / f, v.z / f, v.w / f);
+  }
+}
+
+template <typename Type>
+inline bool nsVec4Template<Type>::IsIdentical(const nsVec4Template<Type>& rhs) const
+{
+  NS_NAN_ASSERT(this);
+  NS_NAN_ASSERT(&rhs);
 
   return ((x == rhs.x) && (y == rhs.y) && (z == rhs.z) && (w == rhs.w));
 }
 
 template <typename Type>
-inline bool wdVec4Template<Type>::IsEqual(const wdVec4Template<Type>& rhs, Type fEpsilon) const
+inline bool nsVec4Template<Type>::IsEqual(const nsVec4Template<Type>& rhs, Type fEpsilon) const
 {
-  WD_NAN_ASSERT(this);
-  WD_NAN_ASSERT(&rhs);
+  NS_NAN_ASSERT(this);
+  NS_NAN_ASSERT(&rhs);
 
-  return (wdMath::IsEqual(x, rhs.x, fEpsilon) && wdMath::IsEqual(y, rhs.y, fEpsilon) && wdMath::IsEqual(z, rhs.z, fEpsilon) && wdMath::IsEqual(w, rhs.w, fEpsilon));
+  return (nsMath::IsEqual(x, rhs.x, fEpsilon) && nsMath::IsEqual(y, rhs.y, fEpsilon) && nsMath::IsEqual(z, rhs.z, fEpsilon) && nsMath::IsEqual(w, rhs.w, fEpsilon));
 }
 
 template <typename Type>
-WD_ALWAYS_INLINE bool operator==(const wdVec4Template<Type>& v1, const wdVec4Template<Type>& v2)
+NS_ALWAYS_INLINE bool operator==(const nsVec4Template<Type>& v1, const nsVec4Template<Type>& v2)
 {
   return v1.IsIdentical(v2);
 }
 
 template <typename Type>
-WD_ALWAYS_INLINE bool operator!=(const wdVec4Template<Type>& v1, const wdVec4Template<Type>& v2)
+NS_ALWAYS_INLINE bool operator!=(const nsVec4Template<Type>& v1, const nsVec4Template<Type>& v2)
 {
   return !v1.IsIdentical(v2);
 }
 
 template <typename Type>
-WD_FORCE_INLINE bool operator<(const wdVec4Template<Type>& v1, const wdVec4Template<Type>& v2)
+NS_FORCE_INLINE bool operator<(const nsVec4Template<Type>& v1, const nsVec4Template<Type>& v2)
 {
-  WD_NAN_ASSERT(&v1);
-  WD_NAN_ASSERT(&v2);
+  NS_NAN_ASSERT(&v1);
+  NS_NAN_ASSERT(&v2);
 
   if (v1.x < v2.x)
     return true;

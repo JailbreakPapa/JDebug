@@ -8,40 +8,57 @@
 /// This class uses less memory than storying a bounding box and sphere separate.
 
 template <typename Type>
-class wdBoundingBoxSphereTemplate
+class nsBoundingBoxSphereTemplate
 {
 public:
   // Means this object can be copied using memcpy instead of copy construction.
-  WD_DECLARE_POD_TYPE();
+  NS_DECLARE_POD_TYPE();
 
-  typedef Type ComponentType;
+  using ComponentType = Type;
 
 public:
   /// \brief Default constructor does not initialize anything.
-  wdBoundingBoxSphereTemplate(); // [tested]
+  nsBoundingBoxSphereTemplate(); // [tested]
 
-  /// \brief Constructs the bounds from the center position, the box half extends and the sphere radius.
-  wdBoundingBoxSphereTemplate(const wdVec3Template<Type>& vCenter, const wdVec3Template<Type>& vBoxHalfExtents, Type fSphereRadius); // [tested]
+  nsBoundingBoxSphereTemplate(const nsBoundingBoxSphereTemplate& rhs);
 
-  /// \brief Constructs the bounds from the given box and sphere.
-  wdBoundingBoxSphereTemplate(const wdBoundingBoxTemplate<Type>& box, const wdBoundingSphereTemplate<Type>& sphere); // [tested]
+  void operator=(const nsBoundingBoxSphereTemplate& rhs);
 
   /// \brief Constructs the bounds from the given box. The sphere radius is calculated from the box extends.
-  wdBoundingBoxSphereTemplate(const wdBoundingBoxTemplate<Type>& box); // [tested]
+  nsBoundingBoxSphereTemplate(const nsBoundingBoxTemplate<Type>& box); // [tested]
 
   /// \brief Constructs the bounds from the given sphere. The box extends are calculated from the sphere radius.
-  wdBoundingBoxSphereTemplate(const wdBoundingSphereTemplate<Type>& sphere); // [tested]
+  nsBoundingBoxSphereTemplate(const nsBoundingSphereTemplate<Type>& sphere); // [tested]
 
-#if WD_ENABLED(WD_MATH_CHECK_FOR_NAN)
+  /// \brief Creates an object with all zero values. These are valid bounds around the origin with no volume.
+  [[nodiscard]] static nsBoundingBoxSphereTemplate<Type> MakeZero();
+
+  /// \brief Creates an 'invalid' object, ie one with negative extents/radius. Invalid objects can be made valid through ExpandToInclude().
+  [[nodiscard]] static nsBoundingBoxSphereTemplate<Type> MakeInvalid();
+
+  /// \brief Creates an object from the given center point and extents.
+  [[nodiscard]] static nsBoundingBoxSphereTemplate<Type> MakeFromCenterExtents(const nsVec3Template<Type>& vCenter, const nsVec3Template<Type>& vBoxHalfExtents, Type fSphereRadius);
+
+  /// \brief Creates an object that contains all the provided points.
+  [[nodiscard]] static nsBoundingBoxSphereTemplate<Type> MakeFromPoints(const nsVec3Template<Type>* pPoints, nsUInt32 uiNumPoints, nsUInt32 uiStride = sizeof(nsVec3Template<Type>));
+
+  /// \brief Creates an object from another bounding box.
+  [[nodiscard]] static nsBoundingBoxSphereTemplate<Type> MakeFromBox(const nsBoundingBoxTemplate<Type>& box);
+
+  /// \brief Creates an object from another bounding sphere.
+  [[nodiscard]] static nsBoundingBoxSphereTemplate<Type> MakeFromSphere(const nsBoundingSphereTemplate<Type>& sphere);
+
+  /// \brief Creates an object from another bounding box and a sphere.
+  [[nodiscard]] static nsBoundingBoxSphereTemplate<Type> MakeFromBoxAndSphere(const nsBoundingBoxTemplate<Type>& box, const nsBoundingSphereTemplate<Type>& sphere);
+
+
+#if NS_ENABLED(NS_MATH_CHECK_FOR_NAN)
   void AssertNotNaN() const
   {
-    WD_ASSERT_ALWAYS(!IsNaN(), "This object contains NaN values. This can happen when you forgot to initialize it before using it. Please check that "
+    NS_ASSERT_ALWAYS(!IsNaN(), "This object contains NaN values. This can happen when you forgot to initialize it before using it. Please check that "
                                "all code-paths properly initialize this object.");
   }
 #endif
-
-  /// \brief Resets the bounds to an invalid state.
-  void SetInvalid(); // [tested]
 
   /// \brief Checks whether the bounds is in an invalid state.
   bool IsValid() const; // [tested]
@@ -49,34 +66,31 @@ public:
   /// \brief Checks whether any component is NaN.
   bool IsNaN() const; // [tested]
 
-  /// \brief Calculates the bounds from given set of points.
-  void SetFromPoints(const wdVec3Template<Type>* pPoints, wdUInt32 uiNumPoints, wdUInt32 uiStride = sizeof(wdVec3Template<Type>)); // [tested]
-
   /// \brief Returns the bounding box.
-  const wdBoundingBoxTemplate<Type> GetBox() const; // [tested]
+  const nsBoundingBoxTemplate<Type> GetBox() const; // [tested]
 
   /// \brief Returns the bounding sphere.
-  const wdBoundingSphereTemplate<Type> GetSphere() const; // [tested]
+  const nsBoundingSphereTemplate<Type> GetSphere() const; // [tested]
 
   /// \brief Expands the bounds such that the given bounds are inside it.
-  void ExpandToInclude(const wdBoundingBoxSphereTemplate& rhs); // [tested]
+  void ExpandToInclude(const nsBoundingBoxSphereTemplate& rhs); // [tested]
 
   /// \brief Transforms the bounds in its local space.
-  void Transform(const wdMat4Template<Type>& mTransform); // [tested]
+  void Transform(const nsMat4Template<Type>& mTransform); // [tested]
 
 public:
-  wdVec3Template<Type> m_vCenter;
+  nsVec3Template<Type> m_vCenter;
   Type m_fSphereRadius;
-  wdVec3Template<Type> m_vBoxHalfExtends;
+  nsVec3Template<Type> m_vBoxHalfExtends;
 };
 
 /// \brief Checks whether this bounds and the other are identical.
 template <typename Type>
-bool operator==(const wdBoundingBoxSphereTemplate<Type>& lhs, const wdBoundingBoxSphereTemplate<Type>& rhs); // [tested]
+bool operator==(const nsBoundingBoxSphereTemplate<Type>& lhs, const nsBoundingBoxSphereTemplate<Type>& rhs); // [tested]
 
 /// \brief Checks whether this bounds and the other are not identical.
 template <typename Type>
-bool operator!=(const wdBoundingBoxSphereTemplate<Type>& lhs, const wdBoundingBoxSphereTemplate<Type>& rhs); // [tested]
+bool operator!=(const nsBoundingBoxSphereTemplate<Type>& lhs, const nsBoundingBoxSphereTemplate<Type>& rhs); // [tested]
 
 
 #include <Foundation/Math/Implementation/BoundingBoxSphere_inl.h>

@@ -2,7 +2,7 @@
 
 #include <Foundation/Basics.h>
 
-#if WD_ENABLED(WD_PLATFORM_WINDOWS)
+#if NS_ENABLED(NS_PLATFORM_WINDOWS)
 #  include <Foundation/Basics/Platform/Win/IncludeWindows.h>
 #endif
 

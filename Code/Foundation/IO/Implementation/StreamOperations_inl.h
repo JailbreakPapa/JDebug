@@ -11,330 +11,330 @@
 
 /// bool versions
 
-inline wdStreamWriter& operator<<(wdStreamWriter& inout_stream, bool bValue)
+inline nsStreamWriter& operator<<(nsStreamWriter& inout_stream, bool bValue)
 {
-  wdUInt8 uiValue = bValue ? 1 : 0;
-  inout_stream.WriteBytes(&uiValue, sizeof(wdUInt8)).AssertSuccess();
+  nsUInt8 uiValue = bValue ? 1 : 0;
+  inout_stream.WriteBytes(&uiValue, sizeof(nsUInt8)).AssertSuccess();
   return inout_stream;
 }
 
-inline wdStreamReader& operator>>(wdStreamReader& inout_stream, bool& out_bValue)
+inline nsStreamReader& operator>>(nsStreamReader& inout_stream, bool& out_bValue)
 {
-  wdUInt8 uiValue = 0;
-  WD_VERIFY(inout_stream.ReadBytes(&uiValue, sizeof(wdUInt8)) == sizeof(wdUInt8), "End of stream reached.");
+  nsUInt8 uiValue = 0;
+  NS_VERIFY(inout_stream.ReadBytes(&uiValue, sizeof(nsUInt8)) == sizeof(nsUInt8), "End of stream reached.");
   out_bValue = (uiValue != 0);
   return inout_stream;
 }
 
 /// unsigned int versions
 
-inline wdStreamWriter& operator<<(wdStreamWriter& inout_stream, wdUInt8 uiValue)
+inline nsStreamWriter& operator<<(nsStreamWriter& inout_stream, nsUInt8 uiValue)
 {
-  inout_stream.WriteBytes(&uiValue, sizeof(wdUInt8)).AssertSuccess();
+  inout_stream.WriteBytes(&uiValue, sizeof(nsUInt8)).AssertSuccess();
   return inout_stream;
 }
 
-inline wdStreamReader& operator>>(wdStreamReader& inout_stream, wdUInt8& out_uiValue)
+inline nsStreamReader& operator>>(nsStreamReader& inout_stream, nsUInt8& out_uiValue)
 {
-  WD_VERIFY(inout_stream.ReadBytes(&out_uiValue, sizeof(wdUInt8)) == sizeof(wdUInt8), "End of stream reached.");
+  NS_VERIFY(inout_stream.ReadBytes(&out_uiValue, sizeof(nsUInt8)) == sizeof(nsUInt8), "End of stream reached.");
   return inout_stream;
 }
 
-inline wdResult SerializeArray(wdStreamWriter& inout_stream, const wdUInt8* pArray, wdUInt64 uiCount)
+inline nsResult SerializeArray(nsStreamWriter& inout_stream, const nsUInt8* pArray, nsUInt64 uiCount)
 {
-  return inout_stream.WriteBytes(pArray, sizeof(wdUInt8) * uiCount);
+  return inout_stream.WriteBytes(pArray, sizeof(nsUInt8) * uiCount);
 }
 
-inline wdResult DeserializeArray(wdStreamReader& inout_stream, wdUInt8* pArray, wdUInt64 uiCount)
+inline nsResult DeserializeArray(nsStreamReader& inout_stream, nsUInt8* pArray, nsUInt64 uiCount)
 {
-  const wdUInt64 uiNumBytes = sizeof(wdUInt8) * uiCount;
+  const nsUInt64 uiNumBytes = sizeof(nsUInt8) * uiCount;
   if (inout_stream.ReadBytes(pArray, uiNumBytes) == uiNumBytes)
-    return WD_SUCCESS;
+    return NS_SUCCESS;
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
 
-inline wdStreamWriter& operator<<(wdStreamWriter& inout_stream, wdUInt16 uiValue)
+inline nsStreamWriter& operator<<(nsStreamWriter& inout_stream, nsUInt16 uiValue)
 {
   inout_stream.WriteWordValue(&uiValue).AssertSuccess();
   return inout_stream;
 }
 
-inline wdStreamReader& operator>>(wdStreamReader& inout_stream, wdUInt16& ref_uiValue)
+inline nsStreamReader& operator>>(nsStreamReader& inout_stream, nsUInt16& ref_uiValue)
 {
   inout_stream.ReadWordValue(&ref_uiValue).AssertSuccess();
   return inout_stream;
 }
 
-inline wdResult SerializeArray(wdStreamWriter& inout_stream, const wdUInt16* pArray, wdUInt64 uiCount)
+inline nsResult SerializeArray(nsStreamWriter& inout_stream, const nsUInt16* pArray, nsUInt64 uiCount)
 {
-  return inout_stream.WriteBytes(pArray, sizeof(wdUInt16) * uiCount);
+  return inout_stream.WriteBytes(pArray, sizeof(nsUInt16) * uiCount);
 }
 
-inline wdResult DeserializeArray(wdStreamReader& inout_stream, wdUInt16* pArray, wdUInt64 uiCount)
+inline nsResult DeserializeArray(nsStreamReader& inout_stream, nsUInt16* pArray, nsUInt64 uiCount)
 {
-  const wdUInt64 uiNumBytes = sizeof(wdUInt16) * uiCount;
+  const nsUInt64 uiNumBytes = sizeof(nsUInt16) * uiCount;
   if (inout_stream.ReadBytes(pArray, uiNumBytes) == uiNumBytes)
-    return WD_SUCCESS;
+    return NS_SUCCESS;
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
 
-inline wdStreamWriter& operator<<(wdStreamWriter& inout_stream, wdUInt32 uiValue)
+inline nsStreamWriter& operator<<(nsStreamWriter& inout_stream, nsUInt32 uiValue)
 {
   inout_stream.WriteDWordValue(&uiValue).AssertSuccess();
   return inout_stream;
 }
 
-inline wdStreamReader& operator>>(wdStreamReader& inout_stream, wdUInt32& ref_uiValue)
+inline nsStreamReader& operator>>(nsStreamReader& inout_stream, nsUInt32& ref_uiValue)
 {
   inout_stream.ReadDWordValue(&ref_uiValue).AssertSuccess();
   return inout_stream;
 }
 
-inline wdResult SerializeArray(wdStreamWriter& inout_stream, const wdUInt32* pArray, wdUInt64 uiCount)
+inline nsResult SerializeArray(nsStreamWriter& inout_stream, const nsUInt32* pArray, nsUInt64 uiCount)
 {
-  return inout_stream.WriteBytes(pArray, sizeof(wdUInt32) * uiCount);
+  return inout_stream.WriteBytes(pArray, sizeof(nsUInt32) * uiCount);
 }
 
-inline wdResult DeserializeArray(wdStreamReader& inout_stream, wdUInt32* pArray, wdUInt64 uiCount)
+inline nsResult DeserializeArray(nsStreamReader& inout_stream, nsUInt32* pArray, nsUInt64 uiCount)
 {
-  const wdUInt64 uiNumBytes = sizeof(wdUInt32) * uiCount;
+  const nsUInt64 uiNumBytes = sizeof(nsUInt32) * uiCount;
   if (inout_stream.ReadBytes(pArray, uiNumBytes) == uiNumBytes)
-    return WD_SUCCESS;
+    return NS_SUCCESS;
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
 
-inline wdStreamWriter& operator<<(wdStreamWriter& inout_stream, wdUInt64 uiValue)
+inline nsStreamWriter& operator<<(nsStreamWriter& inout_stream, nsUInt64 uiValue)
 {
   inout_stream.WriteQWordValue(&uiValue).AssertSuccess();
   return inout_stream;
 }
 
-inline wdStreamReader& operator>>(wdStreamReader& inout_stream, wdUInt64& ref_uiValue)
+inline nsStreamReader& operator>>(nsStreamReader& inout_stream, nsUInt64& ref_uiValue)
 {
   inout_stream.ReadQWordValue(&ref_uiValue).AssertSuccess();
   return inout_stream;
 }
 
-inline wdResult SerializeArray(wdStreamWriter& inout_stream, const wdUInt64* pArray, wdUInt64 uiCount)
+inline nsResult SerializeArray(nsStreamWriter& inout_stream, const nsUInt64* pArray, nsUInt64 uiCount)
 {
-  return inout_stream.WriteBytes(pArray, sizeof(wdUInt64) * uiCount);
+  return inout_stream.WriteBytes(pArray, sizeof(nsUInt64) * uiCount);
 }
 
-inline wdResult DeserializeArray(wdStreamReader& inout_stream, wdUInt64* pArray, wdUInt64 uiCount)
+inline nsResult DeserializeArray(nsStreamReader& inout_stream, nsUInt64* pArray, nsUInt64 uiCount)
 {
-  const wdUInt64 uiNumBytes = sizeof(wdUInt64) * uiCount;
+  const nsUInt64 uiNumBytes = sizeof(nsUInt64) * uiCount;
   if (inout_stream.ReadBytes(pArray, uiNumBytes) == uiNumBytes)
-    return WD_SUCCESS;
+    return NS_SUCCESS;
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
 /// signed int versions
 
-inline wdStreamWriter& operator<<(wdStreamWriter& inout_stream, wdInt8 iValue)
+inline nsStreamWriter& operator<<(nsStreamWriter& inout_stream, nsInt8 iValue)
 {
-  inout_stream.WriteBytes(reinterpret_cast<const wdUInt8*>(&iValue), sizeof(wdInt8)).AssertSuccess();
+  inout_stream.WriteBytes(reinterpret_cast<const nsUInt8*>(&iValue), sizeof(nsInt8)).AssertSuccess();
   return inout_stream;
 }
 
-inline wdStreamReader& operator>>(wdStreamReader& inout_stream, wdInt8& ref_iValue)
+inline nsStreamReader& operator>>(nsStreamReader& inout_stream, nsInt8& ref_iValue)
 {
-  WD_VERIFY(inout_stream.ReadBytes(reinterpret_cast<wdUInt8*>(&ref_iValue), sizeof(wdInt8)) == sizeof(wdInt8), "End of stream reached.");
+  NS_VERIFY(inout_stream.ReadBytes(reinterpret_cast<nsUInt8*>(&ref_iValue), sizeof(nsInt8)) == sizeof(nsInt8), "End of stream reached.");
   return inout_stream;
 }
 
-inline wdResult SerializeArray(wdStreamWriter& inout_stream, const wdInt8* pArray, wdUInt64 uiCount)
+inline nsResult SerializeArray(nsStreamWriter& inout_stream, const nsInt8* pArray, nsUInt64 uiCount)
 {
-  return inout_stream.WriteBytes(pArray, sizeof(wdInt8) * uiCount);
+  return inout_stream.WriteBytes(pArray, sizeof(nsInt8) * uiCount);
 }
 
-inline wdResult DeserializeArray(wdStreamReader& inout_stream, wdInt8* pArray, wdUInt64 uiCount)
+inline nsResult DeserializeArray(nsStreamReader& inout_stream, nsInt8* pArray, nsUInt64 uiCount)
 {
-  const wdUInt64 uiNumBytes = sizeof(wdInt8) * uiCount;
+  const nsUInt64 uiNumBytes = sizeof(nsInt8) * uiCount;
   if (inout_stream.ReadBytes(pArray, uiNumBytes) == uiNumBytes)
-    return WD_SUCCESS;
+    return NS_SUCCESS;
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
 
-inline wdStreamWriter& operator<<(wdStreamWriter& inout_stream, wdInt16 iValue)
+inline nsStreamWriter& operator<<(nsStreamWriter& inout_stream, nsInt16 iValue)
 {
   inout_stream.WriteWordValue(&iValue).AssertSuccess();
   return inout_stream;
 }
 
-inline wdStreamReader& operator>>(wdStreamReader& inout_stream, wdInt16& ref_iValue)
+inline nsStreamReader& operator>>(nsStreamReader& inout_stream, nsInt16& ref_iValue)
 {
   inout_stream.ReadWordValue(&ref_iValue).AssertSuccess();
   return inout_stream;
 }
 
-inline wdResult SerializeArray(wdStreamWriter& inout_stream, const wdInt16* pArray, wdUInt64 uiCount)
+inline nsResult SerializeArray(nsStreamWriter& inout_stream, const nsInt16* pArray, nsUInt64 uiCount)
 {
-  return inout_stream.WriteBytes(pArray, sizeof(wdInt16) * uiCount);
+  return inout_stream.WriteBytes(pArray, sizeof(nsInt16) * uiCount);
 }
 
-inline wdResult DeserializeArray(wdStreamReader& inout_stream, wdInt16* pArray, wdUInt64 uiCount)
+inline nsResult DeserializeArray(nsStreamReader& inout_stream, nsInt16* pArray, nsUInt64 uiCount)
 {
-  const wdUInt64 uiNumBytes = sizeof(wdInt16) * uiCount;
+  const nsUInt64 uiNumBytes = sizeof(nsInt16) * uiCount;
   if (inout_stream.ReadBytes(pArray, uiNumBytes) == uiNumBytes)
-    return WD_SUCCESS;
+    return NS_SUCCESS;
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
 
-inline wdStreamWriter& operator<<(wdStreamWriter& inout_stream, wdInt32 iValue)
+inline nsStreamWriter& operator<<(nsStreamWriter& inout_stream, nsInt32 iValue)
 {
   inout_stream.WriteDWordValue(&iValue).AssertSuccess();
   return inout_stream;
 }
 
-inline wdStreamReader& operator>>(wdStreamReader& inout_stream, wdInt32& ref_iValue)
+inline nsStreamReader& operator>>(nsStreamReader& inout_stream, nsInt32& ref_iValue)
 {
   inout_stream.ReadDWordValue(&ref_iValue).AssertSuccess();
   return inout_stream;
 }
 
-inline wdResult SerializeArray(wdStreamWriter& inout_stream, const wdInt32* pArray, wdUInt64 uiCount)
+inline nsResult SerializeArray(nsStreamWriter& inout_stream, const nsInt32* pArray, nsUInt64 uiCount)
 {
-  return inout_stream.WriteBytes(pArray, sizeof(wdInt32) * uiCount);
+  return inout_stream.WriteBytes(pArray, sizeof(nsInt32) * uiCount);
 }
 
-inline wdResult DeserializeArray(wdStreamReader& inout_stream, wdInt32* pArray, wdUInt64 uiCount)
+inline nsResult DeserializeArray(nsStreamReader& inout_stream, nsInt32* pArray, nsUInt64 uiCount)
 {
-  const wdUInt64 uiNumBytes = sizeof(wdInt32) * uiCount;
+  const nsUInt64 uiNumBytes = sizeof(nsInt32) * uiCount;
   if (inout_stream.ReadBytes(pArray, uiNumBytes) == uiNumBytes)
-    return WD_SUCCESS;
+    return NS_SUCCESS;
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
 
-inline wdStreamWriter& operator<<(wdStreamWriter& inout_stream, wdInt64 iValue)
+inline nsStreamWriter& operator<<(nsStreamWriter& inout_stream, nsInt64 iValue)
 {
   inout_stream.WriteQWordValue(&iValue).AssertSuccess();
   return inout_stream;
 }
 
-inline wdStreamReader& operator>>(wdStreamReader& inout_stream, wdInt64& ref_iValue)
+inline nsStreamReader& operator>>(nsStreamReader& inout_stream, nsInt64& ref_iValue)
 {
   inout_stream.ReadQWordValue(&ref_iValue).AssertSuccess();
   return inout_stream;
 }
 
-inline wdResult SerializeArray(wdStreamWriter& inout_stream, const wdInt64* pArray, wdUInt64 uiCount)
+inline nsResult SerializeArray(nsStreamWriter& inout_stream, const nsInt64* pArray, nsUInt64 uiCount)
 {
-  return inout_stream.WriteBytes(pArray, sizeof(wdInt64) * uiCount);
+  return inout_stream.WriteBytes(pArray, sizeof(nsInt64) * uiCount);
 }
 
-inline wdResult DeserializeArray(wdStreamReader& inout_stream, wdInt64* pArray, wdUInt64 uiCount)
+inline nsResult DeserializeArray(nsStreamReader& inout_stream, nsInt64* pArray, nsUInt64 uiCount)
 {
-  const wdUInt64 uiNumBytes = sizeof(wdInt64) * uiCount;
+  const nsUInt64 uiNumBytes = sizeof(nsInt64) * uiCount;
   if (inout_stream.ReadBytes(pArray, uiNumBytes) == uiNumBytes)
-    return WD_SUCCESS;
+    return NS_SUCCESS;
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
 
 /// float and double versions
 
-inline wdStreamWriter& operator<<(wdStreamWriter& inout_stream, float fValue)
+inline nsStreamWriter& operator<<(nsStreamWriter& inout_stream, float fValue)
 {
   inout_stream.WriteDWordValue(&fValue).AssertSuccess();
   return inout_stream;
 }
 
-inline wdStreamReader& operator>>(wdStreamReader& inout_stream, float& ref_fValue)
+inline nsStreamReader& operator>>(nsStreamReader& inout_stream, float& ref_fValue)
 {
   inout_stream.ReadDWordValue(&ref_fValue).AssertSuccess();
   return inout_stream;
 }
 
-inline wdResult SerializeArray(wdStreamWriter& inout_stream, const float* pArray, wdUInt64 uiCount)
+inline nsResult SerializeArray(nsStreamWriter& inout_stream, const float* pArray, nsUInt64 uiCount)
 {
   return inout_stream.WriteBytes(pArray, sizeof(float) * uiCount);
 }
 
-inline wdResult DeserializeArray(wdStreamReader& inout_stream, float* pArray, wdUInt64 uiCount)
+inline nsResult DeserializeArray(nsStreamReader& inout_stream, float* pArray, nsUInt64 uiCount)
 {
-  const wdUInt64 uiNumBytes = sizeof(float) * uiCount;
+  const nsUInt64 uiNumBytes = sizeof(float) * uiCount;
   if (inout_stream.ReadBytes(pArray, uiNumBytes) == uiNumBytes)
-    return WD_SUCCESS;
+    return NS_SUCCESS;
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
 
-inline wdStreamWriter& operator<<(wdStreamWriter& inout_stream, double fValue)
+inline nsStreamWriter& operator<<(nsStreamWriter& inout_stream, double fValue)
 {
   inout_stream.WriteQWordValue(&fValue).AssertSuccess();
   return inout_stream;
 }
 
-inline wdStreamReader& operator>>(wdStreamReader& inout_stream, double& ref_fValue)
+inline nsStreamReader& operator>>(nsStreamReader& inout_stream, double& ref_fValue)
 {
   inout_stream.ReadQWordValue(&ref_fValue).AssertSuccess();
   return inout_stream;
 }
 
-inline wdResult SerializeArray(wdStreamWriter& inout_stream, const double* pArray, wdUInt64 uiCount)
+inline nsResult SerializeArray(nsStreamWriter& inout_stream, const double* pArray, nsUInt64 uiCount)
 {
   return inout_stream.WriteBytes(pArray, sizeof(double) * uiCount);
 }
 
-inline wdResult DeserializeArray(wdStreamReader& inout_stream, double* pArray, wdUInt64 uiCount)
+inline nsResult DeserializeArray(nsStreamReader& inout_stream, double* pArray, nsUInt64 uiCount)
 {
-  const wdUInt64 uiNumBytes = sizeof(double) * uiCount;
+  const nsUInt64 uiNumBytes = sizeof(double) * uiCount;
   if (inout_stream.ReadBytes(pArray, uiNumBytes) == uiNumBytes)
-    return WD_SUCCESS;
+    return NS_SUCCESS;
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
 
 // C-style strings
-// No read equivalent for C-style strings (but can be read as wdString & wdStringBuilder instances)
+// No read equivalent for C-style strings (but can be read as nsString & nsStringBuilder instances)
 
-WD_FOUNDATION_DLL wdStreamWriter& operator<<(wdStreamWriter& inout_stream, const char* szValue);
-WD_FOUNDATION_DLL wdStreamWriter& operator<<(wdStreamWriter& inout_stream, wdStringView sValue);
+NS_FOUNDATION_DLL nsStreamWriter& operator<<(nsStreamWriter& inout_stream, const char* szValue);
+NS_FOUNDATION_DLL nsStreamWriter& operator<<(nsStreamWriter& inout_stream, nsStringView sValue);
 
-// wdHybridString
+// nsHybridString
 
-template <wdUInt16 Size, typename AllocatorWrapper>
-inline wdStreamWriter& operator<<(wdStreamWriter& inout_stream, const wdHybridString<Size, AllocatorWrapper>& sValue)
+template <nsUInt16 Size, typename AllocatorWrapper>
+inline nsStreamWriter& operator<<(nsStreamWriter& inout_stream, const nsHybridString<Size, AllocatorWrapper>& sValue)
 {
   inout_stream.WriteString(sValue.GetView()).AssertSuccess();
   return inout_stream;
 }
 
-template <wdUInt16 Size, typename AllocatorWrapper>
-inline wdStreamReader& operator>>(wdStreamReader& inout_stream, wdHybridString<Size, AllocatorWrapper>& out_sValue)
+template <nsUInt16 Size, typename AllocatorWrapper>
+inline nsStreamReader& operator>>(nsStreamReader& inout_stream, nsHybridString<Size, AllocatorWrapper>& out_sValue)
 {
-  wdStringBuilder builder;
+  nsStringBuilder builder;
   inout_stream.ReadString(builder).AssertSuccess();
   out_sValue = std::move(builder);
 
   return inout_stream;
 }
 
-// wdStringBuilder
+// nsStringBuilder
 
-WD_FOUNDATION_DLL wdStreamWriter& operator<<(wdStreamWriter& inout_stream, const wdStringBuilder& sValue);
-WD_FOUNDATION_DLL wdStreamReader& operator>>(wdStreamReader& inout_stream, wdStringBuilder& out_sValue);
+NS_FOUNDATION_DLL nsStreamWriter& operator<<(nsStreamWriter& inout_stream, const nsStringBuilder& sValue);
+NS_FOUNDATION_DLL nsStreamReader& operator>>(nsStreamReader& inout_stream, nsStringBuilder& out_sValue);
 
-// wdEnum
+// nsEnum
 
 template <typename T>
-inline wdStreamWriter& operator<<(wdStreamWriter& inout_stream, const wdEnum<T>& value)
+inline nsStreamWriter& operator<<(nsStreamWriter& inout_stream, const nsEnum<T>& value)
 {
   inout_stream << value.GetValue();
 
@@ -342,7 +342,7 @@ inline wdStreamWriter& operator<<(wdStreamWriter& inout_stream, const wdEnum<T>&
 }
 
 template <typename T>
-inline wdStreamReader& operator>>(wdStreamReader& inout_stream, wdEnum<T>& value)
+inline nsStreamReader& operator>>(nsStreamReader& inout_stream, nsEnum<T>& value)
 {
   typename T::StorageType storedValue = T::Default;
   inout_stream >> storedValue;
@@ -351,10 +351,10 @@ inline wdStreamReader& operator>>(wdStreamReader& inout_stream, wdEnum<T>& value
   return inout_stream;
 }
 
-// wdBitflags
+// nsBitflags
 
 template <typename T>
-inline wdStreamWriter& operator<<(wdStreamWriter& inout_stream, const wdBitflags<T>& value)
+inline nsStreamWriter& operator<<(nsStreamWriter& inout_stream, const nsBitflags<T>& value)
 {
   inout_stream << value.GetValue();
 
@@ -362,7 +362,7 @@ inline wdStreamWriter& operator<<(wdStreamWriter& inout_stream, const wdBitflags
 }
 
 template <typename T>
-inline wdStreamReader& operator>>(wdStreamReader& inout_stream, wdBitflags<T>& value)
+inline nsStreamReader& operator>>(nsStreamReader& inout_stream, nsBitflags<T>& value)
 {
   typename T::StorageType storedValue = T::Default;
   inout_stream >> storedValue;

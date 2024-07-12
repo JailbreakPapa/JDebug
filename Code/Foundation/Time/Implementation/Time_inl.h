@@ -2,112 +2,107 @@
 
 #include <Foundation/Basics.h>
 
-constexpr WD_ALWAYS_INLINE wdTime::wdTime(double fTime)
+constexpr NS_ALWAYS_INLINE nsTime::nsTime(double fTime)
   : m_fTime(fTime)
 {
 }
 
-WD_ALWAYS_INLINE void wdTime::SetZero()
-{
-  m_fTime = 0.0;
-}
-
-constexpr WD_ALWAYS_INLINE float wdTime::AsFloatInSeconds() const
+constexpr NS_ALWAYS_INLINE float nsTime::AsFloatInSeconds() const
 {
   return static_cast<float>(m_fTime);
 }
 
-constexpr WD_ALWAYS_INLINE double wdTime::GetNanoseconds() const
+constexpr NS_ALWAYS_INLINE double nsTime::GetNanoseconds() const
 {
   return m_fTime * 1000000000.0;
 }
 
-constexpr WD_ALWAYS_INLINE double wdTime::GetMicroseconds() const
+constexpr NS_ALWAYS_INLINE double nsTime::GetMicroseconds() const
 {
   return m_fTime * 1000000.0;
 }
 
-constexpr WD_ALWAYS_INLINE double wdTime::GetMilliseconds() const
+constexpr NS_ALWAYS_INLINE double nsTime::GetMilliseconds() const
 {
   return m_fTime * 1000.0;
 }
 
-constexpr WD_ALWAYS_INLINE double wdTime::GetSeconds() const
+constexpr NS_ALWAYS_INLINE double nsTime::GetSeconds() const
 {
   return m_fTime;
 }
 
-constexpr WD_ALWAYS_INLINE double wdTime::GetMinutes() const
+constexpr NS_ALWAYS_INLINE double nsTime::GetMinutes() const
 {
   return m_fTime / 60.0;
 }
 
-constexpr WD_ALWAYS_INLINE double wdTime::GetHours() const
+constexpr NS_ALWAYS_INLINE double nsTime::GetHours() const
 {
   return m_fTime / (60.0 * 60.0);
 }
 
-constexpr WD_ALWAYS_INLINE void wdTime::operator-=(const wdTime& other)
+constexpr NS_ALWAYS_INLINE void nsTime::operator-=(const nsTime& other)
 {
   m_fTime -= other.m_fTime;
 }
 
-constexpr WD_ALWAYS_INLINE void wdTime::operator+=(const wdTime& other)
+constexpr NS_ALWAYS_INLINE void nsTime::operator+=(const nsTime& other)
 {
   m_fTime += other.m_fTime;
 }
 
-constexpr WD_ALWAYS_INLINE void wdTime::operator*=(double fFactor)
+constexpr NS_ALWAYS_INLINE void nsTime::operator*=(double fFactor)
 {
   m_fTime *= fFactor;
 }
 
-constexpr WD_ALWAYS_INLINE void wdTime::operator/=(double fFactor)
+constexpr NS_ALWAYS_INLINE void nsTime::operator/=(double fFactor)
 {
   m_fTime /= fFactor;
 }
 
-constexpr WD_ALWAYS_INLINE wdTime wdTime::operator-() const
+constexpr NS_ALWAYS_INLINE nsTime nsTime::operator-() const
 {
-  return wdTime(-m_fTime);
+  return nsTime(-m_fTime);
 }
 
-constexpr WD_ALWAYS_INLINE wdTime wdTime::operator-(const wdTime& other) const
+constexpr NS_ALWAYS_INLINE nsTime nsTime::operator-(const nsTime& other) const
 {
-  return wdTime(m_fTime - other.m_fTime);
+  return nsTime(m_fTime - other.m_fTime);
 }
 
-constexpr WD_ALWAYS_INLINE wdTime wdTime::operator+(const wdTime& other) const
+constexpr NS_ALWAYS_INLINE nsTime nsTime::operator+(const nsTime& other) const
 {
-  return wdTime(m_fTime + other.m_fTime);
+  return nsTime(m_fTime + other.m_fTime);
 }
 
-constexpr WD_ALWAYS_INLINE wdTime operator*(wdTime t, double f)
+constexpr NS_ALWAYS_INLINE nsTime operator*(nsTime t, double f)
 {
-  return wdTime::Seconds(t.GetSeconds() * f);
+  return nsTime::MakeFromSeconds(t.GetSeconds() * f);
 }
 
-constexpr WD_ALWAYS_INLINE wdTime operator*(double f, wdTime t)
+constexpr NS_ALWAYS_INLINE nsTime operator*(double f, nsTime t)
 {
-  return wdTime::Seconds(t.GetSeconds() * f);
+  return nsTime::MakeFromSeconds(t.GetSeconds() * f);
 }
 
-constexpr WD_ALWAYS_INLINE wdTime operator*(wdTime f, wdTime t)
+constexpr NS_ALWAYS_INLINE nsTime operator*(nsTime f, nsTime t)
 {
-  return wdTime::Seconds(t.GetSeconds() * f.GetSeconds());
+  return nsTime::MakeFromSeconds(t.GetSeconds() * f.GetSeconds());
 }
 
-constexpr WD_ALWAYS_INLINE wdTime operator/(wdTime t, double f)
+constexpr NS_ALWAYS_INLINE nsTime operator/(nsTime t, double f)
 {
-  return wdTime::Seconds(t.GetSeconds() / f);
+  return nsTime::MakeFromSeconds(t.GetSeconds() / f);
 }
 
-constexpr WD_ALWAYS_INLINE wdTime operator/(double f, wdTime t)
+constexpr NS_ALWAYS_INLINE nsTime operator/(double f, nsTime t)
 {
-  return wdTime::Seconds(f / t.GetSeconds());
+  return nsTime::MakeFromSeconds(f / t.GetSeconds());
 }
 
-constexpr WD_ALWAYS_INLINE wdTime operator/(wdTime f, wdTime t)
+constexpr NS_ALWAYS_INLINE nsTime operator/(nsTime f, nsTime t)
 {
-  return wdTime::Seconds(f.GetSeconds() / t.GetSeconds());
+  return nsTime::MakeFromSeconds(f.GetSeconds() / t.GetSeconds());
 }

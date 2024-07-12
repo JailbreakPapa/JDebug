@@ -1,24 +1,30 @@
 #include <Foundation/FoundationInternal.h>
-WD_FOUNDATION_INTERNAL_HEADER
+NS_FOUNDATION_INTERNAL_HEADER
 
 #include <Foundation/Configuration/Plugin.h>
 
-typedef void* wdPluginModule;
+using nsPluginModule = void*;
 
-void wdPlugin::GetPluginPaths(const char* szPluginName, wdStringBuilder& sOriginalFile, wdStringBuilder& sCopiedFile, wdUInt8 uiFileCopyNumber)
+bool nsPlugin::PlatformNeedsPluginCopy()
 {
-  WD_ASSERT_NOT_IMPLEMENTED;
+  NS_ASSERT_NOT_IMPLEMENTED;
+  return false;
 }
 
-wdResult UnloadPluginModule(wdPluginModule& Module, const char* szPluginFile)
+void nsPlugin::GetPluginPaths(nsStringView sPluginName, nsStringBuilder& sOriginalFile, nsStringBuilder& sCopiedFile, nsUInt8 uiFileCopyNumber)
 {
-  WD_ASSERT_NOT_IMPLEMENTED;
-
-  return WD_FAILURE;
+  NS_ASSERT_NOT_IMPLEMENTED;
 }
 
-wdResult LoadPluginModule(const char* szFileToLoad, wdPluginModule& Module, const char* szPluginFile)
+nsResult UnloadPluginModule(nsPluginModule& Module, nsStringView sPluginFile)
 {
-  WD_ASSERT_NOT_IMPLEMENTED;
-  return WD_FAILURE;
+  NS_ASSERT_NOT_IMPLEMENTED;
+
+  return NS_FAILURE;
+}
+
+nsResult LoadPluginModule(nsStringView sFileToLoad, nsPluginModule& Module, nsStringView sPluginFile)
+{
+  NS_ASSERT_NOT_IMPLEMENTED;
+  return NS_FAILURE;
 }

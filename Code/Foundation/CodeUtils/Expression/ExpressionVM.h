@@ -3,33 +3,59 @@
 #include <Foundation/CodeUtils/Expression/ExpressionByteCode.h>
 #include <Foundation/Types/UniquePtr.h>
 
-class WD_FOUNDATION_DLL wdExpressionVM
+class NS_FOUNDATION_DLL nsExpressionVM
 {
 public:
-  wdExpressionVM();
-  ~wdExpressionVM();
+  nsExpressionVM();
+  ~nsExpressionVM();
 
-  void RegisterFunction(const wdExpressionFunction& func);
-  void UnregisterFunction(const wdExpressionFunction& func);
+  void RegisterFunction(const nsExpressionFunction& func);
+  void UnregisterFunction(const nsExpressionFunction& func);
 
-  wdResult Execute(const wdExpressionByteCode& byteCode, wdArrayPtr<const wdProcessingStream> inputs, wdArrayPtr<wdProcessingStream> outputs, wdUInt32 uiNumInstances, const wdExpression::GlobalData& globalData = wdExpression::GlobalData());
+  struct Flags
+  {
+    using StorageType = nsUInt32;
+
+    enum Enum
+    {
+      MapStreamsByName = NS_BIT(0),
+      ScalarizeStreams = NS_BIT(1),
+
+      UserFriendly = MapStreamsByName | ScalarizeStreams,
+      BestPerformance = 0,
+
+      Default = UserFriendly
+    };
+
+    struct Bits
+    {
+      StorageType MapStreamsByName : 1;
+      StorageType ScalarizeStreams : 1;
+    };
+  };
+
+  nsResult Execute(const nsExpressionByteCode& byteCode, nsArrayPtr<const nsProcessingStream> inputs, nsArrayPtr<nsProcessingStream> outputs, nsUInt32 uiNumInstances, const nsExpression::GlobalData& globalData = nsExpression::GlobalData(), nsBitflags<Flags> flags = Flags::Default);
 
 private:
   void RegisterDefaultFunctions();
 
-  wdResult ScalarizeStreams(wdArrayPtr<const wdProcessingStream> streams, wdDynamicArray<wdProcessingStream>& out_ScalarizedStreams);
-  wdResult MapStreams(wdArrayPtr<const wdExpression::StreamDesc> streamDescs, wdArrayPtr<wdProcessingStream> streams, const char* szStreamType, wdUInt32 uiNumInstances, wdDynamicArray<wdProcessingStream*>& out_MappedStreams);
-  wdResult MapFunctions(wdArrayPtr<const wdExpression::FunctionDesc> functionDescs, const wdExpression::GlobalData& globalData);
+  static nsResult ScalarizeStreams(nsArrayPtr<const nsProcessingStream> streams, nsDynamicArray<nsProcessingStream>& out_ScalarizedStreams);
+  static nsResult AreStreamsScalarized(nsArrayPtr<const nsProcessingStream> streams);
+  static nsResult ValidateStream(const nsProcessingStream& stream, const nsExpression::StreamDesc& streamDesc, nsStringView sStreamType, nsUInt32 uiNumInstances);
 
-  wdDynamicArray<wdExpression::Register, wdAlignedAllocatorWrapper> m_Registers;
+  template <typename T>
+  static nsResult MapStreams(nsArrayPtr<const nsExpression::StreamDesc> streamDescs, nsArrayPtr<T> streams, nsStringView sStreamType, nsUInt32 uiNumInstances, nsBitflags<Flags> flags, nsDynamicArray<T*>& out_MappedStreams);
+  nsResult MapFunctions(nsArrayPtr<const nsExpression::FunctionDesc> functionDescs, const nsExpression::GlobalData& globalData);
 
-  wdDynamicArray<wdProcessingStream> m_ScalarizedInputs;
-  wdDynamicArray<wdProcessingStream> m_ScalarizedOutputs;
+  nsDynamicArray<nsExpression::Register, nsAlignedAllocatorWrapper> m_Registers;
 
-  wdDynamicArray<wdProcessingStream*> m_MappedInputs;
-  wdDynamicArray<wdProcessingStream*> m_MappedOutputs;
-  wdDynamicArray<const wdExpressionFunction*> m_MappedFunctions;
+  nsDynamicArray<nsProcessingStream> m_ScalarizedInputs;
+  nsDynamicArray<nsProcessingStream> m_ScalarizedOutputs;
 
-  wdDynamicArray<wdExpressionFunction> m_Functions;
-  wdHashTable<wdHashedString, wdUInt32> m_FunctionNamesToIndex;
+  nsDynamicArray<const nsProcessingStream*> m_MappedInputs;
+  nsDynamicArray<nsProcessingStream*> m_MappedOutputs;
+  nsDynamicArray<const nsExpressionFunction*> m_MappedFunctions;
+
+  nsDynamicArray<nsExpressionFunction> m_Functions;
+  nsHashTable<nsHashedString, nsUInt32> m_FunctionNamesToIndex;
 };

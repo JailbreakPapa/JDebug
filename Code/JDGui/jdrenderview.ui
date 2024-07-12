@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>JDRenderViewClass</class>
+ <widget class="QWidget" name="JDRenderViewClass">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>600</width>
+    <height>400</height>
+   </rect>
+  </property>
+  <property name="mouseTracking">
+   <bool>true</bool>
+  </property>
+  <property name="acceptDrops">
+   <bool>true</bool>
+  </property>
+  <property name="windowTitle">
+   <string>Phsyics Preview</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>../../../assets/GUI_icons/street-view-regular-24.png</normaloff>../../../assets/GUI_icons/street-view-regular-24.png</iconset>
+  </property>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>

@@ -3,22 +3,22 @@
 
 /// \file
 
-#include <Foundation/Memory/Allocator.h>
+#include <Foundation/Memory/AllocatorWithPolicy.h>
 
-#include <Foundation/Memory/Policies/AlignedHeapAllocation.h>
-#include <Foundation/Memory/Policies/GuardedAllocation.h>
-#include <Foundation/Memory/Policies/HeapAllocation.h>
-#include <Foundation/Memory/Policies/ProxyAllocation.h>
+#include <Foundation/Memory/Policies/AllocPolicyAlignedHeap.h>
+#include <Foundation/Memory/Policies/AllocPolicyGuarding.h>
+#include <Foundation/Memory/Policies/AllocPolicyHeap.h>
+#include <Foundation/Memory/Policies/AllocPolicyProxy.h>
 
-
-/// \brief Default heap allocator
-typedef wdAllocator<wdMemoryPolicies::wdAlignedHeapAllocation> wdAlignedHeapAllocator;
 
 /// \brief Default heap allocator
-typedef wdAllocator<wdMemoryPolicies::wdHeapAllocation> wdHeapAllocator;
+using nsAlignedHeapAllocator = nsAllocatorWithPolicy<nsAllocPolicyAlignedHeap>;
+
+/// \brief Default heap allocator
+using nsHeapAllocator = nsAllocatorWithPolicy<nsAllocPolicyHeap>;
 
 /// \brief Guarded allocator
-typedef wdAllocator<wdMemoryPolicies::wdGuardedAllocation> wdGuardedAllocator;
+using nsGuardingAllocator = nsAllocatorWithPolicy<nsAllocPolicyGuarding>;
 
 /// \brief Proxy allocator
-typedef wdAllocator<wdMemoryPolicies::wdProxyAllocation> wdProxyAllocator;
+using nsProxyAllocator = nsAllocatorWithPolicy<nsAllocPolicyProxy>;

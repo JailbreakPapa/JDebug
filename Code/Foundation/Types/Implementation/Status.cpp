@@ -4,36 +4,50 @@
 #include <Foundation/Strings/StringBuilder.h>
 #include <Foundation/Types/Status.h>
 
-void wdResult::AssertSuccess(const char* szMsg /*= nullptr*/, const char* szDetails /*= nullptr*/) const
+void nsResult::AssertSuccess(const char* szMsg /*= nullptr*/, const char* szDetails /*= nullptr*/) const
 {
   if (Succeeded())
     return;
 
   if (szMsg)
   {
-    WD_REPORT_FAILURE(szMsg, szDetails);
+    NS_REPORT_FAILURE(szMsg, szDetails);
   }
   else
   {
-    WD_REPORT_FAILURE("An operation failed unexpectedly.");
+    NS_REPORT_FAILURE("An operation failed unexpectedly.");
   }
 }
 
-wdStatus::wdStatus(const wdFormatString& fmt)
-  : m_Result(WD_FAILURE)
+nsStatus::nsStatus(const nsFormatString& fmt)
+  : m_Result(NS_FAILURE)
 {
-  wdStringBuilder sMsg;
+  nsStringBuilder sMsg;
   m_sMessage = fmt.GetText(sMsg);
 }
 
-void wdStatus::LogFailure(wdLogInterface* pLog)
+bool nsStatus::LogFailure(nsLogInterface* pLog)
 {
   if (Failed())
   {
-    wdLogInterface* pInterface = pLog ? pLog : wdLog::GetThreadLocalLogSystem();
-    wdLog::Error(pInterface, "{0}", m_sMessage);
+    nsLogInterface* pInterface = pLog ? pLog : nsLog::GetThreadLocalLogSystem();
+    nsLog::Error(pInterface, "{0}", m_sMessage);
   }
+
+  return Failed();
 }
 
+void nsStatus::AssertSuccess(const char* szMsg /*= nullptr*/) const
+{
+  if (Succeeded())
+    return;
 
-WD_STATICLINK_FILE(Foundation, Foundation_Types_Implementation_Status);
+  if (szMsg)
+  {
+    NS_REPORT_FAILURE(szMsg, m_sMessage.GetData());
+  }
+  else
+  {
+    NS_REPORT_FAILURE("An operation failed unexpectedly.", m_sMessage.GetData());
+  }
+}

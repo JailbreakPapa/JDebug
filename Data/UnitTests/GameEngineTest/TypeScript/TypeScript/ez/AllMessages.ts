@@ -1,45 +1,39 @@
 // AUTO-GENERATED FILE
 
-import __Message = require("TypeScript/wd/Message")
+import __Message = require("TypeScript/ns/Message")
 export import Message = __Message.Message;
 export import EventMessage = __Message.EventMessage;
 
-import __Vec2 = require("TypeScript/wd/Vec2")
+import __Vec2 = require("TypeScript/ns/Vec2")
 export import Vec2 = __Vec2.Vec2;
 
-import __Vec3 = require("TypeScript/wd/Vec3")
+import __Vec3 = require("TypeScript/ns/Vec3")
 export import Vec3 = __Vec3.Vec3;
 
-import __Mat3 = require("TypeScript/wd/Mat3")
+import __Mat3 = require("TypeScript/ns/Mat3")
 export import Mat3 = __Mat3.Mat3;
 
-import __Mat4 = require("TypeScript/wd/Mat4")
+import __Mat4 = require("TypeScript/ns/Mat4")
 export import Mat4 = __Mat4.Mat4;
 
-import __Quat = require("TypeScript/wd/Quat")
+import __Quat = require("TypeScript/ns/Quat")
 export import Quat = __Quat.Quat;
 
-import __Transform = require("TypeScript/wd/Transform")
+import __Transform = require("TypeScript/ns/Transform")
 export import Transform = __Transform.Transform;
 
-import __Color = require("TypeScript/wd/Color")
+import __Color = require("TypeScript/ns/Color")
 export import Color = __Color.Color;
 
-import __Time = require("TypeScript/wd/Time")
+import __Time = require("TypeScript/ns/Time")
 export import Time = __Time.Time;
 
-import __Angle = require("TypeScript/wd/Angle")
+import __Angle = require("TypeScript/ns/Angle")
 export import Angle = __Angle.Angle;
 
 import Enum = require("./AllEnums")
 import Flags = require("./AllFlags")
 
-
-export class EventMsgPathChanged extends EventMessage
-{
-  public static GetTypeNameHash(): number { return 374572587; }
-  constructor() { super(); this.TypeNameHash = 374572587; }
-}
 
 export class EventMsgSetPowerInput extends EventMessage
 {
@@ -207,6 +201,12 @@ export class MsgParentChanged extends Message
 {
   public static GetTypeNameHash(): number { return 2163082146; }
   constructor() { super(); this.TypeNameHash = 2163082146; }
+}
+
+export class MsgPathChanged extends EventMessage
+{
+  public static GetTypeNameHash(): number { return 1539147651; }
+  constructor() { super(); this.TypeNameHash = 1539147651; }
 }
 
 export class MsgPhysicsAddForce extends Message

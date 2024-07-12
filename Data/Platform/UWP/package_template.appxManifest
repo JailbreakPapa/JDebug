@@ -5,11 +5,11 @@
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
   xmlns:uap2="http://schemas.microsoft.com/appx/manifest/uap/windows10/2"
   IgnorableNamespaces="uap uap2 mp">
-  <Identity Name="@IDENTITY_NAME@" Publisher="CN=wdEngine" Version="1.0.0.0" />
+  <Identity Name="@IDENTITY_NAME@" Publisher="CN=nsEngine" Version="1.0.0.0" />
   <mp:PhoneIdentity PhoneProductId="@PACKAGE_GUID@" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
   <Properties>
     <DisplayName>@SHORT_NAME@</DisplayName>
-    <PublisherDisplayName>wdEngine</PublisherDisplayName>
+    <PublisherDisplayName>nsEngine</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Dependencies>

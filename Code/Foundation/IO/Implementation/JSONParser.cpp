@@ -4,7 +4,7 @@
 #include <Foundation/Logging/Log.h>
 #include <Foundation/Utilities/ConversionUtils.h>
 
-wdJSONParser::wdJSONParser()
+nsJSONParser::nsJSONParser()
 {
   m_uiCurByte = '\0';
   m_uiNextByte = '\0';
@@ -15,7 +15,7 @@ wdJSONParser::wdJSONParser()
   m_uiCurColumn = 0;
 }
 
-void wdJSONParser::SetInputStream(wdStreamReader& stream, wdUInt32 uiFirstLineOffset)
+void nsJSONParser::SetInputStream(nsStreamReader& stream, nsUInt32 uiFirstLineOffset)
 {
   m_StateStack.Clear();
   m_uiCurByte = '\0';
@@ -40,7 +40,7 @@ void wdJSONParser::SetInputStream(wdStreamReader& stream, wdUInt32 uiFirstLineOf
   }
 }
 
-void wdJSONParser::StartParsing()
+void nsJSONParser::StartParsing()
 {
   // remove the NotStarted state
   m_StateStack.PopBack();
@@ -68,29 +68,45 @@ void wdJSONParser::StartParsing()
 
       if (!m_bSkippingMode)
         OnBeginObject();
-    }
+
       return;
+    }
+
+    case '[':
+    {
+      JSONState s;
+      s.m_State = ReadingArray;
+      m_StateStack.PushBack(s);
+
+      SkipWhitespace();
+
+      if (!m_bSkippingMode)
+        OnBeginArray();
+
+      return;
+    }
 
     default:
     {
       // document is malformed
 
-      wdStringBuilder s;
-      s.Format("Start of document: Expected a { or an empty document. Got '{0}' instead.", wdArgC(m_uiCurByte));
+      nsStringBuilder s;
+      s.SetFormat("Start of document: Expected a { or [ or an empty document. Got '{0}' instead.", nsArgC(m_uiCurByte));
       ParsingError(s.GetData(), true);
-    }
+
       return;
+    }
   }
 }
 
-void wdJSONParser::ParseAll()
+void nsJSONParser::ParseAll()
 {
   while (ContinueParsing())
   {
   }
 }
 
-void wdJSONParser::ParsingError(const char* szMessage, bool bFatal)
+void nsJSONParser::ParsingError(nsStringView sMessage, bool bFatal)
 {
   if (bFatal)
   {
@@ -100,30 +116,30 @@ void wdJSONParser::ParsingError(const char* szMessage, bool bFatal)
   }
 
   if (bFatal)
-    wdLog::Error(m_pLogInterface, "Line {0} ({1}): {2}", m_uiCurLine, m_uiCurColumn, szMessage);
+    nsLog::Error(m_pLogInterface, "Line {0} ({1}): {2}", m_uiCurLine, m_uiCurColumn, sMessage);
   else
-    wdLog::Warning(m_pLogInterface, szMessage);
+    nsLog::Warning(m_pLogInterface, sMessage);
 
-  OnParsingError(szMessage, bFatal, m_uiCurLine, m_uiCurColumn);
+  OnParsingError(sMessage, bFatal, m_uiCurLine, m_uiCurColumn);
 }
 
-void wdJSONParser::SkipObject()
+void nsJSONParser::SkipObject()
 {
   SkipStack(ReadingObject);
 }
 
-void wdJSONParser::SkipArray()
+void nsJSONParser::SkipArray()
 {
   SkipStack(ReadingArray);
 }
 
-void wdJSONParser::SkipStack(State s)
+void nsJSONParser::SkipStack(State s)
 {
   m_bSkippingMode = true;
 
-  wdUInt32 iSkipToStackHeight = m_StateStack.GetCount();
+  nsUInt32 iSkipToStackHeight = m_StateStack.GetCount();
 
-  for (wdUInt32 top = m_StateStack.GetCount(); top > 1; --top)
+  for (nsUInt32 top = m_StateStack.GetCount(); top > 1; --top)
   {
     if (m_StateStack[top - 1].m_State == s)
     {
@@ -138,7 +154,7 @@ void wdJSONParser::SkipStack(State s)
   m_bSkippingMode = false;
 }
 
-bool wdJSONParser::ContinueParsing()
+bool nsJSONParser::ContinueParsing()
 {
   if (m_uiCurByte == '\0')
   {
@@ -181,14 +197,14 @@ bool wdJSONParser::ContinueParsing()
       break;
 
     default:
-      WD_REPORT_FAILURE("Unknown State in JSON parser state machine.");
+      NS_REPORT_FAILURE("Unknown State in JSON parser state machine.");
       break;
   }
 
   return true;
 }
 
-void wdJSONParser::ContinueObject()
+void nsJSONParser::ContinueObject()
 {
   switch (m_uiCurByte)
   {
@@ -215,15 +231,15 @@ void wdJSONParser::ContinueObject()
 
     default:
     {
-      wdStringBuilder s;
-      s.Format("While parsing object: Expected \" to begin a new variable, or } to close the object. Got '{0}' instead.", wdArgC(m_uiCurByte));
+      nsStringBuilder s;
+      s.SetFormat("While parsing object: Expected \" to begin a new variable, or } to close the object. Got '{0}' instead.", nsArgC(m_uiCurByte));
       ParsingError(s.GetData(), true);
     }
       return;
   }
 }
 
-void wdJSONParser::ContinueArray()
+void nsJSONParser::ContinueArray()
 {
   switch (m_uiCurByte)
   {
@@ -252,7 +268,7 @@ void wdJSONParser::ContinueArray()
   }
 }
 
-void wdJSONParser::ContinueVariable()
+void nsJSONParser::ContinueVariable()
 {
   if (!m_bSkippingMode)
     ReadString();
@@ -263,8 +279,8 @@ void wdJSONParser::ContinueVariable()
 
   if (m_uiCurByte != ':')
   {
-    wdStringBuilder s;
-    s.Format("After parsing variable name: Expected : to separate variable and value, Got '{0}' instead.", wdArgC(m_uiCurByte));
+    nsStringBuilder s;
+    s.SetFormat("After parsing variable name: Expected : to separate variable and value, Got '{0}' instead.", nsArgC(m_uiCurByte));
     ParsingError(s.GetData(), false);
   }
   else
@@ -289,7 +305,7 @@ void wdJSONParser::ContinueVariable()
 }
 
 
-void wdJSONParser::ContinueValue()
+void nsJSONParser::ContinueValue()
 {
   switch (m_uiCurByte)
   {
@@ -309,7 +325,7 @@ void wdJSONParser::ContinueValue()
       m_StateStack.PopBack();
 
       if (!m_bSkippingMode)
-        OnReadValue((const char*)&m_TempString[0]);
+        OnReadValue(nsStringView((const char*)&m_TempString[0]));
     }
       return;
 
@@ -346,10 +362,10 @@ void wdJSONParser::ContinueValue()
       ReadWord();
 
       bool bRes = false;
-      if (wdConversionUtils::StringToBool((const char*)&m_TempString[0], bRes) == WD_FAILURE)
+      if (nsConversionUtils::StringToBool((const char*)&m_TempString[0], bRes) == NS_FAILURE)
       {
-        wdStringBuilder s;
-        s.Format("Parsing value: Expected 'true' or 'false', Got '{0}' instead.", (const char*)&m_TempString[0]);
+        nsStringBuilder s;
+        s.SetFormat("Parsing value: Expected 'true' or 'false', Got '{0}' instead.", (const char*)&m_TempString[0]);
         ParsingError(s.GetData(), false);
       }
 
@@ -369,13 +385,13 @@ void wdJSONParser::ContinueValue()
       bool bIsNull = false;
 
       // if it's 'null' but with the wrong casing, output an error, but it is not fatal
-      if (wdStringUtils::IsEqual_NoCase((const char*)&m_TempString[0], "null"))
+      if (nsStringUtils::IsEqual_NoCase((const char*)&m_TempString[0], "null"))
         bIsNull = true;
 
-      if (!wdStringUtils::IsEqual((const char*)&m_TempString[0], "null"))
+      if (!nsStringUtils::IsEqual((const char*)&m_TempString[0], "null"))
       {
-        wdStringBuilder s;
-        s.Format("Parsing value: Expected 'null', Got '{0}' instead.", (const char*)&m_TempString[0]);
+        nsStringBuilder s;
+        s.SetFormat("Parsing value: Expected 'null', Got '{0}' instead.", (const char*)&m_TempString[0]);
         ParsingError(s.GetData(), !bIsNull);
       }
 
@@ -418,17 +434,17 @@ void wdJSONParser::ContinueValue()
 
     default:
     {
-      wdStringBuilder s;
-      s.Format("Parsing value: Expected [, {, f, t, \", 0-1, ., +, -, or even 'e'. Got '{0}' instead", wdArgC(m_uiCurByte));
+      nsStringBuilder s;
+      s.SetFormat("Parsing value: Expected [, {, f, t, \", 0-1, ., +, -, or even 'e'. Got '{0}' instead", nsArgC(m_uiCurByte));
       ParsingError(s.GetData(), true);
     }
       return;
   }
 }
 
-void wdJSONParser::ContinueSeparator()
+void nsJSONParser::ContinueSeparator()
 {
-  if (wdStringUtils::IsWhiteSpace(m_uiCurByte))
+  if (nsStringUtils::IsWhiteSpace(m_uiCurByte))
     SkipWhitespace();
 
   // remove ExpectSeparator from the stack
@@ -449,17 +465,17 @@ void wdJSONParser::ContinueSeparator()
 
     default:
     {
-      wdStringBuilder s;
-      s.Format("After parsing value: Expected a comma or closing brackets/braces (], }). Got '{0}' instead.", wdArgC(m_uiCurByte));
+      nsStringBuilder s;
+      s.SetFormat("After parsing value: Expected a comma or closing brackets/braces (], }). Got '{0}' instead.", nsArgC(m_uiCurByte));
       ParsingError(s.GetData(), true);
     }
       return;
   }
 }
 
-void wdJSONParser::ReadNextByte()
+void nsJSONParser::ReadNextByte()
 {
-  m_pInput->ReadBytes(&m_uiNextByte, sizeof(wdUInt8));
+  m_pInput->ReadBytes(&m_uiNextByte, sizeof(nsUInt8));
 
   if (m_uiNextByte == '\n')
   {
@@ -470,7 +486,7 @@ void wdJSONParser::ReadNextByte()
     ++m_uiCurColumn;
 }
 
-bool wdJSONParser::ReadCharacter(bool bSkipComments)
+bool nsJSONParser::ReadCharacter(bool bSkipComments)
 {
   m_uiCurByte = m_uiNextByte;
 
@@ -515,9 +531,9 @@ bool wdJSONParser::ReadCharacter(bool bSkipComments)
   return m_uiCurByte != '\0';
 }
 
-void wdJSONParser::SkipWhitespace()
+void nsJSONParser::SkipWhitespace()
 {
-  WD_ASSERT_DEBUG(m_pInput != nullptr, "Input Stream is not set up.");
+  NS_ASSERT_DEBUG(m_pInput != nullptr, "Input Stream is not set up.");
 
   do
   {
@@ -525,12 +541,12 @@ void wdJSONParser::SkipWhitespace()
 
     if (!ReadCharacter(true))
       return; // stop when end of stream is encountered
-  } while (wdStringUtils::IsWhiteSpace(m_uiCurByte));
+  } while (nsStringUtils::IsWhiteSpace(m_uiCurByte));
 }
 
-void wdJSONParser::SkipString()
+void nsJSONParser::SkipString()
 {
-  WD_ASSERT_DEBUG(m_pInput != nullptr, "Input Stream is not set up.");
+  NS_ASSERT_DEBUG(m_pInput != nullptr, "Input Stream is not set up.");
 
   m_TempString.Clear();
   m_TempString.PushBack('\0');
@@ -552,9 +568,9 @@ void wdJSONParser::SkipString()
   } while (bEscapeSequence || m_uiCurByte != '\"');
 }
 
-void wdJSONParser::ReadString()
+void nsJSONParser::ReadString()
 {
-  WD_ASSERT_DEBUG(m_pInput != nullptr, "Input Stream is not set up.");
+  NS_ASSERT_DEBUG(m_pInput != nullptr, "Input Stream is not set up.");
 
   m_TempString.Clear();
 
@@ -607,13 +623,14 @@ void wdJSONParser::ReadString()
           break;
         case 'u':
         {
-          wdUInt16 cpt[2];
-          auto ReadUtf16CodePoint = [&](wdUInt16& ref_uiCodePoint) -> bool {
+          nsUInt16 cpt[2];
+          auto ReadUtf16CodePoint = [&](nsUInt16& ref_uiCodePoint) -> bool
+          {
             ref_uiCodePoint = 0;
 
             // Unicode literal are utf16 in the format \uFFFF. The hex number FFFF can be upper or lower case but must be 4 characters long.
-            wdUInt8 unicodeLiteral[5] = {0, 0, 0, 0, 0};
-            wdUInt32 i = 0;
+            nsUInt8 unicodeLiteral[5] = {0, 0, 0, 0, 0};
+            nsUInt32 i = 0;
             for (; i < 4; i++)
             {
               if (m_uiNextByte == '\0' || m_uiNextByte == '\"')
@@ -631,10 +648,10 @@ void wdJSONParser::ReadString()
               unicodeLiteral[i] = m_uiCurByte;
             }
 
-            wdUInt32 uiHexValue = 0;
-            if (wdConversionUtils::ConvertHexStringToUInt32((const char*)&unicodeLiteral[0], uiHexValue).Succeeded())
+            nsUInt32 uiHexValue = 0;
+            if (nsConversionUtils::ConvertHexStringToUInt32((const char*)&unicodeLiteral[0], uiHexValue).Succeeded())
             {
-              ref_uiCodePoint = static_cast<wdUInt16>(uiHexValue);
+              ref_uiCodePoint = static_cast<nsUInt16>(uiHexValue);
             }
             else
             {
@@ -645,8 +662,8 @@ void wdJSONParser::ReadString()
           };
           if (ReadUtf16CodePoint(cpt[0]))
           {
-            wdUInt16* start = &cpt[0];
-            if (wdUnicodeUtils::IsUtf16Surrogate(start))
+            nsUInt16* start = &cpt[0];
+            if (nsUnicodeUtils::IsUtf16Surrogate(start))
             {
               if (m_uiNextByte != '\\' || !ReadCharacter(false))
               {
@@ -663,16 +680,16 @@ void wdJSONParser::ReadString()
                 break;
               }
             }
-            wdUInt32 uiCodePoint = wdUnicodeUtils::DecodeUtf16ToUtf32(start);
-            wdUnicodeUtils::UtfInserter<char, wdHybridArray<wdUInt8, 4096>> tempInserter(&m_TempString);
-            wdUnicodeUtils::EncodeUtf32ToUtf8(uiCodePoint, tempInserter);
+            nsUInt32 uiCodePoint = nsUnicodeUtils::DecodeUtf16ToUtf32(start);
+            nsUnicodeUtils::UtfInserter<char, nsHybridArray<nsUInt8, 4096>> tempInserter(&m_TempString);
+            nsUnicodeUtils::EncodeUtf32ToUtf8(uiCodePoint, tempInserter);
           }
           break;
         }
         default:
         {
-          wdStringBuilder s;
-          s.Format("Unknown escape-sequence '\\{0}'", wdArgC(m_uiCurByte));
+          nsStringBuilder s;
+          s.SetFormat("Unknown escape-sequence '\\{0}'", nsArgC(m_uiCurByte));
           ParsingError(s, false);
         }
         break;
@@ -687,9 +704,9 @@ void wdJSONParser::ReadString()
   m_TempString.PushBack('\0');
 }
 
-void wdJSONParser::ReadWord()
+void nsJSONParser::ReadWord()
 {
-  WD_ASSERT_DEBUG(m_pInput != nullptr, "Input Stream is not set up.");
+  NS_ASSERT_DEBUG(m_pInput != nullptr, "Input Stream is not set up.");
 
   m_TempString.Clear();
 
@@ -701,14 +718,14 @@ void wdJSONParser::ReadWord()
 
     if (!ReadCharacter(true))
       break; // stop when end of stream is encountered
-  } while (!wdStringUtils::IsWhiteSpace(m_uiCurByte) && m_uiCurByte != ',' && m_uiCurByte != ']' && m_uiCurByte != '}');
+  } while (!nsStringUtils::IsWhiteSpace(m_uiCurByte) && m_uiCurByte != ',' && m_uiCurByte != ']' && m_uiCurByte != '}');
 
   m_TempString.PushBack('\0');
 }
 
-double wdJSONParser::ReadNumber()
+double nsJSONParser::ReadNumber()
 {
-  WD_ASSERT_DEBUG(m_pInput != nullptr, "Input Stream is not set up.");
+  NS_ASSERT_DEBUG(m_pInput != nullptr, "Input Stream is not set up.");
 
   m_TempString.Clear();
 
@@ -726,16 +743,12 @@ double wdJSONParser::ReadNumber()
   m_TempString.PushBack('\0');
 
   double fResult = 0;
-  if (wdConversionUtils::StringToFloat((const char*)&m_TempString[0], fResult) == WD_FAILURE)
+  if (nsConversionUtils::StringToFloat((const char*)&m_TempString[0], fResult) == NS_FAILURE)
   {
-    wdStringBuilder s;
-    s.Format("Reading number failed: Could not convert '{0}' to a floating point value.", (const char*)&m_TempString[0]);
+    nsStringBuilder s;
+    s.SetFormat("Reading number failed: Could not convert '{0}' to a floating point value.", (const char*)&m_TempString[0]);
     ParsingError(s.GetData(), true);
   }
 
   return fResult;
 }
-
-
-
-WD_STATICLINK_FILE(Foundation, Foundation_IO_Implementation_JSONParser);

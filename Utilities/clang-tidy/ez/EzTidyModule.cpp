@@ -15,28 +15,28 @@ namespace clang
 {
   namespace tidy
   {
-    namespace wd
+    namespace ns
     {
 
-      class EzModule : public ClangTidyModule
+      class NsModule : public ClangTidyModule
       {
       public:
         void addCheckFactories(ClangTidyCheckFactories& CheckFactories) override
         {
           CheckFactories.registerCheck<NameCheck>(
-            "wd-name-check");
+            "ns-name-check");
         }
       };
 
-    } // namespace wd
+    } // namespace ns
 
     // Register the MiscTidyModule using this statically initialized variable.
-    static ClangTidyModuleRegistry::Add<wd::EzModule>
-      X("wd-module", "Adds wd engine specific lint checks.");
+    static ClangTidyModuleRegistry::Add<ns::NsModule>
+      X("ns-module", "Adds ns engine specific lint checks.");
 
     // This anchor is used to force the linker to link in the generated object file
-    // and thus register the EzModule.
-    volatile int EzModuleAnchorSource = 0;
+    // and thus register the NsModule.
+    volatile int NsModuleAnchorSource = 0;
 
   } // namespace tidy
 } // namespace clang

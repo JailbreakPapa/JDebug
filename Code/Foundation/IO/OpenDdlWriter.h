@@ -9,7 +9,7 @@
 /// \brief The base class for OpenDDL writers.
 ///
 /// Declares a common interface for writing OpenDDL files.
-class WD_FOUNDATION_DLL wdOpenDdlWriter
+class NS_FOUNDATION_DLL nsOpenDdlWriter
 {
 public:
   enum class TypeStringMode
@@ -27,12 +27,12 @@ public:
   };
 
   /// \brief Constructor
-  wdOpenDdlWriter();
+  nsOpenDdlWriter();
 
-  virtual ~wdOpenDdlWriter() = default;
+  virtual ~nsOpenDdlWriter() = default;
 
   /// \brief All output is written to this binary stream.
-  void SetOutputStream(wdStreamWriter* pOutput) { m_pOutput = pOutput; } // [tested]
+  void SetOutputStream(nsStreamWriter* pOutput) { m_pOutput = pOutput; } // [tested]
 
   /// \brief Configures how much whitespace is output.
   void SetCompactMode(bool bCompact) { m_bCompactMode = bCompact; } // [tested]
@@ -48,58 +48,58 @@ public:
 
   /// \brief Allows to set the indentation. Negative values are possible.
   /// This makes it possible to set the indentation e.g. to -2, thus the output will only have indentation after a level of 3 has been reached.
-  void SetIndentation(wdInt8 iIndentation) { m_iIndentation = iIndentation; }
+  void SetIndentation(nsInt8 iIndentation) { m_iIndentation = iIndentation; }
 
   /// \brief Begins outputting an object.
-  void BeginObject(const char* szType, const char* szName = nullptr, bool bGlobalName = false, bool bSingleLine = false); // [tested]
+  void BeginObject(nsStringView sType, nsStringView sName = {}, bool bGlobalName = false, bool bSingleLine = false); // [tested]
 
   /// \brief Ends outputting an object.
   void EndObject(); // [tested]
 
   /// \brief Begins outputting a list of primitives of the given type.
-  void BeginPrimitiveList(wdOpenDdlPrimitiveType type, const char* szName = nullptr, bool bGlobalName = false); // [tested]
+  void BeginPrimitiveList(nsOpenDdlPrimitiveType type, nsStringView sName = {}, bool bGlobalName = false); // [tested]
 
   /// \brief Ends outputting the list of primitives.
   void EndPrimitiveList(); // [tested]
 
   /// \brief Writes a number of values to the primitive list. Can be called multiple times between BeginPrimitiveList() / EndPrimitiveList().
-  void WriteBool(const bool* pValues, wdUInt32 uiCount = 1); // [tested]
+  void WriteBool(const bool* pValues, nsUInt32 uiCount = 1); // [tested]
 
   /// \brief Writes a number of values to the primitive list. Can be called multiple times between BeginPrimitiveList() / EndPrimitiveList().
-  void WriteInt8(const wdInt8* pValues, wdUInt32 uiCount = 1); // [tested]
+  void WriteInt8(const nsInt8* pValues, nsUInt32 uiCount = 1); // [tested]
 
   /// \brief Writes a number of values to the primitive list. Can be called multiple times between BeginPrimitiveList() / EndPrimitiveList().
-  void WriteInt16(const wdInt16* pValues, wdUInt32 uiCount = 1); // [tested]
+  void WriteInt16(const nsInt16* pValues, nsUInt32 uiCount = 1); // [tested]
 
   /// \brief Writes a number of values to the primitive list. Can be called multiple times between BeginPrimitiveList() / EndPrimitiveList().
-  void WriteInt32(const wdInt32* pValues, wdUInt32 uiCount = 1); // [tested]
+  void WriteInt32(const nsInt32* pValues, nsUInt32 uiCount = 1); // [tested]
 
   /// \brief Writes a number of values to the primitive list. Can be called multiple times between BeginPrimitiveList() / EndPrimitiveList().
-  void WriteInt64(const wdInt64* pValues, wdUInt32 uiCount = 1); // [tested]
+  void WriteInt64(const nsInt64* pValues, nsUInt32 uiCount = 1); // [tested]
 
   /// \brief Writes a number of values to the primitive list. Can be called multiple times between BeginPrimitiveList() / EndPrimitiveList().
-  void WriteUInt8(const wdUInt8* pValues, wdUInt32 uiCount = 1); // [tested]
+  void WriteUInt8(const nsUInt8* pValues, nsUInt32 uiCount = 1); // [tested]
 
   /// \brief Writes a number of values to the primitive list. Can be called multiple times between BeginPrimitiveList() / EndPrimitiveList().
-  void WriteUInt16(const wdUInt16* pValues, wdUInt32 uiCount = 1); // [tested]
+  void WriteUInt16(const nsUInt16* pValues, nsUInt32 uiCount = 1); // [tested]
 
   /// \brief Writes a number of values to the primitive list. Can be called multiple times between BeginPrimitiveList() / EndPrimitiveList().
-  void WriteUInt32(const wdUInt32* pValues, wdUInt32 uiCount = 1); // [tested]
+  void WriteUInt32(const nsUInt32* pValues, nsUInt32 uiCount = 1); // [tested]
 
   /// \brief Writes a number of values to the primitive list. Can be called multiple times between BeginPrimitiveList() / EndPrimitiveList().
-  void WriteUInt64(const wdUInt64* pValues, wdUInt32 uiCount = 1); // [tested]
+  void WriteUInt64(const nsUInt64* pValues, nsUInt32 uiCount = 1); // [tested]
 
   /// \brief Writes a number of values to the primitive list. Can be called multiple times between BeginPrimitiveList() / EndPrimitiveList().
-  void WriteFloat(const float* pValues, wdUInt32 uiCount = 1); // [tested]
+  void WriteFloat(const float* pValues, nsUInt32 uiCount = 1); // [tested]
 
   /// \brief Writes a number of values to the primitive list. Can be called multiple times between BeginPrimitiveList() / EndPrimitiveList().
-  void WriteDouble(const double* pValues, wdUInt32 uiCount = 1); // [tested]
+  void WriteDouble(const double* pValues, nsUInt32 uiCount = 1); // [tested]
 
   /// \brief Writes a single string to the primitive list. Can be called multiple times between BeginPrimitiveList() / EndPrimitiveList().
-  void WriteString(const wdStringView& sString); // [tested]
+  void WriteString(const nsStringView& sString); // [tested]
 
   /// \brief Writes a single string to the primitive list, but the value is a HEX representation of the given binary data.
-  void WriteBinaryAsString(const void* pData, wdUInt32 uiBytes);
+  void WriteBinaryAsString(const void* pData, nsUInt32 uiBytes);
 
 
 protected:
@@ -110,7 +110,7 @@ protected:
     ObjectSingleLine = -3,
     ObjectMultiLine = -2,
     ObjectStart = -1,
-    PrimitivesBool = 0, // same values as in wdOpenDdlPrimitiveType to enable casting
+    PrimitivesBool = 0, // same values as in nsOpenDdlPrimitiveType to enable casting
     PrimitivesInt8,
     PrimitivesInt16,
     PrimitivesInt32,
@@ -126,34 +126,28 @@ protected:
 
   struct DdlState
   {
-    DdlState()
-      : m_State(Empty)
-    {
-      m_bPrimitivesWritten = false;
-    }
-
-    State m_State;
-    bool m_bPrimitivesWritten;
+    State m_State = State::Empty;
+    bool m_bPrimitivesWritten = false;
   };
 
-  WD_ALWAYS_INLINE void OutputString(const char* sz) { m_pOutput->WriteBytes(sz, wdStringUtils::GetStringElementCount(sz)).IgnoreResult(); }
-  WD_ALWAYS_INLINE void OutputString(const char* sz, wdUInt32 uiElementCount) { m_pOutput->WriteBytes(sz, uiElementCount).IgnoreResult(); }
-  void OutputEscapedString(const wdStringView& string);
+  NS_ALWAYS_INLINE void OutputString(nsStringView s) { m_pOutput->WriteBytes(s.GetStartPointer(), s.GetElementCount()).IgnoreResult(); }
+  NS_ALWAYS_INLINE void OutputString(nsStringView s, nsUInt32 uiElementCount) { m_pOutput->WriteBytes(s.GetStartPointer(), uiElementCount).IgnoreResult(); }
+  void OutputEscapedString(const nsStringView& string);
   void OutputIndentation();
-  void OutputPrimitiveTypeNameCompliant(wdOpenDdlPrimitiveType type);
-  void OutputPrimitiveTypeNameShort(wdOpenDdlPrimitiveType type);
-  void OutputPrimitiveTypeNameShortest(wdOpenDdlPrimitiveType type);
-  void WritePrimitiveType(wdOpenDdlWriter::State exp);
-  void OutputObjectName(const char* szName, bool bGlobalName);
-  void WriteBinaryAsHex(const void* pData, wdUInt32 uiBytes);
+  void OutputPrimitiveTypeNameCompliant(nsOpenDdlPrimitiveType type);
+  void OutputPrimitiveTypeNameShort(nsOpenDdlPrimitiveType type);
+  void OutputPrimitiveTypeNameShortest(nsOpenDdlPrimitiveType type);
+  void WritePrimitiveType(nsOpenDdlWriter::State exp);
+  void OutputObjectName(nsStringView sName, bool bGlobalName);
+  void WriteBinaryAsHex(const void* pData, nsUInt32 uiBytes);
   void OutputObjectBeginning();
 
-  wdInt32 m_iIndentation;
-  bool m_bCompactMode;
-  TypeStringMode m_TypeStringMode;
-  FloatPrecisionMode m_FloatPrecisionMode;
-  wdStreamWriter* m_pOutput;
-  wdStringBuilder m_sTemp;
+  nsInt32 m_iIndentation = 0;
+  bool m_bCompactMode = false;
+  TypeStringMode m_TypeStringMode = TypeStringMode::ShortenedUnsignedInt;
+  FloatPrecisionMode m_FloatPrecisionMode = FloatPrecisionMode::Exact;
+  nsStreamWriter* m_pOutput = nullptr;
+  nsStringBuilder m_sTemp;
 
-  wdHybridArray<DdlState, 16> m_StateStack;
+  nsHybridArray<DdlState, 16> m_StateStack;
 };

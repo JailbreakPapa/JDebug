@@ -2,7 +2,7 @@
 
 #include <float.h>
 
-namespace wdMath
+namespace nsMath
 {
   //////////////////////////////////////////////////////////////////////////
 
@@ -68,7 +68,7 @@ namespace wdMath
 
     // NaN = 0111 1111 1000 0000 0000 0000 0000 0001
 
-    wdIntFloatUnion i2f(0x7f800042u);
+    nsIntFloatUnion i2f(0x7f800042u);
     return i2f.f;
   }
 
@@ -80,7 +80,7 @@ namespace wdMath
 
     // NaN = 0111 1111 1111 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0001
 
-    wdInt64DoubleUnion i2f(0x7FF0000000000042ull);
+    nsInt64DoubleUnion i2f(0x7FF0000000000042ull);
     return i2f.f;
   }
 
@@ -121,7 +121,7 @@ namespace wdMath
     // INF = 0111 1111 1000 0000 0000 0000 0000 0000
 
     // bitwise representation of float infinity (positive)
-    wdIntFloatUnion i2f(0x7f800000u);
+    nsIntFloatUnion i2f(0x7f800000u);
     return i2f.f;
   }
 
@@ -134,7 +134,7 @@ namespace wdMath
     // INF = 0111 1111 1111 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000
 
     // bitwise representation of double infinity (positive)
-    wdInt64DoubleUnion i2f(0x7FF0000000000000ull);
+    nsInt64DoubleUnion i2f(0x7FF0000000000000ull);
 
     return i2f.f;
   }
@@ -142,49 +142,49 @@ namespace wdMath
   //////////////////////////////////////////////////////////////////////////
 
   template <>
-  constexpr wdUInt8 MaxValue()
+  constexpr nsUInt8 MaxValue()
   {
     return 0xFF;
   }
 
   template <>
-  constexpr wdUInt16 MaxValue()
+  constexpr nsUInt16 MaxValue()
   {
     return 0xFFFF;
   }
 
   template <>
-  constexpr wdUInt32 MaxValue()
+  constexpr nsUInt32 MaxValue()
   {
     return 0xFFFFFFFFu;
   }
 
   template <>
-  constexpr wdUInt64 MaxValue()
+  constexpr nsUInt64 MaxValue()
   {
     return 0xFFFFFFFFFFFFFFFFull;
   }
 
   template <>
-  constexpr wdInt8 MaxValue()
+  constexpr nsInt8 MaxValue()
   {
     return 0x7F;
   }
 
   template <>
-  constexpr wdInt16 MaxValue()
+  constexpr nsInt16 MaxValue()
   {
     return 0x7FFF;
   }
 
   template <>
-  constexpr wdInt32 MaxValue()
+  constexpr nsInt32 MaxValue()
   {
     return 0x7FFFFFFF;
   }
 
   template <>
-  constexpr wdInt64 MaxValue()
+  constexpr nsInt64 MaxValue()
   {
     return 0x7FFFFFFFFFFFFFFFll;
   }
@@ -204,51 +204,51 @@ namespace wdMath
   //////////////////////////////////////////////////////////////////////////
 
   template <>
-  constexpr wdUInt8 MinValue()
+  constexpr nsUInt8 MinValue()
   {
     return 0;
   }
 
   template <>
-  constexpr wdUInt16 MinValue()
+  constexpr nsUInt16 MinValue()
   {
     return 0;
   }
 
   template <>
-  constexpr wdUInt32 MinValue()
+  constexpr nsUInt32 MinValue()
   {
     return 0;
   }
 
   template <>
-  constexpr wdUInt64 MinValue()
+  constexpr nsUInt64 MinValue()
   {
     return 0;
   }
 
   template <>
-  constexpr wdInt8 MinValue()
+  constexpr nsInt8 MinValue()
   {
-    return -MaxValue<wdInt8>() - 1;
+    return -MaxValue<nsInt8>() - 1;
   }
 
   template <>
-  constexpr wdInt16 MinValue()
+  constexpr nsInt16 MinValue()
   {
-    return -MaxValue<wdInt16>() - 1;
+    return -MaxValue<nsInt16>() - 1;
   }
 
   template <>
-  constexpr wdInt32 MinValue()
+  constexpr nsInt32 MinValue()
   {
-    return -MaxValue<wdInt32>() - 1;
+    return -MaxValue<nsInt32>() - 1;
   }
 
   template <>
-  constexpr wdInt64 MinValue()
+  constexpr nsInt64 MinValue()
   {
-    return -MaxValue<wdInt64>() - 1;
+    return -MaxValue<nsInt64>() - 1;
   }
 
   template <>
@@ -319,65 +319,65 @@ namespace wdMath
   //////////////////////////////////////////////////////////////////////////
 
   template <>
-  constexpr wdUInt32 NumBits<wdUInt8>()
+  constexpr nsUInt32 NumBits<nsUInt8>()
   {
     return 8;
   }
 
   template <>
-  constexpr wdUInt32 NumBits<wdUInt16>()
+  constexpr nsUInt32 NumBits<nsUInt16>()
   {
     return 16;
   }
 
   template <>
-  constexpr wdUInt32 NumBits<wdUInt32>()
+  constexpr nsUInt32 NumBits<nsUInt32>()
   {
     return 32;
   }
 
   template <>
-  constexpr wdUInt32 NumBits<wdUInt64>()
+  constexpr nsUInt32 NumBits<nsUInt64>()
   {
     return 64;
   }
 
   template <>
-  constexpr wdUInt32 NumBits<wdInt8>()
+  constexpr nsUInt32 NumBits<nsInt8>()
   {
     return 8;
   }
 
   template <>
-  constexpr wdUInt32 NumBits<wdInt16>()
+  constexpr nsUInt32 NumBits<nsInt16>()
   {
     return 16;
   }
 
   template <>
-  constexpr wdUInt32 NumBits<wdInt32>()
+  constexpr nsUInt32 NumBits<nsInt32>()
   {
     return 32;
   }
 
   template <>
-  constexpr wdUInt32 NumBits<wdInt64>()
+  constexpr nsUInt32 NumBits<nsInt64>()
   {
     return 64;
   }
 
   template <>
-  constexpr wdUInt32 NumBits<float>()
+  constexpr nsUInt32 NumBits<float>()
   {
     return 32;
   }
 
   template <>
-  constexpr wdUInt32 NumBits<double>()
+  constexpr nsUInt32 NumBits<double>()
   {
     return 64;
   }
 
   //////////////////////////////////////////////////////////////////////////
 
-} // namespace wdMath
+} // namespace nsMath

@@ -10,27 +10,27 @@
 ///
 /// This can be used by a game to store (and continuously update) information about the internal game state. Other tools can then
 /// display this information in a convenient manner. For example the stats can be shown on screen. The data is also transmitted through
-/// wdTelemetry, and the wdInspector tool will display the information.
-class WD_FOUNDATION_DLL wdStats
+/// nsTelemetry, and the nsInspector tool will display the information.
+class NS_FOUNDATION_DLL nsStats
 {
 public:
-  typedef wdMap<wdString, wdVariant> MapType;
+  using MapType = nsMap<nsString, nsVariant>;
 
   /// \brief Removes the stat with the given name.
   ///
-  /// This will also send a 'remove' message through wdTelemetry, such that external tools can remove it from their list.
-  static void RemoveStat(const char* szStatName);
+  /// This will also send a 'remove' message through nsTelemetry, such that external tools can remove it from their list.
+  static void RemoveStat(nsStringView sStatName);
 
   /// \brief Sets the value of the given stat, adds it if it did not exist before.
   ///
-  /// szStatName may contain slashes (but not backslashes) to define groups and subgroups, which can be used by tools such as wdInspector
+  /// szStatName may contain slashes (but not backslashes) to define groups and subgroups, which can be used by tools such as nsInspector
   /// to display the stats in a hierarchical way.
-  /// This function will also send the name and value of the stat through wdTelemetry, such that tools like wdInspector will show the
+  /// This function will also send the name and value of the stat through nsTelemetry, such that tools like nsInspector will show the
   /// changed value.
-  static void SetStat(const char* szStatName, const wdVariant& value);
+  static void SetStat(nsStringView sStatName, const nsVariant& value);
 
-  /// \brief Returns the value of the given stat. Returns an invalid wdVariant, if the stat did not exist before.
-  static const wdVariant& GetStat(const char* szStatName) { return s_Stats[szStatName]; }
+  /// \brief Returns the value of the given stat. Returns an invalid nsVariant, if the stat did not exist before.
+  static const nsVariant& GetStat(nsStringView sStatName) { return s_Stats[sStatName]; }
 
   /// \brief Returns the entire map of stats, can be used to display them.
   static const MapType& GetAllStats() { return s_Stats; }
@@ -47,20 +47,20 @@ public:
     };
 
     EventType m_EventType;
-    const char* m_szStatName;
-    wdVariant m_NewStatValue;
+    nsStringView m_sStatName;
+    nsVariant m_NewStatValue;
   };
 
-  typedef wdEvent<const StatsEventData&, wdMutex> wdEventStats;
+  using nsEventStats = nsEvent<const StatsEventData&, nsMutex>;
 
   /// \brief Adds an event handler that is called every time a stat is changed.
-  static void AddEventHandler(wdEventStats::Handler handler) { s_StatsEvents.AddEventHandler(handler); }
+  static void AddEventHandler(nsEventStats::Handler handler) { s_StatsEvents.AddEventHandler(handler); }
 
   /// \brief Removes a previously added event handler.
-  static void RemoveEventHandler(wdEventStats::Handler handler) { s_StatsEvents.RemoveEventHandler(handler); }
+  static void RemoveEventHandler(nsEventStats::Handler handler) { s_StatsEvents.RemoveEventHandler(handler); }
 
 private:
-  static wdMutex s_Mutex;
+  static nsMutex s_Mutex;
   static MapType s_Stats;
-  static wdEventStats s_StatsEvents;
+  static nsEventStats s_StatsEvents;
 };

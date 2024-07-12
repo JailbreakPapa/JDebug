@@ -1,0 +1,13 @@
+<root>
+    <style>
+        <include src="file://{resources}/styles/common_styles.css"/>
+    </style>
+    <script>
+        <include src="file://{resources}/scripts/util.js"/>
+        <include src="file://{resources}/scripts/myscript.js"/>
+    </script>
+    <div class="main_panel">
+        <Label text="Hello, Aperture UI!"/>
+        <Button class="my_button" onactivate="OnMyButtonPressed()"/>
+    </div>
+</root>

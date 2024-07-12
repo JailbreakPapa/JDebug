@@ -1,162 +1,162 @@
 
 template <typename T>
-WD_ALWAYS_INLINE wdAtomicInteger<T>::wdAtomicInteger()
-  : m_value(0)
+NS_ALWAYS_INLINE nsAtomicInteger<T>::nsAtomicInteger()
+  : m_Value(0)
 {
 }
 
 template <typename T>
-WD_ALWAYS_INLINE wdAtomicInteger<T>::wdAtomicInteger(T value)
-  : m_value(value)
+NS_ALWAYS_INLINE nsAtomicInteger<T>::nsAtomicInteger(T value)
+  : m_Value(static_cast<UnderlyingType>(value))
 {
 }
 
 template <typename T>
-WD_ALWAYS_INLINE wdAtomicInteger<T>::wdAtomicInteger(const wdAtomicInteger<T>& value)
-  : m_value(value.m_value)
+NS_ALWAYS_INLINE nsAtomicInteger<T>::nsAtomicInteger(const nsAtomicInteger<T>& value)
+  : m_Value(nsAtomicUtils::Read(value.m_Value))
 {
 }
 
 template <typename T>
-WD_ALWAYS_INLINE wdAtomicInteger<T>& wdAtomicInteger<T>::operator=(const T value)
+NS_ALWAYS_INLINE nsAtomicInteger<T>& nsAtomicInteger<T>::operator=(const T value)
 {
-  m_value = value;
+  Set(value);
   return *this;
 }
 
 template <typename T>
-WD_ALWAYS_INLINE wdAtomicInteger<T>& wdAtomicInteger<T>::operator=(const wdAtomicInteger<T>& value)
+NS_ALWAYS_INLINE nsAtomicInteger<T>& nsAtomicInteger<T>::operator=(const nsAtomicInteger<T>& value)
 {
-  m_value = value.m_value;
+  Set(nsAtomicUtils::Read(value.m_Value));
   return *this;
 }
 
 template <typename T>
-WD_ALWAYS_INLINE T wdAtomicInteger<T>::Increment()
+NS_ALWAYS_INLINE T nsAtomicInteger<T>::Increment()
 {
-  return wdAtomicUtils::Increment(m_value);
+  return static_cast<T>(nsAtomicUtils::Increment(m_Value));
 }
 
 template <typename T>
-WD_ALWAYS_INLINE T wdAtomicInteger<T>::Decrement()
+NS_ALWAYS_INLINE T nsAtomicInteger<T>::Decrement()
 {
-  return wdAtomicUtils::Decrement(m_value);
+  return static_cast<T>(nsAtomicUtils::Decrement(m_Value));
 }
 
 template <typename T>
-WD_ALWAYS_INLINE T wdAtomicInteger<T>::PostIncrement()
+NS_ALWAYS_INLINE T nsAtomicInteger<T>::PostIncrement()
 {
-  return wdAtomicUtils::PostIncrement(m_value);
+  return static_cast<T>(nsAtomicUtils::PostIncrement(m_Value));
 }
 
 template <typename T>
-WD_ALWAYS_INLINE T wdAtomicInteger<T>::PostDecrement()
+NS_ALWAYS_INLINE T nsAtomicInteger<T>::PostDecrement()
 {
-  return wdAtomicUtils::PostDecrement(m_value);
+  return static_cast<T>(nsAtomicUtils::PostDecrement(m_Value));
 }
 
 template <typename T>
-WD_ALWAYS_INLINE void wdAtomicInteger<T>::Add(T x)
+NS_ALWAYS_INLINE void nsAtomicInteger<T>::Add(T x)
 {
-  wdAtomicUtils::Add(m_value, x);
+  nsAtomicUtils::Add(m_Value, static_cast<UnderlyingType>(x));
 }
 
 template <typename T>
-WD_ALWAYS_INLINE void wdAtomicInteger<T>::Subtract(T x)
+NS_ALWAYS_INLINE void nsAtomicInteger<T>::Subtract(T x)
 {
-  wdAtomicUtils::Add(m_value, -x);
+  nsAtomicUtils::Add(m_Value, -static_cast<UnderlyingType>(x));
 }
 
 template <typename T>
-WD_ALWAYS_INLINE void wdAtomicInteger<T>::And(T x)
+NS_ALWAYS_INLINE void nsAtomicInteger<T>::And(T x)
 {
-  wdAtomicUtils::And(m_value, x);
+  nsAtomicUtils::And(m_Value, static_cast<UnderlyingType>(x));
 }
 
 template <typename T>
-WD_ALWAYS_INLINE void wdAtomicInteger<T>::Or(T x)
+NS_ALWAYS_INLINE void nsAtomicInteger<T>::Or(T x)
 {
-  wdAtomicUtils::Or(m_value, x);
+  nsAtomicUtils::Or(m_Value, static_cast<UnderlyingType>(x));
 }
 
 template <typename T>
-WD_ALWAYS_INLINE void wdAtomicInteger<T>::Xor(T x)
+NS_ALWAYS_INLINE void nsAtomicInteger<T>::Xor(T x)
 {
-  wdAtomicUtils::Xor(m_value, x);
+  nsAtomicUtils::Xor(m_Value, static_cast<UnderlyingType>(x));
 }
 
 template <typename T>
-WD_ALWAYS_INLINE void wdAtomicInteger<T>::Min(T x)
+NS_ALWAYS_INLINE void nsAtomicInteger<T>::Min(T x)
 {
-  wdAtomicUtils::Min(m_value, x);
+  nsAtomicUtils::Min(m_Value, static_cast<UnderlyingType>(x));
 }
 
 template <typename T>
-WD_ALWAYS_INLINE void wdAtomicInteger<T>::Max(T x)
+NS_ALWAYS_INLINE void nsAtomicInteger<T>::Max(T x)
 {
-  wdAtomicUtils::Max(m_value, x);
+  nsAtomicUtils::Max(m_Value, static_cast<UnderlyingType>(x));
 }
 
 template <typename T>
-WD_ALWAYS_INLINE T wdAtomicInteger<T>::Set(T x)
+NS_ALWAYS_INLINE T nsAtomicInteger<T>::Set(T x)
 {
-  return wdAtomicUtils::Set(m_value, x);
+  return static_cast<T>(nsAtomicUtils::Set(m_Value, static_cast<UnderlyingType>(x)));
 }
 
 template <typename T>
-WD_ALWAYS_INLINE bool wdAtomicInteger<T>::TestAndSet(T expected, T x)
+NS_ALWAYS_INLINE bool nsAtomicInteger<T>::TestAndSet(T expected, T x)
 {
-  return wdAtomicUtils::TestAndSet(m_value, expected, x);
+  return nsAtomicUtils::TestAndSet(m_Value, static_cast<UnderlyingType>(expected), static_cast<UnderlyingType>(x));
 }
 
 template <typename T>
-WD_ALWAYS_INLINE T wdAtomicInteger<T>::CompareAndSwap(T expected, T x)
+NS_ALWAYS_INLINE T nsAtomicInteger<T>::CompareAndSwap(T expected, T x)
 {
-  return wdAtomicUtils::CompareAndSwap(m_value, expected, x);
+  return static_cast<T>(nsAtomicUtils::CompareAndSwap(m_Value, static_cast<UnderlyingType>(expected), static_cast<UnderlyingType>(x)));
 }
 
 template <typename T>
-WD_ALWAYS_INLINE wdAtomicInteger<T>::operator T() const
+NS_ALWAYS_INLINE nsAtomicInteger<T>::operator T() const
 {
-  return wdAtomicUtils::Read(m_value);
+  return static_cast<T>(nsAtomicUtils::Read(m_Value));
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-WD_ALWAYS_INLINE wdAtomicBool::wdAtomicBool() = default;
-WD_ALWAYS_INLINE wdAtomicBool::~wdAtomicBool() = default;
+NS_ALWAYS_INLINE nsAtomicBool::nsAtomicBool() = default;
+NS_ALWAYS_INLINE nsAtomicBool::~nsAtomicBool() = default;
 
-WD_ALWAYS_INLINE wdAtomicBool::wdAtomicBool(bool value)
+NS_ALWAYS_INLINE nsAtomicBool::nsAtomicBool(bool value)
 {
   Set(value);
 }
 
-WD_ALWAYS_INLINE wdAtomicBool::wdAtomicBool(const wdAtomicBool& rhs)
+NS_ALWAYS_INLINE nsAtomicBool::nsAtomicBool(const nsAtomicBool& rhs)
 {
   Set(static_cast<bool>(rhs));
 }
 
-WD_ALWAYS_INLINE bool wdAtomicBool::Set(bool value)
+NS_ALWAYS_INLINE bool nsAtomicBool::Set(bool value)
 {
   return m_iAtomicInt.Set(value ? 1 : 0) != 0;
 }
 
-WD_ALWAYS_INLINE void wdAtomicBool::operator=(bool value)
+NS_ALWAYS_INLINE void nsAtomicBool::operator=(bool value)
 {
   Set(value);
 }
 
-WD_ALWAYS_INLINE void wdAtomicBool::operator=(const wdAtomicBool& rhs)
+NS_ALWAYS_INLINE void nsAtomicBool::operator=(const nsAtomicBool& rhs)
 {
   Set(static_cast<bool>(rhs));
 }
 
-WD_ALWAYS_INLINE wdAtomicBool::operator bool() const
+NS_ALWAYS_INLINE nsAtomicBool::operator bool() const
 {
-  return static_cast<wdInt32>(m_iAtomicInt) != 0;
+  return static_cast<nsInt32>(m_iAtomicInt) != 0;
 }
 
-WD_ALWAYS_INLINE bool wdAtomicBool::TestAndSet(bool bExpected, bool bNewValue)
+NS_ALWAYS_INLINE bool nsAtomicBool::TestAndSet(bool bExpected, bool bNewValue)
 {
   return m_iAtomicInt.TestAndSet(bExpected ? 1 : 0, bNewValue ? 1 : 0) != 0;
 }

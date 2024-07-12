@@ -2,11 +2,11 @@
 
 #include <Foundation/CodeUtils/Preprocessor.h>
 
-using namespace wdTokenParseUtils;
+using namespace nsTokenParseUtils;
 
-bool wdPreprocessor::RemoveDefine(const char* szName)
+bool nsPreprocessor::RemoveDefine(nsStringView sName)
 {
-  auto it = m_Macros.Find(szName);
+  auto it = m_Macros.Find(sName);
 
   if (it.IsValid())
   {
@@ -18,18 +18,18 @@ bool wdPreprocessor::RemoveDefine(const char* szName)
 }
 
 
-wdResult wdPreprocessor::StoreDefine(const wdToken* pMacroNameToken, const TokenStream* pReplacementTokens, wdUInt32 uiFirstReplacementToken, wdInt32 iNumParameters, bool bUsesVarArgs)
+nsResult nsPreprocessor::StoreDefine(const nsToken* pMacroNameToken, const TokenStream* pReplacementTokens, nsUInt32 uiFirstReplacementToken, nsInt32 iNumParameters, bool bUsesVarArgs)
 {
   if ((pMacroNameToken->m_DataView.IsEqual("defined")) || (pMacroNameToken->m_DataView.IsEqual("__FILE__")) || (pMacroNameToken->m_DataView.IsEqual("__LINE__")))
   {
     PP_LOG(Error, "Macro name '{0}' is reserved", pMacroNameToken, pMacroNameToken->m_DataView);
-    return WD_FAILURE;
+    return NS_FAILURE;
   }
 
   MacroDefinition md;
   md.m_MacroIdentifier = pMacroNameToken;
   md.m_bIsFunction = iNumParameters >= 0;
-  md.m_iNumParameters = wdMath::Max(0, iNumParameters);
+  md.m_iNumParameters = nsMath::Max(0, iNumParameters);
   md.m_bHasVarArgs = bUsesVarArgs;
 
   // removes whitespace at start and end, skips comments, newlines, etc.
@@ -39,14 +39,14 @@ wdResult wdPreprocessor::StoreDefine(const wdToken* pMacroNameToken, const Token
   if (!md.m_Replacement.IsEmpty() && md.m_Replacement.PeekBack()->m_DataView == "#")
   {
     PP_LOG(Error, "Macro '{0}' ends with invalid character '#'", md.m_Replacement.PeekBack(), pMacroNameToken->m_DataView);
-    return WD_FAILURE;
+    return NS_FAILURE;
   }
 
   /* make sure all replacements are not empty
   {
-    wdToken Whitespace;
+    nsToken Whitespace;
     Whitespace.m_File = pMacroNameToken->m_File;
-    Whitespace.m_iType = wdTokenType::Whitespace;
+    Whitespace.m_iType = nsTokenType::Whitespace;
     Whitespace.m_uiColumn = pMacroNameToken->m_uiColumn + sMacroName.GetCharacterCount() + 1;
     Whitespace.m_uiLine = pMacroNameToken->m_uiLine;
 
@@ -64,26 +64,26 @@ wdResult wdPreprocessor::StoreDefine(const wdToken* pMacroNameToken, const Token
   if (bExisted)
   {
     PP_LOG(Warning, "Redefinition of macro '{0}'", pMacroNameToken, pMacroNameToken->m_DataView);
-    // return WD_FAILURE;
+    // return NS_FAILURE;
   }
 
   it.Value() = md;
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
-wdResult wdPreprocessor::HandleDefine(const TokenStream& Tokens, wdUInt32& uiCurToken)
+nsResult nsPreprocessor::HandleDefine(const TokenStream& Tokens, nsUInt32& uiCurToken)
 {
   SkipWhitespace(Tokens, uiCurToken);
 
-  wdUInt32 uiNameToken = uiCurToken;
+  nsUInt32 uiNameToken = uiCurToken;
 
-  if (Expect(Tokens, uiCurToken, wdTokenType::Identifier, &uiNameToken).Failed())
-    return WD_FAILURE;
+  if (Expect(Tokens, uiCurToken, nsTokenType::Identifier, &uiNameToken).Failed())
+    return NS_FAILURE;
 
   // check if we got an empty macro definition
   if (IsEndOfLine(Tokens, uiCurToken, true))
   {
-    wdStringBuilder sDefine = Tokens[uiNameToken]->m_DataView;
+    nsStringBuilder sDefine = Tokens[uiNameToken]->m_DataView;
 
     return StoreDefine(Tokens[uiNameToken], nullptr, 0, -1, false);
   }
@@ -101,31 +101,31 @@ wdResult wdPreprocessor::HandleDefine(const TokenStream& Tokens, wdUInt32& uiCur
 
     // skip the opening parenthesis (
     if (Expect(Tokens, uiCurToken, "(").Failed())
-      return WD_FAILURE;
+      return NS_FAILURE;
 
-    wdHybridArray<wdString, 16> parameters;
+    nsHybridArray<nsString, 16> parameters;
 
     while (!Accept(Tokens, uiCurToken, ")"))
     {
       if (uiCurToken >= Tokens.GetCount())
       {
         PP_LOG(Error, "Could not extract macro parameter {0}, reached end of token stream first", Tokens[Tokens.GetCount() - 1], parameters.GetCount());
-        return WD_FAILURE;
+        return NS_FAILURE;
       }
 
-      const wdUInt32 uiCurParamToken = uiCurToken;
+      const nsUInt32 uiCurParamToken = uiCurToken;
 
-      wdString sParam;
-      if (ExtractParameterName(Tokens, uiCurToken, sParam) == WD_FAILURE)
+      nsString sParam;
+      if (ExtractParameterName(Tokens, uiCurToken, sParam) == NS_FAILURE)
       {
         PP_LOG(Error, "Could not extract macro parameter {0}", Tokens[uiCurParamToken], parameters.GetCount());
-        return WD_FAILURE;
+        return NS_FAILURE;
       }
 
       if (bVarArgsFounds)
       {
         PP_LOG0(Error, "No additional parameters are allowed after '...'", Tokens[uiCurParamToken]);
-        return WD_FAILURE;
+        return NS_FAILURE;
       }
 
       /// \todo Make sure the same parameter name is not used twice
@@ -142,44 +142,40 @@ wdResult wdPreprocessor::HandleDefine(const TokenStream& Tokens, wdUInt32& uiCur
     TokenStream ReplacementTokens;
     CopyTokensReplaceParams(Tokens, uiCurToken, ReplacementTokens, parameters);
 
-    WD_SUCCEED_OR_RETURN(StoreDefine(Tokens[uiNameToken], &ReplacementTokens, 0, parameters.GetCount(), bVarArgsFounds));
+    NS_SUCCEED_OR_RETURN(StoreDefine(Tokens[uiNameToken], &ReplacementTokens, 0, parameters.GetCount(), bVarArgsFounds));
   }
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
-wdResult wdPreprocessor::AddCustomDefine(const char* szDefinition)
+nsResult nsPreprocessor::AddCustomDefine(nsStringView sDefinition)
 {
   m_CustomDefines.PushBack();
-  m_CustomDefines.PeekBack().m_Content.SetCountUninitialized(wdStringUtils::GetStringElementCount(szDefinition));
-  wdMemoryUtils::Copy(&m_CustomDefines.PeekBack().m_Content[0], (wdUInt8*)szDefinition, m_CustomDefines.PeekBack().m_Content.GetCount());
+  m_CustomDefines.PeekBack().m_Content.SetCountUninitialized(sDefinition.GetElementCount());
+  nsMemoryUtils::Copy(&m_CustomDefines.PeekBack().m_Content[0], (nsUInt8*)sDefinition.GetStartPointer(), m_CustomDefines.PeekBack().m_Content.GetCount());
   m_CustomDefines.PeekBack().m_Tokenized.Tokenize(m_CustomDefines.PeekBack().m_Content, m_pLog);
 
-  wdUInt32 uiFirstToken = 0;
-  wdHybridArray<const wdToken*, 32> Tokens;
+  nsUInt32 uiFirstToken = 0;
+  nsHybridArray<const nsToken*, 32> Tokens;
 
   if (m_CustomDefines.PeekBack().m_Tokenized.GetNextLine(uiFirstToken, Tokens).Failed())
-    return WD_FAILURE;
+    return NS_FAILURE;
 
-  wdDeque<wdToken>& NewTokens = m_CustomDefines.PeekBack().m_Tokenized.GetTokens();
+  nsDeque<nsToken>& NewTokens = m_CustomDefines.PeekBack().m_Tokenized.GetTokens();
 
-  wdHashedString sFile;
+  nsHashedString sFile;
   sFile.Assign("<CustomDefines>");
 
-  wdUInt32 uiColumn = 1;
-  for (wdUInt32 t = 0; t < NewTokens.GetCount(); ++t)
+  nsUInt32 uiColumn = 1;
+  for (nsUInt32 t = 0; t < NewTokens.GetCount(); ++t)
   {
     NewTokens[t].m_File = sFile;
     NewTokens[t].m_uiLine = m_CustomDefines.GetCount();
     NewTokens[t].m_uiColumn = uiColumn;
 
-    uiColumn += wdStringUtils::GetCharacterCount(NewTokens[t].m_DataView.GetStartPointer(), NewTokens[t].m_DataView.GetEndPointer());
+    uiColumn += nsStringUtils::GetCharacterCount(NewTokens[t].m_DataView.GetStartPointer(), NewTokens[t].m_DataView.GetEndPointer());
   }
 
-  wdUInt32 uiCurToken = 0;
+  nsUInt32 uiCurToken = 0;
   return HandleDefine(Tokens, uiCurToken);
 }
-
-
-
-WD_STATICLINK_FILE(Foundation, Foundation_CodeUtils_Implementation_Defines);

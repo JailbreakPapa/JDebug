@@ -3,13 +3,13 @@
 #include <Foundation/IO/Stream.h>
 #include <Foundation/Tracks/ColorGradient.h>
 
-wdColorGradient::wdColorGradient()
+nsColorGradient::nsColorGradient()
 {
   Clear();
 }
 
 
-void wdColorGradient::Clear()
+void nsColorGradient::Clear()
 {
   m_ColorCPs.Clear();
   m_AlphaCPs.Clear();
@@ -17,12 +17,12 @@ void wdColorGradient::Clear()
 }
 
 
-bool wdColorGradient::IsEmpty() const
+bool nsColorGradient::IsEmpty() const
 {
   return m_ColorCPs.IsEmpty() && m_AlphaCPs.IsEmpty() && m_IntensityCPs.IsEmpty();
 }
 
-void wdColorGradient::AddColorControlPoint(double x, const wdColorGammaUB& rgb)
+void nsColorGradient::AddColorControlPoint(double x, const nsColorGammaUB& rgb)
 {
   auto& cp = m_ColorCPs.ExpandAndGetRef();
   cp.m_PosX = x;
@@ -31,54 +31,54 @@ void wdColorGradient::AddColorControlPoint(double x, const wdColorGammaUB& rgb)
   cp.m_GammaBlue = rgb.b;
 }
 
-void wdColorGradient::AddAlphaControlPoint(double x, wdUInt8 uiAlpha)
+void nsColorGradient::AddAlphaControlPoint(double x, nsUInt8 uiAlpha)
 {
   auto& cp = m_AlphaCPs.ExpandAndGetRef();
   cp.m_PosX = x;
   cp.m_Alpha = uiAlpha;
 }
 
-void wdColorGradient::AddIntensityControlPoint(double x, float fIntensity)
+void nsColorGradient::AddIntensityControlPoint(double x, float fIntensity)
 {
   auto& cp = m_IntensityCPs.ExpandAndGetRef();
   cp.m_PosX = x;
   cp.m_Intensity = fIntensity;
 }
 
-bool wdColorGradient::GetExtents(double& ref_fMinx, double& ref_fMaxx) const
+bool nsColorGradient::GetExtents(double& ref_fMinx, double& ref_fMaxx) const
 {
-  ref_fMinx = wdMath::MaxValue<float>();
-  ref_fMaxx = -wdMath::MaxValue<float>();
+  ref_fMinx = nsMath::MaxValue<float>();
+  ref_fMaxx = -nsMath::MaxValue<float>();
 
   for (const auto& cp : m_ColorCPs)
   {
-    ref_fMinx = wdMath::Min(ref_fMinx, cp.m_PosX);
-    ref_fMaxx = wdMath::Max(ref_fMaxx, cp.m_PosX);
+    ref_fMinx = nsMath::Min(ref_fMinx, cp.m_PosX);
+    ref_fMaxx = nsMath::Max(ref_fMaxx, cp.m_PosX);
   }
 
   for (const auto& cp : m_AlphaCPs)
   {
-    ref_fMinx = wdMath::Min(ref_fMinx, cp.m_PosX);
-    ref_fMaxx = wdMath::Max(ref_fMaxx, cp.m_PosX);
+    ref_fMinx = nsMath::Min(ref_fMinx, cp.m_PosX);
+    ref_fMaxx = nsMath::Max(ref_fMaxx, cp.m_PosX);
   }
 
   for (const auto& cp : m_IntensityCPs)
   {
-    ref_fMinx = wdMath::Min(ref_fMinx, cp.m_PosX);
-    ref_fMaxx = wdMath::Max(ref_fMaxx, cp.m_PosX);
+    ref_fMinx = nsMath::Min(ref_fMinx, cp.m_PosX);
+    ref_fMaxx = nsMath::Max(ref_fMaxx, cp.m_PosX);
   }
 
   return ref_fMinx <= ref_fMaxx;
 }
 
-void wdColorGradient::GetNumControlPoints(wdUInt32& ref_uiRgb, wdUInt32& ref_uiAlpha, wdUInt32& ref_uiIntensity) const
+void nsColorGradient::GetNumControlPoints(nsUInt32& ref_uiRgb, nsUInt32& ref_uiAlpha, nsUInt32& ref_uiIntensity) const
 {
   ref_uiRgb = m_ColorCPs.GetCount();
   ref_uiAlpha = m_AlphaCPs.GetCount();
   ref_uiIntensity = m_IntensityCPs.GetCount();
 }
 
-void wdColorGradient::SortControlPoints()
+void nsColorGradient::SortControlPoints()
 {
   m_ColorCPs.Sort();
   m_AlphaCPs.Sort();
@@ -87,9 +87,9 @@ void wdColorGradient::SortControlPoints()
   PrecomputeLerpNormalizer();
 }
 
-void wdColorGradient::PrecomputeLerpNormalizer()
+void nsColorGradient::PrecomputeLerpNormalizer()
 {
-  for (wdUInt32 i = 1; i < m_ColorCPs.GetCount(); ++i)
+  for (nsUInt32 i = 1; i < m_ColorCPs.GetCount(); ++i)
   {
     const double px0 = m_ColorCPs[i - 1].m_PosX;
     const double px1 = m_ColorCPs[i].m_PosX;
@@ -100,7 +100,7 @@ void wdColorGradient::PrecomputeLerpNormalizer()
     m_ColorCPs[i - 1].m_fInvDistToNextCp = (float)invDist;
   }
 
-  for (wdUInt32 i = 1; i < m_AlphaCPs.GetCount(); ++i)
+  for (nsUInt32 i = 1; i < m_AlphaCPs.GetCount(); ++i)
   {
     const double px0 = m_AlphaCPs[i - 1].m_PosX;
     const double px1 = m_AlphaCPs[i].m_PosX;
@@ -111,7 +111,7 @@ void wdColorGradient::PrecomputeLerpNormalizer()
     m_AlphaCPs[i - 1].m_fInvDistToNextCp = (float)invDist;
   }
 
-  for (wdUInt32 i = 1; i < m_IntensityCPs.GetCount(); ++i)
+  for (nsUInt32 i = 1; i < m_IntensityCPs.GetCount(); ++i)
   {
     const double px0 = m_IntensityCPs[i - 1].m_PosX;
     const double px1 = m_IntensityCPs[i].m_PosX;
@@ -123,7 +123,7 @@ void wdColorGradient::PrecomputeLerpNormalizer()
   }
 }
 
-void wdColorGradient::Evaluate(double x, wdColorGammaUB& ref_rgba, float& ref_fIntensity) const
+void nsColorGradient::Evaluate(double x, nsColorGammaUB& ref_rgba, float& ref_fIntensity) const
 {
   ref_rgba.r = 255;
   ref_rgba.g = 255;
@@ -137,36 +137,36 @@ void wdColorGradient::Evaluate(double x, wdColorGammaUB& ref_rgba, float& ref_fI
 }
 
 
-void wdColorGradient::Evaluate(double x, wdColor& ref_hdr) const
+void nsColorGradient::Evaluate(double x, nsColor& ref_hdr) const
 {
   float intensity = 1.0f;
-  wdUInt8 alpha = 255;
+  nsUInt8 alpha = 255;
 
   EvaluateColor(x, ref_hdr);
   EvaluateAlpha(x, alpha);
   EvaluateIntensity(x, intensity);
 
   ref_hdr.ScaleRGB(intensity);
-  ref_hdr.a = wdMath::ColorByteToFloat(alpha);
+  ref_hdr.a = nsMath::ColorByteToFloat(alpha);
 }
 
-void wdColorGradient::EvaluateColor(double x, wdColorGammaUB& ref_rgb) const
+void nsColorGradient::EvaluateColor(double x, nsColorGammaUB& ref_rgb) const
 {
-  wdColor hdr;
+  nsColor hdr;
   EvaluateColor(x, hdr);
 
   ref_rgb = hdr;
   ref_rgb.a = 255;
 }
 
-void wdColorGradient::EvaluateColor(double x, wdColor& ref_rgb) const
+void nsColorGradient::EvaluateColor(double x, nsColor& ref_rgb) const
 {
   ref_rgb.r = 1.0f;
   ref_rgb.g = 1.0f;
   ref_rgb.b = 1.0f;
   ref_rgb.a = 1.0f;
 
-  const wdUInt32 numCPs = m_ColorCPs.GetCount();
+  const nsUInt32 numCPs = m_ColorCPs.GetCount();
 
   if (numCPs >= 2)
   {
@@ -174,13 +174,13 @@ void wdColorGradient::EvaluateColor(double x, wdColor& ref_rgb) const
     if (m_ColorCPs[0].m_PosX >= x)
     {
       const ColorCP& cp = m_ColorCPs[0];
-      ref_rgb = wdColorGammaUB(cp.m_GammaRed, cp.m_GammaGreen, cp.m_GammaBlue);
+      ref_rgb = nsColorGammaUB(cp.m_GammaRed, cp.m_GammaGreen, cp.m_GammaBlue);
       return;
     }
 
-    wdUInt32 uiControlPoint;
+    nsUInt32 uiControlPoint;
 
-    for (wdUInt32 i = 1; i < numCPs; ++i)
+    for (nsUInt32 i = 1; i < numCPs; ++i)
     {
       if (m_ColorCPs[i].m_PosX >= x)
       {
@@ -192,7 +192,7 @@ void wdColorGradient::EvaluateColor(double x, wdColor& ref_rgb) const
     // no point found -> clamp to right value
     {
       const ColorCP& cp = m_ColorCPs[numCPs - 1];
-      ref_rgb = wdColorGammaUB(cp.m_GammaRed, cp.m_GammaGreen, cp.m_GammaBlue);
+      ref_rgb = nsColorGammaUB(cp.m_GammaRed, cp.m_GammaGreen, cp.m_GammaBlue);
       return;
     }
 
@@ -201,28 +201,28 @@ void wdColorGradient::EvaluateColor(double x, wdColor& ref_rgb) const
     const ColorCP& cpl = m_ColorCPs[uiControlPoint];
     const ColorCP& cpr = m_ColorCPs[uiControlPoint + 1];
 
-    const wdColor lhs(wdColorGammaUB(cpl.m_GammaRed, cpl.m_GammaGreen, cpl.m_GammaBlue, 255));
-    const wdColor rhs(wdColorGammaUB(cpr.m_GammaRed, cpr.m_GammaGreen, cpr.m_GammaBlue, 255));
+    const nsColor lhs(nsColorGammaUB(cpl.m_GammaRed, cpl.m_GammaGreen, cpl.m_GammaBlue, 255));
+    const nsColor rhs(nsColorGammaUB(cpr.m_GammaRed, cpr.m_GammaGreen, cpr.m_GammaBlue, 255));
 
     /// \todo Use a midpoint interpolation
 
     // interpolate (linear for now)
     const float lerpX = (float)(x - cpl.m_PosX) * cpl.m_fInvDistToNextCp;
 
-    ref_rgb = wdMath::Lerp(lhs, rhs, lerpX);
+    ref_rgb = nsMath::Lerp(lhs, rhs, lerpX);
   }
   }
   else if (m_ColorCPs.GetCount() == 1)
   {
-    ref_rgb = wdColorGammaUB(m_ColorCPs[0].m_GammaRed, m_ColorCPs[0].m_GammaGreen, m_ColorCPs[0].m_GammaBlue);
+    ref_rgb = nsColorGammaUB(m_ColorCPs[0].m_GammaRed, m_ColorCPs[0].m_GammaGreen, m_ColorCPs[0].m_GammaBlue);
   }
 }
 
-void wdColorGradient::EvaluateAlpha(double x, wdUInt8& ref_uiAlpha) const
+void nsColorGradient::EvaluateAlpha(double x, nsUInt8& ref_uiAlpha) const
 {
   ref_uiAlpha = 255;
 
-  const wdUInt32 numCPs = m_AlphaCPs.GetCount();
+  const nsUInt32 numCPs = m_AlphaCPs.GetCount();
   if (numCPs >= 2)
   {
     // clamp to left value
@@ -232,9 +232,9 @@ void wdColorGradient::EvaluateAlpha(double x, wdUInt8& ref_uiAlpha) const
       return;
     }
 
-    wdUInt32 uiControlPoint;
+    nsUInt32 uiControlPoint;
 
-    for (wdUInt32 i = 1; i < numCPs; ++i)
+    for (nsUInt32 i = 1; i < numCPs; ++i)
     {
       if (m_AlphaCPs[i].m_PosX >= x)
       {
@@ -259,7 +259,7 @@ void wdColorGradient::EvaluateAlpha(double x, wdUInt8& ref_uiAlpha) const
     // interpolate (linear for now)
     const float lerpX = (float)(x - cpl.m_PosX) * cpl.m_fInvDistToNextCp;
 
-    ref_uiAlpha = wdMath::Lerp(cpl.m_Alpha, cpr.m_Alpha, lerpX);
+    ref_uiAlpha = nsMath::Lerp(cpl.m_Alpha, cpr.m_Alpha, lerpX);
   }
   }
   else if (m_AlphaCPs.GetCount() == 1)
@@ -268,11 +268,11 @@ void wdColorGradient::EvaluateAlpha(double x, wdUInt8& ref_uiAlpha) const
   }
 }
 
-void wdColorGradient::EvaluateIntensity(double x, float& ref_fIntensity) const
+void nsColorGradient::EvaluateIntensity(double x, float& ref_fIntensity) const
 {
   ref_fIntensity = 1.0f;
 
-  const wdUInt32 numCPs = m_IntensityCPs.GetCount();
+  const nsUInt32 numCPs = m_IntensityCPs.GetCount();
   if (m_IntensityCPs.GetCount() >= 2)
   {
     // clamp to left value
@@ -282,9 +282,9 @@ void wdColorGradient::EvaluateIntensity(double x, float& ref_fIntensity) const
       return;
     }
 
-    wdUInt32 uiControlPoint;
+    nsUInt32 uiControlPoint;
 
-    for (wdUInt32 i = 1; i < numCPs; ++i)
+    for (nsUInt32 i = 1; i < numCPs; ++i)
     {
       if (m_IntensityCPs[i].m_PosX >= x)
       {
@@ -309,7 +309,7 @@ void wdColorGradient::EvaluateIntensity(double x, float& ref_fIntensity) const
     // interpolate (linear for now)
     const float lerpX = (float)(x - cpl.m_PosX) * cpl.m_fInvDistToNextCp;
 
-    ref_fIntensity = wdMath::Lerp(cpl.m_Intensity, cpr.m_Intensity, lerpX);
+    ref_fIntensity = nsMath::Lerp(cpl.m_Intensity, cpr.m_Intensity, lerpX);
   }
   }
   else if (m_IntensityCPs.GetCount() == 1)
@@ -318,20 +318,20 @@ void wdColorGradient::EvaluateIntensity(double x, float& ref_fIntensity) const
   }
 }
 
-wdUInt64 wdColorGradient::GetHeapMemoryUsage() const
+nsUInt64 nsColorGradient::GetHeapMemoryUsage() const
 {
   return m_ColorCPs.GetHeapMemoryUsage() + m_AlphaCPs.GetHeapMemoryUsage() + m_IntensityCPs.GetHeapMemoryUsage();
 }
 
-void wdColorGradient::Save(wdStreamWriter& inout_stream) const
+void nsColorGradient::Save(nsStreamWriter& inout_stream) const
 {
-  const wdUInt8 uiVersion = 2;
+  const nsUInt8 uiVersion = 2;
 
   inout_stream << uiVersion;
 
-  const wdUInt32 numColor = m_ColorCPs.GetCount();
-  const wdUInt32 numAlpha = m_AlphaCPs.GetCount();
-  const wdUInt32 numIntensity = m_IntensityCPs.GetCount();
+  const nsUInt32 numColor = m_ColorCPs.GetCount();
+  const nsUInt32 numAlpha = m_AlphaCPs.GetCount();
+  const nsUInt32 numIntensity = m_IntensityCPs.GetCount();
 
   inout_stream << numColor;
   inout_stream << numAlpha;
@@ -358,16 +358,16 @@ void wdColorGradient::Save(wdStreamWriter& inout_stream) const
   }
 }
 
-void wdColorGradient::Load(wdStreamReader& inout_stream)
+void nsColorGradient::Load(nsStreamReader& inout_stream)
 {
-  wdUInt8 uiVersion = 0;
+  nsUInt8 uiVersion = 0;
 
   inout_stream >> uiVersion;
-  WD_ASSERT_DEV(uiVersion <= 2, "Incorrect version '{0}' for wdColorGradient", uiVersion);
+  NS_ASSERT_DEV(uiVersion <= 2, "Incorrect version '{0}' for nsColorGradient", uiVersion);
 
-  wdUInt32 numColor = 0;
-  wdUInt32 numAlpha = 0;
-  wdUInt32 numIntensity = 0;
+  nsUInt32 numColor = 0;
+  nsUInt32 numAlpha = 0;
+  nsUInt32 numIntensity = 0;
 
   inout_stream >> numColor;
   inout_stream >> numAlpha;
@@ -428,7 +428,3 @@ void wdColorGradient::Load(wdStreamReader& inout_stream)
 
   PrecomputeLerpNormalizer();
 }
-
-
-
-WD_STATICLINK_FILE(Foundation, Foundation_Tracks_Implementation_ColorGradient);

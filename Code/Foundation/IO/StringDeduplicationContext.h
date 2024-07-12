@@ -7,60 +7,60 @@
 #include <Foundation/IO/SerializationContext.h>
 #include <Foundation/Strings/String.h>
 
-class wdStreamWriter;
-class wdStreamReader;
+class nsStreamWriter;
+class nsStreamReader;
 
 /// \brief This class allows for automatic deduplication of strings written to a stream.
 /// To use, create an object of this type on the stack, call Begin() and use the returned
-/// wdStreamWriter for subsequent serialization operations. Call End() once you want to finish writing
+/// nsStreamWriter for subsequent serialization operations. Call End() once you want to finish writing
 /// deduplicated strings. For a sample see StreamOperationsTest.cpp
-class WD_FOUNDATION_DLL wdStringDeduplicationWriteContext : public wdSerializationContext<wdStringDeduplicationWriteContext>
+class NS_FOUNDATION_DLL nsStringDeduplicationWriteContext : public nsSerializationContext<nsStringDeduplicationWriteContext>
 {
-  WD_DECLARE_SERIALIZATION_CONTEXT(wdStringDeduplicationWriteContext);
+  NS_DECLARE_SERIALIZATION_CONTEXT(nsStringDeduplicationWriteContext);
 
 public:
   /// \brief Setup the write context to perform string deduplication.
-  wdStringDeduplicationWriteContext(wdStreamWriter& ref_originalStream);
-  ~wdStringDeduplicationWriteContext();
+  nsStringDeduplicationWriteContext(nsStreamWriter& ref_originalStream);
+  ~nsStringDeduplicationWriteContext();
 
   /// \brief Call this method to begin string deduplicaton. You need to use the returned stream writer for subsequent serialization operations until
   /// End() is called.
-  wdStreamWriter& Begin();
+  nsStreamWriter& Begin();
 
   /// \brief Ends the string deduplication and writes the string table to the original stream
-  wdResult End();
+  nsResult End();
 
   /// \brief Internal method to serialize a string.
-  void SerializeString(const wdStringView& sString, wdStreamWriter& ref_writer);
+  void SerializeString(const nsStringView& sString, nsStreamWriter& ref_writer);
 
   /// \brief Returns the number of unique strings which were serialized with this instance.
-  wdUInt32 GetUniqueStringCount() const;
+  nsUInt32 GetUniqueStringCount() const;
 
   /// \brief Returns the original stream that was passed to the constructor.
-  wdStreamWriter& GetOriginalStream() { return m_OriginalStream; }
+  nsStreamWriter& GetOriginalStream() { return m_OriginalStream; }
 
 protected:
-  wdStreamWriter& m_OriginalStream;
+  nsStreamWriter& m_OriginalStream;
 
-  wdDefaultMemoryStreamStorage m_TempStreamStorage;
-  wdMemoryStreamWriter m_TempStreamWriter;
+  nsDefaultMemoryStreamStorage m_TempStreamStorage;
+  nsMemoryStreamWriter m_TempStreamWriter;
 
-  wdMap<wdHybridString<64>, wdUInt32> m_DeduplicatedStrings;
+  nsMap<nsHybridString<64>, nsUInt32> m_DeduplicatedStrings;
 };
 
-/// \brief This class to restore strings written to a stream using a wdStringDeduplicationWriteContext.
-class WD_FOUNDATION_DLL wdStringDeduplicationReadContext : public wdSerializationContext<wdStringDeduplicationReadContext>
+/// \brief This class to restore strings written to a stream using a nsStringDeduplicationWriteContext.
+class NS_FOUNDATION_DLL nsStringDeduplicationReadContext : public nsSerializationContext<nsStringDeduplicationReadContext>
 {
-  WD_DECLARE_SERIALIZATION_CONTEXT(wdStringDeduplicationReadContext);
+  NS_DECLARE_SERIALIZATION_CONTEXT(nsStringDeduplicationReadContext);
 
 public:
   /// \brief Setup the string table used internally.
-  wdStringDeduplicationReadContext(wdStreamReader& inout_stream);
-  ~wdStringDeduplicationReadContext();
+  nsStringDeduplicationReadContext(nsStreamReader& inout_stream);
+  ~nsStringDeduplicationReadContext();
 
   /// \brief Internal method to deserialize a string.
-  wdStringView DeserializeString(wdStreamReader& ref_reader);
+  nsStringView DeserializeString(nsStreamReader& ref_reader);
 
 protected:
-  wdDynamicArray<wdHybridString<64>> m_DeduplicatedStrings;
+  nsDynamicArray<nsHybridString<64>> m_DeduplicatedStrings;
 };

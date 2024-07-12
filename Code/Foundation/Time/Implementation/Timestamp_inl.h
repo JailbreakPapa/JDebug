@@ -3,143 +3,135 @@
 #include <Foundation/Basics.h>
 #include <Foundation/Math/Math.h>
 
-static const wdInt64 WD_INVALID_TIME_STAMP = 0x7FFFFFFFFFFFFFFFLL;
+inline nsTimestamp::nsTimestamp() = default;
 
-inline wdTimestamp::wdTimestamp()
+inline bool nsTimestamp::IsValid() const
 {
-  Invalidate();
+  return m_iTimestamp != NS_INVALID_TIME_STAMP;
 }
 
-inline wdTimestamp::wdTimestamp(wdInt64 iTimeValue, wdSIUnitOfTime::Enum unitOfTime)
+inline void nsTimestamp::operator+=(const nsTime& timeSpan)
 {
-  SetInt64(iTimeValue, unitOfTime);
+  NS_ASSERT_DEBUG(IsValid(), "Arithmetics on invalid time stamps are not allowed!");
+  m_iTimestamp += (nsInt64)timeSpan.GetMicroseconds();
 }
 
-inline void wdTimestamp::Invalidate()
+inline void nsTimestamp::operator-=(const nsTime& timeSpan)
 {
-  m_iTimestamp = WD_INVALID_TIME_STAMP;
+  NS_ASSERT_DEBUG(IsValid(), "Arithmetics on invalid time stamps are not allowed!");
+  m_iTimestamp -= (nsInt64)timeSpan.GetMicroseconds();
 }
 
-inline bool wdTimestamp::IsValid() const
+inline const nsTime nsTimestamp::operator-(const nsTimestamp& other) const
 {
-  return m_iTimestamp != WD_INVALID_TIME_STAMP;
+  NS_ASSERT_DEBUG(IsValid(), "Arithmetics on invalid time stamps are not allowed!");
+  NS_ASSERT_DEBUG(other.IsValid(), "Arithmetics on invalid time stamps are not allowed!");
+  return nsTime::MakeFromMicroseconds((double)(m_iTimestamp - other.m_iTimestamp));
 }
 
-inline void wdTimestamp::operator+=(const wdTime& timeSpan)
+inline const nsTimestamp nsTimestamp::operator+(const nsTime& timeSpan) const
 {
-  WD_ASSERT_DEBUG(IsValid(), "Arithmetics on invalid time stamps are not allowed!");
-  m_iTimestamp += (wdInt64)timeSpan.GetMicroseconds();
+  NS_ASSERT_DEBUG(IsValid(), "Arithmetics on invalid time stamps are not allowed!");
+  return nsTimestamp::MakeFromInt(m_iTimestamp + (nsInt64)timeSpan.GetMicroseconds(), nsSIUnitOfTime::Microsecond);
 }
 
-inline void wdTimestamp::operator-=(const wdTime& timeSpan)
+inline const nsTimestamp nsTimestamp::operator-(const nsTime& timeSpan) const
 {
-  WD_ASSERT_DEBUG(IsValid(), "Arithmetics on invalid time stamps are not allowed!");
-  m_iTimestamp -= (wdInt64)timeSpan.GetMicroseconds();
+  NS_ASSERT_DEBUG(IsValid(), "Arithmetics on invalid time stamps are not allowed!");
+  return nsTimestamp::MakeFromInt(m_iTimestamp - (nsInt64)timeSpan.GetMicroseconds(), nsSIUnitOfTime::Microsecond);
 }
 
-inline const wdTime wdTimestamp::operator-(const wdTimestamp& other) const
+inline const nsTimestamp operator+(const nsTime& timeSpan, const nsTimestamp& timestamp)
 {
-  WD_ASSERT_DEBUG(IsValid(), "Arithmetics on invalid time stamps are not allowed!");
-  WD_ASSERT_DEBUG(other.IsValid(), "Arithmetics on invalid time stamps are not allowed!");
-  return wdTime::Microseconds((double)(m_iTimestamp - other.m_iTimestamp));
-}
-
-inline const wdTimestamp wdTimestamp::operator+(const wdTime& timeSpan) const
-{
-  WD_ASSERT_DEBUG(IsValid(), "Arithmetics on invalid time stamps are not allowed!");
-  return wdTimestamp(m_iTimestamp + (wdInt64)timeSpan.GetMicroseconds(), wdSIUnitOfTime::Microsecond);
-}
-
-inline const wdTimestamp wdTimestamp::operator-(const wdTime& timeSpan) const
-{
-  WD_ASSERT_DEBUG(IsValid(), "Arithmetics on invalid time stamps are not allowed!");
-  return wdTimestamp(m_iTimestamp - (wdInt64)timeSpan.GetMicroseconds(), wdSIUnitOfTime::Microsecond);
-}
-
-inline const wdTimestamp operator+(const wdTime& timeSpan, const wdTimestamp& timestamp)
-{
-  WD_ASSERT_DEBUG(timestamp.IsValid(), "Arithmetics on invalid time stamps are not allowed!");
-  return wdTimestamp(timestamp.GetInt64(wdSIUnitOfTime::Microsecond) + (wdInt64)timeSpan.GetMicroseconds(), wdSIUnitOfTime::Microsecond);
+  NS_ASSERT_DEBUG(timestamp.IsValid(), "Arithmetics on invalid time stamps are not allowed!");
+  return nsTimestamp::MakeFromInt(timestamp.GetInt64(nsSIUnitOfTime::Microsecond) + (nsInt64)timeSpan.GetMicroseconds(), nsSIUnitOfTime::Microsecond);
 }
 
 
 
-inline wdUInt32 wdDateTime::GetYear() const
+inline nsUInt32 nsDateTime::GetYear() const
 {
   return m_iYear;
 }
 
-inline void wdDateTime::SetYear(wdInt16 iYear)
+inline void nsDateTime::SetYear(nsInt16 iYear)
 {
   m_iYear = iYear;
 }
 
-inline wdUInt8 wdDateTime::GetMonth() const
+inline nsUInt8 nsDateTime::GetMonth() const
 {
   return m_uiMonth;
 }
 
-inline void wdDateTime::SetMonth(wdUInt8 uiMonth)
+inline void nsDateTime::SetMonth(nsUInt8 uiMonth)
 {
-  m_uiMonth = wdMath::Clamp<wdUInt8>(uiMonth, 1, 12);
+  NS_ASSERT_DEBUG(uiMonth >= 1 && uiMonth <= 12, "Invalid month value");
+  m_uiMonth = uiMonth;
 }
 
-inline wdUInt8 wdDateTime::GetDay() const
+inline nsUInt8 nsDateTime::GetDay() const
 {
   return m_uiDay;
 }
 
-inline void wdDateTime::SetDay(wdUInt8 uiDay)
+inline void nsDateTime::SetDay(nsUInt8 uiDay)
 {
-  m_uiDay = wdMath::Clamp<wdUInt8>(uiDay, 1u, 31u);
+  NS_ASSERT_DEBUG(uiDay >= 1 && uiDay <= 31, "Invalid day value");
+  m_uiDay = uiDay;
 }
 
-inline wdUInt8 wdDateTime::GetDayOfWeek() const
+inline nsUInt8 nsDateTime::GetDayOfWeek() const
 {
   return m_uiDayOfWeek;
 }
 
-inline void wdDateTime::SetDayOfWeek(wdUInt8 uiDayOfWeek)
+inline void nsDateTime::SetDayOfWeek(nsUInt8 uiDayOfWeek)
 {
-  m_uiDayOfWeek = wdMath::Clamp<wdUInt8>(uiDayOfWeek, 0u, 6u);
+  NS_ASSERT_DEBUG(uiDayOfWeek <= 6, "Invalid day of week value");
+  m_uiDayOfWeek = uiDayOfWeek;
 }
 
-inline wdUInt8 wdDateTime::GetHour() const
+inline nsUInt8 nsDateTime::GetHour() const
 {
   return m_uiHour;
 }
 
-inline void wdDateTime::SetHour(wdUInt8 uiHour)
+inline void nsDateTime::SetHour(nsUInt8 uiHour)
 {
-  m_uiHour = wdMath::Clamp<wdUInt8>(uiHour, 0u, 23u);
+  NS_ASSERT_DEBUG(uiHour <= 23, "Invalid hour value");
+  m_uiHour = uiHour;
 }
 
-inline wdUInt8 wdDateTime::GetMinute() const
+inline nsUInt8 nsDateTime::GetMinute() const
 {
   return m_uiMinute;
 }
 
-inline void wdDateTime::SetMinute(wdUInt8 uiMinute)
+inline void nsDateTime::SetMinute(nsUInt8 uiMinute)
 {
-  m_uiMinute = wdMath::Clamp<wdUInt8>(uiMinute, 0u, 59u);
+  NS_ASSERT_DEBUG(uiMinute <= 59, "Invalid minute value");
+  m_uiMinute = uiMinute;
 }
 
-inline wdUInt8 wdDateTime::GetSecond() const
+inline nsUInt8 nsDateTime::GetSecond() const
 {
   return m_uiSecond;
 }
 
-inline void wdDateTime::SetSecond(wdUInt8 uiSecond)
+inline void nsDateTime::SetSecond(nsUInt8 uiSecond)
 {
-  m_uiSecond = wdMath::Clamp<wdUInt8>(uiSecond, 0u, 59u);
+  NS_ASSERT_DEBUG(uiSecond <= 59, "Invalid second value");
+  m_uiSecond = uiSecond;
 }
 
-inline wdUInt32 wdDateTime::GetMicroseconds() const
+inline nsUInt32 nsDateTime::GetMicroseconds() const
 {
   return m_uiMicroseconds;
 }
 
-inline void wdDateTime::SetMicroseconds(wdUInt32 uiMicroSeconds)
+inline void nsDateTime::SetMicroseconds(nsUInt32 uiMicroSeconds)
 {
-  m_uiMicroseconds = wdMath::Clamp<wdUInt32>(uiMicroSeconds, 0u, 999999u);
+  NS_ASSERT_DEBUG(uiMicroSeconds <= 999999u, "Invalid micro-second value");
+  m_uiMicroseconds = uiMicroSeconds;
 }

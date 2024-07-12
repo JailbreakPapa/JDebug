@@ -7,7 +7,7 @@
 //===----------------------------------------------------------------------===//
 
 #ifndef LLVM_CLANG_TOOLS_EXTRA_CLANG_TIDY_MISC_MEMBERVARCHECKCHECK_H
-#  define LLVM_CLANG_TOOLS_EXTRA_CLANG_TIDY_WD_MEMBERVARCHECKCHECK_H
+#  define LLVM_CLANG_TOOLS_EXTRA_CLANG_TIDY_NS_MEMBERVARCHECKCHECK_H
 
 #  include "../utils/RenamerClangTidyCheck.h"
 
@@ -15,7 +15,7 @@ namespace clang
 {
   namespace tidy
   {
-    namespace wd
+    namespace ns
     {
 
       class NameCheck : public RenamerClangTidyCheck
@@ -39,8 +39,8 @@ namespace clang
         mutable const SourceManager* m_pSourceManager = nullptr;
       };
 
-    } // namespace wd
+    } // namespace ns
   }   // namespace tidy
 } // namespace clang
 
-#endif // LLVM_CLANG_TOOLS_EXTRA_CLANG_TIDY_WD_MEMBERVARCHECKCHECK_H
+#endif // LLVM_CLANG_TOOLS_EXTRA_CLANG_TIDY_NS_MEMBERVARCHECKCHECK_H

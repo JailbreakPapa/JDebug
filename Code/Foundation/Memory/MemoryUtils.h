@@ -3,6 +3,12 @@
 #include <Foundation/Basics.h>
 #include <cstdint> // for uintptr_t
 
+enum nsConstructionMode
+{
+  ConstructAll = 0,     /// < default initialize all types, including std::is_trivial types
+  SkipTrivialTypes = 1, ///< If the given type to construct is trivial, nothing will be done
+};
+
 /// \brief This class provides functions to work on raw memory.
 ///
 /// \details
@@ -16,7 +22,7 @@
 ///   Construct: Constructing assumes that the destination does not contain a valid object.
 ///   Overlapped: The source and destination range may overlap for the operation to be performed.
 ///   The above mentioned concepts can be combined, e.g. RelocateConstruct for relocating to an uninitialized buffer.
-class wdMemoryUtils
+class nsMemoryUtils
 {
 public:
   using ConstructorFunction = void (*)(void* pDestination);
@@ -25,23 +31,13 @@ public:
 
   /// \brief Constructs \a uiCount objects of type T in a raw buffer at \a pDestination.
   ///
-  /// You should use 'DefaultConstruct' instead if default construction is needed for trivial types as well.
-  template <typename T>
+  /// The nsConstructionMode template argument determines whether trivial types will be skipped.
+  template <nsConstructionMode mode, typename T>
   static void Construct(T* pDestination, size_t uiCount = 1); // [tested]
 
   /// \brief Returns a function pointer to construct an instance of T. Returns nullptr for trivial types.
-  template <typename T>
+  template <nsConstructionMode mode, typename T>
   static ConstructorFunction MakeConstructorFunction(); // [tested]
-
-  /// \brief Default constructs \a uiCount objects of type T in a raw buffer at \a pDestination regardless of T being a class, POD or
-  /// trivial.
-  template <typename T>
-  static void DefaultConstruct(T* pDestination, size_t uiCount = 1); // [tested]
-
-  /// \brief Returns a function pointer to construct an instance of T. Always returns a constructor function regardless of T being a class,
-  /// POD or trivial.
-  template <typename T>
-  static ConstructorFunction MakeDefaultConstructorFunction(); // [tested]
 
   /// \brief Constructs \a uiCount objects of type T in a raw buffer at \a pDestination, by creating \a uiCount copies of \a copy.
   template <typename Destination, typename Source>
@@ -72,7 +68,7 @@ public:
 
   /// \brief Constructs \a uiCount objects of type T in a raw buffer at \a pDestination from an existing array of objects at \a pSource by
   /// using move construction if availble, otherwise by copy construction. Calls destructor of source elements in any case (if it is a non
-  /// primitive or memrelocatable type).
+  /// primitive or mem-relocatable type).
   template <typename T>
   static void RelocateConstruct(T* pDestination, T* pSource, size_t uiCount = 1);
 
@@ -129,31 +125,39 @@ public:
   template <typename T>
   static void ZeroFill(T* pDestination, size_t uiCount = 1); // [tested]
 
+  /// \brief Overload to prevent confusing calling this on a single object or a static array of objects. Use ZeroFillArray() instead.
+  template <typename T, size_t N>
+  static void ZeroFill(T (&destination)[N]) = delete;
+
   /// \brief Zeros every byte in the provided memory buffer.
   template <typename T, size_t N>
   static void ZeroFillArray(T (&destination)[N]); // [tested]
 
   /// \brief Fills every byte of the provided buffer with the given value
   template <typename T>
-  static void PatternFill(T* pDestination, wdUInt8 uiBytePattern, size_t uiCount = 1); // [tested]
+  static void PatternFill(T* pDestination, nsUInt8 uiBytePattern, size_t uiCount = 1); // [tested]
+
+  /// \brief Overload to prevent confusing calling this on a single object or a static array of objects. Use PatternFillArray() instead.
+  template <typename T, size_t N>
+  static void PatternFill(T (&destination)[N], nsUInt8 uiBytePattern) = delete;
 
   /// \brief Fills every byte of the provided buffer with the given value
   template <typename T, size_t N>
-  static void PatternFillArray(T (&destination)[N], wdUInt8 uiBytePattern); // [tested]
+  static void PatternFillArray(T (&destination)[N], nsUInt8 uiBytePattern); // [tested]
 
   /// \brief Compares two buffers of raw memory byte wise.
   template <typename T>
-  static wdInt32 Compare(const T* a, const T* b, size_t uiCount = 1); // [tested]
+  static nsInt32 Compare(const T* a, const T* b, size_t uiCount = 1); // [tested]
 
   /// \brief Compares exactly \a uiNumBytesToCompare from \a a and \a b, independent of the involved types and their sizes.
-  static wdInt32 RawByteCompare(const void* a, const void* b, size_t uiNumBytesToCompare);
+  static nsInt32 RawByteCompare(const void* a, const void* b, size_t uiNumBytesToCompare);
 
   /// \brief Returns the address stored in \a ptr plus the given byte offset \a iOffset, cast to type \a T.
   ///
   /// This is useful when working with raw memory, to safely modify a pointer without having to take care of the
   /// details of pointer arithmetic.
   template <typename T>
-  static T* AddByteOffset(T* pPtr, ptrdiff_t iOffset); // [tested]
+  static T* AddByteOffset(T* pPtr, std::ptrdiff_t offset); // [tested]
 
   /// \brief Aligns the pointer \a ptr by moving its address backwards to the previous multiple of \a uiAlignment.
   template <typename T>
@@ -182,103 +186,6 @@ public:
   ///
   /// Currently only implemented on Windows.
   static void ReserveLower4GBAddressSpace();
-
-private:
-  template <typename T>
-  static void Construct(T* pDestination, size_t uiCount, wdTypeIsPod);
-  template <typename T>
-  static void Construct(T* pDestination, size_t uiCount, wdTypeIsClass);
-
-  template <typename T>
-  static ConstructorFunction MakeConstructorFunction(wdTypeIsPod);
-  template <typename T>
-  static ConstructorFunction MakeConstructorFunction(wdTypeIsClass);
-
-  template <typename Destination, typename Source>
-  static void CopyConstruct(Destination* pDestination, const Source& copy, size_t uiCount, wdTypeIsPod);
-  template <typename Destination, typename Source>
-  static void CopyConstruct(Destination* pDestination, const Source& copy, size_t uiCount, wdTypeIsClass);
-
-  template <typename T>
-  static void CopyConstructArray(T* pDestination, const T* pSource, size_t uiCount, wdTypeIsPod);
-  template <typename T>
-  static void CopyConstructArray(T* pDestination, const T* pSource, size_t uiCount, wdTypeIsClass);
-
-
-  using NotRValueReference = std::false_type;
-  using IsRValueReference = std::true_type;
-
-  template <typename Destination, typename Source>
-  static void CopyOrMoveConstruct(Destination* pDestination, const Source& source, NotRValueReference);
-  template <typename Destination, typename Source>
-  static void CopyOrMoveConstruct(Destination* pDestination, Source&& source, IsRValueReference);
-
-  template <typename T>
-  static void RelocateConstruct(T* pDestination, T* pSource, size_t uiCount, wdTypeIsPod);
-  template <typename T>
-  static void RelocateConstruct(T* pDestination, T* pSource, size_t uiCount, wdTypeIsMemRelocatable);
-  template <typename T>
-  static void RelocateConstruct(T* pDestination, T* pSource, size_t uiCount, wdTypeIsClass);
-
-  template <typename T>
-  static void Destruct(T* pDestination, size_t uiCount, wdTypeIsPod);
-  template <typename T>
-  static void Destruct(T* pDestination, size_t uiCount, wdTypeIsClass);
-
-  template <typename T>
-  static DestructorFunction MakeDestructorFunction(wdTypeIsPod);
-  template <typename T>
-  static DestructorFunction MakeDestructorFunction(wdTypeIsClass);
-
-  template <typename T>
-  static void Copy(T* pDestination, const T* pSource, size_t uiCount, wdTypeIsPod);
-  template <typename T>
-  static void Copy(T* pDestination, const T* pSource, size_t uiCount, wdTypeIsClass);
-
-  template <typename T>
-  static void CopyOverlapped(T* pDestination, const T* pSource, size_t uiCount, wdTypeIsPod);
-  template <typename T>
-  static void CopyOverlapped(T* pDestination, const T* pSource, size_t uiCount, wdTypeIsClass);
-
-  template <typename T>
-  static void Relocate(T* pDestination, T* pSource, size_t uiCount, wdTypeIsPod);
-  template <typename T>
-  static void Relocate(T* pDestination, T* pSource, size_t uiCount, wdTypeIsMemRelocatable);
-  template <typename T>
-  static void Relocate(T* pDestination, T* pSource, size_t uiCount, wdTypeIsClass);
-
-  template <typename T>
-  static void RelocateOverlapped(T* pDestination, T* pSource, size_t uiCount, wdTypeIsPod);
-  template <typename T>
-  static void RelocateOverlapped(T* pDestination, T* pSource, size_t uiCount, wdTypeIsMemRelocatable);
-  template <typename T>
-  static void RelocateOverlapped(T* pDestination, T* pSource, size_t uiCount, wdTypeIsClass);
-
-  template <typename T>
-  static void Prepend(T* pDestination, const T& source, size_t uiCount, wdTypeIsPod);
-  template <typename T>
-  static void Prepend(T* pDestination, const T& source, size_t uiCount, wdTypeIsMemRelocatable);
-  template <typename T>
-  static void Prepend(T* pDestination, const T& source, size_t uiCount, wdTypeIsClass);
-
-  template <typename T>
-  static void Prepend(T* pDestination, T&& source, size_t uiCount, wdTypeIsPod);
-  template <typename T>
-  static void Prepend(T* pDestination, T&& source, size_t uiCount, wdTypeIsMemRelocatable);
-  template <typename T>
-  static void Prepend(T* pDestination, T&& source, size_t uiCount, wdTypeIsClass);
-
-  template <typename T>
-  static void Prepend(T* pDestination, const T* pSource, size_t uiSourceCount, size_t uiCount, wdTypeIsPod);
-  template <typename T>
-  static void Prepend(T* pDestination, const T* pSource, size_t uiSourceCount, size_t uiCount, wdTypeIsMemRelocatable);
-  template <typename T>
-  static void Prepend(T* pDestination, const T* pSource, size_t uiSourceCount, size_t uiCount, wdTypeIsClass);
-
-  template <typename T>
-  static bool IsEqual(const T* a, const T* b, size_t uiCount, wdTypeIsPod);
-  template <typename T>
-  static bool IsEqual(const T* a, const T* b, size_t uiCount, wdTypeIsClass);
 };
 
 #include <Foundation/Memory/Implementation/MemoryUtils_inl.h>

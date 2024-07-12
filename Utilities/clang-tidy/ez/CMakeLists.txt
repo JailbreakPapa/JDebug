@@ -3,8 +3,8 @@ set(LLVM_LINK_COMPONENTS
   Support
   )
 
-add_clang_library(clangTidyWdModule
-  WdTidyModule.cpp
+add_clang_library(clangTidyNsModule
+  NsTidyModule.cpp
   
   NameCheck.cpp
 
@@ -17,7 +17,7 @@ add_clang_library(clangTidyWdModule
   omp_gen
   )
 
-clang_target_link_libraries(clangTidyWdModule
+clang_target_link_libraries(clangTidyNsModule
   PRIVATE
   clangAST
   clangASTMatchers

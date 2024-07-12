@@ -2,72 +2,70 @@
 
 #include <Foundation/CodeUtils/Preprocessor.h>
 
-using namespace wdTokenParseUtils;
+using namespace nsTokenParseUtils;
 
-wdResult wdPreprocessor::Expect(const TokenStream& Tokens, wdUInt32& uiCurToken, const char* szToken, wdUInt32* pAccepted)
+nsResult nsPreprocessor::Expect(const TokenStream& Tokens, nsUInt32& uiCurToken, nsStringView sToken, nsUInt32* pAccepted)
 {
   if (Tokens.GetCount() < 1)
   {
-    wdLog::Error(m_pLog, "Expected token '{0}', got empty token stream", szToken);
-    return WD_FAILURE;
+    nsLog::Error(m_pLog, "Expected token '{0}', got empty token stream", sToken);
+    return NS_FAILURE;
   }
 
-  if (Accept(Tokens, uiCurToken, szToken, pAccepted))
-    return WD_SUCCESS;
+  if (Accept(Tokens, uiCurToken, sToken, pAccepted))
+    return NS_SUCCESS;
 
-  const wdUInt32 uiErrorToken = wdMath::Min(Tokens.GetCount() - 1, uiCurToken);
-  wdString sErrorToken = Tokens[uiErrorToken]->m_DataView;
-  PP_LOG(Error, "Expected token '{0}' got '{1}'", Tokens[uiErrorToken], szToken, sErrorToken);
+  const nsUInt32 uiErrorToken = nsMath::Min(Tokens.GetCount() - 1, uiCurToken);
+  nsString sErrorToken = Tokens[uiErrorToken]->m_DataView;
+  PP_LOG(Error, "Expected token '{0}' got '{1}'", Tokens[uiErrorToken], sToken, sErrorToken);
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
-wdResult wdPreprocessor::Expect(const TokenStream& Tokens, wdUInt32& uiCurToken, wdTokenType::Enum Type, wdUInt32* pAccepted)
+nsResult nsPreprocessor::Expect(const TokenStream& Tokens, nsUInt32& uiCurToken, nsTokenType::Enum Type, nsUInt32* pAccepted)
 {
   if (Tokens.GetCount() < 1)
   {
-    wdLog::Error(m_pLog, "Expected token of type '{0}', got empty token stream", wdTokenType::EnumNames[Type]);
-    return WD_FAILURE;
+    nsLog::Error(m_pLog, "Expected token of type '{0}', got empty token stream", nsTokenType::EnumNames[Type]);
+    return NS_FAILURE;
   }
 
   if (Accept(Tokens, uiCurToken, Type, pAccepted))
-    return WD_SUCCESS;
+    return NS_SUCCESS;
 
-  const wdUInt32 uiErrorToken = wdMath::Min(Tokens.GetCount() - 1, uiCurToken);
-  PP_LOG(Error, "Expected token of type '{0}' got type '{1}' instead", Tokens[uiErrorToken], wdTokenType::EnumNames[Type], wdTokenType::EnumNames[Tokens[uiErrorToken]->m_iType]);
+  const nsUInt32 uiErrorToken = nsMath::Min(Tokens.GetCount() - 1, uiCurToken);
+  PP_LOG(Error, "Expected token of type '{0}' got type '{1}' instead", Tokens[uiErrorToken], nsTokenType::EnumNames[Type], nsTokenType::EnumNames[Tokens[uiErrorToken]->m_iType]);
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
-wdResult wdPreprocessor::Expect(const TokenStream& Tokens, wdUInt32& uiCurToken, const char* szToken1, const char* szToken2, wdUInt32* pAccepted)
+nsResult nsPreprocessor::Expect(const TokenStream& Tokens, nsUInt32& uiCurToken, nsStringView sToken1, nsStringView sToken2, nsUInt32* pAccepted)
 {
   if (Tokens.GetCount() < 2)
   {
-    wdLog::Error(m_pLog, "Expected tokens '{0}{1}', got empty token stream", szToken1, szToken2);
-    return WD_FAILURE;
+    nsLog::Error(m_pLog, "Expected tokens '{0}{1}', got empty token stream", sToken1, sToken2);
+    return NS_FAILURE;
   }
 
-  if (Accept(Tokens, uiCurToken, szToken1, szToken2, pAccepted))
-    return WD_SUCCESS;
+  if (Accept(Tokens, uiCurToken, sToken1, sToken2, pAccepted))
+    return NS_SUCCESS;
 
-  const wdUInt32 uiErrorToken = wdMath::Min(Tokens.GetCount() - 2, uiCurToken);
-  wdString sErrorToken1 = Tokens[uiErrorToken]->m_DataView;
-  wdString sErrorToken2 = Tokens[uiErrorToken + 1]->m_DataView;
-  PP_LOG(Error, "Expected tokens '{0}{1}', got '{2}{3}'", Tokens[uiErrorToken], szToken1, szToken2, sErrorToken1, sErrorToken2);
+  const nsUInt32 uiErrorToken = nsMath::Min(Tokens.GetCount() - 2, uiCurToken);
+  nsString sErrorToken1 = Tokens[uiErrorToken]->m_DataView;
+  nsString sErrorToken2 = Tokens[uiErrorToken + 1]->m_DataView;
+  PP_LOG(Error, "Expected tokens '{0}{1}', got '{2}{3}'", Tokens[uiErrorToken], sToken1, sToken2, sErrorToken1, sErrorToken2);
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
-wdResult wdPreprocessor::ExpectEndOfLine(const TokenStream& Tokens, wdUInt32 uiCurToken)
+nsResult nsPreprocessor::ExpectEndOfLine(const TokenStream& Tokens, nsUInt32 uiCurToken)
 {
   if (!IsEndOfLine(Tokens, uiCurToken, true))
   {
-    wdString sToken = Tokens[uiCurToken]->m_DataView;
+    nsString sToken = Tokens[uiCurToken]->m_DataView;
     PP_LOG(Warning, "Expected end-of-line, found token '{0}'", Tokens[uiCurToken], sToken);
-    return WD_FAILURE;
+    return NS_FAILURE;
   }
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
-
-WD_STATICLINK_FILE(Foundation, Foundation_CodeUtils_Implementation_PreprocessorParseHelper);

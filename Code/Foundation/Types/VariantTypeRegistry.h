@@ -6,71 +6,71 @@
 #include <Foundation/Reflection/Implementation/StaticRTTI.h>
 #include <Foundation/Utilities/EnumerableClass.h>
 
-class wdStreamWriter;
-class wdStreamReader;
-class wdVariantTypeInfo;
+class nsStreamWriter;
+class nsStreamReader;
+class nsVariantTypeInfo;
 
 /// \brief Variant type registry allows for custom variant type infos to be accessed.
 ///
-/// Custom variant types are defined via the WD_DECLARE_CUSTOM_VARIANT_TYPE and WD_DEFINE_CUSTOM_VARIANT_TYPE macros.
-/// \sa WD_DECLARE_CUSTOM_VARIANT_TYPE, WD_DEFINE_CUSTOM_VARIANT_TYPE
-class WD_FOUNDATION_DLL wdVariantTypeRegistry
+/// Custom variant types are defined via the NS_DECLARE_CUSTOM_VARIANT_TYPE and NS_DEFINE_CUSTOM_VARIANT_TYPE macros.
+/// \sa NS_DECLARE_CUSTOM_VARIANT_TYPE, NS_DEFINE_CUSTOM_VARIANT_TYPE
+class NS_FOUNDATION_DLL nsVariantTypeRegistry
 {
-  WD_DECLARE_SINGLETON(wdVariantTypeRegistry);
+  NS_DECLARE_SINGLETON(nsVariantTypeRegistry);
 
 public:
-  /// \brief Find the variant type info for the given wdRTTI type.
-  /// \return wdVariantTypeInfo if one exits for the given type, otherwise nullptr.
-  const wdVariantTypeInfo* FindVariantTypeInfo(const wdRTTI* pType) const;
-  ~wdVariantTypeRegistry();
+  /// \brief Find the variant type info for the given nsRTTI type.
+  /// \return nsVariantTypeInfo if one exits for the given type, otherwise nullptr.
+  const nsVariantTypeInfo* FindVariantTypeInfo(const nsRTTI* pType) const;
+  ~nsVariantTypeRegistry();
 
 private:
-  WD_MAKE_SUBSYSTEM_STARTUP_FRIEND(Foundation, VariantTypeRegistry);
-  wdVariantTypeRegistry();
+  NS_MAKE_SUBSYSTEM_STARTUP_FRIEND(Foundation, VariantTypeRegistry);
+  nsVariantTypeRegistry();
 
-  void PluginEventHandler(const wdPluginEvent& EventData);
+  void PluginEventHandler(const nsPluginEvent& EventData);
   void UpdateTypes();
 
-  wdHashTable<const wdRTTI*, const wdVariantTypeInfo*> m_TypeInfos;
+  nsHashTable<const nsRTTI*, const nsVariantTypeInfo*> m_TypeInfos;
 };
 
-/// \brief Defines functions to allow the full feature set of wdVariant to be used.
-/// \sa WD_DEFINE_CUSTOM_VARIANT_TYPE, wdVariantTypeRegistry
-class WD_FOUNDATION_DLL wdVariantTypeInfo : public wdEnumerable<wdVariantTypeInfo>
+/// \brief Defines functions to allow the full feature set of nsVariant to be used.
+/// \sa NS_DEFINE_CUSTOM_VARIANT_TYPE, nsVariantTypeRegistry
+class NS_FOUNDATION_DLL nsVariantTypeInfo : public nsEnumerable<nsVariantTypeInfo>
 {
 public:
-  wdVariantTypeInfo();
-  virtual const wdRTTI* GetType() const = 0;
-  virtual wdUInt32 Hash(const void* pObject) const = 0;
+  nsVariantTypeInfo();
+  virtual const nsRTTI* GetType() const = 0;
+  virtual nsUInt32 Hash(const void* pObject) const = 0;
   virtual bool Equal(const void* pObjectA, const void* pObjectB) const = 0;
-  virtual void Serialize(wdStreamWriter& ref_writer, const void* pObject) const = 0;
-  virtual void Deserialize(wdStreamReader& ref_reader, void* pObject) const = 0;
+  virtual void Serialize(nsStreamWriter& ref_writer, const void* pObject) const = 0;
+  virtual void Deserialize(nsStreamReader& ref_reader, void* pObject) const = 0;
 
-  WD_DECLARE_ENUMERABLE_CLASS(wdVariantTypeInfo);
+  NS_DECLARE_ENUMERABLE_CLASS(nsVariantTypeInfo);
 };
 
-/// \brief Helper template used by WD_DEFINE_CUSTOM_VARIANT_TYPE.
-/// \sa WD_DEFINE_CUSTOM_VARIANT_TYPE
+/// \brief Helper template used by NS_DEFINE_CUSTOM_VARIANT_TYPE.
+/// \sa NS_DEFINE_CUSTOM_VARIANT_TYPE
 template <typename T>
-class wdVariantTypeInfoT : public wdVariantTypeInfo
+class nsVariantTypeInfoT : public nsVariantTypeInfo
 {
-  const wdRTTI* GetType() const override
+  const nsRTTI* GetType() const override
   {
-    return wdGetStaticRTTI<T>();
+    return nsGetStaticRTTI<T>();
   }
-  wdUInt32 Hash(const void* pObject) const override
+  nsUInt32 Hash(const void* pObject) const override
   {
-    return wdHashHelper<T>::Hash(*static_cast<const T*>(pObject));
+    return nsHashHelper<T>::Hash(*static_cast<const T*>(pObject));
   }
   bool Equal(const void* pObjectA, const void* pObjectB) const override
   {
-    return wdHashHelper<T>::Equal(*static_cast<const T*>(pObjectA), *static_cast<const T*>(pObjectB));
+    return nsHashHelper<T>::Equal(*static_cast<const T*>(pObjectA), *static_cast<const T*>(pObjectB));
   }
-  void Serialize(wdStreamWriter& writer, const void* pObject) const override
+  void Serialize(nsStreamWriter& writer, const void* pObject) const override
   {
     writer << *static_cast<const T*>(pObject);
   }
-  void Deserialize(wdStreamReader& reader, void* pObject) const override
+  void Deserialize(nsStreamReader& reader, void* pObject) const override
   {
     reader >> *static_cast<T*>(pObject);
   }
@@ -78,10 +78,10 @@ class wdVariantTypeInfoT : public wdVariantTypeInfo
 
 /// \brief Defines a custom variant type, allowing it to be serialized and compared. The type needs to be declared first before using this macro.
 ///
-/// The given type must implement wdHashHelper and wdStreamWriter / wdStreamReader operators.
+/// The given type must implement nsHashHelper and nsStreamWriter / nsStreamReader operators.
 /// Macros should be placed in any cpp. Note that once a custom type is defined, it is considered a value type and will be passed by value. It must be linked into every editor and engine dll to allow serialization. Thus it should only be used for common types in base libraries.
-/// Limitations: Currently only member variables are supported on custom types, no arrays, set, maps etc. For best performance, any custom type smaller than 16 bytes should be POD so it can be inlined into the wdVariant.
-/// \sa WD_DECLARE_CUSTOM_VARIANT_TYPE, wdVariantTypeRegistry, wdVariant
-#define WD_DEFINE_CUSTOM_VARIANT_TYPE(TYPE)                                                                                                                                       \
-  WD_CHECK_AT_COMPILETIME_MSG(wdVariantTypeDeduction<TYPE>::value == wdVariantType::TypedObject, "WD_DECLARE_CUSTOM_VARIANT_TYPE needs to be added to the header defining TYPE"); \
-  wdVariantTypeInfoT<TYPE> g_wdVariantTypeInfoT_##TYPE;
+/// Limitations: Currently only member variables are supported on custom types, no arrays, set, maps etc. For best performance, any custom type smaller than 16 bytes should be POD so it can be inlined into the nsVariant.
+/// \sa NS_DECLARE_CUSTOM_VARIANT_TYPE, nsVariantTypeRegistry, nsVariant
+#define NS_DEFINE_CUSTOM_VARIANT_TYPE(TYPE)                                                                                                                                       \
+  NS_CHECK_AT_COMPILETIME_MSG(nsVariantTypeDeduction<TYPE>::value == nsVariantType::TypedObject, "NS_DECLARE_CUSTOM_VARIANT_TYPE needs to be added to the header defining TYPE"); \
+  nsVariantTypeInfoT<TYPE> g_nsVariantTypeInfoT_##TYPE;

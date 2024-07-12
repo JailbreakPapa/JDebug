@@ -1,56 +1,56 @@
 #pragma once
 
-WD_ALWAYS_INLINE wdSimdVec4u::wdSimdVec4u()
+NS_ALWAYS_INLINE nsSimdVec4u::nsSimdVec4u()
 {
-#if WD_ENABLED(WD_COMPILE_FOR_DEBUG)
+#if NS_ENABLED(NS_MATH_CHECK_FOR_NAN)
   m_v.Set(0xCDCDCDCD);
 #endif
 }
 
-WD_ALWAYS_INLINE wdSimdVec4u::wdSimdVec4u(wdUInt32 xyzw)
+NS_ALWAYS_INLINE nsSimdVec4u::nsSimdVec4u(nsUInt32 xyzw)
 {
   m_v.Set(xyzw);
 }
 
-WD_ALWAYS_INLINE wdSimdVec4u::wdSimdVec4u(wdUInt32 x, wdUInt32 y, wdUInt32 z, wdUInt32 w)
+NS_ALWAYS_INLINE nsSimdVec4u::nsSimdVec4u(nsUInt32 x, nsUInt32 y, nsUInt32 z, nsUInt32 w)
 {
   m_v.Set(x, y, z, w);
 }
 
-WD_ALWAYS_INLINE wdSimdVec4u::wdSimdVec4u(wdInternal::QuadUInt v)
+NS_ALWAYS_INLINE nsSimdVec4u::nsSimdVec4u(nsInternal::QuadUInt v)
 {
   m_v = v;
 }
 
-WD_ALWAYS_INLINE void wdSimdVec4u::Set(wdUInt32 xyzw)
+NS_ALWAYS_INLINE void nsSimdVec4u::Set(nsUInt32 xyzw)
 {
   m_v.Set(xyzw);
 }
 
-WD_ALWAYS_INLINE void wdSimdVec4u::Set(wdUInt32 x, wdUInt32 y, wdUInt32 z, wdUInt32 w)
+NS_ALWAYS_INLINE void nsSimdVec4u::Set(nsUInt32 x, nsUInt32 y, nsUInt32 z, nsUInt32 w)
 {
   m_v.Set(x, y, z, w);
 }
 
-WD_ALWAYS_INLINE void wdSimdVec4u::SetZero()
+NS_ALWAYS_INLINE void nsSimdVec4u::SetZero()
 {
   m_v.SetZero();
 }
 
 // needs to be implemented here because of include dependencies
-WD_ALWAYS_INLINE wdSimdVec4i::wdSimdVec4i(const wdSimdVec4u& u)
+NS_ALWAYS_INLINE nsSimdVec4i::nsSimdVec4i(const nsSimdVec4u& u)
   : m_v(u.m_v.x, u.m_v.y, u.m_v.z, u.m_v.w)
 {
 }
 
-WD_ALWAYS_INLINE wdSimdVec4u::wdSimdVec4u(const wdSimdVec4i& i)
+NS_ALWAYS_INLINE nsSimdVec4u::nsSimdVec4u(const nsSimdVec4i& i)
   : m_v(i.m_v.x, i.m_v.y, i.m_v.z, i.m_v.w)
 {
 }
 
-WD_ALWAYS_INLINE wdSimdVec4f wdSimdVec4u::ToFloat() const
+NS_ALWAYS_INLINE nsSimdVec4f nsSimdVec4u::ToFloat() const
 {
-  wdSimdVec4f result;
+  nsSimdVec4f result;
   result.m_v.x = (float)m_v.x;
   result.m_v.y = (float)m_v.y;
   result.m_v.z = (float)m_v.z;
@@ -60,51 +60,51 @@ WD_ALWAYS_INLINE wdSimdVec4f wdSimdVec4u::ToFloat() const
 }
 
 // static
-WD_ALWAYS_INLINE wdSimdVec4u wdSimdVec4u::Truncate(const wdSimdVec4f& f)
+NS_ALWAYS_INLINE nsSimdVec4u nsSimdVec4u::Truncate(const nsSimdVec4f& f)
 {
-  wdSimdVec4f clampedF = f.CompMax(wdSimdVec4f::ZeroVector());
+  nsSimdVec4f clampedF = f.CompMax(nsSimdVec4f::MakeZero());
 
-  wdSimdVec4u result;
-  result.m_v.x = (wdUInt32)clampedF.m_v.x;
-  result.m_v.y = (wdUInt32)clampedF.m_v.y;
-  result.m_v.z = (wdUInt32)clampedF.m_v.z;
-  result.m_v.w = (wdUInt32)clampedF.m_v.w;
+  nsSimdVec4u result;
+  result.m_v.x = (nsUInt32)clampedF.m_v.x;
+  result.m_v.y = (nsUInt32)clampedF.m_v.y;
+  result.m_v.z = (nsUInt32)clampedF.m_v.z;
+  result.m_v.w = (nsUInt32)clampedF.m_v.w;
 
   return result;
 }
 
 template <int N>
-WD_ALWAYS_INLINE wdUInt32 wdSimdVec4u::GetComponent() const
+NS_ALWAYS_INLINE nsUInt32 nsSimdVec4u::GetComponent() const
 {
   return (&m_v.x)[N];
 }
 
-WD_ALWAYS_INLINE wdUInt32 wdSimdVec4u::x() const
+NS_ALWAYS_INLINE nsUInt32 nsSimdVec4u::x() const
 {
   return m_v.x;
 }
 
-WD_ALWAYS_INLINE wdUInt32 wdSimdVec4u::y() const
+NS_ALWAYS_INLINE nsUInt32 nsSimdVec4u::y() const
 {
   return m_v.y;
 }
 
-WD_ALWAYS_INLINE wdUInt32 wdSimdVec4u::z() const
+NS_ALWAYS_INLINE nsUInt32 nsSimdVec4u::z() const
 {
   return m_v.z;
 }
 
-WD_ALWAYS_INLINE wdUInt32 wdSimdVec4u::w() const
+NS_ALWAYS_INLINE nsUInt32 nsSimdVec4u::w() const
 {
   return m_v.w;
 }
 
-template <wdSwizzle::Enum s>
-WD_ALWAYS_INLINE wdSimdVec4u wdSimdVec4u::Get() const
+template <nsSwizzle::Enum s>
+NS_ALWAYS_INLINE nsSimdVec4u nsSimdVec4u::Get() const
 {
-  wdSimdVec4u result;
+  nsSimdVec4u result;
 
-  const wdUInt32* v = &m_v.x;
+  const nsUInt32* v = &m_v.x;
   result.m_v.x = v[(s & 0x3000) >> 12];
   result.m_v.y = v[(s & 0x0300) >> 8];
   result.m_v.z = v[(s & 0x0030) >> 4];
@@ -113,24 +113,24 @@ WD_ALWAYS_INLINE wdSimdVec4u wdSimdVec4u::Get() const
   return result;
 }
 
-WD_ALWAYS_INLINE wdSimdVec4u wdSimdVec4u::operator+(const wdSimdVec4u& v) const
+NS_ALWAYS_INLINE nsSimdVec4u nsSimdVec4u::operator+(const nsSimdVec4u& v) const
 {
   return m_v + v.m_v;
 }
 
-WD_ALWAYS_INLINE wdSimdVec4u wdSimdVec4u::operator-(const wdSimdVec4u& v) const
+NS_ALWAYS_INLINE nsSimdVec4u nsSimdVec4u::operator-(const nsSimdVec4u& v) const
 {
   return m_v - v.m_v;
 }
 
-WD_ALWAYS_INLINE wdSimdVec4u wdSimdVec4u::CompMul(const wdSimdVec4u& v) const
+NS_ALWAYS_INLINE nsSimdVec4u nsSimdVec4u::CompMul(const nsSimdVec4u& v) const
 {
   return m_v.CompMul(v.m_v);
 }
 
-WD_ALWAYS_INLINE wdSimdVec4u wdSimdVec4u::operator|(const wdSimdVec4u& v) const
+NS_ALWAYS_INLINE nsSimdVec4u nsSimdVec4u::operator|(const nsSimdVec4u& v) const
 {
-  wdSimdVec4u result;
+  nsSimdVec4u result;
   result.m_v.x = m_v.x | v.m_v.x;
   result.m_v.y = m_v.y | v.m_v.y;
   result.m_v.z = m_v.z | v.m_v.z;
@@ -139,9 +139,9 @@ WD_ALWAYS_INLINE wdSimdVec4u wdSimdVec4u::operator|(const wdSimdVec4u& v) const
   return result;
 }
 
-WD_ALWAYS_INLINE wdSimdVec4u wdSimdVec4u::operator&(const wdSimdVec4u& v) const
+NS_ALWAYS_INLINE nsSimdVec4u nsSimdVec4u::operator&(const nsSimdVec4u& v) const
 {
-  wdSimdVec4u result;
+  nsSimdVec4u result;
   result.m_v.x = m_v.x & v.m_v.x;
   result.m_v.y = m_v.y & v.m_v.y;
   result.m_v.z = m_v.z & v.m_v.z;
@@ -150,9 +150,9 @@ WD_ALWAYS_INLINE wdSimdVec4u wdSimdVec4u::operator&(const wdSimdVec4u& v) const
   return result;
 }
 
-WD_ALWAYS_INLINE wdSimdVec4u wdSimdVec4u::operator^(const wdSimdVec4u& v) const
+NS_ALWAYS_INLINE nsSimdVec4u nsSimdVec4u::operator^(const nsSimdVec4u& v) const
 {
-  wdSimdVec4u result;
+  nsSimdVec4u result;
   result.m_v.x = m_v.x ^ v.m_v.x;
   result.m_v.y = m_v.y ^ v.m_v.y;
   result.m_v.z = m_v.z ^ v.m_v.z;
@@ -161,9 +161,9 @@ WD_ALWAYS_INLINE wdSimdVec4u wdSimdVec4u::operator^(const wdSimdVec4u& v) const
   return result;
 }
 
-WD_ALWAYS_INLINE wdSimdVec4u wdSimdVec4u::operator~() const
+NS_ALWAYS_INLINE nsSimdVec4u nsSimdVec4u::operator~() const
 {
-  wdSimdVec4u result;
+  nsSimdVec4u result;
   result.m_v.x = ~m_v.x;
   result.m_v.y = ~m_v.y;
   result.m_v.z = ~m_v.z;
@@ -172,9 +172,9 @@ WD_ALWAYS_INLINE wdSimdVec4u wdSimdVec4u::operator~() const
   return result;
 }
 
-WD_ALWAYS_INLINE wdSimdVec4u wdSimdVec4u::operator<<(wdUInt32 uiShift) const
+NS_ALWAYS_INLINE nsSimdVec4u nsSimdVec4u::operator<<(nsUInt32 uiShift) const
 {
-  wdSimdVec4u result;
+  nsSimdVec4u result;
   result.m_v.x = m_v.x << uiShift;
   result.m_v.y = m_v.y << uiShift;
   result.m_v.z = m_v.z << uiShift;
@@ -183,9 +183,9 @@ WD_ALWAYS_INLINE wdSimdVec4u wdSimdVec4u::operator<<(wdUInt32 uiShift) const
   return result;
 }
 
-WD_ALWAYS_INLINE wdSimdVec4u wdSimdVec4u::operator>>(wdUInt32 uiShift) const
+NS_ALWAYS_INLINE nsSimdVec4u nsSimdVec4u::operator>>(nsUInt32 uiShift) const
 {
-  wdSimdVec4u result;
+  nsSimdVec4u result;
   result.m_v.x = m_v.x >> uiShift;
   result.m_v.y = m_v.y >> uiShift;
   result.m_v.z = m_v.z >> uiShift;
@@ -194,19 +194,19 @@ WD_ALWAYS_INLINE wdSimdVec4u wdSimdVec4u::operator>>(wdUInt32 uiShift) const
   return result;
 }
 
-WD_ALWAYS_INLINE wdSimdVec4u& wdSimdVec4u::operator+=(const wdSimdVec4u& v)
+NS_ALWAYS_INLINE nsSimdVec4u& nsSimdVec4u::operator+=(const nsSimdVec4u& v)
 {
   m_v += v.m_v;
   return *this;
 }
 
-WD_ALWAYS_INLINE wdSimdVec4u& wdSimdVec4u::operator-=(const wdSimdVec4u& v)
+NS_ALWAYS_INLINE nsSimdVec4u& nsSimdVec4u::operator-=(const nsSimdVec4u& v)
 {
   m_v -= v.m_v;
   return *this;
 }
 
-WD_ALWAYS_INLINE wdSimdVec4u& wdSimdVec4u::operator|=(const wdSimdVec4u& v)
+NS_ALWAYS_INLINE nsSimdVec4u& nsSimdVec4u::operator|=(const nsSimdVec4u& v)
 {
   m_v.x |= v.m_v.x;
   m_v.y |= v.m_v.y;
@@ -215,7 +215,7 @@ WD_ALWAYS_INLINE wdSimdVec4u& wdSimdVec4u::operator|=(const wdSimdVec4u& v)
   return *this;
 }
 
-WD_ALWAYS_INLINE wdSimdVec4u& wdSimdVec4u::operator&=(const wdSimdVec4u& v)
+NS_ALWAYS_INLINE nsSimdVec4u& nsSimdVec4u::operator&=(const nsSimdVec4u& v)
 {
   m_v.x &= v.m_v.x;
   m_v.y &= v.m_v.y;
@@ -224,7 +224,7 @@ WD_ALWAYS_INLINE wdSimdVec4u& wdSimdVec4u::operator&=(const wdSimdVec4u& v)
   return *this;
 }
 
-WD_ALWAYS_INLINE wdSimdVec4u& wdSimdVec4u::operator^=(const wdSimdVec4u& v)
+NS_ALWAYS_INLINE nsSimdVec4u& nsSimdVec4u::operator^=(const nsSimdVec4u& v)
 {
   m_v.x ^= v.m_v.x;
   m_v.y ^= v.m_v.y;
@@ -233,7 +233,7 @@ WD_ALWAYS_INLINE wdSimdVec4u& wdSimdVec4u::operator^=(const wdSimdVec4u& v)
   return *this;
 }
 
-WD_ALWAYS_INLINE wdSimdVec4u& wdSimdVec4u::operator<<=(wdUInt32 uiShift)
+NS_ALWAYS_INLINE nsSimdVec4u& nsSimdVec4u::operator<<=(nsUInt32 uiShift)
 {
   m_v.x <<= uiShift;
   m_v.y <<= uiShift;
@@ -242,7 +242,7 @@ WD_ALWAYS_INLINE wdSimdVec4u& wdSimdVec4u::operator<<=(wdUInt32 uiShift)
   return *this;
 }
 
-WD_ALWAYS_INLINE wdSimdVec4u& wdSimdVec4u::operator>>=(wdUInt32 uiShift)
+NS_ALWAYS_INLINE nsSimdVec4u& nsSimdVec4u::operator>>=(nsUInt32 uiShift)
 {
   m_v.x >>= uiShift;
   m_v.y >>= uiShift;
@@ -251,17 +251,17 @@ WD_ALWAYS_INLINE wdSimdVec4u& wdSimdVec4u::operator>>=(wdUInt32 uiShift)
   return *this;
 }
 
-WD_ALWAYS_INLINE wdSimdVec4u wdSimdVec4u::CompMin(const wdSimdVec4u& v) const
+NS_ALWAYS_INLINE nsSimdVec4u nsSimdVec4u::CompMin(const nsSimdVec4u& v) const
 {
   return m_v.CompMin(v.m_v);
 }
 
-WD_ALWAYS_INLINE wdSimdVec4u wdSimdVec4u::CompMax(const wdSimdVec4u& v) const
+NS_ALWAYS_INLINE nsSimdVec4u nsSimdVec4u::CompMax(const nsSimdVec4u& v) const
 {
   return m_v.CompMax(v.m_v);
 }
 
-WD_ALWAYS_INLINE wdSimdVec4b wdSimdVec4u::operator==(const wdSimdVec4u& v) const
+NS_ALWAYS_INLINE nsSimdVec4b nsSimdVec4u::operator==(const nsSimdVec4u& v) const
 {
   bool result[4];
   result[0] = m_v.x == v.m_v.x;
@@ -269,20 +269,20 @@ WD_ALWAYS_INLINE wdSimdVec4b wdSimdVec4u::operator==(const wdSimdVec4u& v) const
   result[2] = m_v.z == v.m_v.z;
   result[3] = m_v.w == v.m_v.w;
 
-  return wdSimdVec4b(result[0], result[1], result[2], result[3]);
+  return nsSimdVec4b(result[0], result[1], result[2], result[3]);
 }
 
-WD_ALWAYS_INLINE wdSimdVec4b wdSimdVec4u::operator!=(const wdSimdVec4u& v) const
+NS_ALWAYS_INLINE nsSimdVec4b nsSimdVec4u::operator!=(const nsSimdVec4u& v) const
 {
   return !(*this == v);
 }
 
-WD_ALWAYS_INLINE wdSimdVec4b wdSimdVec4u::operator<=(const wdSimdVec4u& v) const
+NS_ALWAYS_INLINE nsSimdVec4b nsSimdVec4u::operator<=(const nsSimdVec4u& v) const
 {
   return !(*this > v);
 }
 
-WD_ALWAYS_INLINE wdSimdVec4b wdSimdVec4u::operator<(const wdSimdVec4u& v) const
+NS_ALWAYS_INLINE nsSimdVec4b nsSimdVec4u::operator<(const nsSimdVec4u& v) const
 {
   bool result[4];
   result[0] = m_v.x < v.m_v.x;
@@ -290,15 +290,15 @@ WD_ALWAYS_INLINE wdSimdVec4b wdSimdVec4u::operator<(const wdSimdVec4u& v) const
   result[2] = m_v.z < v.m_v.z;
   result[3] = m_v.w < v.m_v.w;
 
-  return wdSimdVec4b(result[0], result[1], result[2], result[3]);
+  return nsSimdVec4b(result[0], result[1], result[2], result[3]);
 }
 
-WD_ALWAYS_INLINE wdSimdVec4b wdSimdVec4u::operator>=(const wdSimdVec4u& v) const
+NS_ALWAYS_INLINE nsSimdVec4b nsSimdVec4u::operator>=(const nsSimdVec4u& v) const
 {
   return !(*this < v);
 }
 
-WD_ALWAYS_INLINE wdSimdVec4b wdSimdVec4u::operator>(const wdSimdVec4u& v) const
+NS_ALWAYS_INLINE nsSimdVec4b nsSimdVec4u::operator>(const nsSimdVec4u& v) const
 {
   bool result[4];
   result[0] = m_v.x > v.m_v.x;
@@ -306,11 +306,11 @@ WD_ALWAYS_INLINE wdSimdVec4b wdSimdVec4u::operator>(const wdSimdVec4u& v) const
   result[2] = m_v.z > v.m_v.z;
   result[3] = m_v.w > v.m_v.w;
 
-  return wdSimdVec4b(result[0], result[1], result[2], result[3]);
+  return nsSimdVec4b(result[0], result[1], result[2], result[3]);
 }
 
 // static
-WD_ALWAYS_INLINE wdSimdVec4u wdSimdVec4u::ZeroVector()
+NS_ALWAYS_INLINE nsSimdVec4u nsSimdVec4u::MakeZero()
 {
-  return wdVec4U32::ZeroVector();
+  return nsVec4U32::MakeZero();
 }

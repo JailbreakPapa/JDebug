@@ -2,21 +2,19 @@
 
 #include <Foundation/Memory/AllocatorWrapper.h>
 
-static thread_local wdAllocatorBase* s_pAllocator = nullptr;
+static thread_local nsAllocator* s_pAllocator = nullptr;
 
-wdLocalAllocatorWrapper::wdLocalAllocatorWrapper(wdAllocatorBase* pAllocator)
+nsLocalAllocatorWrapper::nsLocalAllocatorWrapper(nsAllocator* pAllocator)
 {
   s_pAllocator = pAllocator;
 }
 
-void wdLocalAllocatorWrapper::Reset()
+void nsLocalAllocatorWrapper::Reset()
 {
   s_pAllocator = nullptr;
 }
 
-wdAllocatorBase* wdLocalAllocatorWrapper::GetAllocator()
+nsAllocator* nsLocalAllocatorWrapper::GetAllocator()
 {
   return s_pAllocator;
 }
-
-WD_STATICLINK_FILE(Foundation, Foundation_Memory_Implementation_AllocatorWrapper);

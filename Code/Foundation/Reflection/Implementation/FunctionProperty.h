@@ -7,132 +7,168 @@
 
 
 template <class R, class... Args>
-class wdTypedFunctionProperty : public wdAbstractFunctionProperty
+class nsTypedFunctionProperty : public nsAbstractFunctionProperty
 {
 public:
-  wdTypedFunctionProperty(const char* szPropertyName)
-    : wdAbstractFunctionProperty(szPropertyName)
+  nsTypedFunctionProperty(const char* szPropertyName)
+    : nsAbstractFunctionProperty(szPropertyName)
   {
   }
 
-  virtual const wdRTTI* GetReturnType() const override { return wdGetStaticRTTI<typename wdCleanType<R>::RttiType>(); }
-  virtual wdBitflags<wdPropertyFlags> GetReturnFlags() const override { return wdPropertyFlags::GetParameterFlags<R>(); }
+  virtual const nsRTTI* GetReturnType() const override { return nsGetStaticRTTI<typename nsCleanType<R>::RttiType>(); }
+  virtual nsBitflags<nsPropertyFlags> GetReturnFlags() const override { return nsPropertyFlags::GetParameterFlags<R>(); }
 
-  virtual wdUInt32 GetArgumentCount() const override { return sizeof...(Args); }
+  virtual nsUInt32 GetArgumentCount() const override { return sizeof...(Args); }
 
   template <std::size_t... I>
-  const wdRTTI* GetParameterTypeImpl(wdUInt32 uiParamIndex, std::index_sequence<I...>) const
+  const nsRTTI* GetParameterTypeImpl(nsUInt32 uiParamIndex, std::index_sequence<I...>) const
   {
     // There is a dummy entry at the end to support zero parameter functions (can't have zero-size arrays).
-    static const wdRTTI* params[] = {wdGetStaticRTTI<typename wdCleanType<typename getArgument<I, Args...>::Type>::RttiType>()..., nullptr};
+    static const nsRTTI* params[] = {nsGetStaticRTTI<typename nsCleanType<typename getArgument<I, Args...>::Type>::RttiType>()..., nullptr};
     return params[uiParamIndex];
   }
 
-  virtual const wdRTTI* GetArgumentType(wdUInt32 uiParamIndex) const override
+  virtual const nsRTTI* GetArgumentType(nsUInt32 uiParamIndex) const override
   {
     return GetParameterTypeImpl(uiParamIndex, std::make_index_sequence<sizeof...(Args)>{});
   }
 
   template <std::size_t... I>
-  wdBitflags<wdPropertyFlags> GetParameterFlagsImpl(wdUInt32 uiParamIndex, std::index_sequence<I...>) const
+  nsBitflags<nsPropertyFlags> GetParameterFlagsImpl(nsUInt32 uiParamIndex, std::index_sequence<I...>) const
   {
     // There is a dummy entry at the end to support zero parameter functions (can't have zero-size arrays).
-    static wdBitflags<wdPropertyFlags> params[] = {
-      wdPropertyFlags::GetParameterFlags<typename getArgument<I, Args...>::Type>()..., wdPropertyFlags::Void};
+    static nsBitflags<nsPropertyFlags> params[] = {
+      nsPropertyFlags::GetParameterFlags<typename getArgument<I, Args...>::Type>()..., nsPropertyFlags::Void};
     return params[uiParamIndex];
   }
 
-  virtual wdBitflags<wdPropertyFlags> GetArgumentFlags(wdUInt32 uiParamIndex) const override
+  virtual nsBitflags<nsPropertyFlags> GetArgumentFlags(nsUInt32 uiParamIndex) const override
   {
     return GetParameterFlagsImpl(uiParamIndex, std::make_index_sequence<sizeof...(Args)>{});
   }
 };
 
 template <typename FUNC>
-class wdFunctionProperty
+class nsFunctionProperty
 {
 };
 
-#define wdFunctionPropertyCode(CONSTNESS)                                                                                                      \
-  template <class CLASS, class R, class... Args>                                                                                               \
-  class wdFunctionProperty<R (CLASS::*)(Args...) CONSTNESS> : public wdTypedFunctionProperty<R, Args...>                                       \
-  {                                                                                                                                            \
-  public:                                                                                                                                      \
-    typedef R (CLASS::*TargetFunction)(Args...) CONSTNESS;                                                                                     \
-                                                                                                                                               \
-    wdFunctionProperty(const char* szPropertyName, TargetFunction func)                                                                        \
-      : wdTypedFunctionProperty<R, Args...>(szPropertyName)                                                                                    \
-    {                                                                                                                                          \
-      m_Function = func;                                                                                                                       \
-    }                                                                                                                                          \
-                                                                                                                                               \
-    virtual wdFunctionType::Enum GetFunctionType() const override { return wdFunctionType::Member; }                                           \
-                                                                                                                                               \
-    template <std::size_t... I>                                                                                                                \
-    void ExecuteImpl(                                                                                                                          \
-      wdTraitInt<1>, CONSTNESS void* pInstance, wdVariant& returnValue, wdArrayPtr<wdVariant> arguments, std::index_sequence<I...>) const      \
-    {                                                                                                                                          \
-      CONSTNESS CLASS* pTargetInstance = (CONSTNESS CLASS*)pInstance;                                                                          \
-      (pTargetInstance->*m_Function)(wdVariantAdapter<typename getArgument<I, Args...>::Type>(arguments[I])...);                               \
-      returnValue = wdVariant();                                                                                                               \
-    }                                                                                                                                          \
-                                                                                                                                               \
-    template <std::size_t... I>                                                                                                                \
-    void ExecuteImpl(                                                                                                                          \
-      wdTraitInt<0>, CONSTNESS void* pInstance, wdVariant& returnValue, wdArrayPtr<wdVariant> arguments, std::index_sequence<I...>) const      \
-    {                                                                                                                                          \
-      CONSTNESS CLASS* pTargetInstance = (CONSTNESS CLASS*)pInstance;                                                                          \
-      wdVariantAssignmentAdapter<R> returnWrapper(returnValue);                                                                                \
-      returnWrapper = (pTargetInstance->*m_Function)(wdVariantAdapter<typename getArgument<I, Args...>::Type>(arguments[I])...);               \
-    }                                                                                                                                          \
-                                                                                                                                               \
-    virtual void Execute(void* pInstance, wdArrayPtr<wdVariant> arguments, wdVariant& returnValue) const override                              \
-    {                                                                                                                                          \
-      ExecuteImpl(wdTraitInt<std::is_same<R, void>::value>(), pInstance, returnValue, arguments, std::make_index_sequence<sizeof...(Args)>{}); \
-    }                                                                                                                                          \
-                                                                                                                                               \
-  private:                                                                                                                                     \
-    TargetFunction m_Function;                                                                                                                 \
-  }
-
-// just need an empty token to call wdFunctionPropertyCode
-#define NON_CONST
-wdFunctionPropertyCode(NON_CONST);
-#undef NON_CONST
-
-wdFunctionPropertyCode(const);
-
-template <class R, class... Args>
-class wdFunctionProperty<R (*)(Args...)> : public wdTypedFunctionProperty<R, Args...>
+template <class CLASS, class R, class... Args>
+class nsFunctionProperty<R (CLASS::*)(Args...)> : public nsTypedFunctionProperty<R, Args...>
 {
 public:
-  typedef R (*TargetFunction)(Args...);
+  using TargetFunction = R (CLASS::*)(Args...);
 
-  wdFunctionProperty(const char* szPropertyName, TargetFunction func)
-    : wdTypedFunctionProperty<R, Args...>(szPropertyName)
+  nsFunctionProperty(const char* szPropertyName, TargetFunction func)
+    : nsTypedFunctionProperty<R, Args...>(szPropertyName)
   {
     m_Function = func;
   }
 
-  virtual wdFunctionType::Enum GetFunctionType() const override { return wdFunctionType::StaticMember; }
-
-  template <std::size_t... I>
-  void ExecuteImpl(wdTraitInt<1>, wdVariant& ref_returnValue, wdArrayPtr<wdVariant> arguments, std::index_sequence<I...>) const
+  virtual nsFunctionType::Enum GetFunctionType() const override
   {
-    (*m_Function)(wdVariantAdapter<typename getArgument<I, Args...>::Type>(arguments[I])...);
-    ref_returnValue = wdVariant();
+    return nsFunctionType::Member;
   }
 
   template <std::size_t... I>
-  void ExecuteImpl(wdTraitInt<0>, wdVariant& ref_returnValue, wdArrayPtr<wdVariant> arguments, std::index_sequence<I...>) const
+  NS_FORCE_INLINE void ExecuteImpl(void* pInstance, nsVariant& out_returnValue, nsArrayPtr<nsVariant> arguments, std::index_sequence<I...>) const
   {
-    wdVariantAssignmentAdapter<R> returnWrapper(ref_returnValue);
-    returnWrapper = (*m_Function)(wdVariantAdapter<typename getArgument<I, Args...>::Type>(arguments[I])...);
+    CLASS* pTargetInstance = static_cast<CLASS*>(pInstance);
+    if constexpr (std::is_same<R, void>::value)
+    {
+      (pTargetInstance->*m_Function)(nsVariantAdapter<typename getArgument<I, Args...>::Type>(arguments[I])...);
+      out_returnValue = nsVariant();
+    }
+    else
+    {
+      nsVariantAssignmentAdapter<R> returnWrapper(out_returnValue);
+      returnWrapper = (pTargetInstance->*m_Function)(nsVariantAdapter<typename getArgument<I, Args...>::Type>(arguments[I])...);
+    }
   }
 
-  virtual void Execute(void* pInstance, wdArrayPtr<wdVariant> arguments, wdVariant& ref_returnValue) const override
+  virtual void Execute(void* pInstance, nsArrayPtr<nsVariant> arguments, nsVariant& out_returnValue) const override
   {
-    ExecuteImpl(wdTraitInt<std::is_same<R, void>::value>(), ref_returnValue, arguments, std::make_index_sequence<sizeof...(Args)>{});
+    ExecuteImpl(pInstance, out_returnValue, arguments, std::make_index_sequence<sizeof...(Args)>{});
+  }
+
+private:
+  TargetFunction m_Function;
+};
+
+template <class CLASS, class R, class... Args>
+class nsFunctionProperty<R (CLASS::*)(Args...) const> : public nsTypedFunctionProperty<R, Args...>
+{
+public:
+  using TargetFunction = R (CLASS::*)(Args...) const;
+
+  nsFunctionProperty(const char* szPropertyName, TargetFunction func)
+    : nsTypedFunctionProperty<R, Args...>(szPropertyName)
+  {
+    m_Function = func;
+    this->AddFlags(nsPropertyFlags::Const);
+  }
+
+  virtual nsFunctionType::Enum GetFunctionType() const override
+  {
+    return nsFunctionType::Member;
+  }
+
+  template <std::size_t... I>
+  NS_FORCE_INLINE void ExecuteImpl(const void* pInstance, nsVariant& out_returnValue, nsArrayPtr<nsVariant> arguments, std::index_sequence<I...>) const
+  {
+    const CLASS* pTargetInstance = static_cast<const CLASS*>(pInstance);
+    if constexpr (std::is_same<R, void>::value)
+    {
+      (pTargetInstance->*m_Function)(nsVariantAdapter<typename getArgument<I, Args...>::Type>(arguments[I])...);
+      out_returnValue = nsVariant();
+    }
+    else
+    {
+      nsVariantAssignmentAdapter<R> returnWrapper(out_returnValue);
+      returnWrapper = (pTargetInstance->*m_Function)(nsVariantAdapter<typename getArgument<I, Args...>::Type>(arguments[I])...);
+    }
+  }
+
+  virtual void Execute(void* pInstance, nsArrayPtr<nsVariant> arguments, nsVariant& out_returnValue) const override
+  {
+    ExecuteImpl(pInstance, out_returnValue, arguments, std::make_index_sequence<sizeof...(Args)>{});
+  }
+
+private:
+  TargetFunction m_Function;
+};
+
+template <class R, class... Args>
+class nsFunctionProperty<R (*)(Args...)> : public nsTypedFunctionProperty<R, Args...>
+{
+public:
+  using TargetFunction = R (*)(Args...);
+
+  nsFunctionProperty(const char* szPropertyName, TargetFunction func)
+    : nsTypedFunctionProperty<R, Args...>(szPropertyName)
+  {
+    m_Function = func;
+  }
+
+  virtual nsFunctionType::Enum GetFunctionType() const override { return nsFunctionType::StaticMember; }
+
+  template <std::size_t... I>
+  void ExecuteImpl(nsTraitInt<1>, nsVariant& out_returnValue, nsArrayPtr<nsVariant> arguments, std::index_sequence<I...>) const
+  {
+    (*m_Function)(nsVariantAdapter<typename getArgument<I, Args...>::Type>(arguments[I])...);
+    out_returnValue = nsVariant();
+  }
+
+  template <std::size_t... I>
+  void ExecuteImpl(nsTraitInt<0>, nsVariant& out_returnValue, nsArrayPtr<nsVariant> arguments, std::index_sequence<I...>) const
+  {
+    nsVariantAssignmentAdapter<R> returnWrapper(out_returnValue);
+    returnWrapper = (*m_Function)(nsVariantAdapter<typename getArgument<I, Args...>::Type>(arguments[I])...);
+  }
+
+  virtual void Execute(void* pInstance, nsArrayPtr<nsVariant> arguments, nsVariant& out_returnValue) const override
+  {
+    ExecuteImpl(nsTraitInt<std::is_same<R, void>::value>(), out_returnValue, arguments, std::make_index_sequence<sizeof...(Args)>{});
   }
 
 private:
@@ -141,35 +177,35 @@ private:
 
 
 template <class CLASS, class... Args>
-class wdConstructorFunctionProperty : public wdTypedFunctionProperty<CLASS*, Args...>
+class nsConstructorFunctionProperty : public nsTypedFunctionProperty<CLASS*, Args...>
 {
 public:
-  wdConstructorFunctionProperty()
-    : wdTypedFunctionProperty<CLASS*, Args...>("Constructor")
+  nsConstructorFunctionProperty()
+    : nsTypedFunctionProperty<CLASS*, Args...>("Constructor")
   {
   }
 
-  virtual wdFunctionType::Enum GetFunctionType() const override { return wdFunctionType::Constructor; }
+  virtual nsFunctionType::Enum GetFunctionType() const override { return nsFunctionType::Constructor; }
 
   template <std::size_t... I>
-  void ExecuteImpl(wdTraitInt<1>, wdVariant& ref_returnValue, wdArrayPtr<wdVariant> arguments, std::index_sequence<I...>) const
+  void ExecuteImpl(nsTraitInt<1>, nsVariant& out_returnValue, nsArrayPtr<nsVariant> arguments, std::index_sequence<I...>) const
   {
-    ref_returnValue = CLASS(wdVariantAdapter<typename getArgument<I, Args...>::Type>(arguments[I])...);
-    // returnValue = CLASS(static_cast<typename getArgument<I, Args...>::Type>(wdVariantAdapter<typename getArgument<I,
+    out_returnValue = CLASS(nsVariantAdapter<typename getArgument<I, Args...>::Type>(arguments[I])...);
+    // returnValue = CLASS(static_cast<typename getArgument<I, Args...>::Type>(nsVariantAdapter<typename getArgument<I,
     // Args...>::Type>(arguments[I]))...);
   }
 
   template <std::size_t... I>
-  void ExecuteImpl(wdTraitInt<0>, wdVariant& ref_returnValue, wdArrayPtr<wdVariant> arguments, std::index_sequence<I...>) const
+  void ExecuteImpl(nsTraitInt<0>, nsVariant& out_returnValue, nsArrayPtr<nsVariant> arguments, std::index_sequence<I...>) const
   {
-    CLASS* pInstance = WD_DEFAULT_NEW(CLASS, wdVariantAdapter<typename getArgument<I, Args...>::Type>(arguments[I])...);
-    // CLASS* pInstance = WD_DEFAULT_NEW(CLASS, static_cast<typename getArgument<I, Args...>::Type>(wdVariantAdapter<typename getArgument<I,
+    CLASS* pInstance = NS_DEFAULT_NEW(CLASS, nsVariantAdapter<typename getArgument<I, Args...>::Type>(arguments[I])...);
+    // CLASS* pInstance = NS_DEFAULT_NEW(CLASS, static_cast<typename getArgument<I, Args...>::Type>(nsVariantAdapter<typename getArgument<I,
     // Args...>::Type>(arguments[I]))...);
-    ref_returnValue = pInstance;
+    out_returnValue = pInstance;
   }
 
-  virtual void Execute(void* pInstance, wdArrayPtr<wdVariant> arguments, wdVariant& ref_returnValue) const override
+  virtual void Execute(void* pInstance, nsArrayPtr<nsVariant> arguments, nsVariant& out_returnValue) const override
   {
-    ExecuteImpl(wdTraitInt<wdIsStandardType<CLASS>::value>(), ref_returnValue, arguments, std::make_index_sequence<sizeof...(Args)>{});
+    ExecuteImpl(nsTraitInt<nsIsStandardType<CLASS>::value>(), out_returnValue, arguments, std::make_index_sequence<sizeof...(Args)>{});
   }
 };

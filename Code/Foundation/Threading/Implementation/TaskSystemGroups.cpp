@@ -9,11 +9,11 @@
 #include <Foundation/Threading/TaskSystem.h>
 
 
-wdTaskGroupID wdTaskSystem::CreateTaskGroup(wdTaskPriority::Enum priority, wdOnTaskGroupFinishedCallback callback)
+nsTaskGroupID nsTaskSystem::CreateTaskGroup(nsTaskPriority::Enum priority, nsOnTaskGroupFinishedCallback callback)
 {
-  WD_LOCK(s_TaskSystemMutex);
+  NS_LOCK(s_TaskSystemMutex);
 
-  wdUInt32 i = 0;
+  nsUInt32 i = 0;
 
   // this search could be speed up with a stack of free groups
   for (; i < s_pState->m_TaskGroups.GetCount(); ++i)
@@ -26,74 +26,74 @@ wdTaskGroupID wdTaskSystem::CreateTaskGroup(wdTaskPriority::Enum priority, wdOnT
 
   // no free group found, create a new one
   s_pState->m_TaskGroups.ExpandAndGetRef();
-  s_pState->m_TaskGroups[i].m_uiTaskGroupIndex = static_cast<wdUInt16>(i);
+  s_pState->m_TaskGroups[i].m_uiTaskGroupIndex = static_cast<nsUInt16>(i);
 
 foundtaskgroup:
 
   s_pState->m_TaskGroups[i].Reuse(priority, callback);
 
-  wdTaskGroupID id;
+  nsTaskGroupID id;
   id.m_pTaskGroup = &s_pState->m_TaskGroups[i];
   id.m_uiGroupCounter = s_pState->m_TaskGroups[i].m_uiGroupCounter;
   return id;
 }
 
-void wdTaskSystem::AddTaskToGroup(wdTaskGroupID groupID, const wdSharedPtr<wdTask>& pTask)
+void nsTaskSystem::AddTaskToGroup(nsTaskGroupID groupID, const nsSharedPtr<nsTask>& pTask)
 {
-  WD_ASSERT_DEBUG(pTask != nullptr, "Cannot add nullptr tasks.");
-  WD_ASSERT_DEV(pTask->IsTaskFinished(), "The given task is not finished! Cannot reuse a task before it is done.");
-  WD_ASSERT_DEBUG(!pTask->m_sTaskName.IsEmpty(), "Every task should have a name");
+  NS_ASSERT_DEBUG(pTask != nullptr, "Cannot add nullptr tasks.");
+  NS_ASSERT_DEV(pTask->IsTaskFinished(), "The given task is not finished! Cannot reuse a task before it is done.");
+  NS_ASSERT_DEBUG(!pTask->m_sTaskName.IsEmpty(), "Every task should have a name");
 
-  wdTaskGroup::DebugCheckTaskGroup(groupID, s_TaskSystemMutex);
+  nsTaskGroup::DebugCheckTaskGroup(groupID, s_TaskSystemMutex);
 
   pTask->Reset();
   pTask->m_BelongsToGroup = groupID;
   groupID.m_pTaskGroup->m_Tasks.PushBack(pTask);
 }
 
-void wdTaskSystem::AddTaskGroupDependency(wdTaskGroupID groupID, wdTaskGroupID dependsOn)
+void nsTaskSystem::AddTaskGroupDependency(nsTaskGroupID groupID, nsTaskGroupID dependsOn)
 {
-  WD_ASSERT_DEBUG(dependsOn.IsValid(), "Invalid dependency");
-  WD_ASSERT_DEBUG(groupID.m_pTaskGroup != dependsOn.m_pTaskGroup || groupID.m_uiGroupCounter != dependsOn.m_uiGroupCounter, "Group cannot depend on itselfs");
+  NS_ASSERT_DEBUG(dependsOn.IsValid(), "Invalid dependency");
+  NS_ASSERT_DEBUG(groupID.m_pTaskGroup != dependsOn.m_pTaskGroup || groupID.m_uiGroupCounter != dependsOn.m_uiGroupCounter, "Group cannot depend on itselfs");
 
-  wdTaskGroup::DebugCheckTaskGroup(groupID, s_TaskSystemMutex);
+  nsTaskGroup::DebugCheckTaskGroup(groupID, s_TaskSystemMutex);
 
   groupID.m_pTaskGroup->m_DependsOnGroups.PushBack(dependsOn);
 }
 
-void wdTaskSystem::AddTaskGroupDependencyBatch(wdArrayPtr<const wdTaskGroupDependency> batch)
+void nsTaskSystem::AddTaskGroupDependencyBatch(nsArrayPtr<const nsTaskGroupDependency> batch)
 {
-#if WD_ENABLED(WD_COMPILE_FOR_DEBUG)
-  // lock here once to reduce the overhead of wdTaskGroup::DebugCheckTaskGroup inside AddTaskGroupDependency
-  WD_LOCK(s_TaskSystemMutex);
+#if NS_ENABLED(NS_COMPILE_FOR_DEBUG)
+  // lock here once to reduce the overhead of nsTaskGroup::DebugCheckTaskGroup inside AddTaskGroupDependency
+  NS_LOCK(s_TaskSystemMutex);
 #endif
 
-  for (const wdTaskGroupDependency& dep : batch)
+  for (const nsTaskGroupDependency& dep : batch)
   {
     AddTaskGroupDependency(dep.m_TaskGroup, dep.m_DependsOn);
   }
 }
 
-void wdTaskSystem::StartTaskGroup(wdTaskGroupID groupID)
+void nsTaskSystem::StartTaskGroup(nsTaskGroupID groupID)
 {
-  WD_ASSERT_DEV(s_pThreadState->m_Workers[wdWorkerThreadType::ShortTasks].GetCount() > 0, "No worker threads started.");
+  NS_ASSERT_DEV(s_pThreadState->m_Workers[nsWorkerThreadType::ShortTasks].GetCount() > 0, "No worker threads started.");
 
-  wdTaskGroup::DebugCheckTaskGroup(groupID, s_TaskSystemMutex);
+  nsTaskGroup::DebugCheckTaskGroup(groupID, s_TaskSystemMutex);
 
-  wdInt32 iActiveDependencies = 0;
+  nsInt32 iActiveDependencies = 0;
 
   {
-    WD_LOCK(s_TaskSystemMutex);
+    NS_LOCK(s_TaskSystemMutex);
 
-    wdTaskGroup& tg = *groupID.m_pTaskGroup;
+    nsTaskGroup& tg = *groupID.m_pTaskGroup;
 
     tg.m_bStartedByUser = true;
 
-    for (wdUInt32 i = 0; i < tg.m_DependsOnGroups.GetCount(); ++i)
+    for (nsUInt32 i = 0; i < tg.m_DependsOnGroups.GetCount(); ++i)
     {
       if (!IsTaskGroupFinished(tg.m_DependsOnGroups[i]))
       {
-        wdTaskGroup& Dependency = *tg.m_DependsOnGroups[i].m_pTaskGroup;
+        nsTaskGroup& Dependency = *tg.m_DependsOnGroups[i].m_pTaskGroup;
 
         // add this task group to the list of dependencies, such that when that group finishes, this task group can get woken up
         Dependency.m_OthersDependingOnMe.PushBack(groupID);
@@ -116,23 +116,23 @@ void wdTaskSystem::StartTaskGroup(wdTaskGroupID groupID)
   }
 }
 
-void wdTaskSystem::StartTaskGroupBatch(wdArrayPtr<const wdTaskGroupID> batch)
+void nsTaskSystem::StartTaskGroupBatch(nsArrayPtr<const nsTaskGroupID> batch)
 {
-  WD_LOCK(s_TaskSystemMutex);
+  NS_LOCK(s_TaskSystemMutex);
 
-  for (const wdTaskGroupID& group : batch)
+  for (const nsTaskGroupID& group : batch)
   {
     StartTaskGroup(group);
   }
 }
 
-bool wdTaskSystem::IsTaskGroupFinished(wdTaskGroupID group)
+bool nsTaskSystem::IsTaskGroupFinished(nsTaskGroupID group)
 {
   // if the counters differ, the task group has been reused since the GroupID was created, so that group has finished
   return (group.m_pTaskGroup == nullptr) || (group.m_pTaskGroup->m_uiGroupCounter != group.m_uiGroupCounter);
 }
 
-void wdTaskSystem::ScheduleGroupTasks(wdTaskGroup* pGroup, bool bHighPriority)
+void nsTaskSystem::ScheduleGroupTasks(nsTaskGroup* pGroup, bool bHighPriority)
 {
   if (pGroup->m_Tasks.IsEmpty())
   {
@@ -143,29 +143,29 @@ void wdTaskSystem::ScheduleGroupTasks(wdTaskGroup* pGroup, bool bHighPriority)
     return;
   }
 
-  wdInt32 iRemainingTasks = 0;
+  nsInt32 iRemainingTasks = 0;
 
   // add all the tasks to the task list, so that they will be processed
   {
-    WD_LOCK(s_TaskSystemMutex);
+    NS_LOCK(s_TaskSystemMutex);
 
 
     // store how many tasks from this groups still need to be processed
 
     for (auto pTask : pGroup->m_Tasks)
     {
-      iRemainingTasks += wdMath::Max(1u, pTask->m_uiMultiplicity);
-      pTask->m_iRemainingRuns = wdMath::Max(1u, pTask->m_uiMultiplicity);
+      iRemainingTasks += nsMath::Max(1u, pTask->m_uiMultiplicity);
+      pTask->m_iRemainingRuns = nsMath::Max(1u, pTask->m_uiMultiplicity);
     }
 
     pGroup->m_iNumRemainingTasks = iRemainingTasks;
 
 
-    for (wdUInt32 task = 0; task < pGroup->m_Tasks.GetCount(); ++task)
+    for (nsUInt32 task = 0; task < pGroup->m_Tasks.GetCount(); ++task)
     {
       auto& pTask = pGroup->m_Tasks[task];
 
-      for (wdUInt32 mult = 0; mult < wdMath::Max(1u, pTask->m_uiMultiplicity); ++mult)
+      for (nsUInt32 mult = 0; mult < nsMath::Max(1u, pTask->m_uiMultiplicity); ++mult)
       {
         TaskData td;
         td.m_pBelongsToGroup = pGroup;
@@ -183,49 +183,49 @@ void wdTaskSystem::ScheduleGroupTasks(wdTaskGroup* pGroup, bool bHighPriority)
     // send the proper thread signal, to make sure one of the correct worker threads is awake
     switch (pGroup->m_Priority)
     {
-      case wdTaskPriority::EarlyThisFrame:
-      case wdTaskPriority::ThisFrame:
-      case wdTaskPriority::LateThisFrame:
-      case wdTaskPriority::EarlyNextFrame:
-      case wdTaskPriority::NextFrame:
-      case wdTaskPriority::LateNextFrame:
-      case wdTaskPriority::In2Frames:
-      case wdTaskPriority::In3Frames:
-      case wdTaskPriority::In4Frames:
-      case wdTaskPriority::In5Frames:
-      case wdTaskPriority::In6Frames:
-      case wdTaskPriority::In7Frames:
-      case wdTaskPriority::In8Frames:
-      case wdTaskPriority::In9Frames:
+      case nsTaskPriority::EarlyThisFrame:
+      case nsTaskPriority::ThisFrame:
+      case nsTaskPriority::LateThisFrame:
+      case nsTaskPriority::EarlyNextFrame:
+      case nsTaskPriority::NextFrame:
+      case nsTaskPriority::LateNextFrame:
+      case nsTaskPriority::In2Frames:
+      case nsTaskPriority::In3Frames:
+      case nsTaskPriority::In4Frames:
+      case nsTaskPriority::In5Frames:
+      case nsTaskPriority::In6Frames:
+      case nsTaskPriority::In7Frames:
+      case nsTaskPriority::In8Frames:
+      case nsTaskPriority::In9Frames:
       {
-        WakeUpThreads(wdWorkerThreadType::ShortTasks, iRemainingTasks);
+        WakeUpThreads(nsWorkerThreadType::ShortTasks, iRemainingTasks);
         break;
       }
 
-      case wdTaskPriority::LongRunning:
-      case wdTaskPriority::LongRunningHighPriority:
+      case nsTaskPriority::LongRunning:
+      case nsTaskPriority::LongRunningHighPriority:
       {
-        WakeUpThreads(wdWorkerThreadType::LongTasks, iRemainingTasks);
+        WakeUpThreads(nsWorkerThreadType::LongTasks, iRemainingTasks);
         break;
       }
 
-      case wdTaskPriority::FileAccess:
-      case wdTaskPriority::FileAccessHighPriority:
+      case nsTaskPriority::FileAccess:
+      case nsTaskPriority::FileAccessHighPriority:
       {
-        WakeUpThreads(wdWorkerThreadType::FileAccess, iRemainingTasks);
+        WakeUpThreads(nsWorkerThreadType::FileAccess, iRemainingTasks);
         break;
       }
 
-      case wdTaskPriority::SomeFrameMainThread:
-      case wdTaskPriority::ThisFrameMainThread:
-      case wdTaskPriority::ENUM_COUNT:
+      case nsTaskPriority::SomeFrameMainThread:
+      case nsTaskPriority::ThisFrameMainThread:
+      case nsTaskPriority::ENUM_COUNT:
         // nothing to do for these enum values
         break;
     }
   }
 }
 
-void wdTaskSystem::DependencyHasFinished(wdTaskGroup* pGroup)
+void nsTaskSystem::DependencyHasFinished(nsTaskGroup* pGroup)
 {
   // remove one dependency from the group
   if (pGroup->m_iNumActiveDependencies.Decrement() == 0)
@@ -235,62 +235,62 @@ void wdTaskSystem::DependencyHasFinished(wdTaskGroup* pGroup)
   }
 }
 
-wdResult wdTaskSystem::CancelGroup(wdTaskGroupID group, wdOnTaskRunning::Enum onTaskRunning)
+nsResult nsTaskSystem::CancelGroup(nsTaskGroupID group, nsOnTaskRunning::Enum onTaskRunning)
 {
-  if (wdTaskSystem::IsTaskGroupFinished(group))
-    return WD_SUCCESS;
+  if (nsTaskSystem::IsTaskGroupFinished(group))
+    return NS_SUCCESS;
 
-  WD_PROFILE_SCOPE("CancelGroup");
+  NS_PROFILE_SCOPE("CancelGroup");
 
-  WD_LOCK(s_TaskSystemMutex);
+  NS_LOCK(s_TaskSystemMutex);
 
-  wdResult res = WD_SUCCESS;
+  nsResult res = NS_SUCCESS;
 
   auto TasksCopy = group.m_pTaskGroup->m_Tasks;
 
   // first cancel ALL the tasks in the group, without waiting for anything
-  for (wdUInt32 task = 0; task < TasksCopy.GetCount(); ++task)
+  for (nsUInt32 task = 0; task < TasksCopy.GetCount(); ++task)
   {
-    if (CancelTask(TasksCopy[task], wdOnTaskRunning::ReturnWithoutBlocking) == WD_FAILURE)
+    if (CancelTask(TasksCopy[task], nsOnTaskRunning::ReturnWithoutBlocking) == NS_FAILURE)
     {
-      res = WD_FAILURE;
+      res = NS_FAILURE;
     }
   }
 
   // if all tasks could be removed without problems, we do not need to try it again with blocking
 
-  if (onTaskRunning == wdOnTaskRunning::WaitTillFinished && res == WD_FAILURE)
+  if (onTaskRunning == nsOnTaskRunning::WaitTillFinished && res == NS_FAILURE)
   {
     // now cancel the tasks in the group again, this time wait for those that are already running
-    for (wdUInt32 task = 0; task < TasksCopy.GetCount(); ++task)
+    for (nsUInt32 task = 0; task < TasksCopy.GetCount(); ++task)
     {
-      CancelTask(TasksCopy[task], wdOnTaskRunning::WaitTillFinished).IgnoreResult();
+      CancelTask(TasksCopy[task], nsOnTaskRunning::WaitTillFinished).IgnoreResult();
     }
   }
 
   return res;
 }
 
-void wdTaskSystem::WaitForGroup(wdTaskGroupID group)
+void nsTaskSystem::WaitForGroup(nsTaskGroupID group)
 {
-  WD_PROFILE_SCOPE("WaitForGroup");
+  NS_PROFILE_SCOPE("WaitForGroup");
 
-  WD_ASSERT_DEV(tl_TaskWorkerInfo.m_bAllowNestedTasks, "The executing task '{}' is flagged to never wait for other tasks but does so anyway. Remove the flag or remove the wait-dependency.", tl_TaskWorkerInfo.m_szTaskName);
+  NS_ASSERT_DEV(tl_TaskWorkerInfo.m_bAllowNestedTasks, "The executing task '{}' is flagged to never wait for other tasks but does so anyway. Remove the flag or remove the wait-dependency.", tl_TaskWorkerInfo.m_szTaskName);
 
   const auto ThreadTaskType = tl_TaskWorkerInfo.m_WorkerType;
-  const bool bAllowSleep = ThreadTaskType != wdWorkerThreadType::MainThread;
+  const bool bAllowSleep = ThreadTaskType != nsWorkerThreadType::MainThread;
 
-  while (!wdTaskSystem::IsTaskGroupFinished(group))
+  while (!nsTaskSystem::IsTaskGroupFinished(group))
   {
     if (!HelpExecutingTasks(group))
     {
       if (bAllowSleep)
       {
-        const wdWorkerThreadType::Enum typeToWakeUp = (ThreadTaskType == wdWorkerThreadType::Unknown) ? wdWorkerThreadType::ShortTasks : ThreadTaskType;
+        const nsWorkerThreadType::Enum typeToWakeUp = (ThreadTaskType == nsWorkerThreadType::Unknown) ? nsWorkerThreadType::ShortTasks : ThreadTaskType;
 
         if (tl_TaskWorkerInfo.m_pWorkerState)
         {
-          WD_VERIFY(tl_TaskWorkerInfo.m_pWorkerState->Set((int)wdTaskWorkerState::Blocked) == (int)wdTaskWorkerState::Active, "Corrupt worker state");
+          NS_VERIFY(tl_TaskWorkerInfo.m_pWorkerState->Set((int)nsTaskWorkerState::Blocked) == (int)nsTaskWorkerState::Active, "Corrupt worker state");
         }
 
         WakeUpThreads(typeToWakeUp, 1);
@@ -299,39 +299,39 @@ void wdTaskSystem::WaitForGroup(wdTaskGroupID group)
 
         if (tl_TaskWorkerInfo.m_pWorkerState)
         {
-          WD_VERIFY(tl_TaskWorkerInfo.m_pWorkerState->Set((int)wdTaskWorkerState::Active) == (int)wdTaskWorkerState::Blocked, "Corrupt worker state");
+          NS_VERIFY(tl_TaskWorkerInfo.m_pWorkerState->Set((int)nsTaskWorkerState::Active) == (int)nsTaskWorkerState::Blocked, "Corrupt worker state");
         }
 
         break;
       }
       else
       {
-        wdThreadUtils::YieldTimeSlice();
+        nsThreadUtils::YieldTimeSlice();
       }
     }
   }
 }
 
-void wdTaskSystem::WaitForCondition(wdDelegate<bool()> condition)
+void nsTaskSystem::WaitForCondition(nsDelegate<bool()> condition)
 {
-  WD_PROFILE_SCOPE("WaitForCondition");
+  NS_PROFILE_SCOPE("WaitForCondition");
 
-  WD_ASSERT_DEV(tl_TaskWorkerInfo.m_bAllowNestedTasks, "The executing task '{}' is flagged to never wait for other tasks but does so anyway. Remove the flag or remove the wait-dependency.", tl_TaskWorkerInfo.m_szTaskName);
+  NS_ASSERT_DEV(tl_TaskWorkerInfo.m_bAllowNestedTasks, "The executing task '{}' is flagged to never wait for other tasks but does so anyway. Remove the flag or remove the wait-dependency.", tl_TaskWorkerInfo.m_szTaskName);
 
   const auto ThreadTaskType = tl_TaskWorkerInfo.m_WorkerType;
-  const bool bAllowSleep = ThreadTaskType != wdWorkerThreadType::MainThread;
+  const bool bAllowSleep = ThreadTaskType != nsWorkerThreadType::MainThread;
 
   while (!condition())
   {
-    if (!HelpExecutingTasks(wdTaskGroupID()))
+    if (!HelpExecutingTasks(nsTaskGroupID()))
     {
       if (bAllowSleep)
       {
-        const wdWorkerThreadType::Enum typeToWakeUp = (ThreadTaskType == wdWorkerThreadType::Unknown) ? wdWorkerThreadType::ShortTasks : ThreadTaskType;
+        const nsWorkerThreadType::Enum typeToWakeUp = (ThreadTaskType == nsWorkerThreadType::Unknown) ? nsWorkerThreadType::ShortTasks : ThreadTaskType;
 
         if (tl_TaskWorkerInfo.m_pWorkerState)
         {
-          WD_VERIFY(tl_TaskWorkerInfo.m_pWorkerState->Set((int)wdTaskWorkerState::Blocked) == (int)wdTaskWorkerState::Active, "Corrupt worker state");
+          NS_VERIFY(tl_TaskWorkerInfo.m_pWorkerState->Set((int)nsTaskWorkerState::Blocked) == (int)nsTaskWorkerState::Active, "Corrupt worker state");
         }
 
         WakeUpThreads(typeToWakeUp, 1);
@@ -339,22 +339,20 @@ void wdTaskSystem::WaitForCondition(wdDelegate<bool()> condition)
         while (!condition())
         {
           // TODO: busy loop for now
-          wdThreadUtils::YieldTimeSlice();
+          nsThreadUtils::YieldTimeSlice();
         }
 
         if (tl_TaskWorkerInfo.m_pWorkerState)
         {
-          WD_VERIFY(tl_TaskWorkerInfo.m_pWorkerState->Set((int)wdTaskWorkerState::Active) == (int)wdTaskWorkerState::Blocked, "Corrupt worker state");
+          NS_VERIFY(tl_TaskWorkerInfo.m_pWorkerState->Set((int)nsTaskWorkerState::Active) == (int)nsTaskWorkerState::Blocked, "Corrupt worker state");
         }
 
         break;
       }
       else
       {
-        wdThreadUtils::YieldTimeSlice();
+        nsThreadUtils::YieldTimeSlice();
       }
     }
   }
 }
-
-WD_STATICLINK_FILE(Foundation, Foundation_Threading_Implementation_TaskSystemGroups);

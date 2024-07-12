@@ -4,12 +4,12 @@
 
 #include "../../../Base/Shaders/Common/ConstantBufferMacros.h"
 
-CONSTANT_BUFFER(wdTestColors, 2)
+CONSTANT_BUFFER(nsTestColors, 2)
 {
   FLOAT4(VertexColor);
 };
 
-CONSTANT_BUFFER(wdTestPositions, 3)
+CONSTANT_BUFFER(nsTestPositions, 3)
 {
   FLOAT4(Vertex0);
   FLOAT4(Vertex1);

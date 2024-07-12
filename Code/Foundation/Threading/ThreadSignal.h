@@ -5,19 +5,19 @@
 
 /// \brief Waiting on a thread signal puts the waiting thread to sleep. Other threads can wake it up by raising the signal.
 ///
-/// wdThreadSignal is similar to wdConditionVariable but adds some internal state, which makes it more suitable for common use cases.
-/// For instance, in contrast to wdConditionVariable, one can wait for an wdThreadSignal and get awoken, even if the signal was raised
+/// nsThreadSignal is similar to nsConditionVariable but adds some internal state, which makes it more suitable for common use cases.
+/// For instance, in contrast to nsConditionVariable, one can wait for an nsThreadSignal and get awoken, even if the signal was raised
 /// before a thread tried to wait on it.
 /// At any given time the thread signal is either 'raised' or 'cleared'. Waiting for a 'raised' signal will return immediately.
 /// This makes it easier to implement a simple producer/consumer scenario.
 ///
-/// Once a waiting thread is woken up, the signal state is cleared automatically, unless the wdThreadSignal uses 'ManualReset' mode.
+/// Once a waiting thread is woken up, the signal state is cleared automatically, unless the nsThreadSignal uses 'ManualReset' mode.
 /// Thus, in AutoReset mode, it is guaranteed that exactly one thread will be woken up (or not even put to sleep) for every signal.
 ///
-/// If an already raised wdThreadSignal is raised again, this has no effect.
-class WD_FOUNDATION_DLL wdThreadSignal
+/// If an already raised nsThreadSignal is raised again, this has no effect.
+class NS_FOUNDATION_DLL nsThreadSignal
 {
-  WD_DISALLOW_COPY_AND_ASSIGN(wdThreadSignal);
+  NS_DISALLOW_COPY_AND_ASSIGN(nsThreadSignal);
 
 public:
   enum class Mode
@@ -32,8 +32,8 @@ public:
     Timeout
   };
 
-  wdThreadSignal(Mode mode = Mode::AutoReset);
-  ~wdThreadSignal();
+  nsThreadSignal(Mode mode = Mode::AutoReset);
+  ~nsThreadSignal();
 
   /// \brief Waits until the signal is raised.
   ///
@@ -43,7 +43,7 @@ public:
   /// \brief Waits until either the signal is raised or the timeout is reached.
   ///
   /// The waiting thread is put to sleep in the mean time.
-  WaitResult WaitForSignal(wdTime timeout) const;
+  WaitResult WaitForSignal(nsTime timeout) const;
 
   /// \brief Wakes up one thread that is currently waiting for this signal.
   ///
@@ -63,5 +63,5 @@ public:
 private:
   Mode m_Mode = Mode::AutoReset;
   mutable bool m_bSignalState = false;
-  mutable wdConditionVariable m_ConditionVariable;
+  mutable nsConditionVariable m_ConditionVariable;
 };

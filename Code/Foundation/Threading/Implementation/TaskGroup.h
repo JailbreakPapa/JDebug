@@ -6,37 +6,39 @@
 #include <Foundation/Types/SharedPtr.h>
 
 /// \internal Represents the state of a group of tasks that can be waited on
-class wdTaskGroup
+class nsTaskGroup
 {
-  WD_DISALLOW_COPY_AND_ASSIGN(wdTaskGroup);
+  NS_DISALLOW_COPY_AND_ASSIGN(nsTaskGroup);
 
 public:
-  wdTaskGroup();
-  ~wdTaskGroup();
+  nsTaskGroup();
+  ~nsTaskGroup();
 
 private:
-  friend class wdTaskSystem;
+  friend class nsTaskSystem;
 
-#if WD_ENABLED(WD_COMPILE_FOR_DEBUG)
-  static void DebugCheckTaskGroup(wdTaskGroupID groupID, wdMutex& mutex);
+#if NS_ENABLED(NS_COMPILE_FOR_DEBUG)
+  static void DebugCheckTaskGroup(nsTaskGroupID groupID, nsMutex& mutex);
 #else
-  WD_ALWAYS_INLINE static void DebugCheckTaskGroup(wdTaskGroupID groupID, wdMutex& mutex) {}
+  NS_ALWAYS_INLINE static void DebugCheckTaskGroup(nsTaskGroupID groupID, nsMutex& mutex)
+  {
+  }
 #endif
 
   /// \brief Puts the calling thread to sleep until this group is fully finished.
-  void WaitForFinish(wdTaskGroupID group) const;
-  void Reuse(wdTaskPriority::Enum priority, wdOnTaskGroupFinishedCallback callback);
+  void WaitForFinish(nsTaskGroupID group) const;
+  void Reuse(nsTaskPriority::Enum priority, nsOnTaskGroupFinishedCallback callback);
 
   bool m_bInUse = true;
   bool m_bStartedByUser = false;
-  wdUInt16 m_uiTaskGroupIndex = 0xFFFF; // only there as a debugging aid
-  wdUInt32 m_uiGroupCounter = 1;
-  wdHybridArray<wdSharedPtr<wdTask>, 16> m_Tasks;
-  wdHybridArray<wdTaskGroupID, 4> m_DependsOnGroups;
-  wdHybridArray<wdTaskGroupID, 8> m_OthersDependingOnMe;
-  wdAtomicInteger32 m_iNumActiveDependencies;
-  wdAtomicInteger32 m_iNumRemainingTasks;
-  wdOnTaskGroupFinishedCallback m_OnFinishedCallback;
-  wdTaskPriority::Enum m_Priority = wdTaskPriority::ThisFrame;
-  mutable wdConditionVariable m_CondVarGroupFinished;
+  nsUInt16 m_uiTaskGroupIndex = 0xFFFF; // only there as a debugging aid
+  nsUInt32 m_uiGroupCounter = 1;
+  nsHybridArray<nsSharedPtr<nsTask>, 16> m_Tasks;
+  nsHybridArray<nsTaskGroupID, 4> m_DependsOnGroups;
+  nsHybridArray<nsTaskGroupID, 8> m_OthersDependingOnMe;
+  nsAtomicInteger32 m_iNumActiveDependencies;
+  nsAtomicInteger32 m_iNumRemainingTasks;
+  nsOnTaskGroupFinishedCallback m_OnFinishedCallback;
+  nsTaskPriority::Enum m_Priority = nsTaskPriority::ThisFrame;
+  mutable nsConditionVariable m_CondVarGroupFinished;
 };

@@ -1,84 +1,82 @@
 #pragma once
 
-template <wdUInt16 Size>
-wdHybridStringBase<Size>::wdHybridStringBase(wdAllocatorBase* pAllocator)
+template <nsUInt16 Size>
+nsHybridStringBase<Size>::nsHybridStringBase(nsAllocator* pAllocator)
   : m_Data(pAllocator)
 {
   Clear();
 }
 
-template <wdUInt16 Size>
-wdHybridStringBase<Size>::wdHybridStringBase(const wdHybridStringBase& rhs, wdAllocatorBase* pAllocator)
+template <nsUInt16 Size>
+nsHybridStringBase<Size>::nsHybridStringBase(const nsHybridStringBase& rhs, nsAllocator* pAllocator)
   : m_Data(pAllocator)
 {
   *this = rhs;
 }
 
-template <wdUInt16 Size>
-wdHybridStringBase<Size>::wdHybridStringBase(wdHybridStringBase&& rhs, wdAllocatorBase* pAllocator)
+template <nsUInt16 Size>
+nsHybridStringBase<Size>::nsHybridStringBase(nsHybridStringBase&& rhs, nsAllocator* pAllocator)
   : m_Data(pAllocator)
 {
   operator=(std::move(rhs));
 }
 
-template <wdUInt16 Size>
-wdHybridStringBase<Size>::wdHybridStringBase(const char* rhs, wdAllocatorBase* pAllocator)
+template <nsUInt16 Size>
+nsHybridStringBase<Size>::nsHybridStringBase(const char* rhs, nsAllocator* pAllocator)
   : m_Data(pAllocator)
 {
   *this = rhs;
 }
 
-template <wdUInt16 Size>
-wdHybridStringBase<Size>::wdHybridStringBase(const wchar_t* rhs, wdAllocatorBase* pAllocator)
+template <nsUInt16 Size>
+nsHybridStringBase<Size>::nsHybridStringBase(const wchar_t* rhs, nsAllocator* pAllocator)
   : m_Data(pAllocator)
 {
   *this = rhs;
 }
 
-template <wdUInt16 Size>
-wdHybridStringBase<Size>::wdHybridStringBase(const wdStringView& rhs, wdAllocatorBase* pAllocator)
+template <nsUInt16 Size>
+nsHybridStringBase<Size>::nsHybridStringBase(const nsStringView& rhs, nsAllocator* pAllocator)
   : m_Data(pAllocator)
 {
   *this = rhs;
 }
 
-template <wdUInt16 Size>
-wdHybridStringBase<Size>::~wdHybridStringBase() = default;
+template <nsUInt16 Size>
+nsHybridStringBase<Size>::~nsHybridStringBase() = default;
 
-template <wdUInt16 Size>
-void wdHybridStringBase<Size>::Clear()
+template <nsUInt16 Size>
+void nsHybridStringBase<Size>::Clear()
 {
   m_Data.SetCountUninitialized(1);
   m_Data[0] = '\0';
-  m_uiCharacterCount = 0;
 }
 
-template <wdUInt16 Size>
-WD_ALWAYS_INLINE const char* wdHybridStringBase<Size>::GetData() const
+template <nsUInt16 Size>
+NS_ALWAYS_INLINE const char* nsHybridStringBase<Size>::GetData() const
 {
-  WD_ASSERT_DEBUG(!m_Data.IsEmpty(), "wdHybridString has been corrupted, the array can never be empty. This can happen when you access a "
+  NS_ASSERT_DEBUG(!m_Data.IsEmpty(), "nsHybridString has been corrupted, the array can never be empty. This can happen when you access a "
                                      "string that was previously std::move'd into another string.");
 
   return &m_Data[0];
 }
 
-template <wdUInt16 Size>
-WD_ALWAYS_INLINE wdUInt32 wdHybridStringBase<Size>::GetElementCount() const
+template <nsUInt16 Size>
+NS_ALWAYS_INLINE nsUInt32 nsHybridStringBase<Size>::GetElementCount() const
 {
   return m_Data.GetCount() - 1;
 }
 
-template <wdUInt16 Size>
-WD_ALWAYS_INLINE wdUInt32 wdHybridStringBase<Size>::GetCharacterCount() const
+template <nsUInt16 Size>
+NS_ALWAYS_INLINE nsUInt32 nsHybridStringBase<Size>::GetCharacterCount() const
 {
-  return m_uiCharacterCount;
+  return nsStringUtils::GetCharacterCount(GetData());
 }
 
-template <wdUInt16 Size>
-void wdHybridStringBase<Size>::operator=(const char* szString)
+template <nsUInt16 Size>
+void nsHybridStringBase<Size>::operator=(const char* szString)
 {
-  wdUInt32 uiElementCount = 0;
-  wdStringUtils::GetCharacterAndElementCount(szString, m_uiCharacterCount, uiElementCount);
+  nsUInt32 uiElementCount = nsStringUtils::GetStringElementCount(szString);
 
   if (szString + uiElementCount < m_Data.GetData() || szString >= m_Data.GetData() + m_Data.GetCount())
   {
@@ -87,175 +85,231 @@ void wdHybridStringBase<Size>::operator=(const char* szString)
   else
   {
     // source string overlaps with our own memory -> we can't increase the size of our memory, as that might invalidate the source data
-    WD_ASSERT_DEBUG(uiElementCount < m_Data.GetCount(), "Invalid copy of overlapping string data.");
+    NS_ASSERT_DEBUG(uiElementCount < m_Data.GetCount(), "Invalid copy of overlapping string data.");
   }
 
   m_Data.SetCountUninitialized(uiElementCount + 1);
-  wdStringUtils::Copy(&m_Data[0], uiElementCount + 1, szString);
+  nsStringUtils::Copy(&m_Data[0], uiElementCount + 1, szString);
 }
 
-template <wdUInt16 Size>
-void wdHybridStringBase<Size>::operator=(const wdHybridStringBase& rhs)
+template <nsUInt16 Size>
+void nsHybridStringBase<Size>::operator=(const nsHybridStringBase& rhs)
 {
   if (this == &rhs)
     return;
 
-  m_uiCharacterCount = rhs.m_uiCharacterCount;
   m_Data = rhs.m_Data;
 }
 
-template <wdUInt16 Size>
-void wdHybridStringBase<Size>::operator=(wdHybridStringBase&& rhs)
+template <nsUInt16 Size>
+void nsHybridStringBase<Size>::operator=(nsHybridStringBase&& rhs)
 {
   if (this == &rhs)
     return;
 
-  m_uiCharacterCount = rhs.m_uiCharacterCount;
   m_Data = std::move(rhs.m_Data);
 }
 
-template <wdUInt16 Size>
-void wdHybridStringBase<Size>::operator=(const wchar_t* szString)
+template <nsUInt16 Size>
+void nsHybridStringBase<Size>::operator=(const wchar_t* szString)
 {
-  wdStringUtf8 sConversion(szString, m_Data.GetAllocator());
+  nsStringUtf8 sConversion(szString, m_Data.GetAllocator());
   *this = sConversion.GetData();
 }
 
-template <wdUInt16 Size>
-void wdHybridStringBase<Size>::operator=(const wdStringView& rhs)
+template <nsUInt16 Size>
+void nsHybridStringBase<Size>::operator=(const nsStringView& rhs)
 {
-  WD_ASSERT_DEBUG(rhs.GetStartPointer() < m_Data.GetData() || rhs.GetStartPointer() >= m_Data.GetData() + m_Data.GetCount(),
+  NS_ASSERT_DEBUG(rhs.GetStartPointer() < m_Data.GetData() || rhs.GetStartPointer() >= m_Data.GetData() + m_Data.GetCount(),
     "Can't assign string a value that points to ourself!");
 
   m_Data.SetCountUninitialized(rhs.GetElementCount() + 1);
-  wdStringUtils::Copy(&m_Data[0], m_Data.GetCount(), rhs.GetStartPointer(), rhs.GetEndPointer());
-  m_uiCharacterCount = wdStringUtils::GetCharacterCount(GetData());
+  nsStringUtils::Copy(&m_Data[0], m_Data.GetCount(), rhs.GetStartPointer(), rhs.GetEndPointer());
 }
 
-template <wdUInt16 Size>
-wdStringView wdHybridStringBase<Size>::GetSubString(wdUInt32 uiFirstCharacter, wdUInt32 uiNumCharacters) const
+template <nsUInt16 Size>
+nsStringView nsHybridStringBase<Size>::GetSubString(nsUInt32 uiFirstCharacter, nsUInt32 uiNumCharacters) const
 {
-  WD_ASSERT_DEV(uiFirstCharacter + uiNumCharacters <= m_uiCharacterCount,
-    "The string only has {0} characters, cannot get a sub-string up to character {1}.", m_uiCharacterCount, uiFirstCharacter + uiNumCharacters);
-
   const char* szStart = GetData();
-  wdUnicodeUtils::MoveToNextUtf8(szStart, uiFirstCharacter);
+  if (nsUnicodeUtils::MoveToNextUtf8(szStart, uiFirstCharacter).Failed())
+    return {};                                                           // szStart was moved too far, the result is just an empty string
 
   const char* szEnd = szStart;
-  wdUnicodeUtils::MoveToNextUtf8(szEnd, uiNumCharacters);
+  nsUnicodeUtils::MoveToNextUtf8(szEnd, uiNumCharacters).IgnoreResult(); // if it fails, szEnd just points to the end of this string
 
-  return wdStringView(szStart, szEnd);
+  return nsStringView(szStart, szEnd);
 }
 
-template <wdUInt16 Size>
-wdStringView wdHybridStringBase<Size>::GetFirst(wdUInt32 uiNumCharacters) const
+template <nsUInt16 Size>
+nsStringView nsHybridStringBase<Size>::GetFirst(nsUInt32 uiNumCharacters) const
 {
   return GetSubString(0, uiNumCharacters);
 }
 
-template <wdUInt16 Size>
-wdStringView wdHybridStringBase<Size>::GetLast(wdUInt32 uiNumCharacters) const
+template <nsUInt16 Size>
+nsStringView nsHybridStringBase<Size>::GetLast(nsUInt32 uiNumCharacters) const
 {
-  WD_ASSERT_DEV(uiNumCharacters < m_uiCharacterCount, "The string only contains {0} characters, cannot return the last {1} characters.",
-    m_uiCharacterCount, uiNumCharacters);
-  return GetSubString(m_uiCharacterCount - uiNumCharacters, uiNumCharacters);
+  const nsUInt32 uiMaxCharacterCount = GetCharacterCount();
+  NS_ASSERT_DEV(uiNumCharacters < uiMaxCharacterCount, "The string only contains {0} characters, cannot return the last {1} characters.",
+    uiMaxCharacterCount, uiNumCharacters);
+  return GetSubString(uiMaxCharacterCount - uiNumCharacters, uiNumCharacters);
 }
 
 
-template <wdUInt16 Size, typename A>
-WD_ALWAYS_INLINE wdHybridString<Size, A>::wdHybridString()
-  : wdHybridStringBase<Size>(A::GetAllocator())
+template <nsUInt16 Size, typename A>
+NS_ALWAYS_INLINE nsHybridString<Size, A>::nsHybridString()
+  : nsHybridStringBase<Size>(A::GetAllocator())
 {
 }
 
-template <wdUInt16 Size, typename A>
-WD_ALWAYS_INLINE wdHybridString<Size, A>::wdHybridString(wdAllocatorBase* pAllocator)
-  : wdHybridStringBase<Size>(pAllocator)
+template <nsUInt16 Size, typename A>
+NS_ALWAYS_INLINE nsHybridString<Size, A>::nsHybridString(nsAllocator* pAllocator)
+  : nsHybridStringBase<Size>(pAllocator)
 {
 }
 
-template <wdUInt16 Size, typename A>
-WD_ALWAYS_INLINE wdHybridString<Size, A>::wdHybridString(const wdHybridString<Size, A>& other)
-  : wdHybridStringBase<Size>(other, A::GetAllocator())
+template <nsUInt16 Size, typename A>
+NS_ALWAYS_INLINE nsHybridString<Size, A>::nsHybridString(const nsHybridString<Size, A>& other)
+  : nsHybridStringBase<Size>(other, A::GetAllocator())
 {
 }
 
-template <wdUInt16 Size, typename A>
-WD_ALWAYS_INLINE wdHybridString<Size, A>::wdHybridString(const wdHybridStringBase<Size>& other)
-  : wdHybridStringBase<Size>(other, A::GetAllocator())
+template <nsUInt16 Size, typename A>
+NS_ALWAYS_INLINE nsHybridString<Size, A>::nsHybridString(const nsHybridStringBase<Size>& other)
+  : nsHybridStringBase<Size>(other, A::GetAllocator())
 {
 }
 
-template <wdUInt16 Size, typename A>
-WD_ALWAYS_INLINE wdHybridString<Size, A>::wdHybridString(wdHybridString<Size, A>&& other)
-  : wdHybridStringBase<Size>(std::move(other), A::GetAllocator())
+template <nsUInt16 Size, typename A>
+NS_ALWAYS_INLINE nsHybridString<Size, A>::nsHybridString(nsHybridString<Size, A>&& other)
+  : nsHybridStringBase<Size>(std::move(other), A::GetAllocator())
 {
 }
 
-template <wdUInt16 Size, typename A>
-WD_ALWAYS_INLINE wdHybridString<Size, A>::wdHybridString(wdHybridStringBase<Size>&& other)
-  : wdHybridStringBase<Size>(std::move(other), A::GetAllocator())
+template <nsUInt16 Size, typename A>
+NS_ALWAYS_INLINE nsHybridString<Size, A>::nsHybridString(nsHybridStringBase<Size>&& other)
+  : nsHybridStringBase<Size>(std::move(other), A::GetAllocator())
 {
 }
 
-template <wdUInt16 Size, typename A>
-WD_ALWAYS_INLINE wdHybridString<Size, A>::wdHybridString(const char* rhs)
-  : wdHybridStringBase<Size>(rhs, A::GetAllocator())
+template <nsUInt16 Size, typename A>
+NS_ALWAYS_INLINE nsHybridString<Size, A>::nsHybridString(const char* rhs)
+  : nsHybridStringBase<Size>(rhs, A::GetAllocator())
 {
 }
 
-template <wdUInt16 Size, typename A>
-WD_ALWAYS_INLINE wdHybridString<Size, A>::wdHybridString(const wchar_t* rhs)
-  : wdHybridStringBase<Size>(rhs, A::GetAllocator())
+template <nsUInt16 Size, typename A>
+NS_ALWAYS_INLINE nsHybridString<Size, A>::nsHybridString(const wchar_t* rhs)
+  : nsHybridStringBase<Size>(rhs, A::GetAllocator())
 {
 }
 
-template <wdUInt16 Size, typename A>
-WD_ALWAYS_INLINE wdHybridString<Size, A>::wdHybridString(const wdStringView& rhs)
-  : wdHybridStringBase<Size>(rhs, A::GetAllocator())
+template <nsUInt16 Size, typename A>
+NS_ALWAYS_INLINE nsHybridString<Size, A>::nsHybridString(const nsStringView& rhs)
+  : nsHybridStringBase<Size>(rhs, A::GetAllocator())
 {
 }
 
-template <wdUInt16 Size, typename A>
-WD_ALWAYS_INLINE void wdHybridString<Size, A>::operator=(const wdHybridString<Size, A>& rhs)
+template <nsUInt16 Size, typename A>
+NS_ALWAYS_INLINE void nsHybridString<Size, A>::operator=(const nsHybridString<Size, A>& rhs)
 {
-  wdHybridStringBase<Size>::operator=(rhs);
+  nsHybridStringBase<Size>::operator=(rhs);
 }
 
-template <wdUInt16 Size, typename A>
-WD_ALWAYS_INLINE void wdHybridString<Size, A>::operator=(const wdHybridStringBase<Size>& rhs)
+template <nsUInt16 Size, typename A>
+NS_ALWAYS_INLINE void nsHybridString<Size, A>::operator=(const nsHybridStringBase<Size>& rhs)
 {
-  wdHybridStringBase<Size>::operator=(rhs);
+  nsHybridStringBase<Size>::operator=(rhs);
 }
 
-template <wdUInt16 Size, typename A>
-WD_ALWAYS_INLINE void wdHybridString<Size, A>::operator=(wdHybridString<Size, A>&& rhs)
+template <nsUInt16 Size, typename A>
+NS_ALWAYS_INLINE void nsHybridString<Size, A>::operator=(nsHybridString<Size, A>&& rhs)
 {
-  wdHybridStringBase<Size>::operator=(std::move(rhs));
+  nsHybridStringBase<Size>::operator=(std::move(rhs));
 }
 
-template <wdUInt16 Size, typename A>
-WD_ALWAYS_INLINE void wdHybridString<Size, A>::operator=(wdHybridStringBase<Size>&& rhs)
+template <nsUInt16 Size, typename A>
+NS_ALWAYS_INLINE void nsHybridString<Size, A>::operator=(nsHybridStringBase<Size>&& rhs)
 {
-  wdHybridStringBase<Size>::operator=(std::move(rhs));
+  nsHybridStringBase<Size>::operator=(std::move(rhs));
 }
 
-template <wdUInt16 Size, typename A>
-WD_ALWAYS_INLINE void wdHybridString<Size, A>::operator=(const char* rhs)
+template <nsUInt16 Size, typename A>
+NS_ALWAYS_INLINE void nsHybridString<Size, A>::operator=(const char* rhs)
 {
-  wdHybridStringBase<Size>::operator=(rhs);
+  nsHybridStringBase<Size>::operator=(rhs);
 }
 
-template <wdUInt16 Size, typename A>
-WD_ALWAYS_INLINE void wdHybridString<Size, A>::operator=(const wchar_t* rhs)
+template <nsUInt16 Size, typename A>
+NS_ALWAYS_INLINE void nsHybridString<Size, A>::operator=(const wchar_t* rhs)
 {
-  wdHybridStringBase<Size>::operator=(rhs);
+  nsHybridStringBase<Size>::operator=(rhs);
 }
 
-template <wdUInt16 Size, typename A>
-WD_ALWAYS_INLINE void wdHybridString<Size, A>::operator=(const wdStringView& rhs)
+template <nsUInt16 Size, typename A>
+NS_ALWAYS_INLINE void nsHybridString<Size, A>::operator=(const nsStringView& rhs)
 {
-  wdHybridStringBase<Size>::operator=(rhs);
+  nsHybridStringBase<Size>::operator=(rhs);
 }
+
+#if NS_ENABLED(NS_INTEROP_STL_STRINGS)
+
+template <nsUInt16 Size>
+nsHybridStringBase<Size>::nsHybridStringBase(const std::string_view& rhs, nsAllocator* pAllocator)
+{
+  *this = rhs;
+}
+
+template <nsUInt16 Size>
+nsHybridStringBase<Size>::nsHybridStringBase(const std::string& rhs, nsAllocator* pAllocator)
+{
+  *this = rhs;
+}
+
+template <nsUInt16 Size>
+void nsHybridStringBase<Size>::operator=(const std::string_view& rhs)
+{
+  if (rhs.empty())
+  {
+    Clear();
+  }
+  else
+  {
+    m_Data.SetCountUninitialized(((nsUInt32)rhs.size() + 1));
+    nsStringUtils::Copy(&m_Data[0], m_Data.GetCount(), rhs.data(), rhs.data() + rhs.size());
+  }
+}
+
+template <nsUInt16 Size>
+void nsHybridStringBase<Size>::operator=(const std::string& rhs)
+{
+  *this = std::string_view(rhs);
+}
+
+template <nsUInt16 Size, typename A>
+NS_ALWAYS_INLINE nsHybridString<Size, A>::nsHybridString(const std::string_view& rhs)
+  : nsHybridStringBase<Size>(rhs, A::GetAllocator())
+{
+}
+
+template <nsUInt16 Size, typename A>
+NS_ALWAYS_INLINE nsHybridString<Size, A>::nsHybridString(const std::string& rhs)
+  : nsHybridStringBase<Size>(rhs, A::GetAllocator())
+{
+}
+
+template <nsUInt16 Size, typename A>
+NS_ALWAYS_INLINE void nsHybridString<Size, A>::operator=(const std::string_view& rhs)
+{
+  nsHybridStringBase<Size>::operator=(rhs);
+}
+
+template <nsUInt16 Size, typename A>
+NS_ALWAYS_INLINE void nsHybridString<Size, A>::operator=(const std::string& rhs)
+{
+  nsHybridStringBase<Size>::operator=(rhs);
+}
+
+#endif
 
 #include <Foundation/Strings/Implementation/AllStrings_inl.h>

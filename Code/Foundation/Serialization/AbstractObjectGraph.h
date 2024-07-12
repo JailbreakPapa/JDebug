@@ -11,68 +11,62 @@
 #include <Foundation/Types/Uuid.h>
 #include <Foundation/Types/Variant.h>
 
-class wdAbstractObjectGraph;
+class nsAbstractObjectGraph;
 
-class WD_FOUNDATION_DLL wdAbstractObjectNode
+class NS_FOUNDATION_DLL nsAbstractObjectNode
 {
 public:
   struct Property
   {
-    const char* m_szPropertyName;
-    wdVariant m_Value;
+    nsStringView m_sPropertyName;
+    nsVariant m_Value;
   };
 
-  wdAbstractObjectNode()
-    : m_pOwner(nullptr)
-    , m_uiTypeVersion(0)
-    , m_szType(nullptr)
-    , m_szNodeName(nullptr)
-  {
-  }
+  nsAbstractObjectNode() = default;
 
-  const wdHybridArray<Property, 16>& GetProperties() const { return m_Properties; }
+  const nsHybridArray<Property, 16>& GetProperties() const { return m_Properties; }
 
-  void AddProperty(const char* szName, const wdVariant& value);
+  void AddProperty(nsStringView sName, const nsVariant& value);
 
-  void RemoveProperty(const char* szName);
+  void RemoveProperty(nsStringView sName);
 
-  void ChangeProperty(const char* szName, const wdVariant& value);
+  void ChangeProperty(nsStringView sName, const nsVariant& value);
 
-  void RenameProperty(const char* szOldName, const char* szNewName);
+  void RenameProperty(nsStringView sOldName, nsStringView sNewName);
 
   void ClearProperties();
 
   // \brief Inlines a custom variant type. Use to patch properties that have been turned into custom variant type.
-  // \sa WD_DEFINE_CUSTOM_VARIANT_TYPE, WD_DECLARE_CUSTOM_VARIANT_TYPE
-  wdResult InlineProperty(const char* szName);
+  // \sa NS_DEFINE_CUSTOM_VARIANT_TYPE, NS_DECLARE_CUSTOM_VARIANT_TYPE
+  nsResult InlineProperty(nsStringView sName);
 
-  const wdAbstractObjectGraph* GetOwner() const { return m_pOwner; }
-  const wdUuid& GetGuid() const { return m_Guid; }
-  wdUInt32 GetTypeVersion() const { return m_uiTypeVersion; }
-  void SetTypeVersion(wdUInt32 uiTypeVersion) { m_uiTypeVersion = uiTypeVersion; }
-  const char* GetType() const { return m_szType; }
-  void SetType(const char* szType);
+  const nsAbstractObjectGraph* GetOwner() const { return m_pOwner; }
+  const nsUuid& GetGuid() const { return m_Guid; }
+  nsUInt32 GetTypeVersion() const { return m_uiTypeVersion; }
+  void SetTypeVersion(nsUInt32 uiTypeVersion) { m_uiTypeVersion = uiTypeVersion; }
+  nsStringView GetType() const { return m_sType; }
+  void SetType(nsStringView sType);
 
-  const Property* FindProperty(const char* szName) const;
-  Property* FindProperty(const char* szName);
+  const Property* FindProperty(nsStringView sName) const;
+  Property* FindProperty(nsStringView sName);
 
-  const char* GetNodeName() const { return m_szNodeName; }
+  nsStringView GetNodeName() const { return m_sNodeName; }
 
 private:
-  friend class wdAbstractObjectGraph;
+  friend class nsAbstractObjectGraph;
 
-  wdAbstractObjectGraph* m_pOwner;
+  nsAbstractObjectGraph* m_pOwner = nullptr;
 
-  wdUuid m_Guid;
-  wdUInt32 m_uiTypeVersion;
-  const char* m_szType;
-  const char* m_szNodeName;
+  nsUuid m_Guid;
+  nsUInt32 m_uiTypeVersion = 0;
+  nsStringView m_sType;
+  nsStringView m_sNodeName;
 
-  wdHybridArray<Property, 16> m_Properties;
+  nsHybridArray<Property, 16> m_Properties;
 };
-WD_DECLARE_REFLECTABLE_TYPE(WD_FOUNDATION_DLL, wdAbstractObjectNode);
+NS_DECLARE_REFLECTABLE_TYPE(NS_FOUNDATION_DLL, nsAbstractObjectNode);
 
-struct WD_FOUNDATION_DLL wdAbstractGraphDiffOperation
+struct NS_FOUNDATION_DLL nsAbstractGraphDiffOperation
 {
   enum class Op
   {
@@ -82,17 +76,17 @@ struct WD_FOUNDATION_DLL wdAbstractGraphDiffOperation
   };
 
   Op m_Operation;
-  wdUuid m_Node;            // prop parent or added / deleted node
-  wdString m_sProperty;     // prop name or type
-  wdUInt32 m_uiTypeVersion; // only used for NodeAdded
-  wdVariant m_Value;
+  nsUuid m_Node;            // prop parent or added / deleted node
+  nsString m_sProperty;     // prop name or type
+  nsUInt32 m_uiTypeVersion; // only used for NodeAdded
+  nsVariant m_Value;
 };
 
-struct WD_FOUNDATION_DLL wdObjectChangeType
+struct NS_FOUNDATION_DLL nsObjectChangeType
 {
-  typedef wdInt8 StorageType;
+  using StorageType = nsInt8;
 
-  enum Enum : wdInt8
+  enum Enum : nsInt8
   {
     NodeAdded,
     NodeRemoved,
@@ -103,86 +97,86 @@ struct WD_FOUNDATION_DLL wdObjectChangeType
     Default = NodeAdded
   };
 };
-WD_DECLARE_REFLECTABLE_TYPE(WD_FOUNDATION_DLL, wdObjectChangeType);
+NS_DECLARE_REFLECTABLE_TYPE(NS_FOUNDATION_DLL, nsObjectChangeType);
 
 
-struct WD_FOUNDATION_DLL wdDiffOperation
+struct NS_FOUNDATION_DLL nsDiffOperation
 {
-  wdEnum<wdObjectChangeType> m_Operation;
-  wdUuid m_Node;        // owner of m_sProperty
-  wdString m_sProperty; // property
-  wdVariant m_Index;
-  wdVariant m_Value;
+  nsEnum<nsObjectChangeType> m_Operation;
+  nsUuid m_Node;        // owner of m_sProperty
+  nsString m_sProperty; // property
+  nsVariant m_Index;
+  nsVariant m_Value;
 };
-WD_DECLARE_REFLECTABLE_TYPE(WD_FOUNDATION_DLL, wdDiffOperation);
+NS_DECLARE_REFLECTABLE_TYPE(NS_FOUNDATION_DLL, nsDiffOperation);
 
 
-class WD_FOUNDATION_DLL wdAbstractObjectGraph
+class NS_FOUNDATION_DLL nsAbstractObjectGraph
 {
 public:
-  wdAbstractObjectGraph() {}
-  ~wdAbstractObjectGraph();
+  nsAbstractObjectGraph() = default;
+  ~nsAbstractObjectGraph();
 
   void Clear();
 
-  using FilterFunction = wdDelegate<bool(const wdAbstractObjectNode*, const wdAbstractObjectNode::Property*)>;
-  wdAbstractObjectNode* Clone(wdAbstractObjectGraph& ref_cloneTarget, const wdAbstractObjectNode* pRootNode = nullptr, FilterFunction filter = FilterFunction()) const;
+  using FilterFunction = nsDelegate<bool(const nsAbstractObjectNode*, const nsAbstractObjectNode::Property*)>;
+  nsAbstractObjectNode* Clone(nsAbstractObjectGraph& ref_cloneTarget, const nsAbstractObjectNode* pRootNode = nullptr, FilterFunction filter = FilterFunction()) const;
 
-  const char* RegisterString(const char* szString);
+  nsStringView RegisterString(nsStringView sString);
 
-  const wdAbstractObjectNode* GetNode(const wdUuid& guid) const;
-  wdAbstractObjectNode* GetNode(const wdUuid& guid);
+  const nsAbstractObjectNode* GetNode(const nsUuid& guid) const;
+  nsAbstractObjectNode* GetNode(const nsUuid& guid);
 
-  const wdAbstractObjectNode* GetNodeByName(const char* szName) const;
-  wdAbstractObjectNode* GetNodeByName(const char* szName);
+  const nsAbstractObjectNode* GetNodeByName(nsStringView sName) const;
+  nsAbstractObjectNode* GetNodeByName(nsStringView sName);
 
-  wdAbstractObjectNode* AddNode(const wdUuid& guid, const char* szType, wdUInt32 uiTypeVersion, const char* szNodeName = nullptr);
-  void RemoveNode(const wdUuid& guid);
+  nsAbstractObjectNode* AddNode(const nsUuid& guid, nsStringView sType, nsUInt32 uiTypeVersion, nsStringView sNodeName = {});
+  void RemoveNode(const nsUuid& guid);
 
-  const wdMap<wdUuid, wdAbstractObjectNode*>& GetAllNodes() const { return m_Nodes; }
-  wdMap<wdUuid, wdAbstractObjectNode*>& GetAllNodes() { return m_Nodes; }
+  const nsMap<nsUuid, nsAbstractObjectNode*>& GetAllNodes() const { return m_Nodes; }
+  nsMap<nsUuid, nsAbstractObjectNode*>& GetAllNodes() { return m_Nodes; }
 
   /// \brief Remaps all node guids by adding the given seed, or if bRemapInverse is true, by subtracting it/
   ///   This is mostly used to remap prefab instance graphs to their prefab template graph.
-  void ReMapNodeGuids(const wdUuid& seedGuid, bool bRemapInverse = false);
+  void ReMapNodeGuids(const nsUuid& seedGuid, bool bRemapInverse = false);
 
   /// \brief Tries to remap the guids of this graph to those in rhsGraph by walking in both down the hierarchy, starting at root and
   /// rhsRoot.
   ///
   ///  Note that in case of array properties the remapping assumes element indices to be equal
   ///  on both sides which will cause all moves inside the arrays to be lost as there is no way of recovering this information without an
-  ///  equality criteria. This function is mostly used to remap a graph from a native object to a graph from wdDocumentObjects to allow
-  ///  applying native side changes to the original wdDocumentObject hierarchy using diffs.
-  void ReMapNodeGuidsToMatchGraph(wdAbstractObjectNode* pRoot, const wdAbstractObjectGraph& rhsGraph, const wdAbstractObjectNode* pRhsRoot);
+  ///  equality criteria. This function is mostly used to remap a graph from a native object to a graph from nsDocumentObjects to allow
+  ///  applying native side changes to the original nsDocumentObject hierarchy using diffs.
+  void ReMapNodeGuidsToMatchGraph(nsAbstractObjectNode* pRoot, const nsAbstractObjectGraph& rhsGraph, const nsAbstractObjectNode* pRhsRoot);
 
   /// \brief Finds everything accessible by the given root node.
-  void FindTransitiveHull(const wdUuid& rootGuid, wdSet<wdUuid>& out_reachableNodes) const;
+  void FindTransitiveHull(const nsUuid& rootGuid, nsSet<nsUuid>& out_reachableNodes) const;
   /// \brief Deletes everything not accessible by the given root node.
-  void PruneGraph(const wdUuid& rootGuid);
+  void PruneGraph(const nsUuid& rootGuid);
 
   /// \brief Allows for a given node to be modified as a native object.
   /// Once the callback exits any changes to the sub-hierarchy of the given root node will be written back to the node objects.
-  void ModifyNodeViaNativeCounterpart(wdAbstractObjectNode* pRootNode, wdDelegate<void(void*, const wdRTTI*)> callback);
+  void ModifyNodeViaNativeCounterpart(nsAbstractObjectNode* pRootNode, nsDelegate<void(void*, const nsRTTI*)> callback);
 
   /// \brief Allows to copy a node from another graph into this graph.
-  wdAbstractObjectNode* CopyNodeIntoGraph(const wdAbstractObjectNode* pNode);
+  nsAbstractObjectNode* CopyNodeIntoGraph(const nsAbstractObjectNode* pNode);
 
-  wdAbstractObjectNode* CopyNodeIntoGraph(const wdAbstractObjectNode* pNode, FilterFunction& ref_filter);
+  nsAbstractObjectNode* CopyNodeIntoGraph(const nsAbstractObjectNode* pNode, FilterFunction& ref_filter);
 
-  void CreateDiffWithBaseGraph(const wdAbstractObjectGraph& base, wdDeque<wdAbstractGraphDiffOperation>& out_diffResult) const;
+  void CreateDiffWithBaseGraph(const nsAbstractObjectGraph& base, nsDeque<nsAbstractGraphDiffOperation>& out_diffResult) const;
 
-  void ApplyDiff(wdDeque<wdAbstractGraphDiffOperation>& ref_diff);
+  void ApplyDiff(nsDeque<nsAbstractGraphDiffOperation>& ref_diff);
 
-  void MergeDiffs(const wdDeque<wdAbstractGraphDiffOperation>& lhs, const wdDeque<wdAbstractGraphDiffOperation>& rhs, wdDeque<wdAbstractGraphDiffOperation>& ref_out) const;
+  void MergeDiffs(const nsDeque<nsAbstractGraphDiffOperation>& lhs, const nsDeque<nsAbstractGraphDiffOperation>& rhs, nsDeque<nsAbstractGraphDiffOperation>& ref_out) const;
 
 private:
-  WD_DISALLOW_COPY_AND_ASSIGN(wdAbstractObjectGraph);
+  NS_DISALLOW_COPY_AND_ASSIGN(nsAbstractObjectGraph);
 
-  void RemapVariant(wdVariant& value, const wdHashTable<wdUuid, wdUuid>& guidMap);
-  void MergeArrays(const wdVariantArray& baseArray, const wdVariantArray& leftArray, const wdVariantArray& rightArray, wdVariantArray& out) const;
-  void ReMapNodeGuidsToMatchGraphRecursive(wdHashTable<wdUuid, wdUuid>& guidMap, wdAbstractObjectNode* lhs, const wdAbstractObjectGraph& rhsGraph, const wdAbstractObjectNode* rhs);
+  void RemapVariant(nsVariant& value, const nsHashTable<nsUuid, nsUuid>& guidMap);
+  void MergeArrays(const nsVariantArray& baseArray, const nsVariantArray& leftArray, const nsVariantArray& rightArray, nsVariantArray& out) const;
+  void ReMapNodeGuidsToMatchGraphRecursive(nsHashTable<nsUuid, nsUuid>& guidMap, nsAbstractObjectNode* lhs, const nsAbstractObjectGraph& rhsGraph, const nsAbstractObjectNode* rhs);
 
-  wdSet<wdString> m_Strings;
-  wdMap<wdUuid, wdAbstractObjectNode*> m_Nodes;
-  wdMap<const char*, wdAbstractObjectNode*, CompareConstChar> m_NodesByName;
+  nsSet<nsString> m_Strings;
+  nsMap<nsUuid, nsAbstractObjectNode*> m_Nodes;
+  nsMap<nsStringView, nsAbstractObjectNode*> m_NodesByName;
 };

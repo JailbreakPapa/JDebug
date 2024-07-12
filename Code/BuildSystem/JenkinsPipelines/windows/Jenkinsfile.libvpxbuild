@@ -1,0 +1,35 @@
+pipeline {
+    /// This can be ran on console agents that have Windows installed.
+    agent { label 'windows' }
+    environment {
+        GITHUB_REPO = 'https://github.com/webmproject/libvpx.git'
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+        stage('Build libvpx for Windows') {
+            steps {
+                script {
+                    bat '''
+                    git clone %GITHUB_REPO% libvpx
+                    cd libvpx
+                    git checkout master
+
+                    set PATH=%WORKSPACE%\\depot_tools;%PATH%
+                    call tools\\build\\gen_msvs_projects.bat
+                    msbuild /p:Configuration=Release vpx.sln
+                    '''
+                }
+            }
+        }
+        stage('Archive Artifacts') {
+            steps {
+                archiveArtifacts artifacts: 'libvpx/vpx.sln', fingerprint: true
+                archiveArtifacts artifacts: 'libvpx/Release/**', fingerprint: true
+            }
+        }
+    }
+}

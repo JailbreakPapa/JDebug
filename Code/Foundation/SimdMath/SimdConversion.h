@@ -6,96 +6,132 @@
 #include <Foundation/Math/Transform.h>
 #include <Foundation/SimdMath/SimdBBox.h>
 #include <Foundation/SimdMath/SimdBBoxSphere.h>
+#include <Foundation/SimdMath/SimdVec4i.h>
 
-namespace wdSimdConversion
+namespace nsSimdConversion
 {
-  WD_ALWAYS_INLINE wdVec3 ToVec3(const wdSimdVec4f& v)
+  NS_ALWAYS_INLINE nsVec3 ToVec3(const nsSimdVec4f& v)
   {
-    wdVec4 tmp;
+    nsVec4 tmp;
     v.Store<4>(&tmp.x);
-    return *reinterpret_cast<wdVec3*>(&tmp.x);
+    return *reinterpret_cast<nsVec3*>(&tmp.x);
   }
 
-  WD_ALWAYS_INLINE wdSimdVec4f ToVec3(const wdVec3& v)
+  NS_ALWAYS_INLINE nsSimdVec4f ToVec3(const nsVec3& v)
   {
-    wdSimdVec4f tmp;
+    nsSimdVec4f tmp;
     tmp.Load<3>(&v.x);
     return tmp;
   }
 
-  WD_ALWAYS_INLINE wdVec4 ToVec4(const wdSimdVec4f& v)
+  NS_ALWAYS_INLINE nsVec3I32 ToVec3i(const nsSimdVec4i& v)
   {
-    wdVec4 tmp;
+    nsVec4I32 tmp;
+    v.Store<4>(&tmp.x);
+    return *reinterpret_cast<nsVec3I32*>(&tmp.x);
+  }
+
+  NS_ALWAYS_INLINE nsSimdVec4i ToVec3i(const nsVec3I32& v)
+  {
+    nsSimdVec4i tmp;
+    tmp.Load<3>(&v.x);
+    return tmp;
+  }
+
+  NS_ALWAYS_INLINE nsVec4 ToVec4(const nsSimdVec4f& v)
+  {
+    nsVec4 tmp;
     v.Store<4>(&tmp.x);
     return tmp;
   }
 
-  WD_ALWAYS_INLINE wdSimdVec4f ToVec4(const wdVec4& v)
+  NS_ALWAYS_INLINE nsSimdVec4f ToVec4(const nsVec4& v)
   {
-    wdSimdVec4f tmp;
+    nsSimdVec4f tmp;
     tmp.Load<4>(&v.x);
     return tmp;
   }
 
-  WD_ALWAYS_INLINE wdQuat ToQuat(const wdSimdQuat& q)
+  NS_ALWAYS_INLINE nsVec4I32 ToVec4i(const nsSimdVec4i& v)
   {
-    wdQuat tmp;
-    q.m_v.Store<4>(&tmp.v.x);
+    nsVec4I32 tmp;
+    v.Store<4>(&tmp.x);
     return tmp;
   }
 
-  WD_ALWAYS_INLINE wdSimdQuat ToQuat(const wdQuat& q)
+  NS_ALWAYS_INLINE nsSimdVec4i ToVec4i(const nsVec4I32& v)
   {
-    wdSimdVec4f tmp;
-    tmp.Load<4>(&q.v.x);
-    return wdSimdQuat(tmp);
-  }
-
-  WD_ALWAYS_INLINE wdTransform ToTransform(const wdSimdTransform& t)
-  {
-    return wdTransform(ToVec3(t.m_Position), ToQuat(t.m_Rotation), ToVec3(t.m_Scale));
-  }
-
-  inline wdSimdTransform ToTransform(const wdTransform& t)
-  {
-    return wdSimdTransform(ToVec3(t.m_vPosition), ToQuat(t.m_qRotation), ToVec3(t.m_vScale));
-  }
-
-  WD_ALWAYS_INLINE wdMat4 ToMat4(const wdSimdMat4f& m)
-  {
-    wdMat4 tmp;
-    m.GetAsArray(tmp.m_fElementsCM, wdMatrixLayout::ColumnMajor);
+    nsSimdVec4i tmp;
+    tmp.Load<4>(&v.x);
     return tmp;
   }
 
-  WD_ALWAYS_INLINE wdSimdMat4f ToMat4(const wdMat4& m)
+  NS_ALWAYS_INLINE nsQuat ToQuat(const nsSimdQuat& q)
   {
-    wdSimdMat4f tmp;
-    tmp.SetFromArray(m.m_fElementsCM, wdMatrixLayout::ColumnMajor);
+    nsQuat tmp;
+    q.m_v.Store<4>(&tmp.x);
     return tmp;
   }
 
-  WD_ALWAYS_INLINE wdBoundingBoxSphere ToBBoxSphere(const wdSimdBBoxSphere& b)
+  NS_ALWAYS_INLINE nsSimdQuat ToQuat(const nsQuat& q)
   {
-    wdVec4 centerAndRadius = ToVec4(b.m_CenterAndRadius);
-    return wdBoundingBoxSphere(centerAndRadius.GetAsVec3(), ToVec3(b.m_BoxHalfExtents), centerAndRadius.w);
+    nsSimdVec4f tmp;
+    tmp.Load<4>(&q.x);
+    return nsSimdQuat(tmp);
   }
 
-  WD_ALWAYS_INLINE wdSimdBBoxSphere ToBBoxSphere(const wdBoundingBoxSphere& b)
+  NS_ALWAYS_INLINE nsTransform ToTransform(const nsSimdTransform& t)
   {
-    return wdSimdBBoxSphere(ToVec3(b.m_vCenter), ToVec3(b.m_vBoxHalfExtends), b.m_fSphereRadius);
+    return nsTransform(ToVec3(t.m_Position), ToQuat(t.m_Rotation), ToVec3(t.m_Scale));
   }
 
-  WD_ALWAYS_INLINE wdBoundingSphere ToBSphere(const wdSimdBSphere& s)
+  inline nsSimdTransform ToTransform(const nsTransform& t)
   {
-    wdVec4 centerAndRadius = ToVec4(s.m_CenterAndRadius);
-    return wdBoundingSphere(centerAndRadius.GetAsVec3(), centerAndRadius.w);
+    return nsSimdTransform(ToVec3(t.m_vPosition), ToQuat(t.m_qRotation), ToVec3(t.m_vScale));
   }
 
-  WD_ALWAYS_INLINE wdSimdBSphere ToBSphere(const wdBoundingSphere& s) { return wdSimdBSphere(ToVec3(s.m_vCenter), s.m_fRadius); }
+  NS_ALWAYS_INLINE nsMat4 ToMat4(const nsSimdMat4f& m)
+  {
+    nsMat4 tmp;
+    m.GetAsArray(tmp.m_fElementsCM, nsMatrixLayout::ColumnMajor);
+    return tmp;
+  }
 
-  WD_ALWAYS_INLINE wdSimdBBox ToBBox(const wdBoundingBox& b) { return wdSimdBBox(ToVec3(b.m_vMin), ToVec3(b.m_vMax)); }
+  NS_ALWAYS_INLINE nsSimdMat4f ToMat4(const nsMat4& m)
+  {
+    return nsSimdMat4f::MakeFromColumnMajorArray(m.m_fElementsCM);
+  }
 
-  WD_ALWAYS_INLINE wdBoundingBox ToBBox(const wdSimdBBox& b) { return wdBoundingBox(ToVec3(b.m_Min), ToVec3(b.m_Max)); }
+  NS_ALWAYS_INLINE nsBoundingBoxSphere ToBBoxSphere(const nsSimdBBoxSphere& b)
+  {
+    nsVec4 centerAndRadius = ToVec4(b.m_CenterAndRadius);
+    return nsBoundingBoxSphere::MakeFromCenterExtents(centerAndRadius.GetAsVec3(), ToVec3(b.m_BoxHalfExtents), centerAndRadius.w);
+  }
 
-}; // namespace wdSimdConversion
+  NS_ALWAYS_INLINE nsSimdBBoxSphere ToBBoxSphere(const nsBoundingBoxSphere& b)
+  {
+    return nsSimdBBoxSphere::MakeFromCenterExtents(ToVec3(b.m_vCenter), ToVec3(b.m_vBoxHalfExtends), b.m_fSphereRadius);
+  }
+
+  NS_ALWAYS_INLINE nsBoundingSphere ToBSphere(const nsSimdBSphere& s)
+  {
+    nsVec4 centerAndRadius = ToVec4(s.m_CenterAndRadius);
+    return nsBoundingSphere::MakeFromCenterAndRadius(centerAndRadius.GetAsVec3(), centerAndRadius.w);
+  }
+
+  NS_ALWAYS_INLINE nsSimdBSphere ToBSphere(const nsBoundingSphere& s)
+  {
+    return nsSimdBSphere(ToVec3(s.m_vCenter), s.m_fRadius);
+  }
+
+  NS_ALWAYS_INLINE nsSimdBBox ToBBox(const nsBoundingBox& b)
+  {
+    return nsSimdBBox(ToVec3(b.m_vMin), ToVec3(b.m_vMax));
+  }
+
+  NS_ALWAYS_INLINE nsBoundingBox ToBBox(const nsSimdBBox& b)
+  {
+    return nsBoundingBox::MakeFromMinMax(ToVec3(b.m_Min), ToVec3(b.m_Max));
+  }
+
+}; // namespace nsSimdConversion

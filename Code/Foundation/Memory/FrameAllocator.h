@@ -1,17 +1,22 @@
 #pragma once
 
-#include <Foundation/Memory/StackAllocator.h>
+#include <Foundation/Memory/LinearAllocator.h>
 
 /// \brief A double buffered stack allocator
-class WD_FOUNDATION_DLL wdDoubleBufferedStackAllocator
+class NS_FOUNDATION_DLL nsDoubleBufferedLinearAllocator
 {
 public:
-  typedef wdStackAllocator<wdMemoryTrackingFlags::RegisterAllocator> StackAllocatorType;
+#if NS_ENABLED(NS_COMPILE_FOR_DEBUG)
+  static constexpr bool OverwriteMemoryOnReset = true;
+#else
+  static constexpr bool OverwriteMemoryOnReset = false;
+#endif
+  using StackAllocatorType = nsLinearAllocator<nsAllocatorTrackingMode::Basics, OverwriteMemoryOnReset>;
 
-  wdDoubleBufferedStackAllocator(const char* szName, wdAllocatorBase* pParent);
-  ~wdDoubleBufferedStackAllocator();
+  nsDoubleBufferedLinearAllocator(nsStringView sName, nsAllocator* pParent);
+  ~nsDoubleBufferedLinearAllocator();
 
-  WD_ALWAYS_INLINE wdAllocatorBase* GetCurrentAllocator() const { return m_pCurrentAllocator; }
+  NS_ALWAYS_INLINE nsAllocator* GetCurrentAllocator() const { return m_pCurrentAllocator; }
 
   void Swap();
   void Reset();
@@ -21,19 +26,19 @@ private:
   StackAllocatorType* m_pOtherAllocator;
 };
 
-class WD_FOUNDATION_DLL wdFrameAllocator
+class NS_FOUNDATION_DLL nsFrameAllocator
 {
 public:
-  WD_ALWAYS_INLINE static wdAllocatorBase* GetCurrentAllocator() { return s_pAllocator->GetCurrentAllocator(); }
+  NS_ALWAYS_INLINE static nsAllocator* GetCurrentAllocator() { return s_pAllocator->GetCurrentAllocator(); }
 
   static void Swap();
   static void Reset();
 
 private:
-  WD_MAKE_SUBSYSTEM_STARTUP_FRIEND(Foundation, FrameAllocator);
+  NS_MAKE_SUBSYSTEM_STARTUP_FRIEND(Foundation, FrameAllocator);
 
   static void Startup();
   static void Shutdown();
 
-  static wdDoubleBufferedStackAllocator* s_pAllocator;
+  static nsDoubleBufferedLinearAllocator* s_pAllocator;
 };

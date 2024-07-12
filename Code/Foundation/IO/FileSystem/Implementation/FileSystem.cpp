@@ -8,57 +8,57 @@
 #include <Foundation/Strings/StringView.h>
 
 // clang-format off
-WD_BEGIN_SUBSYSTEM_DECLARATION(Foundation, FileSystem)
+NS_BEGIN_SUBSYSTEM_DECLARATION(Foundation, FileSystem)
 
   ON_CORESYSTEMS_STARTUP
   {
-    wdFileSystem::Startup();
+    nsFileSystem::Startup();
   }
 
   ON_CORESYSTEMS_SHUTDOWN
   {
-    wdFileSystem::Shutdown();
+    nsFileSystem::Shutdown();
   }
 
-WD_END_SUBSYSTEM_DECLARATION;
+NS_END_SUBSYSTEM_DECLARATION;
 // clang-format on
 
-wdFileSystem::FileSystemData* wdFileSystem::s_pData = nullptr;
-wdString wdFileSystem::s_sSdkRootDir;
-wdMap<wdString, wdString> wdFileSystem::s_SpecialDirectories;
+nsFileSystem::FileSystemData* nsFileSystem::s_pData = nullptr;
+nsString nsFileSystem::s_sSdkRootDir;
+nsMap<nsString, nsString> nsFileSystem::s_SpecialDirectories;
 
 
-void wdFileSystem::RegisterDataDirectoryFactory(wdDataDirFactory factory, float fPriority /*= 0*/)
+void nsFileSystem::RegisterDataDirectoryFactory(nsDataDirFactory factory, float fPriority /*= 0*/)
 {
-  WD_LOCK(s_pData->m_FsMutex);
+  NS_LOCK(s_pData->m_FsMutex);
 
   auto& data = s_pData->m_DataDirFactories.ExpandAndGetRef();
   data.m_Factory = factory;
   data.m_fPriority = fPriority;
 }
 
-wdEventSubscriptionID wdFileSystem::RegisterEventHandler(wdEvent<const FileEvent&>::Handler handler)
+nsEventSubscriptionID nsFileSystem::RegisterEventHandler(nsEvent<const FileEvent&>::Handler handler)
 {
-  WD_ASSERT_DEV(s_pData != nullptr, "FileSystem is not initialized.");
+  NS_ASSERT_DEV(s_pData != nullptr, "FileSystem is not initialized.");
 
   return s_pData->m_Event.AddEventHandler(handler);
 }
 
-void wdFileSystem::UnregisterEventHandler(wdEvent<const FileEvent&>::Handler handler)
+void nsFileSystem::UnregisterEventHandler(nsEvent<const FileEvent&>::Handler handler)
 {
-  WD_ASSERT_DEV(s_pData != nullptr, "FileSystem is not initialized.");
+  NS_ASSERT_DEV(s_pData != nullptr, "FileSystem is not initialized.");
 
   s_pData->m_Event.RemoveEventHandler(handler);
 }
 
-void wdFileSystem::UnregisterEventHandler(wdEventSubscriptionID subscriptionId)
+void nsFileSystem::UnregisterEventHandler(nsEventSubscriptionID subscriptionId)
 {
-  WD_ASSERT_DEV(s_pData != nullptr, "FileSystem is not initialized.");
+  NS_ASSERT_DEV(s_pData != nullptr, "FileSystem is not initialized.");
 
   s_pData->m_Event.RemoveEventHandler(subscriptionId);
 }
 
-void wdFileSystem::CleanUpRootName(wdStringBuilder& sRoot)
+void nsFileSystem::CleanUpRootName(nsStringBuilder& sRoot)
 {
   // this cleaning might actually make the root name empty
   // e.g. ":" becomes ""
@@ -74,41 +74,42 @@ void wdFileSystem::CleanUpRootName(wdStringBuilder& sRoot)
   sRoot.ToUpper();
 }
 
-wdResult wdFileSystem::AddDataDirectory(wdStringView sDataDirectory, wdStringView sGroup, wdStringView sRootName, DataDirUsage usage)
+nsResult nsFileSystem::AddDataDirectory(nsStringView sDataDirectory, nsStringView sGroup, nsStringView sRootName, DataDirUsage usage)
 {
-  WD_ASSERT_DEV(s_pData != nullptr, "FileSystem is not initialized.");
-  WD_ASSERT_DEV(usage != AllowWrites || !sRootName.IsEmpty(), "A data directory must have a non-empty, unique name to be mounted for write access");
+  NS_ASSERT_DEV(s_pData != nullptr, "FileSystem is not initialized.");
+  NS_ASSERT_DEV(usage != AllowWrites || !sRootName.IsEmpty(), "A data directory must have a non-empty, unique name to be mounted for write access");
 
-  wdStringBuilder sPath = sDataDirectory;
+  nsStringBuilder sPath = sDataDirectory;
   sPath.MakeCleanPath();
 
   if (!sPath.IsEmpty() && !sPath.EndsWith("/"))
     sPath.Append("/");
 
-  wdStringBuilder sCleanRootName = sRootName;
+  nsStringBuilder sCleanRootName = sRootName;
   CleanUpRootName(sCleanRootName);
 
-  WD_LOCK(s_pData->m_FsMutex);
+  NS_LOCK(s_pData->m_FsMutex);
 
   bool failed = false;
   if (FindDataDirectoryWithRoot(sCleanRootName) != nullptr)
   {
-    wdLog::Error("A data directory with root name '{0}' already exists.", sCleanRootName);
+    nsLog::Error("A data directory with root name '{0}' already exists.", sCleanRootName);
     failed = true;
   }
 
   if (!failed)
   {
-    s_pData->m_DataDirFactories.Sort([](const auto& a, const auto& b) { return a.m_fPriority < b.m_fPriority; });
+    s_pData->m_DataDirFactories.Sort([](const auto& a, const auto& b)
+      { return a.m_fPriority < b.m_fPriority; });
 
     // use the factory that was added last as the one with the highest priority -> allows to override already added factories
-    for (wdInt32 i = s_pData->m_DataDirFactories.GetCount() - 1; i >= 0; --i)
+    for (nsInt32 i = s_pData->m_DataDirFactories.GetCount() - 1; i >= 0; --i)
     {
-      wdDataDirectoryType* pDataDir = s_pData->m_DataDirFactories[i].m_Factory(sPath, sGroup, sRootName, usage);
+      nsDataDirectoryType* pDataDir = s_pData->m_DataDirFactories[i].m_Factory(sPath, sGroup, sRootName, usage);
 
       if (pDataDir != nullptr)
       {
-        DataDirectory dd;
+        DataDirectoryInfo dd;
         dd.m_Usage = usage;
         dd.m_pDataDirectory = pDataDir;
         dd.m_sRootName = sCleanRootName;
@@ -126,7 +127,7 @@ wdResult wdFileSystem::AddDataDirectory(wdStringView sDataDirectory, wdStringVie
           s_pData->m_Event.Broadcast(fe);
         }
 
-        return WD_SUCCESS;
+        return NS_SUCCESS;
       }
     }
   }
@@ -140,33 +141,35 @@ wdResult wdFileSystem::AddDataDirectory(wdStringView sDataDirectory, wdStringVie
     s_pData->m_Event.Broadcast(fe);
   }
 
-  wdLog::Error("Adding Data Directory '{0}' failed.", wdArgSensitive(sDataDirectory, "Path"));
-  return WD_FAILURE;
+  nsLog::Error("Adding Data Directory '{0}' failed.", nsArgSensitive(sDataDirectory, "Path"));
+  return NS_FAILURE;
 }
 
 
-bool wdFileSystem::RemoveDataDirectory(wdStringView sRootName)
+bool nsFileSystem::RemoveDataDirectory(nsStringView sRootName)
 {
-  wdStringBuilder sCleanRootName = sRootName;
+  nsStringBuilder sCleanRootName = sRootName;
   CleanUpRootName(sCleanRootName);
 
-  WD_LOCK(s_pData->m_FsMutex);
+  NS_LOCK(s_pData->m_FsMutex);
 
-  for (wdUInt32 i = 0; i < s_pData->m_DataDirectories.GetCount();)
+  for (nsUInt32 i = 0; i < s_pData->m_DataDirectories.GetCount();)
   {
-    if (s_pData->m_DataDirectories[i].m_sRootName == sCleanRootName)
+    const auto& directory = s_pData->m_DataDirectories[i];
+
+    if (directory.m_sRootName == sCleanRootName)
     {
       {
         // Broadcast that a data directory is about to be removed
         FileEvent fe;
         fe.m_EventType = FileEventType::RemoveDataDirectory;
-        fe.m_sFileOrDirectory = s_pData->m_DataDirectories[i].m_pDataDirectory->GetDataDirectoryPath();
-        fe.m_sOther = s_pData->m_DataDirectories[i].m_sRootName;
-        fe.m_pDataDir = s_pData->m_DataDirectories[i].m_pDataDirectory;
+        fe.m_sFileOrDirectory = directory.m_pDataDirectory->GetDataDirectoryPath();
+        fe.m_sOther = directory.m_sRootName;
+        fe.m_pDataDir = directory.m_pDataDirectory;
         s_pData->m_Event.Broadcast(fe);
       }
 
-      s_pData->m_DataDirectories[i].m_pDataDirectory->RemoveDataDirectory();
+      directory.m_pDataDirectory->RemoveDataDirectory();
       s_pData->m_DataDirectories.RemoveAtAndCopy(i);
 
       return true;
@@ -178,16 +181,16 @@ bool wdFileSystem::RemoveDataDirectory(wdStringView sRootName)
   return false;
 }
 
-wdUInt32 wdFileSystem::RemoveDataDirectoryGroup(wdStringView sGroup)
+nsUInt32 nsFileSystem::RemoveDataDirectoryGroup(nsStringView sGroup)
 {
   if (s_pData == nullptr)
     return 0;
 
-  WD_LOCK(s_pData->m_FsMutex);
+  NS_LOCK(s_pData->m_FsMutex);
 
-  wdUInt32 uiRemoved = 0;
+  nsUInt32 uiRemoved = 0;
 
-  for (wdUInt32 i = 0; i < s_pData->m_DataDirectories.GetCount();)
+  for (nsUInt32 i = 0; i < s_pData->m_DataDirectories.GetCount();)
   {
     if (s_pData->m_DataDirectories[i].m_sGroup == sGroup)
     {
@@ -213,13 +216,13 @@ wdUInt32 wdFileSystem::RemoveDataDirectoryGroup(wdStringView sGroup)
   return uiRemoved;
 }
 
-void wdFileSystem::ClearAllDataDirectories()
+void nsFileSystem::ClearAllDataDirectories()
 {
-  WD_ASSERT_DEV(s_pData != nullptr, "FileSystem is not initialized.");
+  NS_ASSERT_DEV(s_pData != nullptr, "FileSystem is not initialized.");
 
-  WD_LOCK(s_pData->m_FsMutex);
+  NS_LOCK(s_pData->m_FsMutex);
 
-  for (wdInt32 i = s_pData->m_DataDirectories.GetCount() - 1; i >= 0; --i)
+  for (nsInt32 i = s_pData->m_DataDirectories.GetCount() - 1; i >= 0; --i)
   {
     {
       // Broadcast that a data directory is about to be removed
@@ -237,55 +240,62 @@ void wdFileSystem::ClearAllDataDirectories()
   s_pData->m_DataDirectories.Clear();
 }
 
-wdDataDirectoryType* wdFileSystem::FindDataDirectoryWithRoot(wdStringView sRootName)
+const nsFileSystem::DataDirectoryInfo* nsFileSystem::FindDataDirectoryWithRoot(nsStringView sRootName)
 {
   if (sRootName.IsEmpty())
     return nullptr;
 
-  WD_LOCK(s_pData->m_FsMutex);
+  NS_LOCK(s_pData->m_FsMutex);
 
   for (const auto& dd : s_pData->m_DataDirectories)
   {
     if (dd.m_sRootName.IsEqual_NoCase(sRootName))
     {
-      return dd.m_pDataDirectory;
+      return &dd;
     }
   }
 
   return nullptr;
 }
 
-wdUInt32 wdFileSystem::GetNumDataDirectories()
+nsUInt32 nsFileSystem::GetNumDataDirectories()
 {
-  WD_ASSERT_DEV(s_pData != nullptr, "FileSystem is not initialized.");
+  NS_ASSERT_DEV(s_pData != nullptr, "FileSystem is not initialized.");
 
   return s_pData->m_DataDirectories.GetCount();
 }
 
-wdDataDirectoryType* wdFileSystem::GetDataDirectory(wdUInt32 uiDataDirIndex)
+nsDataDirectoryType* nsFileSystem::GetDataDirectory(nsUInt32 uiDataDirIndex)
 {
-  WD_ASSERT_DEV(s_pData != nullptr, "FileSystem is not initialized.");
+  NS_ASSERT_DEV(s_pData != nullptr, "FileSystem is not initialized.");
 
   return s_pData->m_DataDirectories[uiDataDirIndex].m_pDataDirectory;
 }
 
-wdStringView wdFileSystem::GetDataDirRelativePath(wdStringView sPath, wdUInt32 uiDataDir)
+const nsFileSystem::DataDirectoryInfo& nsFileSystem::GetDataDirectoryInfo(nsUInt32 uiDataDirIndex)
 {
-  WD_LOCK(s_pData->m_FsMutex);
+  NS_ASSERT_DEV(s_pData != nullptr, "FileSystem is not initialized.");
+
+  return s_pData->m_DataDirectories[uiDataDirIndex];
+}
+
+nsStringView nsFileSystem::GetDataDirRelativePath(nsStringView sPath, nsUInt32 uiDataDir)
+{
+  NS_LOCK(s_pData->m_FsMutex);
 
   // if an absolute path is given, this will check whether the absolute path would fall into this data directory
   // if yes, the prefix path is removed and then only the relative path is given to the data directory type
   // otherwise the data directory would prepend its own path and thus create an invalid path to work with
 
   // first check the redirected directory
-  const wdString128& sRedDirPath = s_pData->m_DataDirectories[uiDataDir].m_pDataDirectory->GetRedirectedDataDirectoryPath();
+  const nsString128& sRedDirPath = s_pData->m_DataDirectories[uiDataDir].m_pDataDirectory->GetRedirectedDataDirectoryPath();
 
   if (!sRedDirPath.IsEmpty() && sPath.StartsWith_NoCase(sRedDirPath))
   {
-    wdStringView sRelPath(sPath.GetStartPointer() + sRedDirPath.GetElementCount(), sPath.GetEndPointer());
+    nsStringView sRelPath(sPath.GetStartPointer() + sRedDirPath.GetElementCount(), sPath.GetEndPointer());
 
     // if the relative path still starts with a path-separator, skip it
-    if (wdPathUtils::IsPathSeparator(sRelPath.GetCharacter()))
+    if (nsPathUtils::IsPathSeparator(sRelPath.GetCharacter()))
     {
       sRelPath.ChopAwayFirstCharacterUtf8();
     }
@@ -294,16 +304,16 @@ wdStringView wdFileSystem::GetDataDirRelativePath(wdStringView sPath, wdUInt32 u
   }
 
   // then check the original mount path
-  const wdString128& sDirPath = s_pData->m_DataDirectories[uiDataDir].m_pDataDirectory->GetDataDirectoryPath();
+  const nsString128& sDirPath = s_pData->m_DataDirectories[uiDataDir].m_pDataDirectory->GetDataDirectoryPath();
 
   // If the data dir is empty we return the paths as is or the code below would remove the '/' in front of an
   // absolute path.
   if (!sDirPath.IsEmpty() && sPath.StartsWith_NoCase(sDirPath))
   {
-    wdStringView sRelPath(sPath.GetStartPointer() + sDirPath.GetElementCount(), sPath.GetEndPointer());
+    nsStringView sRelPath(sPath.GetStartPointer() + sDirPath.GetElementCount(), sPath.GetEndPointer());
 
     // if the relative path still starts with a path-separator, skip it
-    if (wdPathUtils::IsPathSeparator(sRelPath.GetCharacter()))
+    if (nsPathUtils::IsPathSeparator(sRelPath.GetCharacter()))
     {
       sRelPath.ChopAwayFirstCharacterUtf8();
     }
@@ -315,11 +325,11 @@ wdStringView wdFileSystem::GetDataDirRelativePath(wdStringView sPath, wdUInt32 u
 }
 
 
-wdFileSystem::DataDirectory* wdFileSystem::GetDataDirForRoot(const wdString& sRoot)
+nsFileSystem::DataDirectoryInfo* nsFileSystem::GetDataDirForRoot(const nsString& sRoot)
 {
-  WD_LOCK(s_pData->m_FsMutex);
+  NS_LOCK(s_pData->m_FsMutex);
 
-  for (wdInt32 i = (wdInt32)s_pData->m_DataDirectories.GetCount() - 1; i >= 0; --i)
+  for (nsInt32 i = (nsInt32)s_pData->m_DataDirectories.GetCount() - 1; i >= 0; --i)
   {
     if (s_pData->m_DataDirectories[i].m_sRootName == sRoot)
       return &s_pData->m_DataDirectories[i];
@@ -329,27 +339,27 @@ wdFileSystem::DataDirectory* wdFileSystem::GetDataDirForRoot(const wdString& sRo
 }
 
 
-void wdFileSystem::DeleteFile(wdStringView sFile)
+void nsFileSystem::DeleteFile(nsStringView sFile)
 {
-  WD_ASSERT_DEV(s_pData != nullptr, "FileSystem is not initialized.");
+  NS_ASSERT_DEV(s_pData != nullptr, "FileSystem is not initialized.");
 
-  if (wdPathUtils::IsAbsolutePath(sFile))
+  if (nsPathUtils::IsAbsolutePath(sFile))
   {
-    wdOSFile::DeleteFile(sFile).IgnoreResult();
+    nsOSFile::DeleteFile(sFile).IgnoreResult();
     return;
   }
 
-  wdString sRootName;
+  nsString sRootName;
   sFile = ExtractRootName(sFile, sRootName);
 
-  WD_ASSERT_DEV(!sRootName.IsEmpty(), "Files can only be deleted with a rooted path name.");
+  NS_ASSERT_DEV(!sRootName.IsEmpty(), "Files can only be deleted with a rooted path name.");
 
   if (sRootName.IsEmpty())
     return;
 
-  WD_LOCK(s_pData->m_FsMutex);
+  NS_LOCK(s_pData->m_FsMutex);
 
-  for (wdInt32 i = (wdInt32)s_pData->m_DataDirectories.GetCount() - 1; i >= 0; --i)
+  for (nsInt32 i = (nsInt32)s_pData->m_DataDirectories.GetCount() - 1; i >= 0; --i)
   {
     // do not delete data from directories that are mounted as read only
     if (s_pData->m_DataDirectories[i].m_Usage != AllowWrites)
@@ -358,7 +368,7 @@ void wdFileSystem::DeleteFile(wdStringView sFile)
     if (s_pData->m_DataDirectories[i].m_sRootName != sRootName)
       continue;
 
-    wdStringView sRelPath = GetDataDirRelativePath(sFile, i);
+    nsStringView sRelPath = GetDataDirRelativePath(sFile, i);
 
     {
       // Broadcast that a file is about to be deleted
@@ -375,23 +385,23 @@ void wdFileSystem::DeleteFile(wdStringView sFile)
   }
 }
 
-bool wdFileSystem::ExistsFile(wdStringView sFile)
+bool nsFileSystem::ExistsFile(nsStringView sFile)
 {
-  WD_ASSERT_DEV(s_pData != nullptr, "FileSystem is not initialized.");
+  NS_ASSERT_DEV(s_pData != nullptr, "FileSystem is not initialized.");
 
-  wdString sRootName;
+  nsString sRootName;
   sFile = ExtractRootName(sFile, sRootName);
 
   const bool bOneSpecificDataDir = !sRootName.IsEmpty();
 
-  WD_LOCK(s_pData->m_FsMutex);
+  NS_LOCK(s_pData->m_FsMutex);
 
-  for (wdInt32 i = (wdInt32)s_pData->m_DataDirectories.GetCount() - 1; i >= 0; --i)
+  for (nsInt32 i = (nsInt32)s_pData->m_DataDirectories.GetCount() - 1; i >= 0; --i)
   {
     if (!sRootName.IsEmpty() && s_pData->m_DataDirectories[i].m_sRootName != sRootName)
       continue;
 
-    wdStringView sRelPath = GetDataDirRelativePath(sFile, i);
+    nsStringView sRelPath = GetDataDirRelativePath(sFile, i);
 
     if (s_pData->m_DataDirectories[i].m_pDataDirectory->ExistsFile(sRelPath, bOneSpecificDataDir))
       return true;
@@ -401,84 +411,68 @@ bool wdFileSystem::ExistsFile(wdStringView sFile)
 }
 
 
-wdResult wdFileSystem::GetFileStats(wdStringView sFileOrFolder, wdFileStats& out_stats)
+nsResult nsFileSystem::GetFileStats(nsStringView sFileOrFolder, nsFileStats& out_stats)
 {
-  WD_ASSERT_DEV(s_pData != nullptr, "FileSystem is not initialized.");
+  NS_ASSERT_DEV(s_pData != nullptr, "FileSystem is not initialized.");
 
-  WD_LOCK(s_pData->m_FsMutex);
+  NS_LOCK(s_pData->m_FsMutex);
 
-  wdString sRootName;
+  nsString sRootName;
   sFileOrFolder = ExtractRootName(sFileOrFolder, sRootName);
 
   const bool bOneSpecificDataDir = !sRootName.IsEmpty();
 
-  for (wdInt32 i = (wdInt32)s_pData->m_DataDirectories.GetCount() - 1; i >= 0; --i)
+  for (nsInt32 i = (nsInt32)s_pData->m_DataDirectories.GetCount() - 1; i >= 0; --i)
   {
     if (!sRootName.IsEmpty() && s_pData->m_DataDirectories[i].m_sRootName != sRootName)
       continue;
 
-    wdStringView sRelPath = GetDataDirRelativePath(sFileOrFolder, i);
+    nsStringView sRelPath = GetDataDirRelativePath(sFileOrFolder, i);
 
     if (s_pData->m_DataDirectories[i].m_pDataDirectory->GetFileStats(sRelPath, bOneSpecificDataDir, out_stats).Succeeded())
-      return WD_SUCCESS;
+      return NS_SUCCESS;
   }
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
-wdStringView wdFileSystem::ExtractRootName(wdStringView sPath, wdString& rootName)
+nsStringView nsFileSystem::ExtractRootName(nsStringView sPath, nsString& rootName)
 {
-  rootName.Clear();
+  nsStringView root, path;
+  nsPathUtils::GetRootedPathParts(sPath, root, path);
 
-  if (!sPath.StartsWith(":"))
-    return sPath;
-
-  wdStringBuilder sCur;
-  const wdStringView view = sPath;
-  wdStringIterator it = view.GetIteratorFront();
-  ++it;
-
-  while (it.IsValid() && (it.GetCharacter() != '/'))
-  {
-    sCur.Append(it.GetCharacter());
-    ++it;
-  }
-
-  WD_ASSERT_DEV(it.IsValid(), "Cannot parse the path \"{0}\". The data-dir root name starts with a ':' but does not end with '/'.", sPath);
-
-  sCur.ToUpper();
-  rootName = sCur;
-  ++it;
-
-  return it.GetData(); // return the string after the data-dir filter declaration
+  nsStringBuilder rootUpr = root;
+  rootUpr.ToUpper();
+  rootName = rootUpr;
+  return path;
 }
 
-wdDataDirectoryReader* wdFileSystem::GetFileReader(wdStringView sFile, wdFileShareMode::Enum FileShareMode, bool bAllowFileEvents)
+nsDataDirectoryReader* nsFileSystem::GetFileReader(nsStringView sFile, nsFileShareMode::Enum FileShareMode, bool bAllowFileEvents)
 {
-  WD_ASSERT_DEV(s_pData != nullptr, "FileSystem is not initialized.");
+  NS_ASSERT_DEV(s_pData != nullptr, "FileSystem is not initialized.");
 
   if (sFile.IsEmpty())
     return nullptr;
 
-  WD_LOCK(s_pData->m_FsMutex);
+  NS_LOCK(s_pData->m_FsMutex);
 
-  wdString sRootName;
+  nsString sRootName;
   sFile = ExtractRootName(sFile, sRootName);
 
   // clean up the path to get rid of ".." etc.
-  wdStringBuilder sPath = sFile;
+  nsStringBuilder sPath = sFile;
   sPath.MakeCleanPath();
 
   const bool bOneSpecificDataDir = !sRootName.IsEmpty();
 
   // the last added data directory has the highest priority
-  for (wdInt32 i = (wdInt32)s_pData->m_DataDirectories.GetCount() - 1; i >= 0; --i)
+  for (nsInt32 i = (nsInt32)s_pData->m_DataDirectories.GetCount() - 1; i >= 0; --i)
   {
     // if a root is used, ignore all directories that do not have the same root name
     if (bOneSpecificDataDir && s_pData->m_DataDirectories[i].m_sRootName != sRootName)
       continue;
 
-    wdStringView sRelPath = GetDataDirRelativePath(sPath, i);
+    nsStringView sRelPath = GetDataDirRelativePath(sPath, i);
 
     if (bAllowFileEvents)
     {
@@ -493,7 +487,7 @@ wdDataDirectoryReader* wdFileSystem::GetFileReader(wdStringView sFile, wdFileSha
     }
 
     // Let the data directory try to open the file.
-    wdDataDirectoryReader* pReader = s_pData->m_DataDirectories[i].m_pDataDirectory->OpenFileToRead(sRelPath, FileShareMode, bOneSpecificDataDir);
+    nsDataDirectoryReader* pReader = s_pData->m_DataDirectories[i].m_pDataDirectory->OpenFileToRead(sRelPath, FileShareMode, bOneSpecificDataDir);
 
     if (bAllowFileEvents && pReader != nullptr)
     {
@@ -521,20 +515,20 @@ wdDataDirectoryReader* wdFileSystem::GetFileReader(wdStringView sFile, wdFileSha
   return nullptr;
 }
 
-wdDataDirectoryWriter* wdFileSystem::GetFileWriter(wdStringView sFile, wdFileShareMode::Enum FileShareMode, bool bAllowFileEvents)
+nsDataDirectoryWriter* nsFileSystem::GetFileWriter(nsStringView sFile, nsFileShareMode::Enum FileShareMode, bool bAllowFileEvents)
 {
-  WD_ASSERT_DEV(s_pData != nullptr, "FileSystem is not initialized.");
+  NS_ASSERT_DEV(s_pData != nullptr, "FileSystem is not initialized.");
 
   if (sFile.IsEmpty())
     return nullptr;
 
-  WD_LOCK(s_pData->m_FsMutex);
+  NS_LOCK(s_pData->m_FsMutex);
 
-  wdString sRootName;
+  nsString sRootName;
 
-  if (!wdPathUtils::IsAbsolutePath(sFile))
+  if (!nsPathUtils::IsAbsolutePath(sFile))
   {
-    WD_ASSERT_DEV(sFile.StartsWith(":"),
+    NS_ASSERT_DEV(sFile.StartsWith(":"),
       "Only native absolute paths or rooted paths (starting with a colon and then the data dir root name) are allowed for "
       "writing to files. This path is neither: '{0}'",
       sFile);
@@ -542,11 +536,11 @@ wdDataDirectoryWriter* wdFileSystem::GetFileWriter(wdStringView sFile, wdFileSha
   }
 
   // clean up the path to get rid of ".." etc.
-  wdStringBuilder sPath = sFile;
+  nsStringBuilder sPath = sFile;
   sPath.MakeCleanPath();
 
   // the last added data directory has the highest priority
-  for (wdInt32 i = (wdInt32)s_pData->m_DataDirectories.GetCount() - 1; i >= 0; --i)
+  for (nsInt32 i = (nsInt32)s_pData->m_DataDirectories.GetCount() - 1; i >= 0; --i)
   {
     if (s_pData->m_DataDirectories[i].m_Usage != AllowWrites)
       continue;
@@ -555,7 +549,7 @@ wdDataDirectoryWriter* wdFileSystem::GetFileWriter(wdStringView sFile, wdFileSha
     if (s_pData->m_DataDirectories[i].m_sRootName != sRootName)
       continue;
 
-    wdStringView sRelPath = GetDataDirRelativePath(sPath, i);
+    nsStringView sRelPath = GetDataDirRelativePath(sPath, i);
 
     if (bAllowFileEvents)
     {
@@ -569,7 +563,7 @@ wdDataDirectoryWriter* wdFileSystem::GetFileWriter(wdStringView sFile, wdFileSha
       s_pData->m_Event.Broadcast(fe);
     }
 
-    wdDataDirectoryWriter* pWriter = s_pData->m_DataDirectories[i].m_pDataDirectory->OpenFileToWrite(sRelPath, FileShareMode);
+    nsDataDirectoryWriter* pWriter = s_pData->m_DataDirectories[i].m_pDataDirectory->OpenFileToWrite(sRelPath, FileShareMode);
 
     if (bAllowFileEvents && pWriter != nullptr)
     {
@@ -597,24 +591,24 @@ wdDataDirectoryWriter* wdFileSystem::GetFileWriter(wdStringView sFile, wdFileSha
   return nullptr;
 }
 
-wdResult wdFileSystem::ResolvePath(wdStringView sPath, wdStringBuilder* out_pAbsolutePath, wdStringBuilder* out_pDataDirRelativePath, wdDataDirectoryType** out_pDataDir /*= nullptr*/)
+nsResult nsFileSystem::ResolvePath(nsStringView sPath, nsStringBuilder* out_pAbsolutePath, nsStringBuilder* out_pDataDirRelativePath, nsDataDirectoryType** out_pDataDir /*= nullptr*/)
 {
-  WD_ASSERT_DEV(s_pData != nullptr, "FileSystem is not initialized.");
+  NS_ASSERT_DEV(s_pData != nullptr, "FileSystem is not initialized.");
 
-  WD_LOCK(s_pData->m_FsMutex);
+  NS_LOCK(s_pData->m_FsMutex);
 
-  wdStringBuilder absPath, relPath;
+  nsStringBuilder absPath, relPath;
 
   if (sPath.StartsWith(":"))
   {
     // writing is only allowed using rooted paths
-    wdString sRootName;
+    nsString sRootName;
     ExtractRootName(sPath, sRootName);
 
-    DataDirectory* pDataDir = GetDataDirForRoot(sRootName);
+    DataDirectoryInfo* pDataDir = GetDataDirForRoot(sRootName);
 
     if (pDataDir == nullptr)
-      return WD_FAILURE;
+      return NS_FAILURE;
 
     if (out_pDataDir != nullptr)
       *out_pDataDir = pDataDir->m_pDataDirectory;
@@ -624,16 +618,16 @@ wdResult wdFileSystem::ResolvePath(wdStringView sPath, wdStringBuilder* out_pAbs
     absPath = pDataDir->m_pDataDirectory->GetRedirectedDataDirectoryPath(); /// \todo We might also need the none-redirected path as an output
     absPath.AppendPath(relPath);
   }
-  else if (wdPathUtils::IsAbsolutePath(sPath))
+  else if (nsPathUtils::IsAbsolutePath(sPath))
   {
     absPath = sPath;
     absPath.MakeCleanPath();
 
-    for (wdUInt32 dd = s_pData->m_DataDirectories.GetCount(); dd > 0; --dd)
+    for (nsUInt32 dd = s_pData->m_DataDirectories.GetCount(); dd > 0; --dd)
     {
       auto& dir = s_pData->m_DataDirectories[dd - 1];
 
-      if (wdPathUtils::IsSubPath(dir.m_pDataDirectory->GetRedirectedDataDirectoryPath(), absPath))
+      if (nsPathUtils::IsSubPath(dir.m_pDataDirectory->GetRedirectedDataDirectoryPath(), absPath))
       {
         if (out_pAbsolutePath)
           *out_pAbsolutePath = absPath;
@@ -647,19 +641,19 @@ wdResult wdFileSystem::ResolvePath(wdStringView sPath, wdStringBuilder* out_pAbs
         if (out_pDataDir)
           *out_pDataDir = dir.m_pDataDirectory;
 
-        return WD_SUCCESS;
+        return NS_SUCCESS;
       }
     }
 
-    return WD_FAILURE;
+    return NS_FAILURE;
   }
   else
   {
     // try to get a reader -> if we get one, the file does indeed exist
-    wdDataDirectoryReader* pReader = wdFileSystem::GetFileReader(sPath, wdFileShareMode::SharedReads, true);
+    nsDataDirectoryReader* pReader = nsFileSystem::GetFileReader(sPath, nsFileShareMode::SharedReads, true);
 
     if (!pReader)
-      return WD_FAILURE;
+      return NS_FAILURE;
 
     if (out_pDataDir != nullptr)
       *out_pDataDir = pReader->GetDataDirectory();
@@ -678,12 +672,12 @@ wdResult wdFileSystem::ResolvePath(wdStringView sPath, wdStringBuilder* out_pAbs
   if (out_pDataDirRelativePath)
     *out_pDataDirRelativePath = relPath;
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
-wdResult wdFileSystem::FindFolderWithSubPath(wdStringBuilder& out_sResult, wdStringView sStartDirectory, wdStringView sSubPath, wdStringView sRedirectionFileName /*= nullptr*/)
+nsResult nsFileSystem::FindFolderWithSubPath(nsStringBuilder& out_sResult, nsStringView sStartDirectory, nsStringView sSubPath, nsStringView sRedirectionFileName /*= nullptr*/)
 {
-  wdStringBuilder sStartDirAbs = sStartDirectory;
+  nsStringBuilder sStartDirAbs = sStartDirectory;
   sStartDirAbs.MakeCleanPath();
 
   // in this case the given path and the absolute path are different
@@ -692,11 +686,11 @@ wdResult wdFileSystem::FindFolderWithSubPath(wdStringBuilder& out_sResult, wdStr
   // ":MyRoot\blub", rather than "C:\Game\blub"
   if (sStartDirAbs.StartsWith(":"))
   {
-    wdStringBuilder abs;
+    nsStringBuilder abs;
     if (ResolvePath(sStartDirAbs, &abs, nullptr).Failed())
     {
       out_sResult.Clear();
-      return WD_FAILURE;
+      return NS_FAILURE;
     }
 
     sStartDirAbs = abs;
@@ -705,7 +699,7 @@ wdResult wdFileSystem::FindFolderWithSubPath(wdStringBuilder& out_sResult, wdStr
   out_sResult = sStartDirectory;
   out_sResult.MakeCleanPath();
 
-  wdStringBuilder FullPath, sRedirection;
+  nsStringBuilder FullPath, sRedirection;
 
   while (!out_sResult.IsEmpty())
   {
@@ -716,12 +710,12 @@ wdResult wdFileSystem::FindFolderWithSubPath(wdStringBuilder& out_sResult, wdStr
       FullPath = sStartDirAbs;
       FullPath.AppendPath(sRedirectionFileName);
 
-      wdOSFile f;
-      if (f.Open(FullPath, wdFileOpenMode::Read).Succeeded())
+      nsOSFile f;
+      if (f.Open(FullPath, nsFileOpenMode::Read).Succeeded())
       {
-        wdDataBuffer db;
+        nsDataBuffer db;
         f.ReadAll(db);
-        sRedirection.Set(wdStringView((const char*)db.GetData(), db.GetCount()));
+        sRedirection.Set(nsStringView((const char*)db.GetData(), db.GetCount()));
       }
     }
 
@@ -733,11 +727,11 @@ wdResult wdFileSystem::FindFolderWithSubPath(wdStringBuilder& out_sResult, wdStr
       FullPath.AppendPath(sSubPath);
       FullPath.MakeCleanPath();
 
-      if (wdOSFile::ExistsDirectory(FullPath) || wdOSFile::ExistsFile(FullPath))
+      if (nsOSFile::ExistsDirectory(FullPath) || nsOSFile::ExistsFile(FullPath))
       {
         out_sResult.AppendPath(sRedirection);
         out_sResult.MakeCleanPath();
-        return WD_SUCCESS;
+        return NS_SUCCESS;
       }
     }
 
@@ -746,21 +740,21 @@ wdResult wdFileSystem::FindFolderWithSubPath(wdStringBuilder& out_sResult, wdStr
     FullPath.AppendPath(sSubPath);
     FullPath.MakeCleanPath();
 
-    if (wdOSFile::ExistsDirectory(FullPath) || wdOSFile::ExistsFile(FullPath))
+    if (nsOSFile::ExistsDirectory(FullPath) || nsOSFile::ExistsFile(FullPath))
     {
-      return WD_SUCCESS;
+      return NS_SUCCESS;
     }
 
     out_sResult.PathParentDirectory();
     sStartDirAbs.PathParentDirectory();
   }
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
-bool wdFileSystem::ResolveAssetRedirection(wdStringView sPathOrAssetGuid, wdStringBuilder& out_sRedirection)
+bool nsFileSystem::ResolveAssetRedirection(nsStringView sPathOrAssetGuid, nsStringBuilder& out_sRedirection)
 {
-  WD_LOCK(s_pData->m_FsMutex);
+  NS_LOCK(s_pData->m_FsMutex);
 
   for (auto& dd : s_pData->m_DataDirectories)
   {
@@ -772,9 +766,9 @@ bool wdFileSystem::ResolveAssetRedirection(wdStringView sPathOrAssetGuid, wdStri
   return false;
 }
 
-wdStringView wdFileSystem::MigrateFileLocation(wdStringView sOldLocation, wdStringView sNewLocation)
+nsStringView nsFileSystem::MigrateFileLocation(nsStringView sOldLocation, nsStringView sNewLocation)
 {
-  wdStringBuilder sOldPathFull, sNewPathFull;
+  nsStringBuilder sOldPathFull, sNewPathFull;
 
   if (ResolvePath(sOldLocation, &sOldPathFull, nullptr).Failed() || sOldPathFull.IsEmpty())
   {
@@ -800,7 +794,7 @@ wdStringView wdFileSystem::MigrateFileLocation(wdStringView sOldLocation, wdStri
   }
 
   // new one doesn't exist -> try to move old to new
-  if (wdOSFile::MoveFileOrDirectory(sOldPathFull, sNewPathFull).Failed())
+  if (nsOSFile::MoveFileOrDirectory(sOldPathFull, sNewPathFull).Failed())
   {
     // if the old location exists, but we can't move the file, return the old location to use
     return sOldLocation;
@@ -814,11 +808,11 @@ wdStringView wdFileSystem::MigrateFileLocation(wdStringView sOldLocation, wdStri
   return sNewLocation;
 }
 
-void wdFileSystem::ReloadAllExternalDataDirectoryConfigs()
+void nsFileSystem::ReloadAllExternalDataDirectoryConfigs()
 {
-  WD_LOG_BLOCK("ReloadAllExternalDataDirectoryConfigs");
+  NS_LOG_BLOCK("ReloadAllExternalDataDirectoryConfigs");
 
-  WD_LOCK(s_pData->m_FsMutex);
+  NS_LOCK(s_pData->m_FsMutex);
 
   for (auto& dd : s_pData->m_DataDirectories)
   {
@@ -826,65 +820,65 @@ void wdFileSystem::ReloadAllExternalDataDirectoryConfigs()
   }
 }
 
-void wdFileSystem::Startup()
+void nsFileSystem::Startup()
 {
-  s_pData = WD_DEFAULT_NEW(FileSystemData);
+  s_pData = NS_DEFAULT_NEW(FileSystemData);
 }
 
-void wdFileSystem::Shutdown()
+void nsFileSystem::Shutdown()
 {
   {
-    WD_LOCK(s_pData->m_FsMutex);
+    NS_LOCK(s_pData->m_FsMutex);
 
     s_pData->m_DataDirFactories.Clear();
 
     ClearAllDataDirectories();
   }
 
-  WD_DEFAULT_DELETE(s_pData);
+  NS_DEFAULT_DELETE(s_pData);
 }
 
-wdResult wdFileSystem::DetectSdkRootDirectory(wdStringView sExpectedSubFolder /*= "Data/Base"*/)
+nsResult nsFileSystem::DetectSdkRootDirectory(nsStringView sExpectedSubFolder /*= "Data/Base"*/)
 {
   if (!s_sSdkRootDir.IsEmpty())
-    return WD_SUCCESS;
+    return NS_SUCCESS;
 
-  wdStringBuilder sdkRoot;
+  nsStringBuilder sdkRoot;
 
-#if WD_ENABLED(WD_PLATFORM_WINDOWS_UWP)
+#if NS_ENABLED(NS_PLATFORM_WINDOWS_UWP)
   // Probably this is what needs to be done on all mobile platforms as well
-  sdkRoot = wdOSFile::GetApplicationDirectory();
-#elif WD_ENABLED(WD_PLATFORM_ANDROID)
-  sdkRoot = wdOSFile::GetApplicationDirectory();
+  sdkRoot = nsOSFile::GetApplicationDirectory();
+#elif NS_ENABLED(NS_PLATFORM_ANDROID)
+  sdkRoot = nsOSFile::GetApplicationDirectory();
 #else
-  if (wdFileSystem::FindFolderWithSubPath(sdkRoot, wdOSFile::GetApplicationDirectory(), sExpectedSubFolder, "wdSdkRoot.txt").Failed())
+  if (nsFileSystem::FindFolderWithSubPath(sdkRoot, nsOSFile::GetApplicationDirectory(), sExpectedSubFolder, "nsSdkRoot.txt").Failed())
   {
-    wdLog::Error("Could not find SDK root. Application dir is '{0}'. Searched for parent with '{1}' sub-folder.", wdOSFile::GetApplicationDirectory(), sExpectedSubFolder);
-    return WD_FAILURE;
+    nsLog::Error("Could not find SDK root. Application dir is '{0}'. Searched for parent with '{1}' sub-folder.", nsOSFile::GetApplicationDirectory(), sExpectedSubFolder);
+    return NS_FAILURE;
   }
 #endif
 
-  wdFileSystem::SetSdkRootDirectory(sdkRoot);
-  return WD_SUCCESS;
+  nsFileSystem::SetSdkRootDirectory(sdkRoot);
+  return NS_SUCCESS;
 }
 
-void wdFileSystem::SetSdkRootDirectory(wdStringView sSdkDir)
+void nsFileSystem::SetSdkRootDirectory(nsStringView sSdkDir)
 {
-  wdStringBuilder s = sSdkDir;
+  nsStringBuilder s = sSdkDir;
   s.MakeCleanPath();
 
   s_sSdkRootDir = s;
 }
 
-const char* wdFileSystem::GetSdkRootDirectory()
+nsStringView nsFileSystem::GetSdkRootDirectory()
 {
-  WD_ASSERT_DEV(!s_sSdkRootDir.IsEmpty(), "The project directory has not been set through 'wdFileSystem::SetSdkRootDirectory'.");
-  return s_sSdkRootDir.GetData();
+  NS_ASSERT_DEV(!s_sSdkRootDir.IsEmpty(), "The project directory has not been set through 'nsFileSystem::SetSdkRootDirectory'.");
+  return s_sSdkRootDir;
 }
 
-void wdFileSystem::SetSpecialDirectory(wdStringView sName, wdStringView sReplacement)
+void nsFileSystem::SetSpecialDirectory(nsStringView sName, nsStringView sReplacement)
 {
-  wdStringBuilder tmp = sName;
+  nsStringBuilder tmp = sName;
   tmp.ToLower();
 
   if (sReplacement.IsEmpty())
@@ -897,12 +891,12 @@ void wdFileSystem::SetSpecialDirectory(wdStringView sName, wdStringView sReplace
   }
 }
 
-wdResult wdFileSystem::ResolveSpecialDirectory(wdStringView sDirectory, wdStringBuilder& out_sPath)
+nsResult nsFileSystem::ResolveSpecialDirectory(nsStringView sDirectory, nsStringBuilder& out_sPath)
 {
   if (sDirectory.IsEmpty() || !sDirectory.StartsWith(">"))
   {
     out_sPath = sDirectory;
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
 
   // skip the '>'
@@ -912,9 +906,9 @@ wdResult wdFileSystem::ResolveSpecialDirectory(wdStringView sDirectory, wdString
   const char* szEnd = sDirectory.FindSubString("/");
 
   if (szEnd == nullptr)
-    szEnd = szStart + wdStringUtils::GetStringElementCount(szStart);
+    szEnd = szStart + nsStringUtils::GetStringElementCount(szStart);
 
-  wdStringBuilder sName;
+  nsStringBuilder sName;
   sName.SetSubString_FromTo(szStart, szEnd);
   sName.ToLower();
 
@@ -924,7 +918,7 @@ wdResult wdFileSystem::ResolveSpecialDirectory(wdStringView sDirectory, wdString
     out_sPath = it.Value();
     out_sPath.AppendPath(szEnd); // szEnd might be on \0 or a slash
     out_sPath.MakeCleanPath();
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
 
   if (sName == "sdk")
@@ -933,67 +927,109 @@ wdResult wdFileSystem::ResolveSpecialDirectory(wdStringView sDirectory, wdString
     out_sPath = GetSdkRootDirectory();
     out_sPath.AppendPath(sDirectory);
     out_sPath.MakeCleanPath();
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
 
   if (sName == "user")
   {
     sDirectory.Shrink(4, 0);
-    out_sPath = wdOSFile::GetUserDataFolder();
+    out_sPath = nsOSFile::GetUserDataFolder();
     out_sPath.AppendPath(sDirectory);
     out_sPath.MakeCleanPath();
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
 
   if (sName == "temp")
   {
     sDirectory.Shrink(4, 0);
-    out_sPath = wdOSFile::GetTempDataFolder();
+    out_sPath = nsOSFile::GetTempDataFolder();
     out_sPath.AppendPath(sDirectory);
     out_sPath.MakeCleanPath();
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
 
   if (sName == "appdir")
   {
     sDirectory.Shrink(6, 0);
-    out_sPath = wdOSFile::GetApplicationDirectory();
+    out_sPath = nsOSFile::GetApplicationDirectory();
     out_sPath.AppendPath(sDirectory);
     out_sPath.MakeCleanPath();
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
 
-wdMutex& wdFileSystem::GetMutex()
+nsMutex& nsFileSystem::GetMutex()
 {
-  WD_ASSERT_DEV(s_pData != nullptr, "FileSystem is not initialized.");
+  NS_ASSERT_DEV(s_pData != nullptr, "FileSystem is not initialized.");
   return s_pData->m_FsMutex;
 }
 
-#if WD_ENABLED(WD_SUPPORTS_FILE_ITERATORS)
+#if NS_ENABLED(NS_SUPPORTS_FILE_ITERATORS)
 
-void wdFileSystem::StartSearch(wdFileSystemIterator& ref_iterator, wdStringView sSearchTerm, wdBitflags<wdFileSystemIteratorFlags> flags /*= wdFileSystemIteratorFlags::Default*/)
+void nsFileSystem::StartSearch(nsFileSystemIterator& ref_iterator, nsStringView sSearchTerm, nsBitflags<nsFileSystemIteratorFlags> flags /*= nsFileSystemIteratorFlags::Default*/)
 {
-  WD_LOCK(s_pData->m_FsMutex);
+  NS_LOCK(s_pData->m_FsMutex);
 
-  wdHybridArray<wdString, 16> folders;
-  wdStringBuilder sDdPath;
+  nsHybridArray<nsString, 16> folders;
+  nsStringBuilder sDdPath, sRelPath;
 
-  for (const auto& dd : s_pData->m_DataDirectories)
+  if (sSearchTerm.IsRootedPath())
   {
-    sDdPath = dd.m_pDataDirectory->GetRedirectedDataDirectoryPath();
+    const nsStringView root = sSearchTerm.GetRootedPathRootName();
 
-    if (ResolvePath(sDdPath, &sDdPath, nullptr).Failed())
-      continue;
+    const DataDirectoryInfo* pDataDir = FindDataDirectoryWithRoot(root);
+    if (pDataDir == nullptr)
+      return;
 
-    if (sDdPath.IsEmpty() || !wdOSFile::ExistsDirectory(sDdPath))
-      continue;
+    sSearchTerm.SetStartPosition(root.GetEndPointer());
 
+    if (!sSearchTerm.IsEmpty())
+    {
+      // root name should be followed by a slash
+      sSearchTerm.ChopAwayFirstCharacterAscii();
+    }
 
-    folders.PushBack(sDdPath);
+    folders.PushBack(pDataDir->m_pDataDirectory->GetRedirectedDataDirectoryPath().GetView());
+  }
+  else if (sSearchTerm.IsAbsolutePath())
+  {
+    for (nsUInt32 idx = s_pData->m_DataDirectories.GetCount(); idx > 0; --idx)
+    {
+      const auto& dd = s_pData->m_DataDirectories[idx - 1];
+
+      sDdPath = dd.m_pDataDirectory->GetRedirectedDataDirectoryPath();
+
+      sRelPath = sSearchTerm;
+
+      if (!sDdPath.IsEmpty())
+      {
+        if (sRelPath.MakeRelativeTo(sDdPath).Failed())
+          continue;
+
+        // this would use "../" if necessary, which we don't want
+        if (sRelPath.StartsWith(".."))
+          continue;
+      }
+
+      sSearchTerm = sRelPath;
+
+      folders.PushBack(sDdPath);
+      break;
+    }
+  }
+  else
+  {
+    for (nsUInt32 idx = s_pData->m_DataDirectories.GetCount(); idx > 0; --idx)
+    {
+      const auto& dd = s_pData->m_DataDirectories[idx - 1];
+
+      sDdPath = dd.m_pDataDirectory->GetRedirectedDataDirectoryPath();
+
+      folders.PushBack(sDdPath);
+    }
   }
 
   ref_iterator.StartMultiFolderSearch(folders, sSearchTerm, flags);
@@ -1001,12 +1037,17 @@ void wdFileSystem::StartSearch(wdFileSystemIterator& ref_iterator, wdStringView 
 
 #endif
 
-wdResult wdFileSystem::CreateDirectoryStructure(wdStringView sPath)
+nsResult nsFileSystem::CreateDirectoryStructure(nsStringView sPath)
 {
-  wdStringBuilder sRedir;
-  WD_SUCCEED_OR_RETURN(ResolveSpecialDirectory(sPath, sRedir));
+  nsStringBuilder sRedir;
+  NS_SUCCEED_OR_RETURN(ResolveSpecialDirectory(sPath, sRedir));
 
-  return wdOSFile::CreateDirectoryStructure(sRedir);
+  if (sRedir.IsRootedPath())
+  {
+    nsFileSystem::ResolvePath(sRedir, &sRedir, nullptr).AssertSuccess();
+  }
+
+  return nsOSFile::CreateDirectoryStructure(sRedir);
 }
 
-WD_STATICLINK_FILE(Foundation, Foundation_IO_FileSystem_Implementation_FileSystem);
+NS_STATICLINK_FILE(Foundation, Foundation_IO_FileSystem_Implementation_FileSystem);

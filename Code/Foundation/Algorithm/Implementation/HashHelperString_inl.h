@@ -1,15 +1,15 @@
 
-wdUInt32 wdHashHelperString_NoCase::Hash(wdStringView value)
+nsUInt32 nsHashHelperString_NoCase::Hash(nsStringView value)
 {
-  wdHybridArray<char, 256> temp;
+  nsHybridArray<char, 256> temp;
   temp.SetCountUninitialized(value.GetElementCount());
-  wdMemoryUtils::Copy(temp.GetData(), value.GetStartPointer(), value.GetElementCount());
-  const wdUInt32 uiElemCount = wdStringUtils::ToLowerString(temp.GetData(), temp.GetData() + value.GetElementCount());
+  nsMemoryUtils::Copy(temp.GetData(), value.GetStartPointer(), value.GetElementCount());
+  const nsUInt32 uiElemCount = nsStringUtils::ToLowerString(temp.GetData(), temp.GetData() + value.GetElementCount());
 
-  return wdHashingUtils::StringHashTo32(wdHashingUtils::xxHash64((void*)temp.GetData(), uiElemCount));
+  return nsHashingUtils::StringHashTo32(nsHashingUtils::xxHash64((void*)temp.GetData(), uiElemCount));
 }
 
-bool wdHashHelperString_NoCase::Equal(wdStringView lhs, wdStringView rhs)
+bool nsHashHelperString_NoCase::Equal(nsStringView lhs, nsStringView rhs)
 {
   return lhs.IsEqual_NoCase(rhs);
 }

@@ -7,26 +7,31 @@
 #include <Foundation/Time/Time.h>
 #include <Foundation/Time/Timestamp.h>
 
-#if WD_ENABLED(WD_PLATFORM_WINDOWS)
-#  include <Foundation/Logging/Implementation/Win/ETWProvider_win.h>
+#if NS_ENABLED(NS_PLATFORM_WINDOWS) || NS_ENABLED(NS_PLATFORM_LINUX)
+#  include <Foundation/Logging/ETWWriter.h>
 #endif
-#if WD_ENABLED(WD_PLATFORM_ANDROID)
+#if NS_ENABLED(NS_PLATFORM_ANDROID)
 #  include <android/log.h>
 #endif
 
-wdLogMsgType::Enum wdLog::s_DefaultLogLevel = wdLogMsgType::All;
-wdLog::PrintFunction wdLog::s_CustomPrintFunction = nullptr;
-wdAtomicInteger32 wdGlobalLog::s_uiMessageCount[wdLogMsgType::ENUM_COUNT];
-wdLoggingEvent wdGlobalLog::s_LoggingEvent;
-wdLogInterface* wdGlobalLog::s_pOverrideLog = nullptr;
+#include <stdarg.h>
+
+// Comment in to log into nsLog::Print any message that is output while no logger is registered.
+// #define DEBUG_STARTUP_LOGGING
+
+nsLogMsgType::Enum nsLog::s_DefaultLogLevel = nsLogMsgType::All;
+nsLog::PrintFunction nsLog::s_CustomPrintFunction = nullptr;
+nsAtomicInteger32 nsGlobalLog::s_uiMessageCount[nsLogMsgType::ENUM_COUNT];
+nsLoggingEvent nsGlobalLog::s_LoggingEvent;
+nsLogInterface* nsGlobalLog::s_pOverrideLog = nullptr;
 static thread_local bool s_bAllowOverrideLog = true;
-static wdMutex s_OverrideLogMutex;
+static nsMutex s_OverrideLogMutex;
 
 /// \brief The log system that messages are sent to when the user specifies no system himself.
-static thread_local wdLogInterface* s_DefaultLogSystem = nullptr;
+static thread_local nsLogInterface* s_DefaultLogSystem = nullptr;
 
 
-wdEventSubscriptionID wdGlobalLog::AddLogWriter(wdLoggingEvent::Handler handler)
+nsEventSubscriptionID nsGlobalLog::AddLogWriter(nsLoggingEvent::Handler handler)
 {
   if (s_LoggingEvent.HasEventHandler(handler))
     return 0;
@@ -34,7 +39,7 @@ wdEventSubscriptionID wdGlobalLog::AddLogWriter(wdLoggingEvent::Handler handler)
   return s_LoggingEvent.AddEventHandler(handler);
 }
 
-void wdGlobalLog::RemoveLogWriter(wdLoggingEvent::Handler handler)
+void nsGlobalLog::RemoveLogWriter(nsLoggingEvent::Handler handler)
 {
   if (!s_LoggingEvent.HasEventHandler(handler))
     return;
@@ -42,25 +47,25 @@ void wdGlobalLog::RemoveLogWriter(wdLoggingEvent::Handler handler)
   s_LoggingEvent.RemoveEventHandler(handler);
 }
 
-void wdGlobalLog::RemoveLogWriter(wdEventSubscriptionID& ref_subscriptionID)
+void nsGlobalLog::RemoveLogWriter(nsEventSubscriptionID& ref_subscriptionID)
 {
   s_LoggingEvent.RemoveEventHandler(ref_subscriptionID);
 }
 
-void wdGlobalLog::SetGlobalLogOverride(wdLogInterface* pInterface)
+void nsGlobalLog::SetGlobalLogOverride(nsLogInterface* pInterface)
 {
-  WD_LOCK(s_OverrideLogMutex);
+  NS_LOCK(s_OverrideLogMutex);
 
-  WD_ASSERT_DEV(pInterface == nullptr || s_pOverrideLog == nullptr, "Only one override log can be set at a time");
+  NS_ASSERT_DEV(pInterface == nullptr || s_pOverrideLog == nullptr, "Only one override log can be set at a time");
   s_pOverrideLog = pInterface;
 }
 
-void wdGlobalLog::HandleLogMessage(const wdLoggingEventData& le)
+void nsGlobalLog::HandleLogMessage(const nsLoggingEventData& le)
 {
   if (s_pOverrideLog != nullptr && s_pOverrideLog != this && s_bAllowOverrideLog)
   {
     // only enter the lock when really necessary
-    WD_LOCK(s_OverrideLogMutex);
+    NS_LOCK(s_OverrideLogMutex);
 
     // since s_bAllowOverrideLog is thread_local we do not need to re-check it
 
@@ -79,18 +84,26 @@ void wdGlobalLog::HandleLogMessage(const wdLoggingEventData& le)
 
   // else
   {
-    const wdLogMsgType::Enum ThisType = le.m_EventType;
+    const nsLogMsgType::Enum ThisType = le.m_EventType;
 
-    if ((ThisType > wdLogMsgType::None) && (ThisType < wdLogMsgType::All))
+    if ((ThisType > nsLogMsgType::None) && (ThisType < nsLogMsgType::All))
       s_uiMessageCount[ThisType].Increment();
 
+#ifdef DEBUG_STARTUP_LOGGING
+    if (s_LoggingEvent.IsEmpty())
+    {
+      nsStringBuilder stmp = le.m_sText;
+      stmp.Append("\n");
+      nsLog::Print(stmp);
+    }
+#endif
     s_LoggingEvent.Broadcast(le);
   }
 }
 
-wdLogBlock::wdLogBlock(wdStringView sName, wdStringView sContextInfo)
+nsLogBlock::nsLogBlock(nsStringView sName, nsStringView sContextInfo)
 {
-  m_pLogInterface = wdLog::GetThreadLocalLogSystem();
+  m_pLogInterface = nsLog::GetThreadLocalLogSystem();
 
   if (!m_pLogInterface)
     return;
@@ -104,13 +117,13 @@ wdLogBlock::wdLogBlock(wdStringView sName, wdStringView sContextInfo)
 
   m_uiBlockDepth = m_pParentBlock ? (m_pParentBlock->m_uiBlockDepth + 1) : 0;
 
-#if WD_ENABLED(WD_COMPILE_FOR_DEVELOPMENT)
-  m_fSeconds = wdTime::Now().GetSeconds();
+#if NS_ENABLED(NS_COMPILE_FOR_DEVELOPMENT)
+  m_fSeconds = nsTime::Now().GetSeconds();
 #endif
 }
 
 
-wdLogBlock::wdLogBlock(wdLogInterface* pInterface, wdStringView sName, wdStringView sContextInfo)
+nsLogBlock::nsLogBlock(nsLogInterface* pInterface, nsStringView sName, nsStringView sContextInfo)
 {
   m_pLogInterface = pInterface;
 
@@ -126,36 +139,36 @@ wdLogBlock::wdLogBlock(wdLogInterface* pInterface, wdStringView sName, wdStringV
 
   m_uiBlockDepth = m_pParentBlock ? (m_pParentBlock->m_uiBlockDepth + 1) : 0;
 
-#if WD_ENABLED(WD_COMPILE_FOR_DEVELOPMENT)
-  m_fSeconds = wdTime::Now().GetSeconds();
+#if NS_ENABLED(NS_COMPILE_FOR_DEVELOPMENT)
+  m_fSeconds = nsTime::Now().GetSeconds();
 #endif
 }
 
-wdLogBlock::~wdLogBlock()
+nsLogBlock::~nsLogBlock()
 {
   if (!m_pLogInterface)
     return;
 
-#if WD_ENABLED(WD_COMPILE_FOR_DEVELOPMENT)
-  m_fSeconds = wdTime::Now().GetSeconds() - m_fSeconds;
+#if NS_ENABLED(NS_COMPILE_FOR_DEVELOPMENT)
+  m_fSeconds = nsTime::Now().GetSeconds() - m_fSeconds;
 #endif
 
   m_pLogInterface->m_pCurrentBlock = m_pParentBlock;
 
-  wdLog::EndLogBlock(m_pLogInterface, this);
+  nsLog::EndLogBlock(m_pLogInterface, this);
 }
 
 
-void wdLog::EndLogBlock(wdLogInterface* pInterface, wdLogBlock* pBlock)
+void nsLog::EndLogBlock(nsLogInterface* pInterface, nsLogBlock* pBlock)
 {
   if (pBlock->m_bWritten)
   {
-    wdLoggingEventData le;
-    le.m_EventType = wdLogMsgType::EndGroup;
+    nsLoggingEventData le;
+    le.m_EventType = nsLogMsgType::EndGroup;
     le.m_sText = pBlock->m_sName;
     le.m_uiIndentation = pBlock->m_uiBlockDepth;
     le.m_sTag = pBlock->m_sContextInfo;
-#if WD_ENABLED(WD_COMPILE_FOR_DEVELOPMENT)
+#if NS_ENABLED(NS_COMPILE_FOR_DEVELOPMENT)
     le.m_fSeconds = pBlock->m_fSeconds;
 #endif
 
@@ -163,7 +176,7 @@ void wdLog::EndLogBlock(wdLogInterface* pInterface, wdLogBlock* pBlock)
   }
 }
 
-void wdLog::WriteBlockHeader(wdLogInterface* pInterface, wdLogBlock* pBlock)
+void nsLog::WriteBlockHeader(nsLogInterface* pInterface, nsLogBlock* pBlock)
 {
   if (!pBlock || pBlock->m_bWritten)
     return;
@@ -172,8 +185,8 @@ void wdLog::WriteBlockHeader(wdLogInterface* pInterface, wdLogBlock* pBlock)
 
   WriteBlockHeader(pInterface, pBlock->m_pParentBlock);
 
-  wdLoggingEventData le;
-  le.m_EventType = wdLogMsgType::BeginGroup;
+  nsLoggingEventData le;
+  le.m_EventType = nsLogMsgType::BeginGroup;
   le.m_sText = pBlock->m_sName;
   le.m_uiIndentation = pBlock->m_uiBlockDepth;
   le.m_sTag = pBlock->m_sContextInfo;
@@ -181,10 +194,10 @@ void wdLog::WriteBlockHeader(wdLogInterface* pInterface, wdLogBlock* pBlock)
   pInterface->HandleLogMessage(le);
 }
 
-void wdLog::BroadcastLoggingEvent(wdLogInterface* pInterface, wdLogMsgType::Enum type, const char* szString)
+void nsLog::BroadcastLoggingEvent(nsLogInterface* pInterface, nsLogMsgType::Enum type, nsStringView sString)
 {
-  wdLogBlock* pTopBlock = pInterface->m_pCurrentBlock;
-  wdUInt8 uiIndentation = 0;
+  nsLogBlock* pTopBlock = pInterface->m_pCurrentBlock;
+  nsUInt8 uiIndentation = 0;
 
   if (pTopBlock)
   {
@@ -195,13 +208,13 @@ void wdLog::BroadcastLoggingEvent(wdLogInterface* pInterface, wdLogMsgType::Enum
 
   char szTag[32] = "";
 
-  if (wdStringUtils::StartsWith(szString, "["))
+  if (sString.StartsWith("["))
   {
-    const char* szAfterTag = szString;
+    const char* szAfterTag = sString.GetStartPointer();
 
     ++szAfterTag;
 
-    wdInt32 iPos = 0;
+    nsInt32 iPos = 0;
 
     // only treat it as a tag, if it is properly enclosed in square brackets and doesn't contain spaces
     while ((*szAfterTag != '\0') && (*szAfterTag != '[') && (*szAfterTag != ']') && (*szAfterTag != ' ') && (iPos < 31))
@@ -214,7 +227,7 @@ void wdLog::BroadcastLoggingEvent(wdLogInterface* pInterface, wdLogMsgType::Enum
     if (*szAfterTag == ']')
     {
       szTag[iPos] = '\0';
-      szString = szAfterTag + 1;
+      sString.SetStartPosition(szAfterTag + 1);
     }
     else
     {
@@ -222,9 +235,9 @@ void wdLog::BroadcastLoggingEvent(wdLogInterface* pInterface, wdLogMsgType::Enum
     }
   }
 
-  wdLoggingEventData le;
+  nsLoggingEventData le;
   le.m_EventType = type;
-  le.m_sText = szString;
+  le.m_sText = sString;
   le.m_uiIndentation = uiIndentation;
   le.m_sTag = szTag;
 
@@ -232,18 +245,18 @@ void wdLog::BroadcastLoggingEvent(wdLogInterface* pInterface, wdLogMsgType::Enum
   pInterface->m_uiLoggedMsgsSinceFlush++;
 }
 
-void wdLog::Print(const char* szText)
+void nsLog::Print(const char* szText)
 {
   printf("%s", szText);
 
-#if WD_ENABLED(WD_PLATFORM_WINDOWS)
-  wdETWProvider::GetInstance().LogMessge(wdLogMsgType::ErrorMsg, 0, szText);
+#if NS_ENABLED(NS_PLATFORM_WINDOWS) || NS_ENABLED(NS_PLATFORM_LINUX)
+  nsLogWriter::ETW::LogMessage(nsLogMsgType::ErrorMsg, 0, szText);
 #endif
-#if WD_ENABLED(WD_PLATFORM_WINDOWS)
-  OutputDebugStringW(wdStringWChar(szText).GetData());
+#if NS_ENABLED(NS_PLATFORM_WINDOWS)
+  OutputDebugStringW(nsStringWChar(szText).GetData());
 #endif
-#if WD_ENABLED(WD_PLATFORM_ANDROID)
-  __android_log_print(ANDROID_LOG_ERROR, "wdEngine", "%s", szText);
+#if NS_ENABLED(NS_PLATFORM_ANDROID)
+  __android_log_print(ANDROID_LOG_ERROR, "nsEngine", "%s", szText);
 #endif
 
   if (s_CustomPrintFunction)
@@ -255,45 +268,45 @@ void wdLog::Print(const char* szText)
   fflush(stderr);
 }
 
-void wdLog::Printf(const char* szFormat, ...)
+void nsLog::Printf(const char* szFormat, ...)
 {
   va_list args;
   va_start(args, szFormat);
 
   char buffer[4096];
-  wdStringUtils::vsnprintf(buffer, WD_ARRAY_SIZE(buffer), szFormat, args);
+  nsStringUtils::vsnprintf(buffer, NS_ARRAY_SIZE(buffer), szFormat, args);
 
   Print(buffer);
 
   va_end(args);
 }
 
-void wdLog::SetCustomPrintFunction(PrintFunction func)
+void nsLog::SetCustomPrintFunction(PrintFunction func)
 {
   s_CustomPrintFunction = func;
 }
 
-void wdLog::OsMessageBox(const wdFormatString& text)
+void nsLog::OsMessageBox(const nsFormatString& text)
 {
-  wdStringBuilder tmp;
-  wdStringBuilder display = text.GetText(tmp);
+  nsStringBuilder tmp;
+  nsStringBuilder display = text.GetText(tmp);
   display.Trim(" \n\r\t");
 
+#if NS_ENABLED(NS_PLATFORM_WINDOWS_DESKTOP)
   const char* title = "";
-  if (wdApplication::GetApplicationInstance())
+  if (nsApplication::GetApplicationInstance())
   {
-    title = wdApplication::GetApplicationInstance()->GetApplicationName();
+    title = nsApplication::GetApplicationInstance()->GetApplicationName();
   }
 
-#if WD_ENABLED(WD_PLATFORM_WINDOWS_DESKTOP)
-  MessageBoxW(nullptr, wdStringWChar(display).GetData(), wdStringWChar(title), MB_OK);
+  MessageBoxW(nullptr, nsStringWChar(display).GetData(), nsStringWChar(title), MB_OK);
 #else
-  wdLog::Print(display);
-  WD_ASSERT_NOT_IMPLEMENTED;
+  nsLog::Print(display);
+  NS_ASSERT_NOT_IMPLEMENTED;
 #endif
 }
 
-void wdLog::GenerateFormattedTimestamp(TimestampMode mode, wdStringBuilder& ref_sTimestampOut)
+void nsLog::GenerateFormattedTimestamp(TimestampMode mode, nsStringBuilder& ref_sTimestampOut)
 {
   // if mode is 'None', early out to not even retrieve a timestamp
   if (mode == TimestampMode::None)
@@ -301,53 +314,53 @@ void wdLog::GenerateFormattedTimestamp(TimestampMode mode, wdStringBuilder& ref_
     return;
   }
 
-  const wdDateTime dateTime(wdTimestamp::CurrentTimestamp());
+  const nsDateTime dateTime = nsDateTime::MakeFromTimestamp(nsTimestamp::CurrentTimestamp());
 
   switch (mode)
   {
     case TimestampMode::Numeric:
-      ref_sTimestampOut.Format("[{}] ", wdArgDateTime(dateTime, wdArgDateTime::ShowDate | wdArgDateTime::ShowMilliseconds | wdArgDateTime::ShowTimeZone));
+      ref_sTimestampOut.SetFormat("[{}] ", nsArgDateTime(dateTime, nsArgDateTime::ShowDate | nsArgDateTime::ShowMilliseconds | nsArgDateTime::ShowTimeZone));
       break;
     case TimestampMode::TimeOnly:
-      ref_sTimestampOut.Format("[{}] ", wdArgDateTime(dateTime, wdArgDateTime::ShowMilliseconds));
+      ref_sTimestampOut.SetFormat("[{}] ", nsArgDateTime(dateTime, nsArgDateTime::ShowMilliseconds));
       break;
     case TimestampMode::Textual:
-      ref_sTimestampOut.Format(
-        "[{}] ", wdArgDateTime(dateTime, wdArgDateTime::TextualDate | wdArgDateTime::ShowMilliseconds | wdArgDateTime::ShowTimeZone));
+      ref_sTimestampOut.SetFormat(
+        "[{}] ", nsArgDateTime(dateTime, nsArgDateTime::TextualDate | nsArgDateTime::ShowMilliseconds | nsArgDateTime::ShowTimeZone));
       break;
     default:
-      WD_ASSERT_DEV(false, "Unknown timestamp mode.");
+      NS_ASSERT_DEV(false, "Unknown timestamp mode.");
       break;
   }
 }
 
-void wdLog::SetThreadLocalLogSystem(wdLogInterface* pInterface)
+void nsLog::SetThreadLocalLogSystem(nsLogInterface* pInterface)
 {
-  WD_ASSERT_DEV(pInterface != nullptr,
+  NS_ASSERT_DEV(pInterface != nullptr,
     "You cannot set a nullptr logging system. If you want to discard all log information, set a dummy system that does not do anything.");
 
   s_DefaultLogSystem = pInterface;
 }
 
-wdLogInterface* wdLog::GetThreadLocalLogSystem()
+nsLogInterface* nsLog::GetThreadLocalLogSystem()
 {
   if (s_DefaultLogSystem == nullptr)
   {
-    // use new, not WD_DEFAULT_NEW, to prevent tracking
-    s_DefaultLogSystem = new wdGlobalLog;
+    // use new, not NS_DEFAULT_NEW, to prevent tracking
+    s_DefaultLogSystem = new nsGlobalLog;
   }
 
   return s_DefaultLogSystem;
 }
 
-void wdLog::SetDefaultLogLevel(wdLogMsgType::Enum logLevel)
+void nsLog::SetDefaultLogLevel(nsLogMsgType::Enum logLevel)
 {
-  WD_ASSERT_DEV(logLevel >= wdLogMsgType::None && logLevel <= wdLogMsgType::All, "Invalid default log level {}", (int)logLevel);
+  NS_ASSERT_DEV(logLevel >= nsLogMsgType::None && logLevel <= nsLogMsgType::All, "Invalid default log level {}", (int)logLevel);
 
   s_DefaultLogLevel = logLevel;
 }
 
-wdLogMsgType::Enum wdLog::GetDefaultLogLevel()
+nsLogMsgType::Enum nsLog::GetDefaultLogLevel()
 {
   return s_DefaultLogLevel;
 }
@@ -355,88 +368,86 @@ wdLogMsgType::Enum wdLog::GetDefaultLogLevel()
 #define LOG_LEVEL_FILTER(MaxLevel)                                                                                                  \
   if (pInterface == nullptr)                                                                                                        \
     return;                                                                                                                         \
-  if ((pInterface->GetLogLevel() == wdLogMsgType::GlobalDefault ? wdLog::s_DefaultLogLevel : pInterface->GetLogLevel()) < MaxLevel) \
+  if ((pInterface->GetLogLevel() == nsLogMsgType::GlobalDefault ? nsLog::s_DefaultLogLevel : pInterface->GetLogLevel()) < MaxLevel) \
     return;
 
 
-void wdLog::Error(wdLogInterface* pInterface, const wdFormatString& string)
+void nsLog::Error(nsLogInterface* pInterface, const nsFormatString& string)
 {
-  LOG_LEVEL_FILTER(wdLogMsgType::ErrorMsg);
+  LOG_LEVEL_FILTER(nsLogMsgType::ErrorMsg);
 
-  wdStringBuilder tmp;
-  BroadcastLoggingEvent(pInterface, wdLogMsgType::ErrorMsg, string.GetText(tmp));
+  nsStringBuilder tmp;
+  BroadcastLoggingEvent(pInterface, nsLogMsgType::ErrorMsg, string.GetText(tmp));
 }
 
-void wdLog::SeriousWarning(wdLogInterface* pInterface, const wdFormatString& string)
+void nsLog::SeriousWarning(nsLogInterface* pInterface, const nsFormatString& string)
 {
-  LOG_LEVEL_FILTER(wdLogMsgType::SeriousWarningMsg);
+  LOG_LEVEL_FILTER(nsLogMsgType::SeriousWarningMsg);
 
-  wdStringBuilder tmp;
-  BroadcastLoggingEvent(pInterface, wdLogMsgType::SeriousWarningMsg, string.GetText(tmp));
+  nsStringBuilder tmp;
+  BroadcastLoggingEvent(pInterface, nsLogMsgType::SeriousWarningMsg, string.GetText(tmp));
 }
 
-void wdLog::Warning(wdLogInterface* pInterface, const wdFormatString& string)
+void nsLog::Warning(nsLogInterface* pInterface, const nsFormatString& string)
 {
-  LOG_LEVEL_FILTER(wdLogMsgType::WarningMsg);
+  LOG_LEVEL_FILTER(nsLogMsgType::WarningMsg);
 
-  wdStringBuilder tmp;
-  BroadcastLoggingEvent(pInterface, wdLogMsgType::WarningMsg, string.GetText(tmp));
+  nsStringBuilder tmp;
+  BroadcastLoggingEvent(pInterface, nsLogMsgType::WarningMsg, string.GetText(tmp));
 }
 
-void wdLog::Success(wdLogInterface* pInterface, const wdFormatString& string)
+void nsLog::Success(nsLogInterface* pInterface, const nsFormatString& string)
 {
-  LOG_LEVEL_FILTER(wdLogMsgType::SuccessMsg);
+  LOG_LEVEL_FILTER(nsLogMsgType::SuccessMsg);
 
-  wdStringBuilder tmp;
-  BroadcastLoggingEvent(pInterface, wdLogMsgType::SuccessMsg, string.GetText(tmp));
+  nsStringBuilder tmp;
+  BroadcastLoggingEvent(pInterface, nsLogMsgType::SuccessMsg, string.GetText(tmp));
 }
 
-void wdLog::Info(wdLogInterface* pInterface, const wdFormatString& string)
+void nsLog::Info(nsLogInterface* pInterface, const nsFormatString& string)
 {
-  LOG_LEVEL_FILTER(wdLogMsgType::InfoMsg);
+  LOG_LEVEL_FILTER(nsLogMsgType::InfoMsg);
 
-  wdStringBuilder tmp;
-  BroadcastLoggingEvent(pInterface, wdLogMsgType::InfoMsg, string.GetText(tmp));
+  nsStringBuilder tmp;
+  BroadcastLoggingEvent(pInterface, nsLogMsgType::InfoMsg, string.GetText(tmp));
 }
 
-#if WD_ENABLED(WD_COMPILE_FOR_DEVELOPMENT)
+#if NS_ENABLED(NS_COMPILE_FOR_DEVELOPMENT)
 
-void wdLog::Dev(wdLogInterface* pInterface, const wdFormatString& string)
+void nsLog::Dev(nsLogInterface* pInterface, const nsFormatString& string)
 {
-  LOG_LEVEL_FILTER(wdLogMsgType::DevMsg);
+  LOG_LEVEL_FILTER(nsLogMsgType::DevMsg);
 
-  wdStringBuilder tmp;
-  BroadcastLoggingEvent(pInterface, wdLogMsgType::DevMsg, string.GetText(tmp));
-}
-
-#endif
-
-#if WD_ENABLED(WD_COMPILE_FOR_DEBUG)
-
-void wdLog::Debug(wdLogInterface* pInterface, const wdFormatString& string)
-{
-  LOG_LEVEL_FILTER(wdLogMsgType::DebugMsg);
-
-  wdStringBuilder tmp;
-  BroadcastLoggingEvent(pInterface, wdLogMsgType::DebugMsg, string.GetText(tmp));
+  nsStringBuilder tmp;
+  BroadcastLoggingEvent(pInterface, nsLogMsgType::DevMsg, string.GetText(tmp));
 }
 
 #endif
 
-bool wdLog::Flush(wdUInt32 uiNumNewMsgThreshold, wdTime timeIntervalThreshold, wdLogInterface* pInterface /*= GetThreadLocalLogSystem()*/)
+#if NS_ENABLED(NS_COMPILE_FOR_DEBUG)
+
+void nsLog::Debug(nsLogInterface* pInterface, const nsFormatString& string)
+{
+  LOG_LEVEL_FILTER(nsLogMsgType::DebugMsg);
+
+  nsStringBuilder tmp;
+  BroadcastLoggingEvent(pInterface, nsLogMsgType::DebugMsg, string.GetText(tmp));
+}
+
+#endif
+
+bool nsLog::Flush(nsUInt32 uiNumNewMsgThreshold, nsTime timeIntervalThreshold, nsLogInterface* pInterface /*= GetThreadLocalLogSystem()*/)
 {
   if (pInterface == nullptr || pInterface->m_uiLoggedMsgsSinceFlush == 0) // if really nothing was logged, don't execute a flush
     return false;
 
-  if (pInterface->m_uiLoggedMsgsSinceFlush <= uiNumNewMsgThreshold && wdTime::Now() - pInterface->m_LastFlushTime < timeIntervalThreshold)
+  if (pInterface->m_uiLoggedMsgsSinceFlush <= uiNumNewMsgThreshold && nsTime::Now() - pInterface->m_LastFlushTime < timeIntervalThreshold)
     return false;
 
-  BroadcastLoggingEvent(pInterface, wdLogMsgType::Flush, nullptr);
+  BroadcastLoggingEvent(pInterface, nsLogMsgType::Flush, nullptr);
 
   pInterface->m_uiLoggedMsgsSinceFlush = 0;
-  pInterface->m_LastFlushTime = wdTime::Now();
+  pInterface->m_LastFlushTime = nsTime::Now();
 
   return true;
 }
-
-WD_STATICLINK_FILE(Foundation, Foundation_Logging_Implementation_Log);

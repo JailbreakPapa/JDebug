@@ -11,79 +11,75 @@
 #include <Foundation/Types/VariantTypeRegistry.h>
 
 ////////////////////////////////////////////////////////////////////////
-// wdReflectionSerializer public static functions
+// nsReflectionSerializer public static functions
 ////////////////////////////////////////////////////////////////////////
 
-void wdReflectionSerializer::WriteObjectToDDL(wdStreamWriter& inout_stream, const wdRTTI* pRtti, const void* pObject, bool bCompactMmode /*= true*/, wdOpenDdlWriter::TypeStringMode typeMode /*= wdOpenDdlWriter::TypeStringMode::Shortest*/)
+void nsReflectionSerializer::WriteObjectToDDL(nsStreamWriter& inout_stream, const nsRTTI* pRtti, const void* pObject, bool bCompactMmode /*= true*/, nsOpenDdlWriter::TypeStringMode typeMode /*= nsOpenDdlWriter::TypeStringMode::Shortest*/)
 {
-  wdAbstractObjectGraph graph;
-  wdRttiConverterContext context;
-  wdRttiConverterWriter conv(&graph, &context, false, true);
+  nsAbstractObjectGraph graph;
+  nsRttiConverterContext context;
+  nsRttiConverterWriter conv(&graph, &context, false, true);
 
-  wdUuid guid;
-  guid.CreateNewUuid();
-
-  context.RegisterObject(guid, pRtti, const_cast<void*>(pObject));
+  context.RegisterObject(nsUuid::MakeUuid(), pRtti, const_cast<void*>(pObject));
   conv.AddObjectToGraph(pRtti, const_cast<void*>(pObject), "root");
 
-  wdAbstractGraphDdlSerializer::Write(inout_stream, &graph, nullptr, bCompactMmode, typeMode);
+  nsAbstractGraphDdlSerializer::Write(inout_stream, &graph, nullptr, bCompactMmode, typeMode);
 }
 
-void wdReflectionSerializer::WriteObjectToDDL(wdOpenDdlWriter& ref_ddl, const wdRTTI* pRtti, const void* pObject, wdUuid guid /*= wdUuid()*/)
+void nsReflectionSerializer::WriteObjectToDDL(nsOpenDdlWriter& ref_ddl, const nsRTTI* pRtti, const void* pObject, nsUuid guid /*= nsUuid()*/)
 {
-  wdAbstractObjectGraph graph;
-  wdRttiConverterContext context;
-  wdRttiConverterWriter conv(&graph, &context, false, true);
+  nsAbstractObjectGraph graph;
+  nsRttiConverterContext context;
+  nsRttiConverterWriter conv(&graph, &context, false, true);
 
   if (!guid.IsValid())
-    guid.CreateNewUuid();
-
-  context.RegisterObject(guid, pRtti, const_cast<void*>(pObject));
-  conv.AddObjectToGraph(pRtti, const_cast<void*>(pObject), "root");
-
-  wdAbstractGraphDdlSerializer::Write(ref_ddl, &graph, nullptr);
-}
-
-void wdReflectionSerializer::WriteObjectToBinary(wdStreamWriter& inout_stream, const wdRTTI* pRtti, const void* pObject)
-{
-  wdAbstractObjectGraph graph;
-  wdRttiConverterContext context;
-  wdRttiConverterWriter conv(&graph, &context, false, true);
-
-  wdUuid guid;
-  guid.CreateNewUuid();
-
-  context.RegisterObject(guid, pRtti, const_cast<void*>(pObject));
-  conv.AddObjectToGraph(pRtti, const_cast<void*>(pObject), "root");
-
-  wdAbstractGraphBinarySerializer::Write(inout_stream, &graph);
-}
-
-void* wdReflectionSerializer::ReadObjectFromDDL(wdStreamReader& inout_stream, const wdRTTI*& ref_pRtti)
-{
-  wdOpenDdlReader reader;
-  if (reader.ParseDocument(inout_stream, 0, wdLog::GetThreadLocalLogSystem()).Failed())
   {
-    wdLog::Error("Failed to parse DDL graph");
+    guid = nsUuid::MakeUuid();
+  }
+
+  context.RegisterObject(guid, pRtti, const_cast<void*>(pObject));
+  conv.AddObjectToGraph(pRtti, const_cast<void*>(pObject), "root");
+
+  nsAbstractGraphDdlSerializer::Write(ref_ddl, &graph, nullptr);
+}
+
+void nsReflectionSerializer::WriteObjectToBinary(nsStreamWriter& inout_stream, const nsRTTI* pRtti, const void* pObject)
+{
+  nsAbstractObjectGraph graph;
+  nsRttiConverterContext context;
+  nsRttiConverterWriter conv(&graph, &context, false, true);
+
+  context.RegisterObject(nsUuid::MakeUuid(), pRtti, const_cast<void*>(pObject));
+  conv.AddObjectToGraph(pRtti, const_cast<void*>(pObject), "root");
+
+  nsAbstractGraphBinarySerializer::Write(inout_stream, &graph);
+}
+
+void* nsReflectionSerializer::ReadObjectFromDDL(nsStreamReader& inout_stream, const nsRTTI*& ref_pRtti)
+{
+  nsOpenDdlReader reader;
+  if (reader.ParseDocument(inout_stream, 0, nsLog::GetThreadLocalLogSystem()).Failed())
+  {
+    nsLog::Error("Failed to parse DDL graph");
     return nullptr;
   }
 
   return ReadObjectFromDDL(reader.GetRootElement(), ref_pRtti);
 }
 
-void* wdReflectionSerializer::ReadObjectFromDDL(const wdOpenDdlReaderElement* pRootElement, const wdRTTI*& ref_pRtti)
+void* nsReflectionSerializer::ReadObjectFromDDL(const nsOpenDdlReaderElement* pRootElement, const nsRTTI*& ref_pRtti)
 {
-  wdAbstractObjectGraph graph;
-  wdRttiConverterContext context;
+  nsAbstractObjectGraph graph;
+  nsRttiConverterContext context;
 
-  wdAbstractGraphDdlSerializer::Read(pRootElement, &graph).IgnoreResult();
+  nsAbstractGraphDdlSerializer::Read(pRootElement, &graph).IgnoreResult();
 
-  wdRttiConverterReader convRead(&graph, &context);
+  nsRttiConverterReader convRead(&graph, &context);
   auto* pRootNode = graph.GetNodeByName("root");
 
-  WD_ASSERT_DEV(pRootNode != nullptr, "invalid document");
+  NS_ASSERT_DEV(pRootNode != nullptr, "invalid document");
 
-  ref_pRtti = wdRTTI::FindTypeByName(pRootNode->GetType());
+  ref_pRtti = nsRTTI::FindTypeByName(pRootNode->GetType());
 
   void* pTarget = context.CreateObject(pRootNode->GetGuid(), ref_pRtti);
 
@@ -92,19 +88,19 @@ void* wdReflectionSerializer::ReadObjectFromDDL(const wdOpenDdlReaderElement* pR
   return pTarget;
 }
 
-void* wdReflectionSerializer::ReadObjectFromBinary(wdStreamReader& inout_stream, const wdRTTI*& ref_pRtti)
+void* nsReflectionSerializer::ReadObjectFromBinary(nsStreamReader& inout_stream, const nsRTTI*& ref_pRtti)
 {
-  wdAbstractObjectGraph graph;
-  wdRttiConverterContext context;
+  nsAbstractObjectGraph graph;
+  nsRttiConverterContext context;
 
-  wdAbstractGraphBinarySerializer::Read(inout_stream, &graph);
+  nsAbstractGraphBinarySerializer::Read(inout_stream, &graph);
 
-  wdRttiConverterReader convRead(&graph, &context);
+  nsRttiConverterReader convRead(&graph, &context);
   auto* pRootNode = graph.GetNodeByName("root");
 
-  WD_ASSERT_DEV(pRootNode != nullptr, "invalid document");
+  NS_ASSERT_DEV(pRootNode != nullptr, "invalid document");
 
-  ref_pRtti = wdRTTI::FindTypeByName(pRootNode->GetType());
+  ref_pRtti = nsRTTI::FindTypeByName(pRootNode->GetType());
 
   void* pTarget = context.CreateObject(pRootNode->GetGuid(), ref_pRtti);
 
@@ -113,17 +109,17 @@ void* wdReflectionSerializer::ReadObjectFromBinary(wdStreamReader& inout_stream,
   return pTarget;
 }
 
-void wdReflectionSerializer::ReadObjectPropertiesFromDDL(wdStreamReader& inout_stream, const wdRTTI& rtti, void* pObject)
+void nsReflectionSerializer::ReadObjectPropertiesFromDDL(nsStreamReader& inout_stream, const nsRTTI& rtti, void* pObject)
 {
-  wdAbstractObjectGraph graph;
-  wdRttiConverterContext context;
+  nsAbstractObjectGraph graph;
+  nsRttiConverterContext context;
 
-  wdAbstractGraphDdlSerializer::Read(inout_stream, &graph).IgnoreResult();
+  nsAbstractGraphDdlSerializer::Read(inout_stream, &graph).IgnoreResult();
 
-  wdRttiConverterReader convRead(&graph, &context);
+  nsRttiConverterReader convRead(&graph, &context);
   auto* pRootNode = graph.GetNodeByName("root");
 
-  WD_ASSERT_DEV(pRootNode != nullptr, "invalid document");
+  NS_ASSERT_DEV(pRootNode != nullptr, "invalid document");
 
   if (pRootNode == nullptr)
     return;
@@ -131,17 +127,17 @@ void wdReflectionSerializer::ReadObjectPropertiesFromDDL(wdStreamReader& inout_s
   convRead.ApplyPropertiesToObject(pRootNode, &rtti, pObject);
 }
 
-void wdReflectionSerializer::ReadObjectPropertiesFromBinary(wdStreamReader& inout_stream, const wdRTTI& rtti, void* pObject)
+void nsReflectionSerializer::ReadObjectPropertiesFromBinary(nsStreamReader& inout_stream, const nsRTTI& rtti, void* pObject)
 {
-  wdAbstractObjectGraph graph;
-  wdRttiConverterContext context;
+  nsAbstractObjectGraph graph;
+  nsRttiConverterContext context;
 
-  wdAbstractGraphBinarySerializer::Read(inout_stream, &graph);
+  nsAbstractGraphBinarySerializer::Read(inout_stream, &graph);
 
-  wdRttiConverterReader convRead(&graph, &context);
+  nsRttiConverterReader convRead(&graph, &context);
   auto* pRootNode = graph.GetNodeByName("root");
 
-  WD_ASSERT_DEV(pRootNode != nullptr, "invalid document");
+  NS_ASSERT_DEV(pRootNode != nullptr, "invalid document");
 
   convRead.ApplyPropertiesToObject(pRootNode, &rtti, pObject);
 }
@@ -149,53 +145,53 @@ void wdReflectionSerializer::ReadObjectPropertiesFromBinary(wdStreamReader& inou
 
 namespace
 {
-  static void CloneProperty(const void* pObject, void* pClone, wdAbstractProperty* pProp)
+  static void CloneProperty(const void* pObject, void* pClone, const nsAbstractProperty* pProp)
   {
-    if (pProp->GetFlags().IsSet(wdPropertyFlags::ReadOnly))
+    if (pProp->GetFlags().IsSet(nsPropertyFlags::ReadOnly))
       return;
 
-    const wdRTTI* pPropType = pProp->GetSpecificType();
+    const nsRTTI* pPropType = pProp->GetSpecificType();
 
-    const bool bIsValueType = wdReflectionUtils::IsValueType(pProp);
+    const bool bIsValueType = nsReflectionUtils::IsValueType(pProp);
 
-    wdVariant vTemp;
+    nsVariant vTemp;
     switch (pProp->GetCategory())
     {
-      case wdPropertyCategory::Member:
+      case nsPropertyCategory::Member:
       {
-        wdAbstractMemberProperty* pSpecific = static_cast<wdAbstractMemberProperty*>(pProp);
+        auto pSpecific = static_cast<const nsAbstractMemberProperty*>(pProp);
 
-        if (pProp->GetFlags().IsSet(wdPropertyFlags::Pointer))
+        if (pProp->GetFlags().IsSet(nsPropertyFlags::Pointer))
         {
-          vTemp = wdReflectionUtils::GetMemberPropertyValue(pSpecific, pObject);
+          vTemp = nsReflectionUtils::GetMemberPropertyValue(pSpecific, pObject);
 
           void* pRefrencedObject = vTemp.ConvertTo<void*>();
-          if (pProp->GetFlags().IsSet(wdPropertyFlags::PointerOwner) && pRefrencedObject)
+          if (pProp->GetFlags().IsSet(nsPropertyFlags::PointerOwner) && pRefrencedObject)
           {
-            pRefrencedObject = wdReflectionSerializer::Clone(pRefrencedObject, pPropType);
-            vTemp = wdVariant(pRefrencedObject, pPropType);
+            pRefrencedObject = nsReflectionSerializer::Clone(pRefrencedObject, pPropType);
+            vTemp = nsVariant(pRefrencedObject, pPropType);
           }
 
-          wdVariant vOldValue = wdReflectionUtils::GetMemberPropertyValue(pSpecific, pClone);
-          wdReflectionUtils::SetMemberPropertyValue(pSpecific, pClone, vTemp);
-          if (pProp->GetFlags().IsSet(wdPropertyFlags::PointerOwner))
-            wdReflectionUtils::DeleteObject(vOldValue.ConvertTo<void*>(), pProp);
+          nsVariant vOldValue = nsReflectionUtils::GetMemberPropertyValue(pSpecific, pClone);
+          nsReflectionUtils::SetMemberPropertyValue(pSpecific, pClone, vTemp);
+          if (pProp->GetFlags().IsSet(nsPropertyFlags::PointerOwner))
+            nsReflectionUtils::DeleteObject(vOldValue.ConvertTo<void*>(), pProp);
         }
         else
         {
-          if (bIsValueType || pProp->GetFlags().IsAnySet(wdPropertyFlags::IsEnum | wdPropertyFlags::Bitflags))
+          if (bIsValueType || pProp->GetFlags().IsAnySet(nsPropertyFlags::IsEnum | nsPropertyFlags::Bitflags))
           {
-            vTemp = wdReflectionUtils::GetMemberPropertyValue(pSpecific, pObject);
-            wdReflectionUtils::SetMemberPropertyValue(pSpecific, pClone, vTemp);
+            vTemp = nsReflectionUtils::GetMemberPropertyValue(pSpecific, pObject);
+            nsReflectionUtils::SetMemberPropertyValue(pSpecific, pClone, vTemp);
           }
-          else if (pProp->GetFlags().IsSet(wdPropertyFlags::Class))
+          else if (pProp->GetFlags().IsSet(nsPropertyFlags::Class))
           {
             void* pSubObject = pSpecific->GetPropertyPointer(pObject);
             // Do we have direct access to the property?
             if (pSubObject != nullptr)
             {
               void* pSubClone = pSpecific->GetPropertyPointer(pClone);
-              wdReflectionSerializer::Clone(pSubObject, pSubClone, pPropType);
+              nsReflectionSerializer::Clone(pSubObject, pSubClone, pPropType);
             }
             // If the property is behind an accessor, we need to retrieve it first.
             else if (pPropType->GetAllocator()->CanAllocate())
@@ -209,54 +205,54 @@ namespace
         }
       }
       break;
-      case wdPropertyCategory::Array:
+      case nsPropertyCategory::Array:
       {
-        wdAbstractArrayProperty* pSpecific = static_cast<wdAbstractArrayProperty*>(pProp);
+        auto pSpecific = static_cast<const nsAbstractArrayProperty*>(pProp);
         // Delete old values
-        if (pProp->GetFlags().AreAllSet(wdPropertyFlags::Pointer | wdPropertyFlags::PointerOwner))
+        if (pProp->GetFlags().AreAllSet(nsPropertyFlags::Pointer | nsPropertyFlags::PointerOwner))
         {
-          const wdInt32 iCloneCount = (wdInt32)pSpecific->GetCount(pClone);
-          for (wdInt32 i = iCloneCount - 1; i >= 0; --i)
+          const nsInt32 iCloneCount = (nsInt32)pSpecific->GetCount(pClone);
+          for (nsInt32 i = iCloneCount - 1; i >= 0; --i)
           {
             void* pOldSubClone = nullptr;
             pSpecific->GetValue(pClone, i, &pOldSubClone);
             pSpecific->Remove(pClone, i);
             if (pOldSubClone)
-              wdReflectionUtils::DeleteObject(pOldSubClone, pProp);
+              nsReflectionUtils::DeleteObject(pOldSubClone, pProp);
           }
         }
 
-        const wdUInt32 uiCount = pSpecific->GetCount(pObject);
+        const nsUInt32 uiCount = pSpecific->GetCount(pObject);
         pSpecific->SetCount(pClone, uiCount);
-        if (pSpecific->GetFlags().IsSet(wdPropertyFlags::Pointer))
+        if (pSpecific->GetFlags().IsSet(nsPropertyFlags::Pointer))
         {
-          for (wdUInt32 i = 0; i < uiCount; ++i)
+          for (nsUInt32 i = 0; i < uiCount; ++i)
           {
-            vTemp = wdReflectionUtils::GetArrayPropertyValue(pSpecific, pObject, i);
+            vTemp = nsReflectionUtils::GetArrayPropertyValue(pSpecific, pObject, i);
             void* pRefrencedObject = vTemp.ConvertTo<void*>();
-            if (pProp->GetFlags().IsSet(wdPropertyFlags::PointerOwner) && pRefrencedObject)
+            if (pProp->GetFlags().IsSet(nsPropertyFlags::PointerOwner) && pRefrencedObject)
             {
-              pRefrencedObject = wdReflectionSerializer::Clone(pRefrencedObject, pPropType);
-              vTemp = wdVariant(pRefrencedObject, pPropType);
+              pRefrencedObject = nsReflectionSerializer::Clone(pRefrencedObject, pPropType);
+              vTemp = nsVariant(pRefrencedObject, pPropType);
             }
-            wdReflectionUtils::SetArrayPropertyValue(pSpecific, pClone, i, vTemp);
+            nsReflectionUtils::SetArrayPropertyValue(pSpecific, pClone, i, vTemp);
           }
         }
         else
         {
           if (bIsValueType)
           {
-            for (wdUInt32 i = 0; i < uiCount; ++i)
+            for (nsUInt32 i = 0; i < uiCount; ++i)
             {
-              vTemp = wdReflectionUtils::GetArrayPropertyValue(pSpecific, pObject, i);
-              wdReflectionUtils::SetArrayPropertyValue(pSpecific, pClone, i, vTemp);
+              vTemp = nsReflectionUtils::GetArrayPropertyValue(pSpecific, pObject, i);
+              nsReflectionUtils::SetArrayPropertyValue(pSpecific, pClone, i, vTemp);
             }
           }
-          else if (pProp->GetFlags().IsSet(wdPropertyFlags::Class) && pPropType->GetAllocator()->CanAllocate())
+          else if (pProp->GetFlags().IsSet(nsPropertyFlags::Class) && pPropType->GetAllocator()->CanAllocate())
           {
             void* pSubObject = pPropType->GetAllocator()->Allocate<void>();
 
-            for (wdUInt32 i = 0; i < uiCount; ++i)
+            for (nsUInt32 i = 0; i < uiCount; ++i)
             {
               pSpecific->GetValue(pObject, i, pSubObject);
               pSpecific->SetValue(pClone, i, pSubObject);
@@ -267,89 +263,89 @@ namespace
         }
       }
       break;
-      case wdPropertyCategory::Set:
+      case nsPropertyCategory::Set:
       {
-        wdAbstractSetProperty* pSpecific = static_cast<wdAbstractSetProperty*>(pProp);
+        auto pSpecific = static_cast<const nsAbstractSetProperty*>(pProp);
 
         // Delete old values
-        if (pProp->GetFlags().AreAllSet(wdPropertyFlags::Pointer | wdPropertyFlags::PointerOwner))
+        if (pProp->GetFlags().AreAllSet(nsPropertyFlags::Pointer | nsPropertyFlags::PointerOwner))
         {
-          wdHybridArray<wdVariant, 16> keys;
+          nsHybridArray<nsVariant, 16> keys;
           pSpecific->GetValues(pClone, keys);
           pSpecific->Clear(pClone);
-          for (wdVariant& value : keys)
+          for (nsVariant& value : keys)
           {
             void* pOldClone = value.ConvertTo<void*>();
             if (pOldClone)
-              wdReflectionUtils::DeleteObject(pOldClone, pProp);
+              nsReflectionUtils::DeleteObject(pOldClone, pProp);
           }
         }
         pSpecific->Clear(pClone);
 
-        wdHybridArray<wdVariant, 16> values;
+        nsHybridArray<nsVariant, 16> values;
         pSpecific->GetValues(pObject, values);
 
 
-        if (pProp->GetFlags().IsSet(wdPropertyFlags::Pointer))
+        if (pProp->GetFlags().IsSet(nsPropertyFlags::Pointer))
         {
-          for (wdUInt32 i = 0; i < values.GetCount(); ++i)
+          for (nsUInt32 i = 0; i < values.GetCount(); ++i)
           {
             void* pRefrencedObject = values[i].ConvertTo<void*>();
-            if (pProp->GetFlags().IsSet(wdPropertyFlags::PointerOwner) && pRefrencedObject)
+            if (pProp->GetFlags().IsSet(nsPropertyFlags::PointerOwner) && pRefrencedObject)
             {
-              pRefrencedObject = wdReflectionSerializer::Clone(pRefrencedObject, pPropType);
+              pRefrencedObject = nsReflectionSerializer::Clone(pRefrencedObject, pPropType);
             }
-            vTemp = wdVariant(pRefrencedObject, pPropType);
-            wdReflectionUtils::InsertSetPropertyValue(pSpecific, pClone, vTemp);
+            vTemp = nsVariant(pRefrencedObject, pPropType);
+            nsReflectionUtils::InsertSetPropertyValue(pSpecific, pClone, vTemp);
           }
         }
         else if (bIsValueType)
         {
-          for (wdUInt32 i = 0; i < values.GetCount(); ++i)
+          for (nsUInt32 i = 0; i < values.GetCount(); ++i)
           {
-            wdReflectionUtils::InsertSetPropertyValue(pSpecific, pClone, values[i]);
+            nsReflectionUtils::InsertSetPropertyValue(pSpecific, pClone, values[i]);
           }
         }
       }
       break;
-      case wdPropertyCategory::Map:
+      case nsPropertyCategory::Map:
       {
-        wdAbstractMapProperty* pSpecific = static_cast<wdAbstractMapProperty*>(pProp);
+        auto pSpecific = static_cast<const nsAbstractMapProperty*>(pProp);
 
         // Delete old values
-        if (pProp->GetFlags().AreAllSet(wdPropertyFlags::Pointer | wdPropertyFlags::PointerOwner))
+        if (pProp->GetFlags().AreAllSet(nsPropertyFlags::Pointer | nsPropertyFlags::PointerOwner))
         {
-          wdHybridArray<wdString, 16> keys;
+          nsHybridArray<nsString, 16> keys;
           pSpecific->GetKeys(pClone, keys);
-          for (const wdString& sKey : keys)
+          for (const nsString& sKey : keys)
           {
-            wdVariant value = wdReflectionUtils::GetMapPropertyValue(pSpecific, pClone, sKey);
+            nsVariant value = nsReflectionUtils::GetMapPropertyValue(pSpecific, pClone, sKey);
             void* pOldClone = value.ConvertTo<void*>();
             pSpecific->Remove(pClone, sKey);
             if (pOldClone)
-              wdReflectionUtils::DeleteObject(pOldClone, pProp);
+              nsReflectionUtils::DeleteObject(pOldClone, pProp);
           }
         }
         pSpecific->Clear(pClone);
 
-        wdHybridArray<wdString, 16> keys;
+        nsHybridArray<nsString, 16> keys;
         pSpecific->GetKeys(pObject, keys);
 
-        for (wdUInt32 i = 0; i < keys.GetCount(); ++i)
+        for (nsUInt32 i = 0; i < keys.GetCount(); ++i)
         {
           if (bIsValueType ||
-              (pProp->GetFlags().IsSet(wdPropertyFlags::Pointer) && !pProp->GetFlags().IsSet(wdPropertyFlags::PointerOwner)))
+              (pProp->GetFlags().IsSet(nsPropertyFlags::Pointer) && !pProp->GetFlags().IsSet(nsPropertyFlags::PointerOwner)))
           {
-            wdVariant value = wdReflectionUtils::GetMapPropertyValue(pSpecific, pObject, keys[i]);
-            wdReflectionUtils::SetMapPropertyValue(pSpecific, pClone, keys[i], value);
+            nsVariant value = nsReflectionUtils::GetMapPropertyValue(pSpecific, pObject, keys[i]);
+            nsReflectionUtils::SetMapPropertyValue(pSpecific, pClone, keys[i], value);
           }
-          else if (pProp->GetFlags().IsSet(wdPropertyFlags::Class))
+          else if (pProp->GetFlags().IsSet(nsPropertyFlags::Class))
           {
-            if (pProp->GetFlags().IsSet(wdPropertyFlags::Pointer))
+            if (pProp->GetFlags().IsSet(nsPropertyFlags::Pointer))
             {
               void* pValue = nullptr;
               pSpecific->GetValue(pObject, keys[i], &pValue);
-              pValue = wdReflectionSerializer::Clone(pValue, pPropType);
+              pValue = nsReflectionSerializer::Clone(pValue, pPropType);
               pSpecific->Insert(pClone, keys[i], &pValue);
             }
             else
@@ -357,13 +353,13 @@ namespace
               if (pPropType->GetAllocator()->CanAllocate())
               {
                 void* pValue = pPropType->GetAllocator()->Allocate<void>();
-                WD_SCOPE_EXIT(pPropType->GetAllocator()->Deallocate(pValue););
-                WD_VERIFY(pSpecific->GetValue(pObject, keys[i], pValue), "Previously retrieved key does not exist.");
+                NS_SCOPE_EXIT(pPropType->GetAllocator()->Deallocate(pValue););
+                NS_VERIFY(pSpecific->GetValue(pObject, keys[i], pValue), "Previously retrieved key does not exist.");
                 pSpecific->Insert(pClone, keys[i], pValue);
               }
               else
               {
-                wdLog::Error("The property '{0}' can not be cloned as the type '{1}' cannot be allocated.", pProp->GetPropertyName(), pPropType->GetTypeName());
+                nsLog::Error("The property '{0}' can not be cloned as the type '{1}' cannot be allocated.", pProp->GetPropertyName(), pPropType->GetTypeName());
               }
             }
           }
@@ -375,7 +371,7 @@ namespace
     }
   }
 
-  static void CloneProperties(const void* pObject, void* pClone, const wdRTTI* pType)
+  static void CloneProperties(const void* pObject, void* pClone, const nsRTTI* pType)
   {
     if (pType->GetParentType())
       CloneProperties(pObject, pClone, pType->GetParentType());
@@ -387,36 +383,34 @@ namespace
   }
 } // namespace
 
-void* wdReflectionSerializer::Clone(const void* pObject, const wdRTTI* pType)
+void* nsReflectionSerializer::Clone(const void* pObject, const nsRTTI* pType)
 {
   if (!pObject)
     return nullptr;
 
-  WD_ASSERT_DEV(pType != nullptr, "invalid type.");
-  if (pType->IsDerivedFrom<wdReflectedClass>())
+  NS_ASSERT_DEV(pType != nullptr, "invalid type.");
+  if (pType->IsDerivedFrom<nsReflectedClass>())
   {
-    const wdReflectedClass* pRefObject = static_cast<const wdReflectedClass*>(pObject);
+    const nsReflectedClass* pRefObject = static_cast<const nsReflectedClass*>(pObject);
     pType = pRefObject->GetDynamicRTTI();
   }
 
-  WD_ASSERT_DEV(pType->GetAllocator()->CanAllocate(), "The type '{0}' can't be cloned!", pType->GetTypeName());
+  NS_ASSERT_DEV(pType->GetAllocator()->CanAllocate(), "The type '{0}' can't be cloned!", pType->GetTypeName());
   void* pClone = pType->GetAllocator()->Allocate<void>();
   CloneProperties(pObject, pClone, pType);
   return pClone;
 }
 
 
-void wdReflectionSerializer::Clone(const void* pObject, void* pClone, const wdRTTI* pType)
+void nsReflectionSerializer::Clone(const void* pObject, void* pClone, const nsRTTI* pType)
 {
-  WD_ASSERT_DEV(pObject && pClone && pType, "invalid type.");
-  if (pType->IsDerivedFrom<wdReflectedClass>())
+  NS_ASSERT_DEV(pObject && pClone && pType, "invalid type.");
+  if (pType->IsDerivedFrom<nsReflectedClass>())
   {
-    const wdReflectedClass* pRefObject = static_cast<const wdReflectedClass*>(pObject);
+    const nsReflectedClass* pRefObject = static_cast<const nsReflectedClass*>(pObject);
     pType = pRefObject->GetDynamicRTTI();
-    WD_ASSERT_DEV(pType == static_cast<wdReflectedClass*>(pClone)->GetDynamicRTTI(), "Object '{0}' and clone '{1}' have mismatching types!", pType->GetTypeName(), static_cast<wdReflectedClass*>(pClone)->GetDynamicRTTI()->GetTypeName());
+    NS_ASSERT_DEV(pType == static_cast<nsReflectedClass*>(pClone)->GetDynamicRTTI(), "Object '{0}' and clone '{1}' have mismatching types!", pType->GetTypeName(), static_cast<nsReflectedClass*>(pClone)->GetDynamicRTTI()->GetTypeName());
   }
 
   CloneProperties(pObject, pClone, pType);
 }
-
-WD_STATICLINK_FILE(Foundation, Foundation_Serialization_Implementation_ReflectionSerializer);

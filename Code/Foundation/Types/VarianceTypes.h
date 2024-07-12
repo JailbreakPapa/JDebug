@@ -4,79 +4,79 @@
 #include <Foundation/Reflection/Implementation/StaticRTTI.h>
 #include <Foundation/Types/TypeTraits.h>
 
-#define WD_DECLARE_VARIANCE_HASH_HELPER(TYPE)                        \
+#define NS_DECLARE_VARIANCE_HASH_HELPER(TYPE)                        \
   template <>                                                        \
-  struct wdHashHelper<TYPE>                                          \
+  struct nsHashHelper<TYPE>                                          \
   {                                                                  \
-    WD_ALWAYS_INLINE static wdUInt32 Hash(const TYPE& value)         \
+    NS_ALWAYS_INLINE static nsUInt32 Hash(const TYPE& value)         \
     {                                                                \
-      return wdHashingUtils::xxHash32(&value, sizeof(TYPE));         \
+      return nsHashingUtils::xxHash32(&value, sizeof(TYPE));         \
     }                                                                \
-    WD_ALWAYS_INLINE static bool Equal(const TYPE& a, const TYPE& b) \
+    NS_ALWAYS_INLINE static bool Equal(const TYPE& a, const TYPE& b) \
     {                                                                \
       return a == b;                                                 \
     }                                                                \
   };
 
-struct WD_FOUNDATION_DLL wdVarianceTypeBase
+struct NS_FOUNDATION_DLL nsVarianceTypeBase
 {
-  WD_DECLARE_POD_TYPE();
+  NS_DECLARE_POD_TYPE();
 
   float m_fVariance = 0;
 };
 
-WD_DECLARE_REFLECTABLE_TYPE(WD_FOUNDATION_DLL, wdVarianceTypeBase);
+NS_DECLARE_REFLECTABLE_TYPE(NS_FOUNDATION_DLL, nsVarianceTypeBase);
 
-struct WD_FOUNDATION_DLL wdVarianceTypeFloat : public wdVarianceTypeBase
+struct NS_FOUNDATION_DLL nsVarianceTypeFloat : public nsVarianceTypeBase
 {
-  WD_DECLARE_POD_TYPE();
-  bool operator==(const wdVarianceTypeFloat& rhs) const
+  NS_DECLARE_POD_TYPE();
+  bool operator==(const nsVarianceTypeFloat& rhs) const
   {
     return m_fVariance == rhs.m_fVariance && m_Value == rhs.m_Value;
   }
-  bool operator!=(const wdVarianceTypeFloat& rhs) const
+  bool operator!=(const nsVarianceTypeFloat& rhs) const
   {
     return !(*this == rhs);
   }
   float m_Value = 0;
 };
 
-WD_DECLARE_VARIANCE_HASH_HELPER(wdVarianceTypeFloat);
-WD_DECLARE_REFLECTABLE_TYPE(WD_FOUNDATION_DLL, wdVarianceTypeFloat);
-WD_DECLARE_CUSTOM_VARIANT_TYPE(wdVarianceTypeFloat);
+NS_DECLARE_VARIANCE_HASH_HELPER(nsVarianceTypeFloat);
+NS_DECLARE_REFLECTABLE_TYPE(NS_FOUNDATION_DLL, nsVarianceTypeFloat);
+NS_DECLARE_CUSTOM_VARIANT_TYPE(nsVarianceTypeFloat);
 
-struct WD_FOUNDATION_DLL wdVarianceTypeTime : public wdVarianceTypeBase
+struct NS_FOUNDATION_DLL nsVarianceTypeTime : public nsVarianceTypeBase
 {
-  WD_DECLARE_POD_TYPE();
-  bool operator==(const wdVarianceTypeTime& rhs) const
+  NS_DECLARE_POD_TYPE();
+  bool operator==(const nsVarianceTypeTime& rhs) const
   {
     return m_fVariance == rhs.m_fVariance && m_Value == rhs.m_Value;
   }
-  bool operator!=(const wdVarianceTypeTime& rhs) const
+  bool operator!=(const nsVarianceTypeTime& rhs) const
   {
     return !(*this == rhs);
   }
-  wdTime m_Value;
+  nsTime m_Value;
 };
 
-WD_DECLARE_VARIANCE_HASH_HELPER(wdVarianceTypeTime);
-WD_DECLARE_REFLECTABLE_TYPE(WD_FOUNDATION_DLL, wdVarianceTypeTime);
-WD_DECLARE_CUSTOM_VARIANT_TYPE(wdVarianceTypeTime);
+NS_DECLARE_VARIANCE_HASH_HELPER(nsVarianceTypeTime);
+NS_DECLARE_REFLECTABLE_TYPE(NS_FOUNDATION_DLL, nsVarianceTypeTime);
+NS_DECLARE_CUSTOM_VARIANT_TYPE(nsVarianceTypeTime);
 
-struct WD_FOUNDATION_DLL wdVarianceTypeAngle : public wdVarianceTypeBase
+struct NS_FOUNDATION_DLL nsVarianceTypeAngle : public nsVarianceTypeBase
 {
-  WD_DECLARE_POD_TYPE();
-  bool operator==(const wdVarianceTypeAngle& rhs) const
+  NS_DECLARE_POD_TYPE();
+  bool operator==(const nsVarianceTypeAngle& rhs) const
   {
     return m_fVariance == rhs.m_fVariance && m_Value == rhs.m_Value;
   }
-  bool operator!=(const wdVarianceTypeAngle& rhs) const
+  bool operator!=(const nsVarianceTypeAngle& rhs) const
   {
     return !(*this == rhs);
   }
-  wdAngle m_Value;
+  nsAngle m_Value;
 };
 
-WD_DECLARE_VARIANCE_HASH_HELPER(wdVarianceTypeAngle);
-WD_DECLARE_REFLECTABLE_TYPE(WD_FOUNDATION_DLL, wdVarianceTypeAngle);
-WD_DECLARE_CUSTOM_VARIANT_TYPE(wdVarianceTypeAngle);
+NS_DECLARE_VARIANCE_HASH_HELPER(nsVarianceTypeAngle);
+NS_DECLARE_REFLECTABLE_TYPE(NS_FOUNDATION_DLL, nsVarianceTypeAngle);
+NS_DECLARE_CUSTOM_VARIANT_TYPE(nsVarianceTypeAngle);

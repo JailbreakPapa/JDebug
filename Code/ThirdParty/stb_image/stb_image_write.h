@@ -128,7 +128,7 @@ CREDITS:
       Guillaume Chereau
       github:jry2
       github:romigrou
-      Sergio Gonzalwd
+      Sergio Gonzalns
       Jonas Karlsson
       Filip Wasil
       Thatcher Ulrich
@@ -136,7 +136,7 @@ CREDITS:
       Patrick Boettcher
       github:xeekworx
       Cap Petschulat
-      Simon Rodriguwd
+      Simon Rodriguns
       Ivan Tikhonov
       github:ignotion
       Adam Schackart
@@ -166,11 +166,11 @@ LICENSE
 #endif
 
 //////////////////////////////////////////////////////////////////////////
-// Start wdEngine edit
+// Start nsEngine edit
 // Configure the DLL Import/Export Define
 #undef STBIWDEF
 #ifdef BUILDSYSTEM_COMPILE_ENGINE_AS_DLL
-#  ifdef _WIN32
+# if defined _WIN32 || defined __PROSPERO__
 #    ifdef BUILDSYSTEM_BUILDING_STB_IMAGE_LIB
 #      define STBIWDEF __declspec(dllexport)
 #    else
@@ -182,7 +182,7 @@ LICENSE
 #else
 #  define STBIWDEF
 #endif
-// End wdEngine edit
+// End nsEngine edit
 //////////////////////////////////////////////////////////////////////////
 
 #ifndef STB_IMAGE_WRITE_STATIC  // C++ forbids static forward declarations

@@ -13,175 +13,175 @@
 #include <Foundation/Math/Vec3.h>
 #include <Foundation/Math/Vec4.h>
 
-// wdVec2Template
+// nsVec2Template
 
 template <typename Type>
-inline wdStreamWriter& operator<<(wdStreamWriter& inout_stream, const wdVec2Template<Type>& vValue)
+inline nsStreamWriter& operator<<(nsStreamWriter& inout_stream, const nsVec2Template<Type>& vValue)
 {
-  inout_stream.WriteBytes(&vValue, sizeof(wdVec2Template<Type>)).AssertSuccess();
+  inout_stream.WriteBytes(&vValue, sizeof(nsVec2Template<Type>)).AssertSuccess();
   return inout_stream;
 }
 
 template <typename Type>
-inline wdStreamReader& operator>>(wdStreamReader& inout_stream, wdVec2Template<Type>& ref_vValue)
+inline nsStreamReader& operator>>(nsStreamReader& inout_stream, nsVec2Template<Type>& ref_vValue)
 {
-  WD_VERIFY(inout_stream.ReadBytes(&ref_vValue, sizeof(wdVec2Template<Type>)) == sizeof(wdVec2Template<Type>), "End of stream reached.");
+  NS_VERIFY(inout_stream.ReadBytes(&ref_vValue, sizeof(nsVec2Template<Type>)) == sizeof(nsVec2Template<Type>), "End of stream reached.");
   return inout_stream;
 }
 
 template <typename Type>
-wdResult SerializeArray(wdStreamWriter& inout_stream, const wdVec2Template<Type>* pArray, wdUInt64 uiCount)
+nsResult SerializeArray(nsStreamWriter& inout_stream, const nsVec2Template<Type>* pArray, nsUInt64 uiCount)
 {
-  return inout_stream.WriteBytes(pArray, sizeof(wdVec2Template<Type>) * uiCount);
+  return inout_stream.WriteBytes(pArray, sizeof(nsVec2Template<Type>) * uiCount);
 }
 
 template <typename Type>
-wdResult DeserializeArray(wdStreamReader& inout_stream, wdVec2Template<Type>* pArray, wdUInt64 uiCount)
+nsResult DeserializeArray(nsStreamReader& inout_stream, nsVec2Template<Type>* pArray, nsUInt64 uiCount)
 {
-  const wdUInt64 uiNumBytes = sizeof(wdVec2Template<Type>) * uiCount;
+  const nsUInt64 uiNumBytes = sizeof(nsVec2Template<Type>) * uiCount;
   if (inout_stream.ReadBytes(pArray, uiNumBytes) == uiNumBytes)
-    return WD_SUCCESS;
+    return NS_SUCCESS;
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
 
-// wdVec3Template
+// nsVec3Template
 
 template <typename Type>
-inline wdStreamWriter& operator<<(wdStreamWriter& inout_stream, const wdVec3Template<Type>& vValue)
+inline nsStreamWriter& operator<<(nsStreamWriter& inout_stream, const nsVec3Template<Type>& vValue)
 {
-  inout_stream.WriteBytes(&vValue, sizeof(wdVec3Template<Type>)).AssertSuccess();
+  inout_stream.WriteBytes(&vValue, sizeof(nsVec3Template<Type>)).AssertSuccess();
   return inout_stream;
 }
 
 template <typename Type>
-inline wdStreamReader& operator>>(wdStreamReader& inout_stream, wdVec3Template<Type>& ref_vValue)
+inline nsStreamReader& operator>>(nsStreamReader& inout_stream, nsVec3Template<Type>& ref_vValue)
 {
-  WD_VERIFY(inout_stream.ReadBytes(&ref_vValue, sizeof(wdVec3Template<Type>)) == sizeof(wdVec3Template<Type>), "End of stream reached.");
+  NS_VERIFY(inout_stream.ReadBytes(&ref_vValue, sizeof(nsVec3Template<Type>)) == sizeof(nsVec3Template<Type>), "End of stream reached.");
   return inout_stream;
 }
 
 template <typename Type>
-wdResult SerializeArray(wdStreamWriter& inout_stream, const wdVec3Template<Type>* pArray, wdUInt64 uiCount)
+nsResult SerializeArray(nsStreamWriter& inout_stream, const nsVec3Template<Type>* pArray, nsUInt64 uiCount)
 {
-  return inout_stream.WriteBytes(pArray, sizeof(wdVec3Template<Type>) * uiCount);
+  return inout_stream.WriteBytes(pArray, sizeof(nsVec3Template<Type>) * uiCount);
 }
 
 template <typename Type>
-wdResult DeserializeArray(wdStreamReader& inout_stream, wdVec3Template<Type>* pArray, wdUInt64 uiCount)
+nsResult DeserializeArray(nsStreamReader& inout_stream, nsVec3Template<Type>* pArray, nsUInt64 uiCount)
 {
-  const wdUInt64 uiNumBytes = sizeof(wdVec3Template<Type>) * uiCount;
+  const nsUInt64 uiNumBytes = sizeof(nsVec3Template<Type>) * uiCount;
   if (inout_stream.ReadBytes(pArray, uiNumBytes) == uiNumBytes)
-    return WD_SUCCESS;
+    return NS_SUCCESS;
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
 
-// wdVec4Template
+// nsVec4Template
 
 template <typename Type>
-inline wdStreamWriter& operator<<(wdStreamWriter& inout_stream, const wdVec4Template<Type>& vValue)
+inline nsStreamWriter& operator<<(nsStreamWriter& inout_stream, const nsVec4Template<Type>& vValue)
 {
-  inout_stream.WriteBytes(&vValue, sizeof(wdVec4Template<Type>)).AssertSuccess();
+  inout_stream.WriteBytes(&vValue, sizeof(nsVec4Template<Type>)).AssertSuccess();
   return inout_stream;
 }
 
 template <typename Type>
-inline wdStreamReader& operator>>(wdStreamReader& inout_stream, wdVec4Template<Type>& ref_vValue)
+inline nsStreamReader& operator>>(nsStreamReader& inout_stream, nsVec4Template<Type>& ref_vValue)
 {
-  WD_VERIFY(inout_stream.ReadBytes(&ref_vValue, sizeof(wdVec4Template<Type>)) == sizeof(wdVec4Template<Type>), "End of stream reached.");
+  NS_VERIFY(inout_stream.ReadBytes(&ref_vValue, sizeof(nsVec4Template<Type>)) == sizeof(nsVec4Template<Type>), "End of stream reached.");
   return inout_stream;
 }
 
 template <typename Type>
-wdResult SerializeArray(wdStreamWriter& inout_stream, const wdVec4Template<Type>* pArray, wdUInt64 uiCount)
+nsResult SerializeArray(nsStreamWriter& inout_stream, const nsVec4Template<Type>* pArray, nsUInt64 uiCount)
 {
-  return inout_stream.WriteBytes(pArray, sizeof(wdVec4Template<Type>) * uiCount);
+  return inout_stream.WriteBytes(pArray, sizeof(nsVec4Template<Type>) * uiCount);
 }
 
 template <typename Type>
-wdResult DeserializeArray(wdStreamReader& inout_stream, wdVec4Template<Type>* pArray, wdUInt64 uiCount)
+nsResult DeserializeArray(nsStreamReader& inout_stream, nsVec4Template<Type>* pArray, nsUInt64 uiCount)
 {
-  const wdUInt64 uiNumBytes = sizeof(wdVec4Template<Type>) * uiCount;
+  const nsUInt64 uiNumBytes = sizeof(nsVec4Template<Type>) * uiCount;
   if (inout_stream.ReadBytes(pArray, uiNumBytes) == uiNumBytes)
-    return WD_SUCCESS;
+    return NS_SUCCESS;
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
 
-// wdMat3Template
+// nsMat3Template
 
 template <typename Type>
-inline wdStreamWriter& operator<<(wdStreamWriter& inout_stream, const wdMat3Template<Type>& mValue)
+inline nsStreamWriter& operator<<(nsStreamWriter& inout_stream, const nsMat3Template<Type>& mValue)
 {
   inout_stream.WriteBytes(mValue.m_fElementsCM, sizeof(Type) * 9).AssertSuccess();
   return inout_stream;
 }
 
 template <typename Type>
-inline wdStreamReader& operator>>(wdStreamReader& inout_stream, wdMat3Template<Type>& ref_mValue)
+inline nsStreamReader& operator>>(nsStreamReader& inout_stream, nsMat3Template<Type>& ref_mValue)
 {
-  WD_VERIFY(inout_stream.ReadBytes(ref_mValue.m_fElementsCM, sizeof(Type) * 9) == sizeof(Type) * 9, "End of stream reached.");
+  NS_VERIFY(inout_stream.ReadBytes(ref_mValue.m_fElementsCM, sizeof(Type) * 9) == sizeof(Type) * 9, "End of stream reached.");
   return inout_stream;
 }
 
 template <typename Type>
-wdResult SerializeArray(wdStreamWriter& inout_stream, const wdMat3Template<Type>* pArray, wdUInt64 uiCount)
+nsResult SerializeArray(nsStreamWriter& inout_stream, const nsMat3Template<Type>* pArray, nsUInt64 uiCount)
 {
-  return inout_stream.WriteBytes(pArray, sizeof(wdMat3Template<Type>) * uiCount);
+  return inout_stream.WriteBytes(pArray, sizeof(nsMat3Template<Type>) * uiCount);
 }
 
 template <typename Type>
-wdResult DeserializeArray(wdStreamReader& inout_stream, wdMat3Template<Type>* pArray, wdUInt64 uiCount)
+nsResult DeserializeArray(nsStreamReader& inout_stream, nsMat3Template<Type>* pArray, nsUInt64 uiCount)
 {
-  const wdUInt64 uiNumBytes = sizeof(wdMat3Template<Type>) * uiCount;
+  const nsUInt64 uiNumBytes = sizeof(nsMat3Template<Type>) * uiCount;
   if (inout_stream.ReadBytes(pArray, uiNumBytes) == uiNumBytes)
-    return WD_SUCCESS;
+    return NS_SUCCESS;
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
 
-// wdMat4Template
+// nsMat4Template
 
 template <typename Type>
-inline wdStreamWriter& operator<<(wdStreamWriter& inout_stream, const wdMat4Template<Type>& mValue)
+inline nsStreamWriter& operator<<(nsStreamWriter& inout_stream, const nsMat4Template<Type>& mValue)
 {
   inout_stream.WriteBytes(mValue.m_fElementsCM, sizeof(Type) * 16).AssertSuccess();
   return inout_stream;
 }
 
 template <typename Type>
-inline wdStreamReader& operator>>(wdStreamReader& inout_stream, wdMat4Template<Type>& ref_mValue)
+inline nsStreamReader& operator>>(nsStreamReader& inout_stream, nsMat4Template<Type>& ref_mValue)
 {
-  WD_VERIFY(inout_stream.ReadBytes(ref_mValue.m_fElementsCM, sizeof(Type) * 16) == sizeof(Type) * 16, "End of stream reached.");
+  NS_VERIFY(inout_stream.ReadBytes(ref_mValue.m_fElementsCM, sizeof(Type) * 16) == sizeof(Type) * 16, "End of stream reached.");
   return inout_stream;
 }
 
 template <typename Type>
-wdResult SerializeArray(wdStreamWriter& inout_stream, const wdMat4Template<Type>* pArray, wdUInt64 uiCount)
+nsResult SerializeArray(nsStreamWriter& inout_stream, const nsMat4Template<Type>* pArray, nsUInt64 uiCount)
 {
-  return inout_stream.WriteBytes(pArray, sizeof(wdMat4Template<Type>) * uiCount);
+  return inout_stream.WriteBytes(pArray, sizeof(nsMat4Template<Type>) * uiCount);
 }
 
 template <typename Type>
-wdResult DeserializeArray(wdStreamReader& inout_stream, wdMat4Template<Type>* pArray, wdUInt64 uiCount)
+nsResult DeserializeArray(nsStreamReader& inout_stream, nsMat4Template<Type>* pArray, nsUInt64 uiCount)
 {
-  const wdUInt64 uiNumBytes = sizeof(wdMat4Template<Type>) * uiCount;
+  const nsUInt64 uiNumBytes = sizeof(nsMat4Template<Type>) * uiCount;
   if (inout_stream.ReadBytes(pArray, uiNumBytes) == uiNumBytes)
-    return WD_SUCCESS;
+    return NS_SUCCESS;
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
 
-// wdTransformTemplate
+// nsTransformTemplate
 
 template <typename Type>
-inline wdStreamWriter& operator<<(wdStreamWriter& inout_stream, const wdTransformTemplate<Type>& value)
+inline nsStreamWriter& operator<<(nsStreamWriter& inout_stream, const nsTransformTemplate<Type>& value)
 {
   inout_stream << value.m_qRotation;
   inout_stream << value.m_vPosition;
@@ -191,7 +191,7 @@ inline wdStreamWriter& operator<<(wdStreamWriter& inout_stream, const wdTransfor
 }
 
 template <typename Type>
-inline wdStreamReader& operator>>(wdStreamReader& inout_stream, wdTransformTemplate<Type>& out_value)
+inline nsStreamReader& operator>>(nsStreamReader& inout_stream, nsTransformTemplate<Type>& out_value)
 {
   inout_stream >> out_value.m_qRotation;
   inout_stream >> out_value.m_vPosition;
@@ -200,76 +200,76 @@ inline wdStreamReader& operator>>(wdStreamReader& inout_stream, wdTransformTempl
   return inout_stream;
 }
 
-// wdPlaneTemplate
+// nsPlaneTemplate
 
 template <typename Type>
-inline wdStreamWriter& operator<<(wdStreamWriter& inout_stream, const wdPlaneTemplate<Type>& value)
+inline nsStreamWriter& operator<<(nsStreamWriter& inout_stream, const nsPlaneTemplate<Type>& value)
 {
-  inout_stream.WriteBytes(&value, sizeof(wdPlaneTemplate<Type>)).AssertSuccess();
+  inout_stream.WriteBytes(&value, sizeof(nsPlaneTemplate<Type>)).AssertSuccess();
   return inout_stream;
 }
 
 template <typename Type>
-inline wdStreamReader& operator>>(wdStreamReader& inout_stream, wdPlaneTemplate<Type>& out_value)
+inline nsStreamReader& operator>>(nsStreamReader& inout_stream, nsPlaneTemplate<Type>& out_value)
 {
-  WD_VERIFY(inout_stream.ReadBytes(&out_value, sizeof(wdPlaneTemplate<Type>)) == sizeof(wdPlaneTemplate<Type>), "End of stream reached.");
+  NS_VERIFY(inout_stream.ReadBytes(&out_value, sizeof(nsPlaneTemplate<Type>)) == sizeof(nsPlaneTemplate<Type>), "End of stream reached.");
   return inout_stream;
 }
 
 template <typename Type>
-wdResult SerializeArray(wdStreamWriter& inout_stream, const wdPlaneTemplate<Type>* pArray, wdUInt64 uiCount)
+nsResult SerializeArray(nsStreamWriter& inout_stream, const nsPlaneTemplate<Type>* pArray, nsUInt64 uiCount)
 {
-  return inout_stream.WriteBytes(pArray, sizeof(wdPlaneTemplate<Type>) * uiCount);
+  return inout_stream.WriteBytes(pArray, sizeof(nsPlaneTemplate<Type>) * uiCount);
 }
 
 template <typename Type>
-wdResult DeserializeArray(wdStreamReader& inout_stream, wdPlaneTemplate<Type>* pArray, wdUInt64 uiCount)
+nsResult DeserializeArray(nsStreamReader& inout_stream, nsPlaneTemplate<Type>* pArray, nsUInt64 uiCount)
 {
-  const wdUInt64 uiNumBytes = sizeof(wdPlaneTemplate<Type>) * uiCount;
+  const nsUInt64 uiNumBytes = sizeof(nsPlaneTemplate<Type>) * uiCount;
   if (inout_stream.ReadBytes(pArray, uiNumBytes) == uiNumBytes)
-    return WD_SUCCESS;
+    return NS_SUCCESS;
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
 
-// wdQuatTemplate
+// nsQuatTemplate
 
 template <typename Type>
-inline wdStreamWriter& operator<<(wdStreamWriter& inout_stream, const wdQuatTemplate<Type>& qValue)
+inline nsStreamWriter& operator<<(nsStreamWriter& inout_stream, const nsQuatTemplate<Type>& qValue)
 {
-  inout_stream.WriteBytes(&qValue, sizeof(wdQuatTemplate<Type>)).AssertSuccess();
+  inout_stream.WriteBytes(&qValue, sizeof(nsQuatTemplate<Type>)).AssertSuccess();
   return inout_stream;
 }
 
 template <typename Type>
-inline wdStreamReader& operator>>(wdStreamReader& inout_stream, wdQuatTemplate<Type>& ref_qValue)
+inline nsStreamReader& operator>>(nsStreamReader& inout_stream, nsQuatTemplate<Type>& ref_qValue)
 {
-  WD_VERIFY(inout_stream.ReadBytes(&ref_qValue, sizeof(wdQuatTemplate<Type>)) == sizeof(wdQuatTemplate<Type>), "End of stream reached.");
+  NS_VERIFY(inout_stream.ReadBytes(&ref_qValue, sizeof(nsQuatTemplate<Type>)) == sizeof(nsQuatTemplate<Type>), "End of stream reached.");
   return inout_stream;
 }
 
 template <typename Type>
-wdResult SerializeArray(wdStreamWriter& inout_stream, const wdQuatTemplate<Type>* pArray, wdUInt64 uiCount)
+nsResult SerializeArray(nsStreamWriter& inout_stream, const nsQuatTemplate<Type>* pArray, nsUInt64 uiCount)
 {
-  return inout_stream.WriteBytes(pArray, sizeof(wdQuatTemplate<Type>) * uiCount);
+  return inout_stream.WriteBytes(pArray, sizeof(nsQuatTemplate<Type>) * uiCount);
 }
 
 template <typename Type>
-wdResult DeserializeArray(wdStreamReader& inout_stream, wdQuatTemplate<Type>* pArray, wdUInt64 uiCount)
+nsResult DeserializeArray(nsStreamReader& inout_stream, nsQuatTemplate<Type>* pArray, nsUInt64 uiCount)
 {
-  const wdUInt64 uiNumBytes = sizeof(wdQuatTemplate<Type>) * uiCount;
+  const nsUInt64 uiNumBytes = sizeof(nsQuatTemplate<Type>) * uiCount;
   if (inout_stream.ReadBytes(pArray, uiNumBytes) == uiNumBytes)
-    return WD_SUCCESS;
+    return NS_SUCCESS;
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
 
-// wdBoundingBoxTemplate
+// nsBoundingBoxTemplate
 
 template <typename Type>
-inline wdStreamWriter& operator<<(wdStreamWriter& inout_stream, const wdBoundingBoxTemplate<Type>& value)
+inline nsStreamWriter& operator<<(nsStreamWriter& inout_stream, const nsBoundingBoxTemplate<Type>& value)
 {
   inout_stream << value.m_vMax;
   inout_stream << value.m_vMin;
@@ -277,17 +277,17 @@ inline wdStreamWriter& operator<<(wdStreamWriter& inout_stream, const wdBounding
 }
 
 template <typename Type>
-inline wdStreamReader& operator>>(wdStreamReader& inout_stream, wdBoundingBoxTemplate<Type>& out_value)
+inline nsStreamReader& operator>>(nsStreamReader& inout_stream, nsBoundingBoxTemplate<Type>& out_value)
 {
   inout_stream >> out_value.m_vMax;
   inout_stream >> out_value.m_vMin;
   return inout_stream;
 }
 
-// wdBoundingSphereTemplate
+// nsBoundingSphereTemplate
 
 template <typename Type>
-inline wdStreamWriter& operator<<(wdStreamWriter& inout_stream, const wdBoundingSphereTemplate<Type>& value)
+inline nsStreamWriter& operator<<(nsStreamWriter& inout_stream, const nsBoundingSphereTemplate<Type>& value)
 {
   inout_stream << value.m_vCenter;
   inout_stream << value.m_fRadius;
@@ -295,17 +295,17 @@ inline wdStreamWriter& operator<<(wdStreamWriter& inout_stream, const wdBounding
 }
 
 template <typename Type>
-inline wdStreamReader& operator>>(wdStreamReader& inout_stream, wdBoundingSphereTemplate<Type>& out_value)
+inline nsStreamReader& operator>>(nsStreamReader& inout_stream, nsBoundingSphereTemplate<Type>& out_value)
 {
   inout_stream >> out_value.m_vCenter;
   inout_stream >> out_value.m_fRadius;
   return inout_stream;
 }
 
-// wdBoundingBoxSphereTemplate
+// nsBoundingBoxSphereTemplate
 
 template <typename Type>
-inline wdStreamWriter& operator<<(wdStreamWriter& inout_stream, const wdBoundingBoxSphereTemplate<Type>& value)
+inline nsStreamWriter& operator<<(nsStreamWriter& inout_stream, const nsBoundingBoxSphereTemplate<Type>& value)
 {
   inout_stream << value.m_vCenter;
   inout_stream << value.m_fSphereRadius;
@@ -314,7 +314,7 @@ inline wdStreamWriter& operator<<(wdStreamWriter& inout_stream, const wdBounding
 }
 
 template <typename Type>
-inline wdStreamReader& operator>>(wdStreamReader& inout_stream, wdBoundingBoxSphereTemplate<Type>& out_value)
+inline nsStreamReader& operator>>(nsStreamReader& inout_stream, nsBoundingBoxSphereTemplate<Type>& out_value)
 {
   inout_stream >> out_value.m_vCenter;
   inout_stream >> out_value.m_fSphereRadius;
@@ -322,73 +322,73 @@ inline wdStreamReader& operator>>(wdStreamReader& inout_stream, wdBoundingBoxSph
   return inout_stream;
 }
 
-// wdColor
-inline wdStreamWriter& operator<<(wdStreamWriter& inout_stream, const wdColor& value)
+// nsColor
+inline nsStreamWriter& operator<<(nsStreamWriter& inout_stream, const nsColor& value)
 {
-  inout_stream.WriteBytes(&value, sizeof(wdColor)).AssertSuccess();
+  inout_stream.WriteBytes(&value, sizeof(nsColor)).AssertSuccess();
   return inout_stream;
 }
 
-inline wdStreamReader& operator>>(wdStreamReader& inout_stream, wdColor& ref_value)
+inline nsStreamReader& operator>>(nsStreamReader& inout_stream, nsColor& ref_value)
 {
-  WD_VERIFY(inout_stream.ReadBytes(&ref_value, sizeof(wdColor)) == sizeof(wdColor), "End of stream reached.");
+  NS_VERIFY(inout_stream.ReadBytes(&ref_value, sizeof(nsColor)) == sizeof(nsColor), "End of stream reached.");
   return inout_stream;
 }
 
-inline wdResult SerializeArray(wdStreamWriter& inout_stream, const wdColor* pArray, wdUInt64 uiCount)
+inline nsResult SerializeArray(nsStreamWriter& inout_stream, const nsColor* pArray, nsUInt64 uiCount)
 {
-  return inout_stream.WriteBytes(pArray, sizeof(wdColor) * uiCount);
+  return inout_stream.WriteBytes(pArray, sizeof(nsColor) * uiCount);
 }
 
 template <typename Type>
-wdResult DeserializeArray(wdStreamReader& inout_stream, wdColor* pArray, wdUInt64 uiCount)
+nsResult DeserializeArray(nsStreamReader& inout_stream, nsColor* pArray, nsUInt64 uiCount)
 {
-  const wdUInt64 uiNumBytes = sizeof(wdColor) * uiCount;
+  const nsUInt64 uiNumBytes = sizeof(nsColor) * uiCount;
   if (inout_stream.ReadBytes(pArray, uiNumBytes) == uiNumBytes)
-    return WD_SUCCESS;
+    return NS_SUCCESS;
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
 
-// wdColorGammaUB
-inline wdStreamWriter& operator<<(wdStreamWriter& inout_stream, const wdColorGammaUB& value)
+// nsColorGammaUB
+inline nsStreamWriter& operator<<(nsStreamWriter& inout_stream, const nsColorGammaUB& value)
 {
-  inout_stream.WriteBytes(&value, sizeof(wdColorGammaUB)).AssertSuccess();
+  inout_stream.WriteBytes(&value, sizeof(nsColorGammaUB)).AssertSuccess();
   return inout_stream;
 }
 
-inline wdStreamReader& operator>>(wdStreamReader& inout_stream, wdColorGammaUB& ref_value)
+inline nsStreamReader& operator>>(nsStreamReader& inout_stream, nsColorGammaUB& ref_value)
 {
-  WD_VERIFY(inout_stream.ReadBytes(&ref_value, sizeof(wdColorGammaUB)) == sizeof(wdColorGammaUB), "End of stream reached.");
+  NS_VERIFY(inout_stream.ReadBytes(&ref_value, sizeof(nsColorGammaUB)) == sizeof(nsColorGammaUB), "End of stream reached.");
   return inout_stream;
 }
 
 template <typename Type>
-wdResult SerializeArray(wdStreamWriter& inout_stream, const wdColorGammaUB* pArray, wdUInt64 uiCount)
+nsResult SerializeArray(nsStreamWriter& inout_stream, const nsColorGammaUB* pArray, nsUInt64 uiCount)
 {
-  return inout_stream.WriteBytes(pArray, sizeof(wdColorGammaUB) * uiCount);
+  return inout_stream.WriteBytes(pArray, sizeof(nsColorGammaUB) * uiCount);
 }
 
 template <typename Type>
-wdResult DeserializeArray(wdStreamReader& inout_stream, wdColorGammaUB* pArray, wdUInt64 uiCount)
+nsResult DeserializeArray(nsStreamReader& inout_stream, nsColorGammaUB* pArray, nsUInt64 uiCount)
 {
-  const wdUInt64 uiNumBytes = sizeof(wdColorGammaUB) * uiCount;
+  const nsUInt64 uiNumBytes = sizeof(nsColorGammaUB) * uiCount;
   if (inout_stream.ReadBytes(pArray, uiNumBytes) == uiNumBytes)
-    return WD_SUCCESS;
+    return NS_SUCCESS;
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
 
-// wdAngle
-inline wdStreamWriter& operator<<(wdStreamWriter& inout_stream, const wdAngle& value)
+// nsAngle
+inline nsStreamWriter& operator<<(nsStreamWriter& inout_stream, const nsAngle& value)
 {
   inout_stream << value.GetRadian();
   return inout_stream;
 }
 
-inline wdStreamReader& operator>>(wdStreamReader& inout_stream, wdAngle& out_value)
+inline nsStreamReader& operator>>(nsStreamReader& inout_stream, nsAngle& out_value)
 {
   float fRadian;
   inout_stream >> fRadian;
@@ -397,47 +397,47 @@ inline wdStreamReader& operator>>(wdStreamReader& inout_stream, wdAngle& out_val
 }
 
 template <typename Type>
-wdResult SerializeArray(wdStreamWriter& inout_stream, const wdAngle* pArray, wdUInt64 uiCount)
+nsResult SerializeArray(nsStreamWriter& inout_stream, const nsAngle* pArray, nsUInt64 uiCount)
 {
-  return inout_stream.WriteBytes(pArray, sizeof(wdAngle) * uiCount);
+  return inout_stream.WriteBytes(pArray, sizeof(nsAngle) * uiCount);
 }
 
 template <typename Type>
-wdResult DeserializeArray(wdStreamReader& inout_stream, wdAngle* pArray, wdUInt64 uiCount)
+nsResult DeserializeArray(nsStreamReader& inout_stream, nsAngle* pArray, nsUInt64 uiCount)
 {
-  const wdUInt64 uiNumBytes = sizeof(wdAngle) * uiCount;
+  const nsUInt64 uiNumBytes = sizeof(nsAngle) * uiCount;
   if (inout_stream.ReadBytes(pArray, uiNumBytes) == uiNumBytes)
-    return WD_SUCCESS;
+    return NS_SUCCESS;
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
 
-// wdColor8Unorm
-inline wdStreamWriter& operator<<(wdStreamWriter& inout_stream, const wdColorLinearUB& value)
+// nsColor8Unorm
+inline nsStreamWriter& operator<<(nsStreamWriter& inout_stream, const nsColorLinearUB& value)
 {
-  inout_stream.WriteBytes(&value, sizeof(wdColorLinearUB)).AssertSuccess();
+  inout_stream.WriteBytes(&value, sizeof(nsColorLinearUB)).AssertSuccess();
   return inout_stream;
 }
 
-inline wdStreamReader& operator>>(wdStreamReader& inout_stream, wdColorLinearUB& ref_value)
+inline nsStreamReader& operator>>(nsStreamReader& inout_stream, nsColorLinearUB& ref_value)
 {
-  WD_VERIFY(inout_stream.ReadBytes(&ref_value, sizeof(wdColorLinearUB)) == sizeof(wdColorLinearUB), "End of stream reached.");
+  NS_VERIFY(inout_stream.ReadBytes(&ref_value, sizeof(nsColorLinearUB)) == sizeof(nsColorLinearUB), "End of stream reached.");
   return inout_stream;
 }
 
 template <typename Type>
-wdResult SerializeArray(wdStreamWriter& inout_stream, const wdColorLinearUB* pArray, wdUInt64 uiCount)
+nsResult SerializeArray(nsStreamWriter& inout_stream, const nsColorLinearUB* pArray, nsUInt64 uiCount)
 {
-  return inout_stream.WriteBytes(pArray, sizeof(wdColorLinearUB) * uiCount);
+  return inout_stream.WriteBytes(pArray, sizeof(nsColorLinearUB) * uiCount);
 }
 
 template <typename Type>
-wdResult DeserializeArray(wdStreamReader& inout_stream, wdColorLinearUB* pArray, wdUInt64 uiCount)
+nsResult DeserializeArray(nsStreamReader& inout_stream, nsColorLinearUB* pArray, nsUInt64 uiCount)
 {
-  const wdUInt64 uiNumBytes = sizeof(wdColorLinearUB) * uiCount;
+  const nsUInt64 uiNumBytes = sizeof(nsColorLinearUB) * uiCount;
   if (inout_stream.ReadBytes(pArray, uiNumBytes) == uiNumBytes)
-    return WD_SUCCESS;
+    return NS_SUCCESS;
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }

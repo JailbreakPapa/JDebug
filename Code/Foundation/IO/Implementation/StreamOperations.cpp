@@ -6,37 +6,33 @@
 #include <Foundation/Types/Enum.h>
 
 // C-style strings
-// No read equivalent for C-style strings (but can be read as wdString & wdStringBuilder instances)
+// No read equivalent for C-style strings (but can be read as nsString & nsStringBuilder instances)
 
-wdStreamWriter& operator<<(wdStreamWriter& inout_stream, const char* szValue)
+nsStreamWriter& operator<<(nsStreamWriter& inout_stream, const char* szValue)
 {
-  wdStringView szView(szValue);
+  nsStringView szView(szValue);
   inout_stream.WriteString(szView).AssertSuccess();
 
   return inout_stream;
 }
 
-wdStreamWriter& operator<<(wdStreamWriter& inout_stream, wdStringView sValue)
+nsStreamWriter& operator<<(nsStreamWriter& inout_stream, nsStringView sValue)
 {
   inout_stream.WriteString(sValue).AssertSuccess();
 
   return inout_stream;
 }
 
-// wdStringBuilder
+// nsStringBuilder
 
-wdStreamWriter& operator<<(wdStreamWriter& inout_stream, const wdStringBuilder& sValue)
+nsStreamWriter& operator<<(nsStreamWriter& inout_stream, const nsStringBuilder& sValue)
 {
   inout_stream.WriteString(sValue.GetView()).AssertSuccess();
   return inout_stream;
 }
 
-wdStreamReader& operator>>(wdStreamReader& inout_stream, wdStringBuilder& out_sValue)
+nsStreamReader& operator>>(nsStreamReader& inout_stream, nsStringBuilder& out_sValue)
 {
   inout_stream.ReadString(out_sValue).AssertSuccess();
   return inout_stream;
 }
-
-
-
-WD_STATICLINK_FILE(Foundation, Foundation_IO_Implementation_StreamOperations);

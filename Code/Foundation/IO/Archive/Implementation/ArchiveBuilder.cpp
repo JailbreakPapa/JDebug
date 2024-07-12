@@ -8,18 +8,18 @@
 #include <Foundation/Logging/Log.h>
 #include <Foundation/Time/Stopwatch.h>
 
-void wdArchiveBuilder::AddFolder(wdStringView sAbsFolderPath, wdArchiveCompressionMode defaultMode /*= wdArchiveCompressionMode::Uncompressed*/, InclusionCallback callback /*= InclusionCallback()*/)
+void nsArchiveBuilder::AddFolder(nsStringView sAbsFolderPath, nsArchiveCompressionMode defaultMode /*= nsArchiveCompressionMode::Uncompressed*/, InclusionCallback callback /*= InclusionCallback()*/)
 {
-#if WD_ENABLED(WD_SUPPORTS_FILE_ITERATORS)
-  wdFileSystemIterator fileIt;
+#if NS_ENABLED(NS_SUPPORTS_FILE_ITERATORS)
+  nsFileSystemIterator fileIt;
 
-  wdStringBuilder sBasePath = sAbsFolderPath;
+  nsStringBuilder sBasePath = sAbsFolderPath;
   sBasePath.MakeCleanPath();
 
-  wdStringBuilder fullPath;
-  wdStringBuilder relPath;
+  nsStringBuilder fullPath;
+  nsStringBuilder relPath;
 
-  for (fileIt.StartSearch(sBasePath, wdFileSystemIteratorFlags::ReportFilesRecursive); fileIt.IsValid(); fileIt.Next())
+  for (fileIt.StartSearch(sBasePath, nsFileSystemIteratorFlags::ReportFilesRecursive); fileIt.IsValid(); fileIt.Next())
   {
     const auto& stat = fileIt.GetStats();
 
@@ -28,8 +28,8 @@ void wdArchiveBuilder::AddFolder(wdStringView sAbsFolderPath, wdArchiveCompressi
 
     if (relPath.MakeRelativeTo(sBasePath).Succeeded())
     {
-      wdArchiveCompressionMode compression = defaultMode;
-      wdInt32 iCompressionLevel = 0;
+      nsArchiveCompressionMode compression = defaultMode;
+      nsInt32 iCompressionLevel = 0;
 
       if (callback.IsValid())
       {
@@ -39,29 +39,31 @@ void wdArchiveBuilder::AddFolder(wdStringView sAbsFolderPath, wdArchiveCompressi
             continue;
 
           case InclusionMode::Uncompressed:
-            compression = wdArchiveCompressionMode::Uncompressed;
+            compression = nsArchiveCompressionMode::Uncompressed;
             break;
 
+#  ifdef BUILDSYSTEM_ENABLE_ZSTD_SUPPORT
           case InclusionMode::Compress_zstd_fastest:
-            compression = wdArchiveCompressionMode::Compressed_zstd;
-            iCompressionLevel = wdCompressedStreamWriterZstd::Compression::Fastest;
+            compression = nsArchiveCompressionMode::Compressed_zstd;
+            iCompressionLevel = static_cast<nsInt32>(nsCompressedStreamWriterZstd::Compression::Fastest);
             break;
           case InclusionMode::Compress_zstd_fast:
-            compression = wdArchiveCompressionMode::Compressed_zstd;
-            iCompressionLevel = wdCompressedStreamWriterZstd::Compression::Fast;
+            compression = nsArchiveCompressionMode::Compressed_zstd;
+            iCompressionLevel = static_cast<nsInt32>(nsCompressedStreamWriterZstd::Compression::Fast);
             break;
           case InclusionMode::Compress_zstd_average:
-            compression = wdArchiveCompressionMode::Compressed_zstd;
-            iCompressionLevel = wdCompressedStreamWriterZstd::Compression::Average;
+            compression = nsArchiveCompressionMode::Compressed_zstd;
+            iCompressionLevel = static_cast<nsInt32>(nsCompressedStreamWriterZstd::Compression::Average);
             break;
           case InclusionMode::Compress_zstd_high:
-            compression = wdArchiveCompressionMode::Compressed_zstd;
-            iCompressionLevel = wdCompressedStreamWriterZstd::Compression::High;
+            compression = nsArchiveCompressionMode::Compressed_zstd;
+            iCompressionLevel = static_cast<nsInt32>(nsCompressedStreamWriterZstd::Compression::High);
             break;
           case InclusionMode::Compress_zstd_highest:
-            compression = wdArchiveCompressionMode::Compressed_zstd;
-            iCompressionLevel = wdCompressedStreamWriterZstd::Compression::Highest;
+            compression = nsArchiveCompressionMode::Compressed_zstd;
+            iCompressionLevel = static_cast<nsInt32>(nsCompressedStreamWriterZstd::Compression::Highest);
             break;
+#  endif
         }
       }
 
@@ -74,72 +76,69 @@ void wdArchiveBuilder::AddFolder(wdStringView sAbsFolderPath, wdArchiveCompressi
   }
 
 #else
-  WD_ASSERT_NOT_IMPLEMENTED;
+  NS_ASSERT_NOT_IMPLEMENTED;
 #endif
 }
 
-wdResult wdArchiveBuilder::WriteArchive(wdStringView sFile) const
+nsResult nsArchiveBuilder::WriteArchive(nsStringView sFile) const
 {
-  WD_LOG_BLOCK("WriteArchive", sFile);
+  NS_LOG_BLOCK("WriteArchive", sFile);
 
-  wdFileWriter file;
+  nsFileWriter file;
   if (file.Open(sFile, 1024 * 1024 * 16).Failed())
   {
-    wdLog::Error("Could not open file for writing archive to: '{}'", sFile);
-    return WD_FAILURE;
+    nsLog::Error("Could not open file for writing archive to: '{}'", sFile);
+    return NS_FAILURE;
   }
 
   return WriteArchive(file);
 }
 
-wdResult wdArchiveBuilder::WriteArchive(wdStreamWriter& inout_stream) const
+nsResult nsArchiveBuilder::WriteArchive(nsStreamWriter& inout_stream) const
 {
-  WD_SUCCEED_OR_RETURN(wdArchiveUtils::WriteHeader(inout_stream));
+  NS_SUCCEED_OR_RETURN(nsArchiveUtils::WriteHeader(inout_stream));
 
-  wdArchiveTOC toc;
+  nsArchiveTOC toc;
 
-  wdStringBuilder sHashablePath;
+  nsStringBuilder sHashablePath;
 
-  wdUInt64 uiStreamSize = 0;
-  const wdUInt32 uiNumEntries = m_Entries.GetCount();
+  nsUInt64 uiStreamSize = 0;
+  const nsUInt32 uiNumEntries = m_Entries.GetCount();
 
-  wdStopwatch sw;
+  nsStopwatch sw;
 
-  for (wdUInt32 i = 0; i < uiNumEntries; ++i)
+  for (nsUInt32 i = 0; i < uiNumEntries; ++i)
   {
     const SourceEntry& e = m_Entries[i];
 
-    const wdUInt32 uiPathStringOffset = toc.m_AllPathStrings.GetCount();
-    toc.m_AllPathStrings.PushBackRange(wdArrayPtr<const wdUInt8>(reinterpret_cast<const wdUInt8*>(e.m_sRelTargetPath.GetData()), e.m_sRelTargetPath.GetElementCount() + 1));
+    const nsUInt32 uiPathStringOffset = toc.AddPathString(e.m_sRelTargetPath);
 
     sHashablePath = e.m_sRelTargetPath;
     sHashablePath.ToLower();
 
-    toc.m_PathToEntryIndex[wdArchiveStoredString(wdHashingUtils::StringHash(sHashablePath), uiPathStringOffset)] = toc.m_Entries.GetCount();
+    toc.m_PathToEntryIndex[nsArchiveStoredString(nsHashingUtils::StringHash(sHashablePath), uiPathStringOffset)] = toc.m_Entries.GetCount();
 
     if (!WriteNextFileCallback(i + 1, uiNumEntries, e.m_sAbsSourcePath))
-      return WD_FAILURE;
+      return NS_FAILURE;
 
-    wdArchiveEntry& tocEntry = toc.m_Entries.ExpandAndGetRef();
+    nsArchiveEntry& tocEntry = toc.m_Entries.ExpandAndGetRef();
 
-    WD_SUCCEED_OR_RETURN(wdArchiveUtils::WriteEntryOptimal(inout_stream, e.m_sAbsSourcePath, uiPathStringOffset, e.m_CompressionMode, e.m_iCompressionLevel, tocEntry, uiStreamSize, wdMakeDelegate(&wdArchiveBuilder::WriteFileProgressCallback, this)));
+    NS_SUCCEED_OR_RETURN(nsArchiveUtils::WriteEntryOptimal(inout_stream, e.m_sAbsSourcePath, uiPathStringOffset, e.m_CompressionMode, e.m_iCompressionLevel, tocEntry, uiStreamSize, nsMakeDelegate(&nsArchiveBuilder::WriteFileProgressCallback, this)));
 
     WriteFileResultCallback(i + 1, uiNumEntries, e.m_sAbsSourcePath, tocEntry.m_uiUncompressedDataSize, tocEntry.m_uiStoredDataSize, sw.Checkpoint());
   }
 
-  WD_SUCCEED_OR_RETURN(wdArchiveUtils::AppendTOC(inout_stream, toc));
+  NS_SUCCEED_OR_RETURN(nsArchiveUtils::AppendTOC(inout_stream, toc));
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
-bool wdArchiveBuilder::WriteNextFileCallback(wdUInt32 uiCurEntry, wdUInt32 uiMaxEntries, wdStringView sSourceFile) const
+bool nsArchiveBuilder::WriteNextFileCallback(nsUInt32 uiCurEntry, nsUInt32 uiMaxEntries, nsStringView sSourceFile) const
 {
   return true;
 }
 
-bool wdArchiveBuilder::WriteFileProgressCallback(wdUInt64 bytesWritten, wdUInt64 bytesTotal) const
+bool nsArchiveBuilder::WriteFileProgressCallback(nsUInt64 bytesWritten, nsUInt64 bytesTotal) const
 {
   return true;
 }
-
-WD_STATICLINK_FILE(Foundation, Foundation_IO_Archive_Implementation_ArchiveBuilder);

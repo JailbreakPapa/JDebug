@@ -1,7 +1,7 @@
-import wd = require("TypeScript/wd")
-import WD_TEST = require("./TestFramework")
+import ns = require("TypeScript/ns")
+import NS_TEST = require("./TestFramework")
 
-export class TestWorld extends wd.TypescriptComponent {
+export class TestWorld extends ns.TypescriptComponent {
 
     /* BEGIN AUTO-GENERATED: VARIABLES */
     /* END AUTO-GENERATED: VARIABLES */
@@ -11,12 +11,12 @@ export class TestWorld extends wd.TypescriptComponent {
     }
 
     static RegisterMessageHandlers() {
-        wd.TypescriptComponent.RegisterMessageHandler(wd.MsgGenericEvent, "OnMsgGenericEvent");
+        ns.TypescriptComponent.RegisterMessageHandler(ns.MsgGenericEvent, "OnMsgGenericEvent");
     }
 
-    foundObjs: wd.GameObject[] = [];
+    foundObjs: ns.GameObject[] = [];
 
-    FoundObjectCallback = (go: wd.GameObject): boolean => {
+    FoundObjectCallback = (go: ns.GameObject): boolean => {
 
         this.foundObjs.push(go);
         return true;
@@ -27,29 +27,29 @@ export class TestWorld extends wd.TypescriptComponent {
         // FindObjectsInSphere
         {
             this.foundObjs = [];
-            wd.World.FindObjectsInSphere("Category1", new wd.Vec3(5, 0, 0), 3, this.FoundObjectCallback);
-            WD_TEST.INT(this.foundObjs.length, 2);
+            ns.World.FindObjectsInSphere("Category1", new ns.Vec3(5, 0, 0), 3, this.FoundObjectCallback);
+            NS_TEST.INT(this.foundObjs.length, 2);
 
             this.foundObjs = [];
-            wd.World.FindObjectsInSphere("Category2", new wd.Vec3(5, 0, 0), 3, this.FoundObjectCallback);
-            WD_TEST.INT(this.foundObjs.length, 1);
+            ns.World.FindObjectsInSphere("Category2", new ns.Vec3(5, 0, 0), 3, this.FoundObjectCallback);
+            NS_TEST.INT(this.foundObjs.length, 1);
         }
 
         // FindObjectsInBox
         {
             this.foundObjs = [];
-            wd.World.FindObjectsInBox("Category1", new wd.Vec3(-10, 0, -5), new wd.Vec3(0, 10, 5), this.FoundObjectCallback);
-            WD_TEST.INT(this.foundObjs.length, 3);
+            ns.World.FindObjectsInBox("Category1", new ns.Vec3(-10, 0, -5), new ns.Vec3(0, 10, 5), this.FoundObjectCallback);
+            NS_TEST.INT(this.foundObjs.length, 3);
 
             this.foundObjs = [];
-            wd.World.FindObjectsInBox("Category2", new wd.Vec3(-10, 0, -5), new wd.Vec3(0, 10, 5), this.FoundObjectCallback);
-            WD_TEST.INT(this.foundObjs.length, 2);
+            ns.World.FindObjectsInBox("Category2", new ns.Vec3(-10, 0, -5), new ns.Vec3(0, 10, 5), this.FoundObjectCallback);
+            NS_TEST.INT(this.foundObjs.length, 2);
         }
 
         return false;
     }
 
-    OnMsgGenericEvent(msg: wd.MsgGenericEvent): void {
+    OnMsgGenericEvent(msg: ns.MsgGenericEvent): void {
 
         if (msg.Message == "TestWorld") {
 
@@ -59,7 +59,7 @@ export class TestWorld extends wd.TypescriptComponent {
             else {
                 msg.Message = "done";
             }
-
+        
         }
     }
 

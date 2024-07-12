@@ -1,0 +1,27 @@
+/* 
+    Aperture UI Is Designed to target a subset of the CSS3 Standard within games.
+*/
+
+/* Example class for a panel */
+.example {
+    /* Define primary color */
+    --color-primary: #FF0000;
+    /* Use the primary color for the background */
+    background-color: var(--color-primary);
+    /* Set a default transition time for animations */
+    transition-duration: 0.3s;
+    /* Set a bold font style */
+    font-family: Arial Bold, "Arial Unicode MS";
+}
+
+/* Example of a linear gradient */
+.example-gradient {
+    /* Vertical linear gradient from white to black */
+    background-color: gradient(linear, 0% 0%, 0% 100%, from(white), to(black));
+}
+
+/* Pseudo-selectors for panel states */
+.example:hover {
+    /* Change background color on hover */
+    background-color: #d8c3c3;
+}

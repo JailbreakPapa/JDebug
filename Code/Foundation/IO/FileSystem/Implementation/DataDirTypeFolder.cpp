@@ -5,7 +5,7 @@
 #include <Foundation/Logging/Log.h>
 
 // clang-format off
-WD_BEGIN_SUBSYSTEM_DECLARATION(Foundation, FolderDataDirectory)
+NS_BEGIN_SUBSYSTEM_DECLARATION(Foundation, FolderDataDirectory)
 
   BEGIN_SUBSYSTEM_DEPENDENCIES
     "FileSystem"
@@ -13,23 +13,23 @@ WD_BEGIN_SUBSYSTEM_DECLARATION(Foundation, FolderDataDirectory)
 
   ON_CORESYSTEMS_STARTUP
   {
-    wdFileSystem::RegisterDataDirectoryFactory(wdDataDirectory::FolderType::Factory);
+    nsFileSystem::RegisterDataDirectoryFactory(nsDataDirectory::FolderType::Factory);
   }
 
-WD_END_SUBSYSTEM_DECLARATION;
+NS_END_SUBSYSTEM_DECLARATION;
 // clang-format on
 
-namespace wdDataDirectory
+namespace nsDataDirectory
 {
-  wdString FolderType::s_sRedirectionFile;
-  wdString FolderType::s_sRedirectionPrefix;
+  nsString FolderType::s_sRedirectionFile;
+  nsString FolderType::s_sRedirectionPrefix;
 
-  wdResult FolderReader::InternalOpen(wdFileShareMode::Enum FileShareMode)
+  nsResult FolderReader::InternalOpen(nsFileShareMode::Enum FileShareMode)
   {
-    wdStringBuilder sPath = ((wdDataDirectory::FolderType*)GetDataDirectory())->GetRedirectedDataDirectoryPath();
+    nsStringBuilder sPath = ((nsDataDirectory::FolderType*)GetDataDirectory())->GetRedirectedDataDirectoryPath();
     sPath.AppendPath(GetFilePath());
 
-    return m_File.Open(sPath.GetData(), wdFileOpenMode::Read, FileShareMode);
+    return m_File.Open(sPath.GetData(), nsFileOpenMode::Read, FileShareMode);
   }
 
   void FolderReader::InternalClose()
@@ -37,22 +37,41 @@ namespace wdDataDirectory
     m_File.Close();
   }
 
-  wdUInt64 FolderReader::Read(void* pBuffer, wdUInt64 uiBytes)
+  nsUInt64 FolderReader::Skip(nsUInt64 uiBytes)
+  {
+    if (uiBytes == 0)
+    {
+      return 0;
+    }
+
+    const nsUInt64 fileSize = m_File.GetFileSize();
+    const nsUInt64 origFilePosition = m_File.GetFilePosition();
+    NS_ASSERT_DEBUG(origFilePosition <= fileSize, "");
+
+    const nsUInt64 newFilePosition = nsMath::Min(fileSize, origFilePosition + uiBytes);
+    m_File.SetFilePosition(newFilePosition, nsFileSeekMode::FromStart);
+    NS_ASSERT_DEBUG(newFilePosition == m_File.GetFilePosition(), "");
+
+    NS_ASSERT_DEBUG(newFilePosition >= origFilePosition, "");
+    return newFilePosition - origFilePosition;
+  }
+
+  nsUInt64 FolderReader::Read(void* pBuffer, nsUInt64 uiBytes)
   {
     return m_File.Read(pBuffer, uiBytes);
   }
 
-  wdUInt64 FolderReader::GetFileSize() const
+  nsUInt64 FolderReader::GetFileSize() const
   {
     return m_File.GetFileSize();
   }
 
-  wdResult FolderWriter::InternalOpen(wdFileShareMode::Enum FileShareMode)
+  nsResult FolderWriter::InternalOpen(nsFileShareMode::Enum FileShareMode)
   {
-    wdStringBuilder sPath = ((wdDataDirectory::FolderType*)GetDataDirectory())->GetRedirectedDataDirectoryPath();
+    nsStringBuilder sPath = ((nsDataDirectory::FolderType*)GetDataDirectory())->GetRedirectedDataDirectoryPath();
     sPath.AppendPath(GetFilePath());
 
-    return m_File.Open(sPath.GetData(), wdFileOpenMode::Write, FileShareMode);
+    return m_File.Open(sPath.GetData(), nsFileOpenMode::Write, FileShareMode);
   }
 
   void FolderWriter::InternalClose()
@@ -60,61 +79,61 @@ namespace wdDataDirectory
     m_File.Close();
   }
 
-  wdResult FolderWriter::Write(const void* pBuffer, wdUInt64 uiBytes)
+  nsResult FolderWriter::Write(const void* pBuffer, nsUInt64 uiBytes)
   {
     return m_File.Write(pBuffer, uiBytes);
   }
 
-  wdUInt64 FolderWriter::GetFileSize() const
+  nsUInt64 FolderWriter::GetFileSize() const
   {
     return m_File.GetFileSize();
   }
 
-  wdDataDirectoryType* FolderType::Factory(wdStringView sDataDirectory, wdStringView sGroup, wdStringView sRootName, wdFileSystem::DataDirUsage usage)
+  nsDataDirectoryType* FolderType::Factory(nsStringView sDataDirectory, nsStringView sGroup, nsStringView sRootName, nsFileSystem::DataDirUsage usage)
   {
-    FolderType* pDataDir = WD_DEFAULT_NEW(FolderType);
+    FolderType* pDataDir = NS_DEFAULT_NEW(FolderType);
 
-    if (pDataDir->InitializeDataDirectory(sDataDirectory) == WD_SUCCESS)
+    if (pDataDir->InitializeDataDirectory(sDataDirectory) == NS_SUCCESS)
       return pDataDir;
 
-    WD_DEFAULT_DELETE(pDataDir);
+    NS_DEFAULT_DELETE(pDataDir);
     return nullptr;
   }
 
   void FolderType::RemoveDataDirectory()
   {
     {
-      WD_LOCK(m_ReaderWriterMutex);
-      for (wdUInt32 i = 0; i < m_Readers.GetCount(); ++i)
+      NS_LOCK(m_ReaderWriterMutex);
+      for (nsUInt32 i = 0; i < m_Readers.GetCount(); ++i)
       {
-        WD_ASSERT_DEV(!m_Readers[i]->m_bIsInUse, "Cannot remove a data directory while there are still files open in it.");
+        NS_ASSERT_DEV(!m_Readers[i]->m_bIsInUse, "Cannot remove a data directory while there are still files open in it.");
       }
 
-      for (wdUInt32 i = 0; i < m_Writers.GetCount(); ++i)
+      for (nsUInt32 i = 0; i < m_Writers.GetCount(); ++i)
       {
-        WD_ASSERT_DEV(!m_Writers[i]->m_bIsInUse, "Cannot remove a data directory while there are still files open in it.");
+        NS_ASSERT_DEV(!m_Writers[i]->m_bIsInUse, "Cannot remove a data directory while there are still files open in it.");
       }
     }
     FolderType* pThis = this;
-    WD_DEFAULT_DELETE(pThis);
+    NS_DEFAULT_DELETE(pThis);
   }
 
-  void FolderType::DeleteFile(wdStringView sFile)
+  void FolderType::DeleteFile(nsStringView sFile)
   {
-    wdStringBuilder sPath = GetRedirectedDataDirectoryPath();
+    nsStringBuilder sPath = GetRedirectedDataDirectoryPath();
     sPath.AppendPath(sFile);
 
-    wdOSFile::DeleteFile(sPath.GetData()).IgnoreResult();
+    nsOSFile::DeleteFile(sPath.GetData()).IgnoreResult();
   }
 
   FolderType::~FolderType()
   {
-    WD_LOCK(m_ReaderWriterMutex);
-    for (wdUInt32 i = 0; i < m_Readers.GetCount(); ++i)
-      WD_DEFAULT_DELETE(m_Readers[i]);
+    NS_LOCK(m_ReaderWriterMutex);
+    for (nsUInt32 i = 0; i < m_Readers.GetCount(); ++i)
+      NS_DEFAULT_DELETE(m_Readers[i]);
 
-    for (wdUInt32 i = 0; i < m_Writers.GetCount(); ++i)
-      WD_DEFAULT_DELETE(m_Writers[i]);
+    for (nsUInt32 i = 0; i < m_Writers.GetCount(); ++i)
+      NS_DEFAULT_DELETE(m_Writers[i]);
   }
 
   void FolderType::ReloadExternalConfigs()
@@ -124,29 +143,29 @@ namespace wdDataDirectory
 
   void FolderType::LoadRedirectionFile()
   {
-    WD_LOCK(m_RedirectionMutex);
+    NS_LOCK(m_RedirectionMutex);
     m_FileRedirection.Clear();
 
     if (!s_sRedirectionFile.IsEmpty())
     {
-      wdStringBuilder sRedirectionFile(GetRedirectedDataDirectoryPath(), "/", s_sRedirectionFile);
+      nsStringBuilder sRedirectionFile(GetRedirectedDataDirectoryPath(), "/", s_sRedirectionFile);
       sRedirectionFile.MakeCleanPath();
 
-      WD_LOG_BLOCK("LoadRedirectionFile", sRedirectionFile.GetData());
+      NS_LOG_BLOCK("LoadRedirectionFile", sRedirectionFile.GetData());
 
-      wdOSFile file;
-      if (file.Open(sRedirectionFile, wdFileOpenMode::Read).Succeeded())
+      nsOSFile file;
+      if (file.Open(sRedirectionFile, nsFileOpenMode::Read).Succeeded())
       {
-        wdHybridArray<char, 1024 * 10> content;
+        nsHybridArray<char, 1024 * 10> content;
         char uiTemp[4096];
 
-        wdUInt64 uiRead = 0;
+        nsUInt64 uiRead = 0;
 
         do
         {
-          uiRead = file.Read(uiTemp, WD_ARRAY_SIZE(uiTemp));
-          content.PushBackRange(wdArrayPtr<char>(uiTemp, (wdUInt32)uiRead));
-        } while (uiRead == WD_ARRAY_SIZE(uiTemp));
+          uiRead = file.Read(uiTemp, NS_ARRAY_SIZE(uiTemp));
+          content.PushBackRange(nsArrayPtr<char>(uiTemp, (nsUInt32)uiRead));
+        } while (uiRead == NS_ARRAY_SIZE(uiTemp));
 
         content.PushBack(0); // make sure the string is terminated
 
@@ -154,12 +173,12 @@ namespace wdDataDirectory
         const char* szSeparator = nullptr;
         const char* szLineEnd = nullptr;
 
-        wdStringBuilder sFileToRedirect, sRedirection;
+        nsStringBuilder sFileToRedirect, sRedirection;
 
         while (true)
         {
-          szSeparator = wdStringUtils::FindSubString(szLineStart, ";");
-          szLineEnd = wdStringUtils::FindSubString(szSeparator, "\n");
+          szSeparator = nsStringUtils::FindSubString(szLineStart, ";");
+          szLineEnd = nsStringUtils::FindSubString(szSeparator, "\n");
 
           if (szLineStart == nullptr || szSeparator == nullptr || szLineEnd == nullptr)
             break;
@@ -172,55 +191,59 @@ namespace wdDataDirectory
           szLineStart = szLineEnd + 1;
         }
 
-        // wdLog::Debug("Redirection file contains {0} entries", m_FileRedirection.GetCount());
+        // nsLog::Debug("Redirection file contains {0} entries", m_FileRedirection.GetCount());
       }
       // else
-      // wdLog::Debug("No Redirection file found in: '{0}'", sRedirectionFile);
+      // nsLog::Debug("No Redirection file found in: '{0}'", sRedirectionFile);
     }
   }
 
 
-  bool FolderType::ExistsFile(wdStringView sFile, bool bOneSpecificDataDir)
+  bool FolderType::ExistsFile(nsStringView sFile, bool bOneSpecificDataDir)
   {
-    wdStringBuilder sRedirectedAsset;
+    nsStringBuilder sRedirectedAsset;
     ResolveAssetRedirection(sFile, sRedirectedAsset);
 
-    wdStringBuilder sPath = GetRedirectedDataDirectoryPath();
+    nsStringBuilder sPath = GetRedirectedDataDirectoryPath();
     sPath.AppendPath(sRedirectedAsset);
-    return wdOSFile::ExistsFile(sPath);
+    return nsOSFile::ExistsFile(sPath);
   }
 
-  wdResult FolderType::GetFileStats(wdStringView sFileOrFolder, bool bOneSpecificDataDir, wdFileStats& out_Stats)
+  nsResult FolderType::GetFileStats(nsStringView sFileOrFolder, bool bOneSpecificDataDir, nsFileStats& out_Stats)
   {
-    wdStringBuilder sRedirectedAsset;
+    nsStringBuilder sRedirectedAsset;
     ResolveAssetRedirection(sFileOrFolder, sRedirectedAsset);
 
-    wdStringBuilder sPath = GetRedirectedDataDirectoryPath();
+    nsStringBuilder sPath = GetRedirectedDataDirectoryPath();
 
-    if (wdPathUtils::IsAbsolutePath(sRedirectedAsset))
+    if (nsPathUtils::IsAbsolutePath(sRedirectedAsset))
     {
       if (!sRedirectedAsset.StartsWith_NoCase(sPath))
-        return WD_FAILURE;
+        return NS_FAILURE;
 
       sPath.Clear();
     }
 
     sPath.AppendPath(sRedirectedAsset);
 
-    if (!wdPathUtils::IsAbsolutePath(sPath))
-      return WD_FAILURE;
+    if (!nsPathUtils::IsAbsolutePath(sPath))
+      return NS_FAILURE;
 
-    return wdOSFile::GetFileStats(sPath, out_Stats);
+#if NS_ENABLED(NS_SUPPORTS_FILE_STATS)
+    return nsOSFile::GetFileStats(sPath, out_Stats);
+#else
+    return NS_FAILURE;
+#endif
   }
 
-  wdResult FolderType::InternalInitializeDataDirectory(wdStringView sDirectory)
+  nsResult FolderType::InternalInitializeDataDirectory(nsStringView sDirectory)
   {
     // allow to set the 'empty' directory to handle all absolute paths
     if (sDirectory.IsEmpty())
-      return WD_SUCCESS;
+      return NS_SUCCESS;
 
-    wdStringBuilder sRedirected;
-    if (wdFileSystem::ResolveSpecialDirectory(sDirectory, sRedirected).Succeeded())
+    nsStringBuilder sRedirected;
+    if (nsFileSystem::ResolveSpecialDirectory(sDirectory, sRedirected).Succeeded())
     {
       m_sRedirectedDataDirPath = sRedirected;
     }
@@ -229,17 +252,17 @@ namespace wdDataDirectory
       m_sRedirectedDataDirPath = sDirectory;
     }
 
-    if (!wdOSFile::ExistsDirectory(m_sRedirectedDataDirPath))
-      return WD_FAILURE;
+    if (!nsOSFile::ExistsDirectory(m_sRedirectedDataDirPath))
+      return NS_FAILURE;
 
     ReloadExternalConfigs();
 
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
 
-  void FolderType::OnReaderWriterClose(wdDataDirectoryReaderWriterBase* pClosed)
+  void FolderType::OnReaderWriterClose(nsDataDirectoryReaderWriterBase* pClosed)
   {
-    WD_LOCK(m_ReaderWriterMutex);
+    NS_LOCK(m_ReaderWriterMutex);
     if (pClosed->IsReader())
     {
       FolderReader* pReader = (FolderReader*)pClosed;
@@ -252,29 +275,29 @@ namespace wdDataDirectory
     }
   }
 
-  wdDataDirectory::FolderReader* FolderType::CreateFolderReader() const
+  nsDataDirectory::FolderReader* FolderType::CreateFolderReader() const
   {
-    return WD_DEFAULT_NEW(FolderReader, 0);
+    return NS_DEFAULT_NEW(FolderReader, 0);
   }
 
-  wdDataDirectory::FolderWriter* FolderType::CreateFolderWriter() const
+  nsDataDirectory::FolderWriter* FolderType::CreateFolderWriter() const
   {
-    return WD_DEFAULT_NEW(FolderWriter, 0);
+    return NS_DEFAULT_NEW(FolderWriter, 0);
   }
 
-  wdDataDirectoryReader* FolderType::OpenFileToRead(wdStringView sFile, wdFileShareMode::Enum FileShareMode, bool bSpecificallyThisDataDir)
+  nsDataDirectoryReader* FolderType::OpenFileToRead(nsStringView sFile, nsFileShareMode::Enum FileShareMode, bool bSpecificallyThisDataDir)
   {
-    wdStringBuilder sFileToOpen;
+    nsStringBuilder sFileToOpen;
     ResolveAssetRedirection(sFile, sFileToOpen);
 
     // we know that these files cannot be opened, so don't even try
-    if (wdConversionUtils::IsStringUuid(sFileToOpen))
+    if (nsConversionUtils::IsStringUuid(sFileToOpen))
       return nullptr;
 
     FolderReader* pReader = nullptr;
     {
-      WD_LOCK(m_ReaderWriterMutex);
-      for (wdUInt32 i = 0; i < m_Readers.GetCount(); ++i)
+      NS_LOCK(m_ReaderWriterMutex);
+      for (nsUInt32 i = 0; i < m_Readers.GetCount(); ++i)
       {
         if (!m_Readers[i]->m_bIsInUse)
           pReader = m_Readers[i];
@@ -289,9 +312,9 @@ namespace wdDataDirectory
     }
 
     // if opening the file fails, the reader's m_bIsInUse needs to be reset.
-    if (pReader->Open(sFileToOpen, this, FileShareMode) == WD_FAILURE)
+    if (pReader->Open(sFileToOpen, this, FileShareMode) == NS_FAILURE)
     {
-      WD_LOCK(m_ReaderWriterMutex);
+      NS_LOCK(m_ReaderWriterMutex);
       pReader->m_bIsInUse = false;
       return nullptr;
     }
@@ -301,9 +324,9 @@ namespace wdDataDirectory
   }
 
 
-  bool FolderType::ResolveAssetRedirection(wdStringView sFile, wdStringBuilder& out_sRedirection)
+  bool FolderType::ResolveAssetRedirection(nsStringView sFile, nsStringBuilder& out_sRedirection)
   {
-    WD_LOCK(m_RedirectionMutex);
+    NS_LOCK(m_RedirectionMutex);
     // Check if we know about a file redirection for this
     auto it = m_FileRedirection.Find(sFile);
 
@@ -329,13 +352,13 @@ namespace wdDataDirectory
     }
   }
 
-  wdDataDirectoryWriter* FolderType::OpenFileToWrite(wdStringView sFile, wdFileShareMode::Enum FileShareMode)
+  nsDataDirectoryWriter* FolderType::OpenFileToWrite(nsStringView sFile, nsFileShareMode::Enum FileShareMode)
   {
     FolderWriter* pWriter = nullptr;
 
     {
-      WD_LOCK(m_ReaderWriterMutex);
-      for (wdUInt32 i = 0; i < m_Writers.GetCount(); ++i)
+      NS_LOCK(m_ReaderWriterMutex);
+      for (nsUInt32 i = 0; i < m_Writers.GetCount(); ++i)
       {
         if (!m_Writers[i]->m_bIsInUse)
           pWriter = m_Writers[i];
@@ -349,9 +372,9 @@ namespace wdDataDirectory
       pWriter->m_bIsInUse = true;
     }
     // if opening the file fails, the writer's m_bIsInUse needs to be reset.
-    if (pWriter->Open(sFile, this, FileShareMode) == WD_FAILURE)
+    if (pWriter->Open(sFile, this, FileShareMode) == NS_FAILURE)
     {
-      WD_LOCK(m_ReaderWriterMutex);
+      NS_LOCK(m_ReaderWriterMutex);
       pWriter->m_bIsInUse = false;
       return nullptr;
     }
@@ -359,8 +382,8 @@ namespace wdDataDirectory
     // if it succeeds, we return the reader
     return pWriter;
   }
-} // namespace wdDataDirectory
+} // namespace nsDataDirectory
 
 
 
-WD_STATICLINK_FILE(Foundation, Foundation_IO_FileSystem_Implementation_DataDirTypeFolder);
+NS_STATICLINK_FILE(Foundation, Foundation_IO_FileSystem_Implementation_DataDirTypeFolder);

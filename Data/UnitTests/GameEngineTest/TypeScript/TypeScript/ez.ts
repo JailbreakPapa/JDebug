@@ -1,68 +1,68 @@
-import __Log = require("TypeScript/wd/Log")
+import __Log = require("TypeScript/ns/Log")
 export import Log = __Log.Log;
 
-import __Utils = require("TypeScript/wd/Utils")
+import __Utils = require("TypeScript/ns/Utils")
 export import Utils = __Utils.Utils;
 
-import __Vec2 = require("TypeScript/wd/Vec2")
+import __Vec2 = require("TypeScript/ns/Vec2")
 export import Vec2 = __Vec2.Vec2;
 
-import __Vec3 = require("TypeScript/wd/Vec3")
+import __Vec3 = require("TypeScript/ns/Vec3")
 export import Vec3 = __Vec3.Vec3;
 
-import __Mat3 = require("TypeScript/wd/Mat3")
+import __Mat3 = require("TypeScript/ns/Mat3")
 export import Mat3 = __Mat3.Mat3;
 
-import __Mat4 = require("TypeScript/wd/Mat4")
+import __Mat4 = require("TypeScript/ns/Mat4")
 export import Mat4 = __Mat4.Mat4;
 
-import __Quat = require("TypeScript/wd/Quat")
+import __Quat = require("TypeScript/ns/Quat")
 export import Quat = __Quat.Quat;
 
-import __Transform = require("TypeScript/wd/Transform")
+import __Transform = require("TypeScript/ns/Transform")
 export import Transform = __Transform.Transform;
 
-import __Color = require("TypeScript/wd/Color")
+import __Color = require("TypeScript/ns/Color")
 export import Color = __Color.Color;
 
-import __Time = require("TypeScript/wd/Time")
+import __Time = require("TypeScript/ns/Time")
 export import Time = __Time.Time;
 
-import __Angle = require("TypeScript/wd/Angle")
+import __Angle = require("TypeScript/ns/Angle")
 export import Angle = __Angle.Angle;
 
-import __GameObject = require("TypeScript/wd/GameObject")
+import __GameObject = require("TypeScript/ns/GameObject")
 export import GameObject = __GameObject.GameObject;
 
-import __Component = require("TypeScript/wd/Component")
+import __Component = require("TypeScript/ns/Component")
 export import Component = __Component.Component;
 export import TypescriptComponent = __Component.TypescriptComponent;
 export import TickedTypescriptComponent = __Component.TickedTypescriptComponent;
 
-import __World = require("TypeScript/wd/World")
+import __World = require("TypeScript/ns/World")
 export import World = __World.World;
 export import GameObjectDesc = __World.GameObjectDesc;
 
-import __Message = require("TypeScript/wd/Message")
+import __Message = require("TypeScript/ns/Message")
 export import Message = __Message.Message;
 //export import EventMessage = __Message.EventMessage; // not supported yet, to write custom TS event messages
 
-import __Debug = require("TypeScript/wd/Debug")
+import __Debug = require("TypeScript/ns/Debug")
 export import Debug = __Debug.Debug;
 
-import __Random = require("TypeScript/wd/Random")
+import __Random = require("TypeScript/ns/Random")
 export import Random = __Random.Random;
 
-import __Clock = require("TypeScript/wd/Clock")
+import __Clock = require("TypeScript/ns/Clock")
 export import Clock = __Clock.Clock;
 
-import __Physics = require("TypeScript/wd/Physics")
+import __Physics = require("TypeScript/ns/Physics")
 export import Physics = __Physics.Physics;
 
 
 
 // AUTO-GENERATED
-import __AllComponents = require("./wd/AllComponents")
+import __AllComponents = require("./ns/AllComponents")
 export import RenderComponent = __AllComponents.RenderComponent;
 export import AlwaysVisibleComponent = __AllComponents.AlwaysVisibleComponent;
 export import SettingsComponent = __AllComponents.SettingsComponent;
@@ -99,6 +99,7 @@ export import FollowPathComponent = __AllComponents.FollowPathComponent;
 export import ForwardEventsToGameStateComponent = __AllComponents.ForwardEventsToGameStateComponent;
 export import MeshComponent = __AllComponents.MeshComponent;
 export import GizmoComponent = __AllComponents.GizmoComponent;
+export import GlobalBlackboardComponent = __AllComponents.GlobalBlackboardComponent;
 export import GrabbableItemComponent = __AllComponents.GrabbableItemComponent;
 export import GreyBoxComponent = __AllComponents.GreyBoxComponent;
 export import HeadBoneComponent = __AllComponents.HeadBoneComponent;
@@ -107,7 +108,9 @@ export import InputComponent = __AllComponents.InputComponent;
 export import InstancedMeshComponent = __AllComponents.InstancedMeshComponent;
 export import JointAttachmentComponent = __AllComponents.JointAttachmentComponent;
 export import JointOverrideComponent = __AllComponents.JointOverrideComponent;
+export import LensFlareComponent = __AllComponents.LensFlareComponent;
 export import LineToComponent = __AllComponents.LineToComponent;
+export import LocalBlackboardComponent = __AllComponents.LocalBlackboardComponent;
 export import MarkerComponent = __AllComponents.MarkerComponent;
 export import MoveToComponent = __AllComponents.MoveToComponent;
 export import OccluderComponent = __AllComponents.OccluderComponent;
@@ -115,15 +118,18 @@ export import PathComponent = __AllComponents.PathComponent;
 export import PathNodeComponent = __AllComponents.PathNodeComponent;
 export import PlayerStartPointComponent = __AllComponents.PlayerStartPointComponent;
 export import PointLightComponent = __AllComponents.PointLightComponent;
+export import PostProcessingComponent = __AllComponents.PostProcessingComponent;
 export import PowerConnectorComponent = __AllComponents.PowerConnectorComponent;
 export import PrefabReferenceComponent = __AllComponents.PrefabReferenceComponent;
 export import ProjectileComponent = __AllComponents.ProjectileComponent;
 export import PropertyAnimComponent = __AllComponents.PropertyAnimComponent;
 export import RaycastComponent = __AllComponents.RaycastComponent;
 export import RenderTargetActivatorComponent = __AllComponents.RenderTargetActivatorComponent;
+export import ResetTransformComponent = __AllComponents.ResetTransformComponent;
 export import RopeRenderComponent = __AllComponents.RopeRenderComponent;
 export import TransformComponent = __AllComponents.TransformComponent;
 export import RotorComponent = __AllComponents.RotorComponent;
+export import ScriptComponent = __AllComponents.ScriptComponent;
 export import SensorComponent = __AllComponents.SensorComponent;
 export import SensorConeComponent = __AllComponents.SensorConeComponent;
 export import SensorCylinderComponent = __AllComponents.SensorCylinderComponent;
@@ -137,6 +143,7 @@ export import SkyBoxComponent = __AllComponents.SkyBoxComponent;
 export import SkyLightComponent = __AllComponents.SkyLightComponent;
 export import SliderComponent = __AllComponents.SliderComponent;
 export import SpatialAnchorComponent = __AllComponents.SpatialAnchorComponent;
+export import SpawnBoxComponent = __AllComponents.SpawnBoxComponent;
 export import SpawnComponent = __AllComponents.SpawnComponent;
 export import SphereReflectionProbeComponent = __AllComponents.SphereReflectionProbeComponent;
 export import SpotLightComponent = __AllComponents.SpotLightComponent;
@@ -145,8 +152,10 @@ export import StageSpaceComponent = __AllComponents.StageSpaceComponent;
 export import StateMachineComponent = __AllComponents.StateMachineComponent;
 export import TimedDeathComponent = __AllComponents.TimedDeathComponent;
 export import TriggerDelayModifierComponent = __AllComponents.TriggerDelayModifierComponent;
-export import VisualScriptComponent = __AllComponents.VisualScriptComponent;
 export import VisualizeHandComponent = __AllComponents.VisualizeHandComponent;
+export import VolumeComponent = __AllComponents.VolumeComponent;
+export import VolumeBoxComponent = __AllComponents.VolumeBoxComponent;
+export import VolumeSphereComponent = __AllComponents.VolumeSphereComponent;
 export import WindVolumeComponent = __AllComponents.WindVolumeComponent;
 export import WindVolumeConeComponent = __AllComponents.WindVolumeConeComponent;
 export import WindVolumeCylinderComponent = __AllComponents.WindVolumeCylinderComponent;
@@ -155,8 +164,7 @@ export import WindVolumeSphereComponent = __AllComponents.WindVolumeSphereCompon
 
 
 // AUTO-GENERATED
-import __AllMessages = require("./wd/AllMessages")
-export import EventMsgPathChanged = __AllMessages.EventMsgPathChanged;
+import __AllMessages = require("./ns/AllMessages")
 export import EventMsgSetPowerInput = __AllMessages.EventMsgSetPowerInput;
 export import MsgAnimationPosePreparing = __AllMessages.MsgAnimationPosePreparing;
 export import MsgAnimationPoseProposal = __AllMessages.MsgAnimationPoseProposal;
@@ -180,6 +188,7 @@ export import MsgMoveCharacterController = __AllMessages.MsgMoveCharacterControl
 export import MsgObjectGrabbed = __AllMessages.MsgObjectGrabbed;
 export import MsgOnlyApplyToObject = __AllMessages.MsgOnlyApplyToObject;
 export import MsgParentChanged = __AllMessages.MsgParentChanged;
+export import MsgPathChanged = __AllMessages.MsgPathChanged;
 export import MsgPhysicsAddForce = __AllMessages.MsgPhysicsAddForce;
 export import MsgPhysicsAddImpulse = __AllMessages.MsgPhysicsAddImpulse;
 export import MsgPhysicsJointBroke = __AllMessages.MsgPhysicsJointBroke;
@@ -201,10 +210,13 @@ export import MsgUpdateLocalBounds = __AllMessages.MsgUpdateLocalBounds;
 
 
 // AUTO-GENERATED
-import __AllEnums = require("./wd/AllEnums")
+import __AllEnums = require("./ns/AllEnums")
+export import AnimationInvisibleUpdateRate = __AllEnums.AnimationInvisibleUpdateRate;
 export import BasisAxis = __AllEnums.BasisAxis;
 export import CameraMode = __AllEnums.CameraMode;
 export import CameraUsageHint = __AllEnums.CameraUsageHint;
+export import FollowPathMode = __AllEnums.FollowPathMode;
+export import GlobalBlackboardInitMode = __AllEnums.GlobalBlackboardInitMode;
 export import GreyBoxShape = __AllEnums.GreyBoxShape;
 export import InputMessageGranularity = __AllEnums.InputMessageGranularity;
 export import OnComponentFinishedAction = __AllEnums.OnComponentFinishedAction;
@@ -227,7 +239,7 @@ export import XRTransformSpace = __AllEnums.XRTransformSpace;
 
 
 // AUTO-GENERATED
-import __AllFlags = require("./wd/AllFlags")
+import __AllFlags = require("./ns/AllFlags")
 export import ClothSheetFlags = __AllFlags.ClothSheetFlags;
 export import PathComponentFlags = __AllFlags.PathComponentFlags;
 export import PhysicsShapeType = __AllFlags.PhysicsShapeType;

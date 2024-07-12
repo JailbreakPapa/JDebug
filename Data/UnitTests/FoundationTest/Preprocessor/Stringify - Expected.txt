@@ -25,12 +25,12 @@ Processing succeeded
 
 // Block 4
 "VARIABLE3(str1)"
-"VARIABLE3(str1 )""WD_STRINGIZE ( VARIABLE3(str2 ) )"
+"VARIABLE3(str1 )""NS_STRINGIZE ( VARIABLE3(str2 ) )"
 "varstr3"
 
 // Block 5
 "VARIABLE3(str1)"
-"VARIABLE3(str1)""WD_STRINGIZE ( VARIABLE3(str2) )"
+"VARIABLE3(str1)""NS_STRINGIZE ( VARIABLE3(str2) )"
 "varstr3"
 
 "\"a string\""

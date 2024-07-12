@@ -1,34 +1,34 @@
 #pragma once
 
-struct wdNullAllocatorWrapper
+struct nsNullAllocatorWrapper
 {
-  WD_FORCE_INLINE static wdAllocatorBase* GetAllocator()
+  NS_FORCE_INLINE static nsAllocator* GetAllocator()
   {
-    WD_REPORT_FAILURE("This method should never be called");
+    NS_REPORT_FAILURE("This method should never be called");
     return nullptr;
   }
 };
 
-struct wdDefaultAllocatorWrapper
+struct nsDefaultAllocatorWrapper
 {
-  WD_ALWAYS_INLINE static wdAllocatorBase* GetAllocator() { return wdFoundation::GetDefaultAllocator(); }
+  NS_ALWAYS_INLINE static nsAllocator* GetAllocator() { return nsFoundation::GetDefaultAllocator(); }
 };
 
-struct wdStaticAllocatorWrapper
+struct nsStaticsAllocatorWrapper
 {
-  WD_ALWAYS_INLINE static wdAllocatorBase* GetAllocator() { return wdFoundation::GetStaticAllocator(); }
+  NS_ALWAYS_INLINE static nsAllocator* GetAllocator() { return nsFoundation::GetStaticsAllocator(); }
 };
 
-struct wdAlignedAllocatorWrapper
+struct nsAlignedAllocatorWrapper
 {
-  WD_ALWAYS_INLINE static wdAllocatorBase* GetAllocator() { return wdFoundation::GetAlignedAllocator(); }
+  NS_ALWAYS_INLINE static nsAllocator* GetAllocator() { return nsFoundation::GetAlignedAllocator(); }
 };
 
-struct WD_FOUNDATION_DLL wdLocalAllocatorWrapper
+struct NS_FOUNDATION_DLL nsLocalAllocatorWrapper
 {
-  wdLocalAllocatorWrapper(wdAllocatorBase* pAllocator);
+  nsLocalAllocatorWrapper(nsAllocator* pAllocator);
 
   void Reset();
 
-  static wdAllocatorBase* GetAllocator();
+  static nsAllocator* GetAllocator();
 };

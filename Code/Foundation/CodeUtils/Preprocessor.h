@@ -10,22 +10,22 @@
 #include <Foundation/Memory/CommonAllocators.h>
 #include <Foundation/Time/Timestamp.h>
 
-/// \brief This object caches files in a tokenized state. It can be shared among wdPreprocessor instances to improve performance when
+/// \brief This object caches files in a tokenized state. It can be shared among nsPreprocessor instances to improve performance when
 /// they access the same files.
-class WD_FOUNDATION_DLL wdTokenizedFileCache
+class NS_FOUNDATION_DLL nsTokenizedFileCache
 {
 public:
   struct FileData
   {
-    wdTokenizer m_Tokens;
-    wdTimestamp m_Timestamp;
+    nsTokenizer m_Tokens;
+    nsTimestamp m_Timestamp;
   };
 
   /// \brief Checks whether \a sFileName is already in the cache, returns an iterator to it. If the iterator is invalid, the file is not cached yet.
-  wdMap<wdString, FileData>::ConstIterator Lookup(const wdString& sFileName) const;
+  nsMap<nsString, FileData>::ConstIterator Lookup(const nsString& sFileName) const;
 
   /// \brief Removes the cached content for \a sFileName from the cache. Should be used when the file content has changed and needs to be re-read.
-  void Remove(const wdString& sFileName);
+  void Remove(const nsString& sFileName);
 
   /// \brief Removes all files from the cache to ensure that they will be re-read.
   void Clear();
@@ -34,16 +34,16 @@ public:
   ///
   //// The file content is tokenized first and all #line directives are evaluated, to update the line number and file origin for each token.
   /// Any errors are written to the given log.
-  const wdTokenizer* Tokenize(const wdString& sFileName, wdArrayPtr<const wdUInt8> fileContent, const wdTimestamp& fileTimeStamp, wdLogInterface* pLog);
+  const nsTokenizer* Tokenize(const nsString& sFileName, nsArrayPtr<const nsUInt8> fileContent, const nsTimestamp& fileTimeStamp, nsLogInterface* pLog);
 
 private:
-  void SkipWhitespace(wdDeque<wdToken>& Tokens, wdUInt32& uiCurToken);
+  void SkipWhitespace(nsDeque<nsToken>& Tokens, nsUInt32& uiCurToken);
 
-  mutable wdMutex m_Mutex;
-  wdMap<wdString, FileData> m_Cache;
+  mutable nsMutex m_Mutex;
+  nsMap<nsString, FileData> m_Cache;
 };
 
-/// \brief wdPreprocessor implements a standard C preprocessor. It can be used to pre-process files to get the output after macro expansion and #ifdef
+/// \brief nsPreprocessor implements a standard C preprocessor. It can be used to pre-process files to get the output after macro expansion and #ifdef
 /// handling.
 ///
 /// For a detailed documentation about the C preprocessor, see https://gcc.gnu.org/onlinedocs/cpp/
@@ -59,7 +59,7 @@ private:
 ///   * #include handling
 ///   * #pragma once
 ///   * #warning and #error for custom failure messages
-class WD_FOUNDATION_DLL wdPreprocessor
+class NS_FOUNDATION_DLL nsPreprocessor
 {
 public:
   /// \brief Describes the type of #include that was encountered during preprocessing
@@ -70,25 +70,25 @@ public:
     GlobalInclude    ///< An #include <file> has been encountered
   };
 
-  /// \brief This type of callback is used to read an #include file. \a szAbsoluteFile is the path that the FileLocatorCB reported, the result needs
+  /// \brief This type of callback is used to read an #include file. \a sAbsoluteFile is the path that the FileLocatorCB reported, the result needs
   /// to be stored in \a FileContent.
-  typedef wdDelegate<wdResult(const char* szAbsoluteFile, wdDynamicArray<wdUInt8>& FileContent, wdTimestamp& out_FileModification)> FileOpenCB;
+  using FileOpenCB = nsDelegate<nsResult(nsStringView, nsDynamicArray<nsUInt8>&, nsTimestamp&)>;
 
-  /// \brief This type of callback is used to retrieve the absolute path of the \a szIncludeFile when #included inside \a szCurAbsoluteFile.
+  /// \brief This type of callback is used to retrieve the absolute path of the \a sIncludeFile when #included inside \a sCurAbsoluteFile.
   ///
   /// Note that you should ensure that \a out_sAbsoluteFilePath is always identical (including casing and path slashes) when it is supposed to point
   /// to the same file, as this exact name is used for file lookup (and therefore also file caching).
   /// If it is not identical, file caching will not work, and on different OSes the file may be found or not.
-  typedef wdDelegate<wdResult(const char* szCurAbsoluteFile, const char* szIncludeFile, IncludeType IncType, wdStringBuilder& out_sAbsoluteFilePath)> FileLocatorCB;
+  using FileLocatorCB = nsDelegate<nsResult(nsStringView, nsStringView, IncludeType, nsStringBuilder&)>;
 
   /// \brief Every time an unknown command (e.g. '#version') is encountered, this callback is used to determine whether the command shall be passed
   /// through.
   ///
   /// If the callback returns false, an error is generated and parsing fails. The callback thus acts as a whitelist for all commands that shall be
   /// passed through.
-  typedef wdDelegate<bool(const char* szUnknownCommand)> PassThroughUnknownCmdCB;
+  using PassThroughUnknownCmdCB = nsDelegate<bool(nsStringView)>;
 
-  typedef wdDeque<wdTokenParseUtils::TokenStream> MacroParameters;
+  using MacroParameters = nsDeque<nsTokenParseUtils::TokenStream>;
 
   /// \brief The event data that the processor broadcasts
   ///
@@ -111,39 +111,32 @@ public:
       Redefine,        ///< A #define for an already existing macro name (also logged as a warning)
     };
 
-    ProcessingEvent()
-    {
-      m_Type = Error;
-      m_pToken = nullptr;
-      m_szInfo = "";
-    }
+    EventType m_Type = EventType::Error;
 
-    EventType m_Type;
-
-    const wdToken* m_pToken;
-    const char* m_szInfo;
+    const nsToken* m_pToken = nullptr;
+    nsStringView m_sInfo;
   };
 
   /// \brief Broadcasts events during the processing. This can be used to create detailed callstacks when an error is encountered.
   /// It also broadcasts errors and warnings with more detailed information than the log interface allows.
-  wdEvent<const ProcessingEvent&> m_ProcessingEvents;
+  nsEvent<const ProcessingEvent&> m_ProcessingEvents;
 
-  wdPreprocessor();
+  nsPreprocessor();
 
-  /// \brief All error output is sent to the given wdLogInterface.
+  /// \brief All error output is sent to the given nsLogInterface.
   ///
   /// Note that when the preprocessor encounters any error, it will stop immediately and usually no output is generated.
   /// However, there are also a few cases where only a warning is generated, in this case preprocessing will continue without problems.
   ///
   /// Additionally errors and warnings are also broadcast through m_ProcessingEvents. So if you want to output more detailed information,
   /// that method should be preferred, because the events carry more information about the current file and line number etc.
-  void SetLogInterface(wdLogInterface* pLog);
+  void SetLogInterface(nsLogInterface* pLog);
 
   /// \brief Allows to specify a custom cache object that should be used for storing the tokenized result of files.
   ///
-  /// This allows to share one cache across multiple instances of wdPreprocessor and across time. E.g. it makes it possible
+  /// This allows to share one cache across multiple instances of nsPreprocessor and across time. E.g. it makes it possible
   /// to prevent having to read and tokenize include files that are referenced often.
-  void SetCustomFileCache(wdTokenizedFileCache* pFileCache = nullptr);
+  void SetCustomFileCache(nsTokenizedFileCache* pFileCache = nullptr);
 
   /// \brief If set to true, all #pragma commands are passed through to the output, otherwise they are removed.
   void SetPassThroughPragma(bool bPassThrough) { m_bPassThroughPragma = bPassThrough; }
@@ -156,7 +149,7 @@ public:
 
   /// \brief Sets the callback that is needed to read input data.
   ///
-  /// The default file open function will just try to open files via wdFileReader.
+  /// The default file open function will just try to open files via nsFileReader.
   void SetFileOpenFunction(FileOpenCB openAbsFileCB);
 
   /// \brief Sets the callback that is needed to locate an input file
@@ -168,23 +161,23 @@ public:
   /// \brief Adds a #define to the preprocessor, even before any file is processed.
   ///
   /// This allows to have global macros that are always defined for all processed files, such as the current platform etc.
-  /// \a szDefinition must be in the form of the text that follows a #define statement. So to define the macro "WIN32", just
+  /// \a sDefinition must be in the form of the text that follows a #define statement. So to define the macro "WIN32", just
   /// pass that string. You can define any macro that could also be defined in the source files.
   ///
-  /// If the definition is invalid, WD_FAILURE is returned. Also the preprocessor might end up in an invalid state, so using it any
+  /// If the definition is invalid, NS_FAILURE is returned. Also the preprocessor might end up in an invalid state, so using it any
   /// further might fail (including crashing).
-  wdResult AddCustomDefine(const char* szDefinition);
+  nsResult AddCustomDefine(nsStringView sDefinition);
 
   /// \brief Processes the given file and returns the result as a stream of tokens.
   ///
   /// This function is useful when you want to further process the output afterwards and thus need it in a tokenized form anyway.
-  wdResult Process(const char* szMainFile, wdTokenParseUtils::TokenStream& ref_tokenOutput);
+  nsResult Process(nsStringView sMainFile, nsTokenParseUtils::TokenStream& ref_tokenOutput);
 
   /// \brief Processes the given file and returns the result as a string.
   ///
   /// This function creates a string from the tokenized result. If \a bKeepComments is true, all block and line comments
   /// are included in the output string, otherwise they are removed.
-  wdResult Process(const char* szMainFile, wdStringBuilder& ref_sOutput, bool bKeepComments = true, bool bRemoveRedundantWhitespace = false, bool bInsertLine = false);
+  nsResult Process(nsStringView sMainFile, nsStringBuilder& ref_sOutput, bool bKeepComments = true, bool bRemoveRedundantWhitespace = false, bool bInsertLine = false);
 
 
 private:
@@ -196,10 +189,10 @@ private:
       m_iExpandDepth = 0;
     }
 
-    wdHashedString m_sVirtualFileName;
-    wdHashedString m_sFileName;
-    wdInt32 m_iCurrentLine;
-    wdInt32 m_iExpandDepth;
+    nsHashedString m_sVirtualFileName;
+    nsHashedString m_sFileName;
+    nsInt32 m_iCurrentLine;
+    nsInt32 m_iExpandDepth;
   };
 
   enum IfDefActivity
@@ -211,8 +204,8 @@ private:
 
   struct CustomDefine
   {
-    wdHybridArray<wdUInt8, 64> m_Content;
-    wdTokenizer m_Tokenized;
+    nsHybridArray<nsUInt8, 64> m_Content;
+    nsTokenizer m_Tokenized;
   };
 
   // This class-local allocator is used to get rid of some of the memory allocation
@@ -220,154 +213,154 @@ private:
   // If changing its position in the class, make sure it always comes before all
   // other members that depend on it to ensure deallocations in those members
   // happen before the allocator get destroyed.
-  wdAllocator<wdMemoryPolicies::wdHeapAllocation, wdMemoryTrackingFlags::None> m_ClassAllocator;
+  nsAllocatorWithPolicy<nsAllocPolicyHeap, nsAllocatorTrackingMode::Nothing> m_ClassAllocator;
 
   bool m_bPassThroughPragma;
   bool m_bPassThroughLine;
   PassThroughUnknownCmdCB m_PassThroughUnknownCmdCB;
 
   // this file cache is used as long as the user does not provide his own
-  wdTokenizedFileCache m_InternalFileCache;
+  nsTokenizedFileCache m_InternalFileCache;
 
   // pointer to the file cache that is in use
-  wdTokenizedFileCache* m_pUsedFileCache;
+  nsTokenizedFileCache* m_pUsedFileCache;
 
-  wdDeque<FileData> m_CurrentFileStack;
+  nsDeque<FileData> m_CurrentFileStack;
 
-  wdLogInterface* m_pLog;
+  nsLogInterface* m_pLog;
 
-  wdDeque<CustomDefine> m_CustomDefines;
+  nsDeque<CustomDefine> m_CustomDefines;
 
   struct IfDefState
   {
     IfDefState(IfDefActivity activeState = IfDefActivity::IsActive)
       : m_ActiveState(activeState)
-      , m_bIsInElseClause(false)
+
     {
     }
 
     IfDefActivity m_ActiveState;
-    bool m_bIsInElseClause;
+    bool m_bIsInElseClause = false;
   };
 
-  wdDeque<IfDefState> m_IfdefActiveStack;
+  nsDeque<IfDefState> m_IfdefActiveStack;
 
-  wdResult ProcessFile(const char* szFile, wdTokenParseUtils::TokenStream& TokenOutput);
-  wdResult ProcessCmd(const wdTokenParseUtils::TokenStream& Tokens, wdTokenParseUtils::TokenStream& TokenOutput);
+  nsResult ProcessFile(nsStringView sFile, nsTokenParseUtils::TokenStream& TokenOutput);
+  nsResult ProcessCmd(const nsTokenParseUtils::TokenStream& Tokens, nsTokenParseUtils::TokenStream& TokenOutput);
 
 public:
-  static wdResult DefaultFileLocator(const char* szCurAbsoluteFile, const char* szIncludeFile, wdPreprocessor::IncludeType incType, wdStringBuilder& out_sAbsoluteFilePath);
-  static wdResult DefaultFileOpen(const char* szAbsoluteFile, wdDynamicArray<wdUInt8>& ref_fileContent, wdTimestamp& out_fileModification);
+  static nsResult DefaultFileLocator(nsStringView sCurAbsoluteFile, nsStringView sIncludeFile, nsPreprocessor::IncludeType incType, nsStringBuilder& out_sAbsoluteFilePath);
+  static nsResult DefaultFileOpen(nsStringView sAbsoluteFile, nsDynamicArray<nsUInt8>& ref_fileContent, nsTimestamp& out_fileModification);
 
 private: // *** File Handling ***
-  wdResult OpenFile(const char* szFile, const wdTokenizer** pTokenizer);
+  nsResult OpenFile(nsStringView sFile, const nsTokenizer** pTokenizer);
 
   FileOpenCB m_FileOpenCallback;
   FileLocatorCB m_FileLocatorCallback;
-  wdSet<wdTempHashedString> m_PragmaOnce;
+  nsSet<nsTempHashedString> m_PragmaOnce;
 
 private: // *** Macro Definition ***
-  bool RemoveDefine(const char* szName);
-  wdResult HandleDefine(const wdTokenParseUtils::TokenStream& Tokens, wdUInt32& uiCurToken);
+  bool RemoveDefine(nsStringView sName);
+  nsResult HandleDefine(const nsTokenParseUtils::TokenStream& Tokens, nsUInt32& uiCurToken);
 
   struct MacroDefinition
   {
     MacroDefinition();
 
-    const wdToken* m_MacroIdentifier;
+    const nsToken* m_MacroIdentifier;
     bool m_bIsFunction;
     bool m_bCurrentlyExpanding;
     bool m_bHasVarArgs;
-    wdInt32 m_iNumParameters;
-    wdTokenParseUtils::TokenStream m_Replacement;
+    nsInt32 m_iNumParameters;
+    nsTokenParseUtils::TokenStream m_Replacement;
   };
 
-  wdResult StoreDefine(const wdToken* pMacroNameToken, const wdTokenParseUtils::TokenStream* pReplacementTokens, wdUInt32 uiFirstReplacementToken, wdInt32 iNumParameters, bool bUsesVarArgs);
-  wdResult ExtractParameterName(const wdTokenParseUtils::TokenStream& Tokens, wdUInt32& uiCurToken, wdString& sIdentifierName);
+  nsResult StoreDefine(const nsToken* pMacroNameToken, const nsTokenParseUtils::TokenStream* pReplacementTokens, nsUInt32 uiFirstReplacementToken, nsInt32 iNumParameters, bool bUsesVarArgs);
+  nsResult ExtractParameterName(const nsTokenParseUtils::TokenStream& Tokens, nsUInt32& uiCurToken, nsString& sIdentifierName);
 
-  wdMap<wdString256, MacroDefinition> m_Macros;
+  nsMap<nsString256, MacroDefinition> m_Macros;
 
-  static const wdInt32 s_iMacroParameter0 = wdTokenType::ENUM_COUNT + 2;
-  static wdString s_ParamNames[32];
-  wdToken m_ParameterTokens[32];
+  static constexpr nsInt32 s_iMacroParameter0 = nsTokenType::ENUM_COUNT + 2;
+  static nsString s_ParamNames[32];
+  nsToken m_ParameterTokens[32];
 
 private: // *** #if condition parsing ***
-  wdResult EvaluateCondition(const wdTokenParseUtils::TokenStream& Tokens, wdUInt32& uiCurToken, wdInt64& iResult);
-  wdResult ParseCondition(const wdTokenParseUtils::TokenStream& Tokens, wdUInt32& uiCurToken, wdInt64& iResult);
-  wdResult ParseFactor(const wdTokenParseUtils::TokenStream& Tokens, wdUInt32& uiCurToken, wdInt64& iResult);
-  wdResult ParseExpressionMul(const wdTokenParseUtils::TokenStream& Tokens, wdUInt32& uiCurToken, wdInt64& iResult);
-  wdResult ParseExpressionOr(const wdTokenParseUtils::TokenStream& Tokens, wdUInt32& uiCurToken, wdInt64& iResult);
-  wdResult ParseExpressionAnd(const wdTokenParseUtils::TokenStream& Tokens, wdUInt32& uiCurToken, wdInt64& iResult);
-  wdResult ParseExpressionPlus(const wdTokenParseUtils::TokenStream& Tokens, wdUInt32& uiCurToken, wdInt64& iResult);
-  wdResult ParseExpressionShift(const wdTokenParseUtils::TokenStream& Tokens, wdUInt32& uiCurToken, wdInt64& iResult);
-  wdResult ParseExpressionBitOr(const wdTokenParseUtils::TokenStream& Tokens, wdUInt32& uiCurToken, wdInt64& iResult);
-  wdResult ParseExpressionBitAnd(const wdTokenParseUtils::TokenStream& Tokens, wdUInt32& uiCurToken, wdInt64& iResult);
-  wdResult ParseExpressionBitXor(const wdTokenParseUtils::TokenStream& Tokens, wdUInt32& uiCurToken, wdInt64& iResult);
+  nsResult EvaluateCondition(const nsTokenParseUtils::TokenStream& Tokens, nsUInt32& uiCurToken, nsInt64& iResult);
+  nsResult ParseCondition(const nsTokenParseUtils::TokenStream& Tokens, nsUInt32& uiCurToken, nsInt64& iResult);
+  nsResult ParseFactor(const nsTokenParseUtils::TokenStream& Tokens, nsUInt32& uiCurToken, nsInt64& iResult);
+  nsResult ParseExpressionMul(const nsTokenParseUtils::TokenStream& Tokens, nsUInt32& uiCurToken, nsInt64& iResult);
+  nsResult ParseExpressionOr(const nsTokenParseUtils::TokenStream& Tokens, nsUInt32& uiCurToken, nsInt64& iResult);
+  nsResult ParseExpressionAnd(const nsTokenParseUtils::TokenStream& Tokens, nsUInt32& uiCurToken, nsInt64& iResult);
+  nsResult ParseExpressionPlus(const nsTokenParseUtils::TokenStream& Tokens, nsUInt32& uiCurToken, nsInt64& iResult);
+  nsResult ParseExpressionShift(const nsTokenParseUtils::TokenStream& Tokens, nsUInt32& uiCurToken, nsInt64& iResult);
+  nsResult ParseExpressionBitOr(const nsTokenParseUtils::TokenStream& Tokens, nsUInt32& uiCurToken, nsInt64& iResult);
+  nsResult ParseExpressionBitAnd(const nsTokenParseUtils::TokenStream& Tokens, nsUInt32& uiCurToken, nsInt64& iResult);
+  nsResult ParseExpressionBitXor(const nsTokenParseUtils::TokenStream& Tokens, nsUInt32& uiCurToken, nsInt64& iResult);
 
 
 private: // *** Parsing ***
-  wdResult CopyTokensAndEvaluateDefined(const wdTokenParseUtils::TokenStream& Source, wdUInt32 uiFirstSourceToken, wdTokenParseUtils::TokenStream& Destination);
-  void CopyTokensReplaceParams(const wdTokenParseUtils::TokenStream& Source, wdUInt32 uiFirstSourceToken, wdTokenParseUtils::TokenStream& Destination, const wdHybridArray<wdString, 16>& parameters);
+  nsResult CopyTokensAndEvaluateDefined(const nsTokenParseUtils::TokenStream& Source, nsUInt32 uiFirstSourceToken, nsTokenParseUtils::TokenStream& Destination);
+  void CopyTokensReplaceParams(const nsTokenParseUtils::TokenStream& Source, nsUInt32 uiFirstSourceToken, nsTokenParseUtils::TokenStream& Destination, const nsHybridArray<nsString, 16>& parameters);
 
-  wdResult Expect(const wdTokenParseUtils::TokenStream& Tokens, wdUInt32& uiCurToken, const char* szToken, wdUInt32* pAccepted = nullptr);
-  wdResult Expect(const wdTokenParseUtils::TokenStream& Tokens, wdUInt32& uiCurToken, wdTokenType::Enum Type, wdUInt32* pAccepted = nullptr);
-  wdResult Expect(const wdTokenParseUtils::TokenStream& Tokens, wdUInt32& uiCurToken, const char* szToken1, const char* szToken2, wdUInt32* pAccepted = nullptr);
-  wdResult ExpectEndOfLine(const wdTokenParseUtils::TokenStream& Tokens, wdUInt32 uiCurToken);
+  nsResult Expect(const nsTokenParseUtils::TokenStream& Tokens, nsUInt32& uiCurToken, nsStringView sToken, nsUInt32* pAccepted = nullptr);
+  nsResult Expect(const nsTokenParseUtils::TokenStream& Tokens, nsUInt32& uiCurToken, nsTokenType::Enum Type, nsUInt32* pAccepted = nullptr);
+  nsResult Expect(const nsTokenParseUtils::TokenStream& Tokens, nsUInt32& uiCurToken, nsStringView sToken1, nsStringView sToken2, nsUInt32* pAccepted = nullptr);
+  nsResult ExpectEndOfLine(const nsTokenParseUtils::TokenStream& Tokens, nsUInt32 uiCurToken);
 
 private: // *** Macro Expansion ***
-  wdResult Expand(const wdTokenParseUtils::TokenStream& Tokens, wdTokenParseUtils::TokenStream& Output);
-  wdResult ExpandOnce(const wdTokenParseUtils::TokenStream& Tokens, wdTokenParseUtils::TokenStream& Output);
-  wdResult ExpandObjectMacro(MacroDefinition& Macro, wdTokenParseUtils::TokenStream& Output, const wdToken* pMacroToken);
-  wdResult ExpandFunctionMacro(MacroDefinition& Macro, const MacroParameters& Parameters, wdTokenParseUtils::TokenStream& Output, const wdToken* pMacroToken);
-  wdResult ExpandMacroParam(const wdToken& MacroToken, wdUInt32 uiParam, wdTokenParseUtils::TokenStream& Output, const MacroDefinition& Macro);
-  void PassThroughFunctionMacro(MacroDefinition& Macro, const MacroParameters& Parameters, wdTokenParseUtils::TokenStream& Output);
-  wdToken* AddCustomToken(const wdToken* pPrevious, const wdStringView& sNewText);
-  void OutputNotExpandableMacro(MacroDefinition& Macro, wdTokenParseUtils::TokenStream& Output);
-  wdResult ExtractAllMacroParameters(const wdTokenParseUtils::TokenStream& Tokens, wdUInt32& uiCurToken, wdDeque<wdTokenParseUtils::TokenStream>& AllParameters);
-  wdResult ExtractParameterValue(const wdTokenParseUtils::TokenStream& Tokens, wdUInt32& uiCurToken, wdTokenParseUtils::TokenStream& ParamTokens);
+  nsResult Expand(const nsTokenParseUtils::TokenStream& Tokens, nsTokenParseUtils::TokenStream& Output);
+  nsResult ExpandOnce(const nsTokenParseUtils::TokenStream& Tokens, nsTokenParseUtils::TokenStream& Output);
+  nsResult ExpandObjectMacro(MacroDefinition& Macro, nsTokenParseUtils::TokenStream& Output, const nsToken* pMacroToken);
+  nsResult ExpandFunctionMacro(MacroDefinition& Macro, const MacroParameters& Parameters, nsTokenParseUtils::TokenStream& Output, const nsToken* pMacroToken);
+  nsResult ExpandMacroParam(const nsToken& MacroToken, nsUInt32 uiParam, nsTokenParseUtils::TokenStream& Output, const MacroDefinition& Macro);
+  void PassThroughFunctionMacro(MacroDefinition& Macro, const MacroParameters& Parameters, nsTokenParseUtils::TokenStream& Output);
+  nsToken* AddCustomToken(const nsToken* pPrevious, const nsStringView& sNewText);
+  void OutputNotExpandableMacro(MacroDefinition& Macro, nsTokenParseUtils::TokenStream& Output);
+  nsResult ExtractAllMacroParameters(const nsTokenParseUtils::TokenStream& Tokens, nsUInt32& uiCurToken, nsDeque<nsTokenParseUtils::TokenStream>& AllParameters);
+  nsResult ExtractParameterValue(const nsTokenParseUtils::TokenStream& Tokens, nsUInt32& uiCurToken, nsTokenParseUtils::TokenStream& ParamTokens);
 
-  wdResult InsertParameters(const wdTokenParseUtils::TokenStream& Tokens, wdTokenParseUtils::TokenStream& Output, const MacroDefinition& Macro);
+  nsResult InsertParameters(const nsTokenParseUtils::TokenStream& Tokens, nsTokenParseUtils::TokenStream& Output, const MacroDefinition& Macro);
 
-  wdResult InsertStringifiedParameters(const wdTokenParseUtils::TokenStream& Tokens, wdTokenParseUtils::TokenStream& Output, const MacroDefinition& Macro);
-  wdResult ConcatenateParameters(const wdTokenParseUtils::TokenStream& Tokens, wdTokenParseUtils::TokenStream& Output, const MacroDefinition& Macro);
-  void MergeTokens(const wdToken* pFirst, const wdToken* pSecond, wdTokenParseUtils::TokenStream& Output, const MacroDefinition& Macro);
+  nsResult InsertStringifiedParameters(const nsTokenParseUtils::TokenStream& Tokens, nsTokenParseUtils::TokenStream& Output, const MacroDefinition& Macro);
+  nsResult ConcatenateParameters(const nsTokenParseUtils::TokenStream& Tokens, nsTokenParseUtils::TokenStream& Output, const MacroDefinition& Macro);
+  void MergeTokens(const nsToken* pFirst, const nsToken* pSecond, nsTokenParseUtils::TokenStream& Output, const MacroDefinition& Macro);
 
   struct CustomToken
   {
-    wdToken m_Token;
-    wdString m_sIdentifierString;
+    nsToken m_Token;
+    nsString m_sIdentifierString;
   };
 
-  enum TokenFlags : wdUInt32
+  enum TokenFlags : nsUInt32
   {
-    NoFurtherExpansion = WD_BIT(0),
+    NoFurtherExpansion = NS_BIT(0),
   };
 
-  wdToken m_TokenFile;
-  wdToken m_TokenLine;
-  const wdToken* m_pTokenOpenParenthesis;
-  const wdToken* m_pTokenClosedParenthesis;
-  const wdToken* m_pTokenComma;
+  nsToken m_TokenFile;
+  nsToken m_TokenLine;
+  const nsToken* m_pTokenOpenParenthesis;
+  const nsToken* m_pTokenClosedParenthesis;
+  const nsToken* m_pTokenComma;
 
-  wdDeque<const MacroParameters*> m_MacroParamStack;
-  wdDeque<const MacroParameters*> m_MacroParamStackExpanded;
-  wdDeque<CustomToken> m_CustomTokens;
+  nsDeque<const MacroParameters*> m_MacroParamStack;
+  nsDeque<const MacroParameters*> m_MacroParamStackExpanded;
+  nsDeque<CustomToken> m_CustomTokens;
 
 private: // *** Other ***
-  static void StringifyTokens(const wdTokenParseUtils::TokenStream& Tokens, wdStringBuilder& sResult, bool bSurroundWithQuotes);
-  wdToken* CreateStringifiedParameter(wdUInt32 uiParam, const wdToken* pParamToken, const MacroDefinition& Macro);
+  static void StringifyTokens(const nsTokenParseUtils::TokenStream& Tokens, nsStringBuilder& sResult, bool bSurroundWithQuotes);
+  nsToken* CreateStringifiedParameter(nsUInt32 uiParam, const nsToken* pParamToken, const MacroDefinition& Macro);
 
-  wdResult HandleErrorDirective(const wdTokenParseUtils::TokenStream& Tokens, wdUInt32 uiCurToken, wdUInt32 uiDirectiveToken);
-  wdResult HandleWarningDirective(const wdTokenParseUtils::TokenStream& Tokens, wdUInt32 uiCurToken, wdUInt32 uiDirectiveToken);
-  wdResult HandleUndef(const wdTokenParseUtils::TokenStream& Tokens, wdUInt32 uiCurToken, wdUInt32 uiDirectiveToken);
+  nsResult HandleErrorDirective(const nsTokenParseUtils::TokenStream& Tokens, nsUInt32 uiCurToken, nsUInt32 uiDirectiveToken);
+  nsResult HandleWarningDirective(const nsTokenParseUtils::TokenStream& Tokens, nsUInt32 uiCurToken, nsUInt32 uiDirectiveToken);
+  nsResult HandleUndef(const nsTokenParseUtils::TokenStream& Tokens, nsUInt32 uiCurToken, nsUInt32 uiDirectiveToken);
 
-  wdResult HandleEndif(const wdTokenParseUtils::TokenStream& Tokens, wdUInt32 uiCurToken, wdUInt32 uiDirectiveToken);
-  wdResult HandleElif(const wdTokenParseUtils::TokenStream& Tokens, wdUInt32 uiCurToken, wdUInt32 uiDirectiveToken);
-  wdResult HandleIf(const wdTokenParseUtils::TokenStream& Tokens, wdUInt32 uiCurToken, wdUInt32 uiDirectiveToken);
-  wdResult HandleElse(const wdTokenParseUtils::TokenStream& Tokens, wdUInt32 uiCurToken, wdUInt32 uiDirectiveToken);
-  wdResult HandleIfdef(const wdTokenParseUtils::TokenStream& Tokens, wdUInt32 uiCurToken, wdUInt32 uiDirectiveToken, bool bIsIfdef);
-  wdResult HandleInclude(const wdTokenParseUtils::TokenStream& Tokens, wdUInt32 uiCurToken, wdUInt32 uiDirectiveToken, wdTokenParseUtils::TokenStream& TokenOutput);
-  wdResult HandleLine(const wdTokenParseUtils::TokenStream& Tokens, wdUInt32 uiCurToken, wdUInt32 uiDirectiveToken, wdTokenParseUtils::TokenStream& TokenOutput);
+  nsResult HandleEndif(const nsTokenParseUtils::TokenStream& Tokens, nsUInt32 uiCurToken, nsUInt32 uiDirectiveToken);
+  nsResult HandleElif(const nsTokenParseUtils::TokenStream& Tokens, nsUInt32 uiCurToken, nsUInt32 uiDirectiveToken);
+  nsResult HandleIf(const nsTokenParseUtils::TokenStream& Tokens, nsUInt32 uiCurToken, nsUInt32 uiDirectiveToken);
+  nsResult HandleElse(const nsTokenParseUtils::TokenStream& Tokens, nsUInt32 uiCurToken, nsUInt32 uiDirectiveToken);
+  nsResult HandleIfdef(const nsTokenParseUtils::TokenStream& Tokens, nsUInt32 uiCurToken, nsUInt32 uiDirectiveToken, bool bIsIfdef);
+  nsResult HandleInclude(const nsTokenParseUtils::TokenStream& Tokens, nsUInt32 uiCurToken, nsUInt32 uiDirectiveToken, nsTokenParseUtils::TokenStream& TokenOutput);
+  nsResult HandleLine(const nsTokenParseUtils::TokenStream& Tokens, nsUInt32 uiCurToken, nsUInt32 uiDirectiveToken, nsTokenParseUtils::TokenStream& TokenOutput);
 };
 
 #define PP_LOG0(Type, FormatStr, ErrorToken)                                                                                                        \
@@ -375,14 +368,14 @@ private: // *** Other ***
     ProcessingEvent pe;                                                                                                                             \
     pe.m_Type = ProcessingEvent::Type;                                                                                                              \
     pe.m_pToken = ErrorToken;                                                                                                                       \
-    pe.m_szInfo = FormatStr;                                                                                                                        \
+    pe.m_sInfo = FormatStr;                                                                                                                         \
     if (pe.m_pToken->m_uiLine == 0 && pe.m_pToken->m_uiColumn == 0)                                                                                 \
     {                                                                                                                                               \
-      const_cast<wdToken*>(pe.m_pToken)->m_uiLine = m_CurrentFileStack.PeekBack().m_iCurrentLine;                                                   \
-      const_cast<wdToken*>(pe.m_pToken)->m_File = m_CurrentFileStack.PeekBack().m_sVirtualFileName;                                                 \
+      const_cast<nsToken*>(pe.m_pToken)->m_uiLine = m_CurrentFileStack.PeekBack().m_iCurrentLine;                                                   \
+      const_cast<nsToken*>(pe.m_pToken)->m_File = m_CurrentFileStack.PeekBack().m_sVirtualFileName;                                                 \
     }                                                                                                                                               \
     m_ProcessingEvents.Broadcast(pe);                                                                                                               \
-    wdLog::Type(m_pLog, "File '{0}', Line {1} ({2}): " FormatStr, pe.m_pToken->m_File.GetString(), pe.m_pToken->m_uiLine, pe.m_pToken->m_uiColumn); \
+    nsLog::Type(m_pLog, "File '{0}', Line {1} ({2}): " FormatStr, pe.m_pToken->m_File.GetString(), pe.m_pToken->m_uiLine, pe.m_pToken->m_uiColumn); \
   }
 
 #define PP_LOG(Type, FormatStr, ErrorToken, ...)                                                                                                       \
@@ -392,12 +385,12 @@ private: // *** Other ***
     _pe.m_pToken = ErrorToken;                                                                                                                         \
     if (_pe.m_pToken->m_uiLine == 0 && _pe.m_pToken->m_uiColumn == 0)                                                                                  \
     {                                                                                                                                                  \
-      const_cast<wdToken*>(_pe.m_pToken)->m_uiLine = m_CurrentFileStack.PeekBack().m_iCurrentLine;                                                     \
-      const_cast<wdToken*>(_pe.m_pToken)->m_File = m_CurrentFileStack.PeekBack().m_sVirtualFileName;                                                   \
+      const_cast<nsToken*>(_pe.m_pToken)->m_uiLine = m_CurrentFileStack.PeekBack().m_iCurrentLine;                                                     \
+      const_cast<nsToken*>(_pe.m_pToken)->m_File = m_CurrentFileStack.PeekBack().m_sVirtualFileName;                                                   \
     }                                                                                                                                                  \
-    wdStringBuilder sInfo;                                                                                                                             \
-    sInfo.Format(FormatStr, ##__VA_ARGS__);                                                                                                            \
-    _pe.m_szInfo = sInfo.GetData();                                                                                                                    \
+    nsStringBuilder sInfo;                                                                                                                             \
+    sInfo.SetFormat(FormatStr, ##__VA_ARGS__);                                                                                                         \
+    _pe.m_sInfo = sInfo;                                                                                                                               \
     m_ProcessingEvents.Broadcast(_pe);                                                                                                                 \
-    wdLog::Type(m_pLog, "File '{0}', Line {1} ({2}): {3}", _pe.m_pToken->m_File.GetString(), _pe.m_pToken->m_uiLine, _pe.m_pToken->m_uiColumn, sInfo); \
+    nsLog::Type(m_pLog, "File '{0}', Line {1} ({2}): {3}", _pe.m_pToken->m_File.GetString(), _pe.m_pToken->m_uiLine, _pe.m_pToken->m_uiColumn, sInfo); \
   }

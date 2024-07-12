@@ -1,149 +1,149 @@
 #pragma once
 
 template <typename Type>
-constexpr WD_ALWAYS_INLINE Type wdAngle::Pi()
+constexpr NS_ALWAYS_INLINE Type nsAngle::Pi()
 {
   return static_cast<Type>(3.1415926535897932384626433832795);
 }
 
 template <typename Type>
-constexpr WD_ALWAYS_INLINE Type wdAngle::DegToRadMultiplier()
+constexpr NS_ALWAYS_INLINE Type nsAngle::DegToRadMultiplier()
 {
   return Pi<Type>() / (Type)180;
 }
 
 template <typename Type>
-constexpr WD_ALWAYS_INLINE Type wdAngle::RadToDegMultiplier()
+constexpr NS_ALWAYS_INLINE Type nsAngle::RadToDegMultiplier()
 {
   return ((Type)180) / Pi<Type>();
 }
 
 template <typename Type>
-constexpr Type wdAngle::DegToRad(Type f)
+constexpr Type nsAngle::DegToRad(Type f)
 {
   return f * DegToRadMultiplier<Type>();
 }
 
 template <typename Type>
-constexpr Type wdAngle::RadToDeg(Type f)
+constexpr Type nsAngle::RadToDeg(Type f)
 {
   return f * RadToDegMultiplier<Type>();
 }
 
-constexpr inline wdAngle wdAngle::Degree(float fDegree)
+constexpr inline nsAngle nsAngle::MakeFromDegree(float fDegree)
 {
-  return wdAngle(DegToRad(fDegree));
+  return nsAngle(DegToRad(fDegree));
 }
 
-constexpr WD_ALWAYS_INLINE wdAngle wdAngle::Radian(float fRadian)
+constexpr NS_ALWAYS_INLINE nsAngle nsAngle::MakeFromRadian(float fRadian)
 {
-  return wdAngle(fRadian);
+  return nsAngle(fRadian);
 }
 
-constexpr inline float wdAngle::GetDegree() const
+constexpr inline float nsAngle::GetDegree() const
 {
   return RadToDeg(m_fRadian);
 }
 
-constexpr WD_ALWAYS_INLINE float wdAngle::GetRadian() const
+constexpr NS_ALWAYS_INLINE float nsAngle::GetRadian() const
 {
   return m_fRadian;
 }
 
-inline wdAngle wdAngle::GetNormalizedRange() const
+inline nsAngle nsAngle::GetNormalizedRange() const
 {
-  wdAngle out(m_fRadian);
+  nsAngle out(m_fRadian);
   out.NormalizeRange();
   return out;
 }
 
-inline bool wdAngle::IsEqualSimple(wdAngle rhs, wdAngle epsilon) const
+inline bool nsAngle::IsEqualSimple(nsAngle rhs, nsAngle epsilon) const
 {
-  const wdAngle diff = AngleBetween(*this, rhs);
+  const nsAngle diff = AngleBetween(*this, rhs);
 
   return ((diff.m_fRadian >= -epsilon.m_fRadian) && (diff.m_fRadian <= epsilon.m_fRadian));
 }
 
-inline bool wdAngle::IsEqualNormalized(wdAngle rhs, wdAngle epsilon) const
+inline bool nsAngle::IsEqualNormalized(nsAngle rhs, nsAngle epsilon) const
 {
   // equality between normalized angles
-  const wdAngle aNorm = GetNormalizedRange();
-  const wdAngle bNorm = rhs.GetNormalizedRange();
+  const nsAngle aNorm = GetNormalizedRange();
+  const nsAngle bNorm = rhs.GetNormalizedRange();
 
   return aNorm.IsEqualSimple(bNorm, epsilon);
 }
 
-constexpr WD_ALWAYS_INLINE wdAngle wdAngle::operator-() const
+constexpr NS_ALWAYS_INLINE nsAngle nsAngle::operator-() const
 {
-  return wdAngle(-m_fRadian);
+  return nsAngle(-m_fRadian);
 }
 
-WD_ALWAYS_INLINE void wdAngle::operator+=(wdAngle r)
+NS_ALWAYS_INLINE void nsAngle::operator+=(nsAngle r)
 {
   m_fRadian += r.m_fRadian;
 }
 
-WD_ALWAYS_INLINE void wdAngle::operator-=(wdAngle r)
+NS_ALWAYS_INLINE void nsAngle::operator-=(nsAngle r)
 {
   m_fRadian -= r.m_fRadian;
 }
 
-constexpr inline wdAngle wdAngle::operator+(wdAngle r) const
+constexpr inline nsAngle nsAngle::operator+(nsAngle r) const
 {
-  return wdAngle(m_fRadian + r.m_fRadian);
+  return nsAngle(m_fRadian + r.m_fRadian);
 }
 
-constexpr inline wdAngle wdAngle::operator-(wdAngle r) const
+constexpr inline nsAngle nsAngle::operator-(nsAngle r) const
 {
-  return wdAngle(m_fRadian - r.m_fRadian);
+  return nsAngle(m_fRadian - r.m_fRadian);
 }
 
-constexpr WD_ALWAYS_INLINE bool wdAngle::operator==(const wdAngle& r) const
+constexpr NS_ALWAYS_INLINE bool nsAngle::operator==(const nsAngle& r) const
 {
   return m_fRadian == r.m_fRadian;
 }
 
-constexpr WD_ALWAYS_INLINE bool wdAngle::operator!=(const wdAngle& r) const
+constexpr NS_ALWAYS_INLINE bool nsAngle::operator!=(const nsAngle& r) const
 {
   return m_fRadian != r.m_fRadian;
 }
 
-constexpr WD_ALWAYS_INLINE bool wdAngle::operator<(const wdAngle& r) const
+constexpr NS_ALWAYS_INLINE bool nsAngle::operator<(const nsAngle& r) const
 {
   return m_fRadian < r.m_fRadian;
 }
 
-constexpr WD_ALWAYS_INLINE bool wdAngle::operator>(const wdAngle& r) const
+constexpr NS_ALWAYS_INLINE bool nsAngle::operator>(const nsAngle& r) const
 {
   return m_fRadian > r.m_fRadian;
 }
 
-constexpr WD_ALWAYS_INLINE bool wdAngle::operator<=(const wdAngle& r) const
+constexpr NS_ALWAYS_INLINE bool nsAngle::operator<=(const nsAngle& r) const
 {
   return m_fRadian <= r.m_fRadian;
 }
 
-constexpr WD_ALWAYS_INLINE bool wdAngle::operator>=(const wdAngle& r) const
+constexpr NS_ALWAYS_INLINE bool nsAngle::operator>=(const nsAngle& r) const
 {
   return m_fRadian >= r.m_fRadian;
 }
 
-constexpr inline wdAngle operator*(wdAngle a, float f)
+constexpr inline nsAngle operator*(nsAngle a, float f)
 {
-  return wdAngle::Radian(a.GetRadian() * f);
+  return nsAngle::MakeFromRadian(a.GetRadian() * f);
 }
 
-constexpr inline wdAngle operator*(float f, wdAngle a)
+constexpr inline nsAngle operator*(float f, nsAngle a)
 {
-  return wdAngle::Radian(a.GetRadian() * f);
+  return nsAngle::MakeFromRadian(a.GetRadian() * f);
 }
 
-constexpr inline wdAngle operator/(wdAngle a, float f)
+constexpr inline nsAngle operator/(nsAngle a, float f)
 {
-  return wdAngle::Radian(a.GetRadian() / f);
+  return nsAngle::MakeFromRadian(a.GetRadian() / f);
 }
 
-constexpr inline float operator/(wdAngle a, wdAngle b)
+constexpr inline float operator/(nsAngle a, nsAngle b)
 {
   return a.GetRadian() / b.GetRadian();
 }

@@ -4,19 +4,19 @@
 
 #include "../../../Base/Shaders/Common/ConstantBufferMacros.h"
 
-struct WD_SHADER_STRUCT wdTestShaderData
+struct NS_SHADER_STRUCT nsTestShaderData
 {
   FLOAT4(InstanceColor);
   TRANSFORM(InstanceTransform);
 };
 
 // this is only defined during shader compilation
-#if WD_ENABLED(PLATFORM_SHADER)
+#if NS_ENABLED(PLATFORM_SHADER)
 
-StructuredBuffer<wdTestShaderData> instancingData;
+StructuredBuffer<nsTestShaderData> instancingData;
 
 #else // C++
 
-WD_CHECK_AT_COMPILETIME(sizeof(wdTestShaderData) == 64);
+NS_CHECK_AT_COMPILETIME(sizeof(nsTestShaderData) == 64);
 
 #endif

@@ -8,74 +8,66 @@
 #include <Foundation/Threading/ThreadUtils.h>
 #include <Foundation/Utilities/CommandLineOptions.h>
 
-wdApplication::wdApplication(const char* szAppName)
-  : m_iReturnCode(0)
-  , m_uiArgumentCount(0)
-  , m_pArguments(nullptr)
-  , m_bReportMemoryLeaks(true)
-  , m_sAppName(szAppName)
+nsApplication::nsApplication(nsStringView sAppName)
+  : m_sAppName(sAppName)
 {
 }
 
-wdApplication::~wdApplication() = default;
+nsApplication::~nsApplication() = default;
 
-void wdApplication::SetApplicationName(const char* szAppName)
+void nsApplication::SetApplicationName(nsStringView sAppName)
 {
-  m_sAppName = szAppName;
+  m_sAppName = sAppName;
 }
 
-wdCommandLineOptionBool opt_WaitForDebugger("app", "-WaitForDebugger", "If specified, the application will wait at startup until a debugger is attached.", false);
+nsCommandLineOptionBool opt_WaitForDebugger("app", "-WaitForDebugger", "If specified, the application will wait at startup until a debugger is attached.", false);
 
-wdResult wdApplication::BeforeCoreSystemsStartup()
+nsResult nsApplication::BeforeCoreSystemsStartup()
 {
-  if (wdFileSystem::DetectSdkRootDirectory().Failed())
+  if (nsFileSystem::DetectSdkRootDirectory().Failed())
   {
-    wdLog::Error("Unable to find the SDK root directory. Mounting data directories may fail.");
+    nsLog::Error("Unable to find the SDK root directory. Mounting data directories may fail.");
   }
 
-#if WD_ENABLED(WD_COMPILE_FOR_DEBUG)
-  wdRTTI::VerifyCorrectnessForAllTypes();
+#if NS_ENABLED(NS_COMPILE_FOR_DEBUG)
+  nsRTTI::VerifyCorrectnessForAllTypes();
 #endif
 
-  if (opt_WaitForDebugger.GetOptionValue(wdCommandLineOption::LogMode::AlwaysIfSpecified))
+  if (opt_WaitForDebugger.GetOptionValue(nsCommandLineOption::LogMode::AlwaysIfSpecified))
   {
-    while (!wdSystemInformation::IsDebuggerAttached())
+    while (!nsSystemInformation::IsDebuggerAttached())
     {
-      wdThreadUtils::Sleep(wdTime::Milliseconds(1));
+      nsThreadUtils::Sleep(nsTime::MakeFromMilliseconds(1));
     }
 
-    WD_DEBUG_BREAK;
+    NS_DEBUG_BREAK;
   }
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
 
-void wdApplication::SetCommandLineArguments(wdUInt32 uiArgumentCount, const char** pArguments)
+void nsApplication::SetCommandLineArguments(nsUInt32 uiArgumentCount, const char** pArguments)
 {
   m_uiArgumentCount = uiArgumentCount;
   m_pArguments = pArguments;
 
-  wdCommandLineUtils::GetGlobalInstance()->SetCommandLine(uiArgumentCount, pArguments, wdCommandLineUtils::PreferOsArgs);
+  nsCommandLineUtils::GetGlobalInstance()->SetCommandLine(uiArgumentCount, pArguments, nsCommandLineUtils::PreferOsArgs);
 }
 
 
-const char* wdApplication::GetArgument(wdUInt32 uiArgument) const
+const char* nsApplication::GetArgument(nsUInt32 uiArgument) const
 {
-  WD_ASSERT_DEV(uiArgument < m_uiArgumentCount, "There are only {0} arguments, cannot access argument {1}.", m_uiArgumentCount, uiArgument);
+  NS_ASSERT_DEV(uiArgument < m_uiArgumentCount, "There are only {0} arguments, cannot access argument {1}.", m_uiArgumentCount, uiArgument);
 
   return m_pArguments[uiArgument];
 }
 
 
-void wdApplication::RequestQuit()
+void nsApplication::RequestQuit()
 {
   m_bWasQuitRequested = true;
 }
 
 
-wdApplication* wdApplication::s_pApplicationInstance = nullptr;
-
-
-
-WD_STATICLINK_FILE(Foundation, Foundation_Application_Implementation_Application);
+nsApplication* nsApplication::s_pApplicationInstance = nullptr;

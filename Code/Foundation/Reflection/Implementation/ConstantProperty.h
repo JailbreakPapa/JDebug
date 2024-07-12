@@ -8,41 +8,41 @@
 /// \brief The base class for all typed member properties. Ie. once the type of a property is determined, it can be cast to the proper
 /// version of this.
 ///
-/// For example, when you have a pointer to an wdAbstractMemberProperty and it returns that the property is of type 'int', you can cast the
-/// pointer to an pointer to wdTypedMemberProperty<int> which then allows you to access its values.
+/// For example, when you have a pointer to an nsAbstractMemberProperty and it returns that the property is of type 'int', you can cast the
+/// pointer to an pointer to nsTypedMemberProperty<int> which then allows you to access its values.
 template <typename Type>
-class wdTypedConstantProperty : public wdAbstractConstantProperty
+class nsTypedConstantProperty : public nsAbstractConstantProperty
 {
 public:
-  /// \brief Passes the property name through to wdAbstractMemberProperty.
-  wdTypedConstantProperty(const char* szPropertyName)
-    : wdAbstractConstantProperty(szPropertyName)
+  /// \brief Passes the property name through to nsAbstractMemberProperty.
+  nsTypedConstantProperty(const char* szPropertyName)
+    : nsAbstractConstantProperty(szPropertyName)
   {
-    m_Flags = wdPropertyFlags::GetParameterFlags<Type>();
+    m_Flags = nsPropertyFlags::GetParameterFlags<Type>();
   }
 
-  /// \brief Returns the actual type of the property. You can then compare that with known types, eg. compare it to wdGetStaticRTTI<int>()
+  /// \brief Returns the actual type of the property. You can then compare that with known types, eg. compare it to nsGetStaticRTTI<int>()
   /// to see whether this is an int property.
-  virtual const wdRTTI* GetSpecificType() const override // [tested]
+  virtual const nsRTTI* GetSpecificType() const override // [tested]
   {
-    return wdGetStaticRTTI<typename wdTypeTraits<Type>::NonConstReferenceType>();
+    return nsGetStaticRTTI<typename nsTypeTraits<Type>::NonConstReferenceType>();
   }
 
   /// \brief Returns the value of the property. Pass the instance pointer to the surrounding class along.
   virtual Type GetValue() const = 0;
 };
 
-/// \brief [internal] An implementation of wdTypedConstantProperty that accesses the property data directly.
+/// \brief [internal] An implementation of nsTypedConstantProperty that accesses the property data directly.
 template <typename Type>
-class wdConstantProperty : public wdTypedConstantProperty<Type>
+class nsConstantProperty : public nsTypedConstantProperty<Type>
 {
 public:
   /// \brief Constructor.
-  wdConstantProperty(const char* szPropertyName, Type value)
-    : wdTypedConstantProperty<Type>(szPropertyName)
+  nsConstantProperty(const char* szPropertyName, Type value)
+    : nsTypedConstantProperty<Type>(szPropertyName)
     , m_Value(value)
   {
-    WD_ASSERT_DEBUG(this->m_Flags.IsSet(wdPropertyFlags::StandardType), "Only constants that can be put in an wdVariant are currently supported!");
+    NS_ASSERT_DEBUG(this->m_Flags.IsSet(nsPropertyFlags::StandardType), "Only constants that can be put in an nsVariant are currently supported!");
   }
 
   /// \brief Returns a pointer to the member property.
@@ -54,7 +54,7 @@ public:
     return m_Value;
   }
 
-  virtual wdVariant GetConstant() const override { return wdVariant(m_Value); }
+  virtual nsVariant GetConstant() const override { return nsVariant(m_Value); }
 
 private:
   Type m_Value;

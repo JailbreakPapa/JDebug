@@ -3,7 +3,7 @@
 #include <Foundation/CodeUtils/Tokenizer.h>
 #include <Foundation/Memory/CommonAllocators.h>
 
-const char* wdTokenType::EnumNames[wdTokenType::ENUM_COUNT] = {
+const char* nsTokenType::EnumNames[nsTokenType::ENUM_COUNT] = {
   "Unknown",
   "Whitespace",
   "Identifier",
@@ -15,25 +15,28 @@ const char* wdTokenType::EnumNames[wdTokenType::ENUM_COUNT] = {
   "String2",
   "Integer",
   "Float",
-};
+  "RawString1",
+  "RawString1Prefix",
+  "RawString1Postfix",
+  "EndOfFile"};
 
 namespace
 {
   // This allocator is used to get rid of some of the memory allocation tracking
   // that would otherwise occur for allocations made by the tokenizer.
-  thread_local wdAllocator<wdMemoryPolicies::wdHeapAllocation, wdMemoryTrackingFlags::None> s_ClassAllocator("wdTokenizer", wdFoundation::GetDefaultAllocator());
+  thread_local nsAllocatorWithPolicy<nsAllocPolicyHeap, nsAllocatorTrackingMode::Nothing> s_ClassAllocator("nsTokenizer", nsFoundation::GetDefaultAllocator());
 } // namespace
 
 
-wdTokenizer::wdTokenizer(wdAllocatorBase* pAllocator)
-  : m_Data(pAllocator != nullptr ? pAllocator : &s_ClassAllocator)
-  , m_Tokens(pAllocator != nullptr ? pAllocator : &s_ClassAllocator)
+nsTokenizer::nsTokenizer(nsAllocator* pAllocator)
+  : m_Tokens(pAllocator != nullptr ? pAllocator : &s_ClassAllocator)
+  , m_Data(pAllocator != nullptr ? pAllocator : &s_ClassAllocator)
 {
 }
 
-wdTokenizer::~wdTokenizer() = default;
+nsTokenizer::~nsTokenizer() = default;
 
-void wdTokenizer::NextChar()
+void nsTokenizer::NextChar()
 {
   m_uiCurChar = m_uiNextChar;
   m_szCurCharStart = m_szNextCharStart;
@@ -45,7 +48,7 @@ void wdTokenizer::NextChar()
     m_uiCurColumn = 0;
   }
 
-  if (!m_sIterator.IsValid())
+  if (!m_sIterator.IsValid() || m_sIterator.IsEmpty())
   {
     m_szNextCharStart = m_sIterator.GetEndPointer();
     m_uiNextChar = '\0';
@@ -58,15 +61,15 @@ void wdTokenizer::NextChar()
   ++m_sIterator;
 }
 
-void wdTokenizer::AddToken()
+void nsTokenizer::AddToken()
 {
   const char* szEnd = m_szCurCharStart;
 
-  wdToken t;
+  nsToken t;
   t.m_uiLine = m_uiLastLine;
   t.m_uiColumn = m_uiLastColumn;
   t.m_iType = m_CurMode;
-  t.m_DataView = wdStringView(m_szTokenStart, szEnd);
+  t.m_DataView = nsStringView(m_szTokenStart, szEnd);
 
   m_uiLastLine = m_uiCurLine;
   m_uiLastColumn = m_uiCurColumn;
@@ -75,37 +78,40 @@ void wdTokenizer::AddToken()
 
   m_szTokenStart = szEnd;
 
-  m_CurMode = wdTokenType::Unknown;
+  m_CurMode = nsTokenType::Unknown;
 }
 
-void wdTokenizer::Tokenize(wdArrayPtr<const wdUInt8> data, wdLogInterface* pLog)
+void nsTokenizer::Tokenize(nsArrayPtr<const nsUInt8> data, nsLogInterface* pLog, bool bCopyData)
 {
+  if (bCopyData)
+  {
+    m_Data = data;
+    data = m_Data;
+  }
+  else
+  {
+    m_Data.Clear();
+  }
+
   if (data.GetCount() >= 3)
   {
     const char* dataStart = reinterpret_cast<const char*>(data.GetPtr());
 
-    if (wdUnicodeUtils::SkipUtf8Bom(dataStart))
+    if (nsUnicodeUtils::SkipUtf8Bom(dataStart))
     {
-      wdLog::Error(pLog, "Data to tokenize contains a Utf-8 BOM.");
+      nsLog::Error(pLog, "Data to tokenize contains a Utf-8 BOM.");
 
       // although the tokenizer should get data without a BOM, it's easy enough to work around that here
       // that's what the tokenizer does in other error cases as well - complain, but continue
-      data = wdArrayPtr<const wdUInt8>((const wdUInt8*)dataStart, data.GetCount() - 3);
+      data = nsArrayPtr<const nsUInt8>((const nsUInt8*)dataStart, data.GetCount() - 3);
     }
   }
-
-  m_Data.Clear();
-  m_Data.Reserve(m_Data.GetCount() + 1);
-  m_Data = data;
-
-  if (m_Data.IsEmpty() || m_Data[m_Data.GetCount() - 1] != 0)
-    m_Data.PushBack('\0'); // make sure the string is zero terminated
 
   m_Tokens.Clear();
   m_pLog = pLog;
 
   {
-    m_CurMode = wdTokenType::Unknown;
+    m_CurMode = nsTokenType::Unknown;
     m_uiCurLine = 1;
     m_uiCurColumn = -1;
     m_uiCurChar = '\0';
@@ -118,13 +124,17 @@ void wdTokenizer::Tokenize(wdArrayPtr<const wdUInt8> data, wdLogInterface* pLog)
     m_szTokenStart = nullptr;
   }
 
-  m_sIterator = wdStringView((const char*)&m_Data[0], (const char*)&m_Data[0] + m_Data.GetCount() - 1);
-
-  if (!m_sIterator.IsValid())
+  m_sIterator = {};
+  if (!data.IsEmpty())
   {
-    wdToken t;
+    m_sIterator = nsStringView((const char*)&data[0], (const char*)&data[0] + data.GetCount());
+  }
+
+  if (!m_sIterator.IsValid() || m_sIterator.IsEmpty())
+  {
+    nsToken t;
     t.m_uiLine = 1;
-    t.m_iType = wdTokenType::EndOfFile;
+    t.m_iType = nsTokenType::EndOfFile;
     m_Tokens.PushBack(t);
     return;
   }
@@ -134,67 +144,73 @@ void wdTokenizer::Tokenize(wdArrayPtr<const wdUInt8> data, wdLogInterface* pLog)
 
   m_szTokenStart = m_szCurCharStart;
 
-  while (m_szTokenStart != nullptr && *m_szTokenStart != '\0')
+  while (m_szTokenStart != nullptr && m_szTokenStart != m_sIterator.GetEndPointer())
   {
     switch (m_CurMode)
     {
-      case wdTokenType::Unknown:
+      case nsTokenType::Unknown:
         HandleUnknown();
         break;
 
-      case wdTokenType::String1:
+      case nsTokenType::String1:
         HandleString('\"');
         break;
 
-      case wdTokenType::String2:
+      case nsTokenType::RawString1:
+        HandleRawString();
+        break;
+
+      case nsTokenType::String2:
         HandleString('\'');
         break;
 
-      case wdTokenType::Integer:
-      case wdTokenType::Float:
+      case nsTokenType::Integer:
+      case nsTokenType::Float:
         HandleNumber();
         break;
 
-      case wdTokenType::LineComment:
+      case nsTokenType::LineComment:
         HandleLineComment();
         break;
 
-      case wdTokenType::BlockComment:
+      case nsTokenType::BlockComment:
         HandleBlockComment();
         break;
 
-      case wdTokenType::Whitespace:
+      case nsTokenType::Whitespace:
         HandleWhitespace();
         break;
 
-      case wdTokenType::Identifier:
+      case nsTokenType::Identifier:
         HandleIdentifier();
         break;
 
-      case wdTokenType::NonIdentifier:
+      case nsTokenType::NonIdentifier:
         HandleNonIdentifier();
         break;
 
-      case wdTokenType::Newline:
-      case wdTokenType::EndOfFile:
-      case wdTokenType::ENUM_COUNT:
+      case nsTokenType::RawString1Prefix:
+      case nsTokenType::RawString1Postfix:
+      case nsTokenType::Newline:
+      case nsTokenType::EndOfFile:
+      case nsTokenType::ENUM_COUNT:
         break;
     }
   }
 
-  wdToken t;
+  nsToken t;
   t.m_uiLine = m_uiCurLine;
-  t.m_iType = wdTokenType::EndOfFile;
+  t.m_iType = nsTokenType::EndOfFile;
   m_Tokens.PushBack(t);
 }
 
-void wdTokenizer::HandleUnknown()
+void nsTokenizer::HandleUnknown()
 {
   m_szTokenStart = m_szCurCharStart;
 
   if ((m_uiCurChar == '/') && (m_uiNextChar == '/'))
   {
-    m_CurMode = wdTokenType::LineComment;
+    m_CurMode = nsTokenType::LineComment;
     NextChar();
     NextChar();
     return;
@@ -202,14 +218,14 @@ void wdTokenizer::HandleUnknown()
 
   if (m_bHashSignIsLineComment && (m_uiCurChar == '#'))
   {
-    m_CurMode = wdTokenType::LineComment;
+    m_CurMode = nsTokenType::LineComment;
     NextChar();
     return;
   }
 
   if ((m_uiCurChar == '/') && (m_uiNextChar == '*'))
   {
-    m_CurMode = wdTokenType::BlockComment;
+    m_CurMode = nsTokenType::BlockComment;
     NextChar();
     NextChar();
     return;
@@ -217,42 +233,50 @@ void wdTokenizer::HandleUnknown()
 
   if (m_uiCurChar == '\"')
   {
-    m_CurMode = wdTokenType::String1;
+    m_CurMode = nsTokenType::String1;
+    NextChar();
+    return;
+  }
+
+  if (m_uiCurChar == 'R' && m_uiNextChar == '\"')
+  {
+    m_CurMode = nsTokenType::RawString1;
+    NextChar();
     NextChar();
     return;
   }
 
   if (m_uiCurChar == '\'')
   {
-    m_CurMode = wdTokenType::String2;
+    m_CurMode = nsTokenType::String2;
     NextChar();
     return;
   }
 
   if ((m_uiCurChar == ' ') || (m_uiCurChar == '\t'))
   {
-    m_CurMode = wdTokenType::Whitespace;
+    m_CurMode = nsTokenType::Whitespace;
     NextChar();
     return;
   }
 
-  if (wdStringUtils::IsDecimalDigit(m_uiCurChar) || (m_uiCurChar == '.' && wdStringUtils::IsDecimalDigit(m_uiNextChar)))
+  if (nsStringUtils::IsDecimalDigit(m_uiCurChar) || (m_uiCurChar == '.' && nsStringUtils::IsDecimalDigit(m_uiNextChar)))
   {
-    m_CurMode = m_uiCurChar == '.' ? wdTokenType::Float : wdTokenType::Integer;
+    m_CurMode = m_uiCurChar == '.' ? nsTokenType::Float : nsTokenType::Integer;
     // Do not advance to next char here since we need the first character in HandleNumber
     return;
   }
 
-  if (!wdStringUtils::IsIdentifierDelimiter_C_Code(m_uiCurChar))
+  if (!nsStringUtils::IsIdentifierDelimiter_C_Code(m_uiCurChar))
   {
-    m_CurMode = wdTokenType::Identifier;
+    m_CurMode = nsTokenType::Identifier;
     NextChar();
     return;
   }
 
   if (m_uiCurChar == '\n')
   {
-    m_CurMode = wdTokenType::Newline;
+    m_CurMode = nsTokenType::Newline;
     NextChar();
     AddToken();
     return;
@@ -262,17 +286,17 @@ void wdTokenizer::HandleUnknown()
   {
     NextChar();
     NextChar();
-    m_CurMode = wdTokenType::Newline;
+    m_CurMode = nsTokenType::Newline;
     AddToken();
     return;
   }
 
   // else
-  m_CurMode = wdTokenType::NonIdentifier;
+  m_CurMode = nsTokenType::NonIdentifier;
   NextChar();
 }
 
-void wdTokenizer::HandleString(char terminator)
+void nsTokenizer::HandleString(char terminator)
 {
   while (m_uiCurChar != '\0')
   {
@@ -292,7 +316,7 @@ void wdTokenizer::HandleString(char terminator)
       NextChar();
       NextChar();
 
-      m_CurMode = terminator == '\"' ? wdTokenType::String1 : wdTokenType::String2;
+      m_CurMode = terminator == '\"' ? nsTokenType::String1 : nsTokenType::String2;
       m_szTokenStart = m_szCurCharStart;
     }
     // escaped line break in string
@@ -309,7 +333,7 @@ void wdTokenizer::HandleString(char terminator)
       if (m_uiCurChar == '\n')
         NextChar();
 
-      m_CurMode = terminator == '\"' ? wdTokenType::String1 : wdTokenType::String2;
+      m_CurMode = terminator == '\"' ? nsTokenType::String1 : nsTokenType::String2;
       m_szTokenStart = m_szCurCharStart;
     }
     // escaped backslash
@@ -322,7 +346,7 @@ void wdTokenizer::HandleString(char terminator)
     // not-escaped line break in string
     else if (m_uiCurChar == '\n')
     {
-      wdLog::Error(m_pLog, "Unescaped Newline in string line {0} column {1}", m_uiCurLine, m_uiCurColumn);
+      nsLog::Error(m_pLog, "Unescaped Newline in string line {0} column {1}", m_uiCurLine, m_uiCurColumn);
       // NextChar(); // not sure whether to include the newline in the string or not
       AddToken();
       return;
@@ -340,19 +364,84 @@ void wdTokenizer::HandleString(char terminator)
     }
   }
 
-  wdLog::Error(m_pLog, "String not closed at end of file");
+  nsLog::Error(m_pLog, "String not closed at end of file");
   AddToken();
 }
 
-void wdTokenizer::HandleNumber()
+void nsTokenizer::HandleRawString()
+{
+  const char* markerStart = m_szCurCharStart;
+  while (m_uiCurChar != '\0')
+  {
+    if (m_uiCurChar == '(')
+    {
+      m_sRawStringMarker = nsStringView(markerStart, m_szCurCharStart);
+      NextChar(); // consume '('
+      break;
+    }
+    NextChar();
+  }
+  if (m_uiCurChar == '\0')
+  {
+    nsLog::Error(m_pLog, "Failed to find '(' for raw string before end of file");
+    AddToken();
+    return;
+  }
+
+  m_CurMode = nsTokenType::RawString1Prefix;
+  AddToken();
+
+  m_CurMode = nsTokenType::RawString1;
+
+  while (m_uiCurChar != '\0')
+  {
+    if (m_uiCurChar == ')')
+    {
+      if (m_sRawStringMarker.GetElementCount() == 0 && m_uiNextChar == '\"')
+      {
+        AddToken();
+        NextChar();
+        NextChar();
+        m_CurMode = nsTokenType::RawString1Postfix;
+        AddToken();
+        return;
+      }
+      else if (m_szCurCharStart + m_sRawStringMarker.GetElementCount() + 2 <= m_sIterator.GetEndPointer())
+      {
+        if (nsStringUtils::CompareN(m_szCurCharStart + 1, m_sRawStringMarker.GetStartPointer(), m_sRawStringMarker.GetElementCount()) == 0 &&
+            m_szCurCharStart[m_sRawStringMarker.GetElementCount() + 1] == '\"')
+        {
+          AddToken();
+          for (nsUInt32 i = 0; i < m_sRawStringMarker.GetElementCount() + 2; ++i) // consume )marker"
+          {
+            NextChar();
+          }
+          m_CurMode = nsTokenType::RawString1Postfix;
+          AddToken();
+          return;
+        }
+      }
+      NextChar();
+    }
+    else
+    {
+      NextChar();
+    }
+  }
+
+  nsLog::Error(m_pLog, "Raw string not closed at end of file");
+  AddToken();
+}
+
+void nsTokenizer::HandleNumber()
 {
   if (m_uiCurChar == '0' && (m_uiNextChar == 'x' || m_uiNextChar == 'X'))
   {
     NextChar();
     NextChar();
 
-    wdUInt32 uiDigitsRead = 0;
-    while (wdStringUtils::IsHexDigit(m_uiCurChar))
+    nsUInt32 uiDigitsRead = 0;
+    while (nsStringUtils::IsHexDigit(m_uiCurChar))
     {
       NextChar();
       ++uiDigitsRead;
@@ -360,29 +449,29 @@ void wdTokenizer::HandleNumber()
 
     if (uiDigitsRead < 1)
     {
-      wdLog::Error(m_pLog, "Invalid hex literal");
+      nsLog::Error(m_pLog, "Invalid hex literal");
     }
   }
   else
   {
     NextChar();
 
-    while (wdStringUtils::IsDecimalDigit(m_uiCurChar))
+    while (nsStringUtils::IsDecimalDigit(m_uiCurChar) || m_uiCurChar == '\'') // integer literal: 100'000
     {
       NextChar();
     }
 
-    if (m_CurMode != wdTokenType::Float && (m_uiCurChar == '.' || m_uiCurChar == 'e' || m_uiCurChar == 'E'))
+    if (m_CurMode != nsTokenType::Float && (m_uiCurChar == '.' || m_uiCurChar == 'e' || m_uiCurChar == 'E'))
     {
-      m_CurMode = wdTokenType::Float;
+      m_CurMode = nsTokenType::Float;
       bool bAllowExponent = true;
 
       if (m_uiCurChar == '.')
       {
         NextChar();
 
-        wdUInt32 uiDigitsRead = 0;
-        while (wdStringUtils::IsDecimalDigit(m_uiCurChar))
+        nsUInt32 uiDigitsRead = 0;
+        while (nsStringUtils::IsDecimalDigit(m_uiCurChar))
         {
           NextChar();
           ++uiDigitsRead;
@@ -399,8 +488,8 @@ void wdTokenizer::HandleNumber()
           NextChar();
         }
 
-        wdUInt32 uiDigitsRead = 0;
-        while (wdStringUtils::IsDecimalDigit(m_uiCurChar))
+        nsUInt32 uiDigitsRead = 0;
+        while (nsStringUtils::IsDecimalDigit(m_uiCurChar))
         {
           NextChar();
           ++uiDigitsRead;
@@ -408,7 +497,7 @@ void wdTokenizer::HandleNumber()
 
         if (uiDigitsRead < 1)
         {
-          wdLog::Error(m_pLog, "Invalid float literal");
+          nsLog::Error(m_pLog, "Invalid float literal");
         }
       }
 
@@ -422,7 +511,7 @@ void wdTokenizer::HandleNumber()
   AddToken();
 }
 
-void wdTokenizer::HandleLineComment()
+void nsTokenizer::HandleLineComment()
 {
   while (m_uiCurChar != '\0')
   {
@@ -439,7 +528,7 @@ void wdTokenizer::HandleLineComment()
   AddToken();
 }
 
-void wdTokenizer::HandleBlockComment()
+void nsTokenizer::HandleBlockComment()
 {
   while (m_uiCurChar != '\0')
   {
@@ -454,11 +543,11 @@ void wdTokenizer::HandleBlockComment()
     NextChar();
   }
 
-  wdLog::Error(m_pLog, "Block comment not closed at end of file.");
+  nsLog::Error(m_pLog, "Block comment not closed at end of file.");
   AddToken();
 }
 
-void wdTokenizer::HandleWhitespace()
+void nsTokenizer::HandleWhitespace()
 {
   while (m_uiCurChar != '\0')
   {
@@ -475,11 +564,11 @@ void wdTokenizer::HandleWhitespace()
   AddToken();
 }
 
-void wdTokenizer::HandleIdentifier()
+void nsTokenizer::HandleIdentifier()
 {
   while (m_uiCurChar != '\0')
   {
-    if (wdStringUtils::IsIdentifierDelimiter_C_Code(m_uiCurChar))
+    if (nsStringUtils::IsIdentifierDelimiter_C_Code(m_uiCurChar))
     {
       AddToken();
       return;
@@ -492,56 +581,67 @@ void wdTokenizer::HandleIdentifier()
   AddToken();
 }
 
-void wdTokenizer::HandleNonIdentifier()
+void nsTokenizer::HandleNonIdentifier()
 {
   AddToken();
 }
 
-void wdTokenizer::GetAllLines(wdHybridArray<const wdToken*, 32>& ref_tokens) const
+void nsTokenizer::GetAllTokens(nsDynamicArray<const nsToken*>& ref_tokens) const
 {
   ref_tokens.Clear();
   ref_tokens.Reserve(m_Tokens.GetCount());
 
-  for (const wdToken& curToken : m_Tokens)
+  for (const nsToken& curToken : m_Tokens)
   {
-    if (curToken.m_iType != wdTokenType::Newline)
+    ref_tokens.PushBack(&curToken);
+  }
+}
+
+void nsTokenizer::GetAllLines(nsDynamicArray<const nsToken*>& ref_tokens) const
+{
+  ref_tokens.Clear();
+  ref_tokens.Reserve(m_Tokens.GetCount());
+
+  for (const nsToken& curToken : m_Tokens)
+  {
+    if (curToken.m_iType != nsTokenType::Newline)
     {
       ref_tokens.PushBack(&curToken);
     }
   }
 }
 
-wdResult wdTokenizer::GetNextLine(wdUInt32& ref_uiFirstToken, wdHybridArray<wdToken*, 32>& ref_tokens)
+nsResult nsTokenizer::GetNextLine(nsUInt32& ref_uiFirstToken, nsHybridArray<nsToken*, 32>& ref_tokens)
 {
   ref_tokens.Clear();
 
-  wdHybridArray<const wdToken*, 32> Tokens0;
-  wdResult r = GetNextLine(ref_uiFirstToken, Tokens0);
+  nsHybridArray<const nsToken*, 32> Tokens0;
+  nsResult r = GetNextLine(ref_uiFirstToken, Tokens0);
 
   ref_tokens.SetCountUninitialized(Tokens0.GetCount());
-  for (wdUInt32 i = 0; i < Tokens0.GetCount(); ++i)
-    ref_tokens[i] = const_cast<wdToken*>(Tokens0[i]); // soo evil !
+  for (nsUInt32 i = 0; i < Tokens0.GetCount(); ++i)
+    ref_tokens[i] = const_cast<nsToken*>(Tokens0[i]); // soo evil !
 
   return r;
 }
 
-wdResult wdTokenizer::GetNextLine(wdUInt32& ref_uiFirstToken, wdHybridArray<const wdToken*, 32>& ref_tokens) const
+nsResult nsTokenizer::GetNextLine(nsUInt32& ref_uiFirstToken, nsHybridArray<const nsToken*, 32>& ref_tokens) const
 {
   ref_tokens.Clear();
 
-  const wdUInt32 uiMaxTokens = m_Tokens.GetCount() - 1;
+  const nsUInt32 uiMaxTokens = m_Tokens.GetCount() - 1;
 
   while (ref_uiFirstToken < uiMaxTokens)
   {
-    const wdToken& tCur = m_Tokens[ref_uiFirstToken];
+    const nsToken& tCur = m_Tokens[ref_uiFirstToken];
 
     // found a backslash
-    if (tCur.m_iType == wdTokenType::NonIdentifier && tCur.m_DataView == "\\")
+    if (tCur.m_iType == nsTokenType::NonIdentifier && tCur.m_DataView == "\\")
     {
-      const wdToken& tNext = m_Tokens[ref_uiFirstToken + 1];
+      const nsToken& tNext = m_Tokens[ref_uiFirstToken + 1];
 
       // and a newline!
-      if (tNext.m_iType == wdTokenType::Newline)
+      if (tNext.m_iType == nsTokenType::Newline)
       {
         /// \todo Theoretically, if the line ends with an identifier, and the next directly starts with one again,
         // we would need to merge the two into one identifier name, because the \ \n combo means it is not a
@@ -549,11 +649,11 @@ wdResult wdTokenizer::GetNextLine(wdUInt32& ref_uiFirstToken, wdHybridArray<cons
         // for now we ignore this and assume there is a 'whitespace' between such identifiers
 
         // we could maybe at least output a warning, if we detect it
-        if (ref_uiFirstToken > 0 && m_Tokens[ref_uiFirstToken - 1].m_iType == wdTokenType::Identifier && ref_uiFirstToken + 2 < uiMaxTokens && m_Tokens[ref_uiFirstToken + 2].m_iType == wdTokenType::Identifier)
+        if (ref_uiFirstToken > 0 && m_Tokens[ref_uiFirstToken - 1].m_iType == nsTokenType::Identifier && ref_uiFirstToken + 2 < uiMaxTokens && m_Tokens[ref_uiFirstToken + 2].m_iType == nsTokenType::Identifier)
         {
-          wdStringBuilder s1 = m_Tokens[ref_uiFirstToken - 1].m_DataView;
-          wdStringBuilder s2 = m_Tokens[ref_uiFirstToken + 2].m_DataView;
-          wdLog::Warning("Line {0}: The \\ at the line end is in the middle of an identifier name ('{1}' and '{2}'). However, merging identifier "
+          nsStringBuilder s1 = m_Tokens[ref_uiFirstToken - 1].m_DataView;
+          nsStringBuilder s2 = m_Tokens[ref_uiFirstToken + 2].m_DataView;
+          nsLog::Warning("Line {0}: The \\ at the line end is in the middle of an identifier name ('{1}' and '{2}'). However, merging identifier "
                          "names is currently not supported.",
             m_Tokens[ref_uiFirstToken].m_uiLine, s1, s2);
         }
@@ -566,21 +666,17 @@ wdResult wdTokenizer::GetNextLine(wdUInt32& ref_uiFirstToken, wdHybridArray<cons
 
     ref_tokens.PushBack(&tCur);
 
-    if (m_Tokens[ref_uiFirstToken].m_iType == wdTokenType::Newline)
+    if (m_Tokens[ref_uiFirstToken].m_iType == nsTokenType::Newline)
     {
       ++ref_uiFirstToken;
-      return WD_SUCCESS;
+      return NS_SUCCESS;
     }
 
     ++ref_uiFirstToken;
   }
 
   if (ref_tokens.IsEmpty())
-    return WD_FAILURE;
+    return NS_FAILURE;
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
-
-
-
-WD_STATICLINK_FILE(Foundation, Foundation_CodeUtils_Implementation_Tokenizer);

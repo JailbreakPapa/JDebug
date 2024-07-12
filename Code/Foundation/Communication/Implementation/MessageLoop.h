@@ -7,32 +7,33 @@
 #include <Foundation/Threading/Mutex.h>
 #include <Foundation/Threading/Thread.h>
 
-class wdProcessMessage;
-class wdIpcChannel;
-class wdLoopThread;
+class nsProcessMessage;
+class nsIpcChannel;
+class nsLoopThread;
 
-/// \brief Internal sub-system used by wdIpcChannel.
+/// \brief Internal sub-system used by nsIpcChannel.
 ///
-/// This sub-system creates a background thread as soon as the first wdIpcChannel
+/// This sub-system creates a background thread as soon as the first nsIpcChannel
 /// is added to it. This class should never be needed to be accessed outside
-/// of wdIpcChannel implementations.
-class WD_FOUNDATION_DLL wdMessageLoop
+/// of nsIpcChannel implementations.
+class NS_FOUNDATION_DLL nsMessageLoop
 {
-  WD_DECLARE_SINGLETON(wdMessageLoop);
+  NS_DECLARE_SINGLETON(nsMessageLoop);
 
 public:
-  wdMessageLoop();
-  virtual ~wdMessageLoop(){};
+  nsMessageLoop();
+  virtual ~nsMessageLoop() = default;
+  ;
 
   /// \brief Needs to be called by newly created channels' constructors.
-  void AddChannel(wdIpcChannel* pChannel);
+  void AddChannel(nsIpcChannel* pChannel);
 
-  void RemoveChannel(wdIpcChannel* pChannel);
+  void RemoveChannel(nsIpcChannel* pChannel);
 
 protected:
-  WD_MAKE_SUBSYSTEM_STARTUP_FRIEND(Foundation, MessageLoop);
-  friend class wdLoopThread;
-  friend class wdIpcChannel;
+  NS_MAKE_SUBSYSTEM_STARTUP_FRIEND(Foundation, MessageLoop);
+  friend class nsLoopThread;
+  friend class nsIpcChannel;
 
   void StartUpdateThread();
   void StopUpdateThread();
@@ -46,23 +47,23 @@ protected:
   /// \param timeout If negative, wait indefinitely.
   /// \param pFilter If not null, wait for a message for the specific channel.
   /// \return Returns whether a message was received or the timeout was reached.
-  virtual bool WaitForMessages(wdInt32 iTimeout, wdIpcChannel* pFilter) = 0;
+  virtual bool WaitForMessages(nsInt32 iTimeout, nsIpcChannel* pFilter) = 0;
 
-  wdThreadID m_ThreadId = 0;
-  mutable wdMutex m_Mutex;
+  nsThreadID m_ThreadId = 0;
+  mutable nsMutex m_Mutex;
   bool m_bShouldQuit = false;
   bool m_bCallTickFunction = false;
-  class wdLoopThread* m_pUpdateThread = nullptr;
+  class nsLoopThread* m_pUpdateThread = nullptr;
 
-  wdMutex m_TasksMutex;
-  wdDynamicArray<wdIpcChannel*> m_ConnectQueue;
-  wdDynamicArray<wdIpcChannel*> m_DisconnectQueue;
-  wdDynamicArray<wdIpcChannel*> m_SendQueue;
+  nsMutex m_TasksMutex;
+  nsDynamicArray<nsIpcChannel*> m_ConnectQueue;
+  nsDynamicArray<nsIpcChannel*> m_DisconnectQueue;
+  nsDynamicArray<nsIpcChannel*> m_SendQueue;
 
   // Thread local copies of the different queues for the ProcessTasks method
-  wdDynamicArray<wdIpcChannel*> m_ConnectQueueTask;
-  wdDynamicArray<wdIpcChannel*> m_DisconnectQueueTask;
-  wdDynamicArray<wdIpcChannel*> m_SendQueueTask;
+  nsDynamicArray<nsIpcChannel*> m_ConnectQueueTask;
+  nsDynamicArray<nsIpcChannel*> m_DisconnectQueueTask;
+  nsDynamicArray<nsIpcChannel*> m_SendQueueTask;
 
-  wdDynamicArray<wdIpcChannel*> m_AllAddedChannels;
+  nsDynamicArray<nsIpcChannel*> m_AllAddedChannels;
 };

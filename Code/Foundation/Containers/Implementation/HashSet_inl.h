@@ -1,19 +1,19 @@
 
 /// \brief Value used by containers for indices to indicate an invalid index.
-#ifndef wdInvalidIndex
-#  define wdInvalidIndex 0xFFFFFFFF
+#ifndef nsInvalidIndex
+#  define nsInvalidIndex 0xFFFFFFFF
 #endif
 
 // ***** Const Iterator *****
 
 template <typename K, typename H>
-wdHashSetBase<K, H>::ConstIterator::ConstIterator(const wdHashSetBase<K, H>& hashSet)
+nsHashSetBase<K, H>::ConstIterator::ConstIterator(const nsHashSetBase<K, H>& hashSet)
   : m_pHashSet(&hashSet)
 {
 }
 
 template <typename K, typename H>
-void wdHashSetBase<K, H>::ConstIterator::SetToBegin()
+void nsHashSetBase<K, H>::ConstIterator::SetToBegin()
 {
   if (m_pHashSet->IsEmpty())
   {
@@ -27,38 +27,32 @@ void wdHashSetBase<K, H>::ConstIterator::SetToBegin()
 }
 
 template <typename K, typename H>
-inline void wdHashSetBase<K, H>::ConstIterator::SetToEnd()
+inline void nsHashSetBase<K, H>::ConstIterator::SetToEnd()
 {
   m_uiCurrentCount = m_pHashSet->m_uiCount;
   m_uiCurrentIndex = m_pHashSet->m_uiCapacity;
 }
 
 template <typename K, typename H>
-WD_ALWAYS_INLINE bool wdHashSetBase<K, H>::ConstIterator::IsValid() const
+NS_ALWAYS_INLINE bool nsHashSetBase<K, H>::ConstIterator::IsValid() const
 {
   return m_uiCurrentCount < m_pHashSet->m_uiCount;
 }
 
 template <typename K, typename H>
-WD_ALWAYS_INLINE bool wdHashSetBase<K, H>::ConstIterator::operator==(const typename wdHashSetBase<K, H>::ConstIterator& rhs) const
+NS_ALWAYS_INLINE bool nsHashSetBase<K, H>::ConstIterator::operator==(const typename nsHashSetBase<K, H>::ConstIterator& rhs) const
 {
   return m_uiCurrentIndex == rhs.m_uiCurrentIndex && m_pHashSet->m_pEntries == rhs.m_pHashSet->m_pEntries;
 }
 
 template <typename K, typename H>
-WD_ALWAYS_INLINE bool wdHashSetBase<K, H>::ConstIterator::operator!=(const typename wdHashSetBase<K, H>::ConstIterator& rhs) const
-{
-  return !(*this == rhs);
-}
-
-template <typename K, typename H>
-WD_FORCE_INLINE const K& wdHashSetBase<K, H>::ConstIterator::Key() const
+NS_FORCE_INLINE const K& nsHashSetBase<K, H>::ConstIterator::Key() const
 {
   return m_pHashSet->m_pEntries[m_uiCurrentIndex];
 }
 
 template <typename K, typename H>
-void wdHashSetBase<K, H>::ConstIterator::Next()
+void nsHashSetBase<K, H>::ConstIterator::Next()
 {
   ++m_uiCurrentCount;
   if (m_uiCurrentCount == m_pHashSet->m_uiCount)
@@ -67,23 +61,27 @@ void wdHashSetBase<K, H>::ConstIterator::Next()
     return;
   }
 
-  do
+  for (++m_uiCurrentIndex; m_uiCurrentIndex < m_pHashSet->m_uiCapacity; ++m_uiCurrentIndex)
   {
-    ++m_uiCurrentIndex;
-  } while (!m_pHashSet->IsValidEntry(m_uiCurrentIndex));
+    if (m_pHashSet->IsValidEntry(m_uiCurrentIndex))
+    {
+      return;
+    }
+  }
+  SetToEnd();
 }
 
 template <typename K, typename H>
-WD_ALWAYS_INLINE void wdHashSetBase<K, H>::ConstIterator::operator++()
+NS_ALWAYS_INLINE void nsHashSetBase<K, H>::ConstIterator::operator++()
 {
   Next();
 }
 
 
-// ***** wdHashSetBase *****
+// ***** nsHashSetBase *****
 
 template <typename K, typename H>
-wdHashSetBase<K, H>::wdHashSetBase(wdAllocatorBase* pAllocator)
+nsHashSetBase<K, H>::nsHashSetBase(nsAllocator* pAllocator)
 {
   m_pEntries = nullptr;
   m_pEntryFlags = nullptr;
@@ -93,7 +91,7 @@ wdHashSetBase<K, H>::wdHashSetBase(wdAllocatorBase* pAllocator)
 }
 
 template <typename K, typename H>
-wdHashSetBase<K, H>::wdHashSetBase(const wdHashSetBase<K, H>& other, wdAllocatorBase* pAllocator)
+nsHashSetBase<K, H>::nsHashSetBase(const nsHashSetBase<K, H>& other, nsAllocator* pAllocator)
 {
   m_pEntries = nullptr;
   m_pEntryFlags = nullptr;
@@ -105,7 +103,7 @@ wdHashSetBase<K, H>::wdHashSetBase(const wdHashSetBase<K, H>& other, wdAllocator
 }
 
 template <typename K, typename H>
-wdHashSetBase<K, H>::wdHashSetBase(wdHashSetBase<K, H>&& other, wdAllocatorBase* pAllocator)
+nsHashSetBase<K, H>::nsHashSetBase(nsHashSetBase<K, H>&& other, nsAllocator* pAllocator)
 {
   m_pEntries = nullptr;
   m_pEntryFlags = nullptr;
@@ -117,22 +115,22 @@ wdHashSetBase<K, H>::wdHashSetBase(wdHashSetBase<K, H>&& other, wdAllocatorBase*
 }
 
 template <typename K, typename H>
-wdHashSetBase<K, H>::~wdHashSetBase()
+nsHashSetBase<K, H>::~nsHashSetBase()
 {
   Clear();
-  WD_DELETE_RAW_BUFFER(m_pAllocator, m_pEntries);
-  WD_DELETE_RAW_BUFFER(m_pAllocator, m_pEntryFlags);
+  NS_DELETE_RAW_BUFFER(m_pAllocator, m_pEntries);
+  NS_DELETE_RAW_BUFFER(m_pAllocator, m_pEntryFlags);
   m_uiCapacity = 0;
 }
 
 template <typename K, typename H>
-void wdHashSetBase<K, H>::operator=(const wdHashSetBase<K, H>& rhs)
+void nsHashSetBase<K, H>::operator=(const nsHashSetBase<K, H>& rhs)
 {
   Clear();
   Reserve(rhs.GetCount());
 
-  wdUInt32 uiCopied = 0;
-  for (wdUInt32 i = 0; uiCopied < rhs.GetCount(); ++i)
+  nsUInt32 uiCopied = 0;
+  for (nsUInt32 i = 0; uiCopied < rhs.GetCount(); ++i)
   {
     if (rhs.IsValidEntry(i))
     {
@@ -143,7 +141,7 @@ void wdHashSetBase<K, H>::operator=(const wdHashSetBase<K, H>& rhs)
 }
 
 template <typename K, typename H>
-void wdHashSetBase<K, H>::operator=(wdHashSetBase<K, H>&& rhs)
+void nsHashSetBase<K, H>::operator=(nsHashSetBase<K, H>&& rhs)
 {
   // Clear any existing data (calls destructors if necessary)
   Clear();
@@ -152,8 +150,8 @@ void wdHashSetBase<K, H>::operator=(wdHashSetBase<K, H>&& rhs)
   {
     Reserve(rhs.m_uiCapacity);
 
-    wdUInt32 uiCopied = 0;
-    for (wdUInt32 i = 0; uiCopied < rhs.GetCount(); ++i)
+    nsUInt32 uiCopied = 0;
+    for (nsUInt32 i = 0; uiCopied < rhs.GetCount(); ++i)
     {
       if (rhs.IsValidEntry(i))
       {
@@ -166,8 +164,8 @@ void wdHashSetBase<K, H>::operator=(wdHashSetBase<K, H>&& rhs)
   }
   else
   {
-    WD_DELETE_RAW_BUFFER(m_pAllocator, m_pEntries);
-    WD_DELETE_RAW_BUFFER(m_pAllocator, m_pEntryFlags);
+    NS_DELETE_RAW_BUFFER(m_pAllocator, m_pEntries);
+    NS_DELETE_RAW_BUFFER(m_pAllocator, m_pEntryFlags);
 
     // Move all data over.
     m_pEntries = rhs.m_pEntries;
@@ -184,13 +182,13 @@ void wdHashSetBase<K, H>::operator=(wdHashSetBase<K, H>&& rhs)
 }
 
 template <typename K, typename H>
-bool wdHashSetBase<K, H>::operator==(const wdHashSetBase<K, H>& rhs) const
+bool nsHashSetBase<K, H>::operator==(const nsHashSetBase<K, H>& rhs) const
 {
   if (m_uiCount != rhs.m_uiCount)
     return false;
 
-  wdUInt32 uiCompared = 0;
-  for (wdUInt32 i = 0; uiCompared < m_uiCount; ++i)
+  nsUInt32 uiCompared = 0;
+  for (nsUInt32 i = 0; uiCompared < m_uiCount; ++i)
   {
     if (IsValidEntry(i))
     {
@@ -205,89 +203,83 @@ bool wdHashSetBase<K, H>::operator==(const wdHashSetBase<K, H>& rhs) const
 }
 
 template <typename K, typename H>
-WD_ALWAYS_INLINE bool wdHashSetBase<K, H>::operator!=(const wdHashSetBase<K, H>& rhs) const
+void nsHashSetBase<K, H>::Reserve(nsUInt32 uiCapacity)
 {
-  return !(*this == rhs);
-}
+  const nsUInt64 uiCap64 = static_cast<nsUInt64>(uiCapacity);
+  nsUInt64 uiNewCapacity64 = uiCap64 + (uiCap64 * 2 / 3);                  // ensure a maximum load of 60%
 
-template <typename K, typename H>
-void wdHashSetBase<K, H>::Reserve(wdUInt32 uiCapacity)
-{
-  const wdUInt64 uiCap64 = static_cast<wdUInt64>(uiCapacity);
-  wdUInt64 uiNewCapacity64 = uiCap64 + (uiCap64 * 2 / 3); // ensure a maximum load of 60%
+  uiNewCapacity64 = nsMath::Min<nsUInt64>(uiNewCapacity64, 0x80000000llu); // the largest power-of-two in 32 bit
 
-  uiNewCapacity64 = wdMath::Min<wdUInt64>(uiNewCapacity64, 0x80000000llu); // the largest power-of-two in 32 bit
-
-  wdUInt32 uiNewCapacity32 = static_cast<wdUInt32>(uiNewCapacity64 & 0xFFFFFFFF);
-  WD_ASSERT_DEBUG(uiCapacity <= uiNewCapacity32, "wdHashSet/Map do not support more than 2 billion entries.");
+  nsUInt32 uiNewCapacity32 = static_cast<nsUInt32>(uiNewCapacity64 & 0xFFFFFFFF);
+  NS_ASSERT_DEBUG(uiCapacity <= uiNewCapacity32, "nsHashSet/Map do not support more than 2 billion entries.");
 
   if (m_uiCapacity >= uiNewCapacity32)
     return;
 
-  uiNewCapacity32 = wdMath::Max<wdUInt32>(wdMath::PowerOfTwo_Ceil(uiNewCapacity32), CAPACITY_ALIGNMENT);
+  uiNewCapacity32 = nsMath::Max<nsUInt32>(nsMath::PowerOfTwo_Ceil(uiNewCapacity32), CAPACITY_ALIGNMENT);
   SetCapacity(uiNewCapacity32);
 }
 
 template <typename K, typename H>
-void wdHashSetBase<K, H>::Compact()
+void nsHashSetBase<K, H>::Compact()
 {
   if (IsEmpty())
   {
     // completely deallocate all data, if the table is empty.
-    WD_DELETE_RAW_BUFFER(m_pAllocator, m_pEntries);
-    WD_DELETE_RAW_BUFFER(m_pAllocator, m_pEntryFlags);
+    NS_DELETE_RAW_BUFFER(m_pAllocator, m_pEntries);
+    NS_DELETE_RAW_BUFFER(m_pAllocator, m_pEntryFlags);
     m_uiCapacity = 0;
   }
   else
   {
-    const wdUInt32 uiNewCapacity = (m_uiCount + (CAPACITY_ALIGNMENT - 1)) & ~(CAPACITY_ALIGNMENT - 1);
+    const nsUInt32 uiNewCapacity = (m_uiCount + (CAPACITY_ALIGNMENT - 1)) & ~(CAPACITY_ALIGNMENT - 1);
     if (m_uiCapacity != uiNewCapacity)
       SetCapacity(uiNewCapacity);
   }
 }
 
 template <typename K, typename H>
-WD_ALWAYS_INLINE wdUInt32 wdHashSetBase<K, H>::GetCount() const
+NS_ALWAYS_INLINE nsUInt32 nsHashSetBase<K, H>::GetCount() const
 {
   return m_uiCount;
 }
 
 template <typename K, typename H>
-WD_ALWAYS_INLINE bool wdHashSetBase<K, H>::IsEmpty() const
+NS_ALWAYS_INLINE bool nsHashSetBase<K, H>::IsEmpty() const
 {
   return m_uiCount == 0;
 }
 
 template <typename K, typename H>
-void wdHashSetBase<K, H>::Clear()
+void nsHashSetBase<K, H>::Clear()
 {
-  for (wdUInt32 i = 0; i < m_uiCapacity; ++i)
+  for (nsUInt32 i = 0; i < m_uiCapacity; ++i)
   {
     if (IsValidEntry(i))
     {
-      wdMemoryUtils::Destruct(&m_pEntries[i], 1);
+      nsMemoryUtils::Destruct(&m_pEntries[i], 1);
     }
   }
 
-  wdMemoryUtils::ZeroFill(m_pEntryFlags, GetFlagsCapacity());
+  nsMemoryUtils::ZeroFill(m_pEntryFlags, GetFlagsCapacity());
   m_uiCount = 0;
 }
 
 template <typename K, typename H>
 template <typename CompatibleKeyType>
-bool wdHashSetBase<K, H>::Insert(CompatibleKeyType&& key)
+bool nsHashSetBase<K, H>::Insert(CompatibleKeyType&& key)
 {
   Reserve(m_uiCount + 1);
 
-  wdUInt32 uiIndex = H::Hash(key) & (m_uiCapacity - 1);
-  wdUInt32 uiDeletedIndex = wdInvalidIndex;
+  nsUInt32 uiIndex = H::Hash(key) & (m_uiCapacity - 1);
+  nsUInt32 uiDeletedIndex = nsInvalidIndex;
 
-  wdUInt32 uiCounter = 0;
+  nsUInt32 uiCounter = 0;
   while (!IsFreeEntry(uiIndex) && uiCounter < m_uiCapacity)
   {
     if (IsDeletedEntry(uiIndex))
     {
-      if (uiDeletedIndex == wdInvalidIndex)
+      if (uiDeletedIndex == nsInvalidIndex)
         uiDeletedIndex = uiIndex;
     }
     else if (H::Equal(m_pEntries[uiIndex], key))
@@ -302,10 +294,10 @@ bool wdHashSetBase<K, H>::Insert(CompatibleKeyType&& key)
   }
 
   // new entry
-  uiIndex = uiDeletedIndex != wdInvalidIndex ? uiDeletedIndex : uiIndex;
+  uiIndex = uiDeletedIndex != nsInvalidIndex ? uiDeletedIndex : uiIndex;
 
   // Constructions might either be a move or a copy.
-  wdMemoryUtils::CopyOrMoveConstruct(&m_pEntries[uiIndex], std::forward<CompatibleKeyType>(key));
+  nsMemoryUtils::CopyOrMoveConstruct(&m_pEntries[uiIndex], std::forward<CompatibleKeyType>(key));
 
   MarkEntryAsValid(uiIndex);
   ++m_uiCount;
@@ -315,10 +307,10 @@ bool wdHashSetBase<K, H>::Insert(CompatibleKeyType&& key)
 
 template <typename K, typename H>
 template <typename CompatibleKeyType>
-bool wdHashSetBase<K, H>::Remove(const CompatibleKeyType& key)
+bool nsHashSetBase<K, H>::Remove(const CompatibleKeyType& key)
 {
-  wdUInt32 uiIndex = FindEntry(key);
-  if (uiIndex != wdInvalidIndex)
+  nsUInt32 uiIndex = FindEntry(key);
+  if (uiIndex != nsInvalidIndex)
   {
     RemoveInternal(uiIndex);
     return true;
@@ -328,10 +320,10 @@ bool wdHashSetBase<K, H>::Remove(const CompatibleKeyType& key)
 }
 
 template <typename K, typename H>
-typename wdHashSetBase<K, H>::ConstIterator wdHashSetBase<K, H>::Remove(const typename wdHashSetBase<K, H>::ConstIterator& pos)
+typename nsHashSetBase<K, H>::ConstIterator nsHashSetBase<K, H>::Remove(const typename nsHashSetBase<K, H>::ConstIterator& pos)
 {
   ConstIterator it = pos;
-  wdUInt32 uiIndex = pos.m_uiCurrentIndex;
+  nsUInt32 uiIndex = pos.m_uiCurrentIndex;
   ++it;
   --it.m_uiCurrentCount;
   RemoveInternal(uiIndex);
@@ -339,11 +331,11 @@ typename wdHashSetBase<K, H>::ConstIterator wdHashSetBase<K, H>::Remove(const ty
 }
 
 template <typename K, typename H>
-void wdHashSetBase<K, H>::RemoveInternal(wdUInt32 uiIndex)
+void nsHashSetBase<K, H>::RemoveInternal(nsUInt32 uiIndex)
 {
-  wdMemoryUtils::Destruct(&m_pEntries[uiIndex], 1);
+  nsMemoryUtils::Destruct(&m_pEntries[uiIndex], 1);
 
-  wdUInt32 uiNextIndex = uiIndex + 1;
+  nsUInt32 uiNextIndex = uiIndex + 1;
   if (uiNextIndex == m_uiCapacity)
     uiNextIndex = 0;
 
@@ -354,7 +346,7 @@ void wdHashSetBase<K, H>::RemoveInternal(wdUInt32 uiIndex)
     MarkEntryAsFree(uiIndex);
 
     // run backwards and free all deleted entries in this chain
-    wdUInt32 uiPrevIndex = (uiIndex != 0) ? uiIndex : m_uiCapacity;
+    nsUInt32 uiPrevIndex = (uiIndex != 0) ? uiIndex : m_uiCapacity;
     --uiPrevIndex;
 
     while (IsDeletedEntry(uiPrevIndex))
@@ -376,13 +368,30 @@ void wdHashSetBase<K, H>::RemoveInternal(wdUInt32 uiIndex)
 
 template <typename K, typename H>
 template <typename CompatibleKeyType>
-WD_FORCE_INLINE bool wdHashSetBase<K, H>::Contains(const CompatibleKeyType& key) const
+NS_FORCE_INLINE bool nsHashSetBase<K, H>::Contains(const CompatibleKeyType& key) const
 {
-  return FindEntry(key) != wdInvalidIndex;
+  return FindEntry(key) != nsInvalidIndex;
 }
 
 template <typename K, typename H>
-bool wdHashSetBase<K, H>::ContainsSet(const wdHashSetBase<K, H>& operand) const
+template <typename CompatibleKeyType>
+NS_FORCE_INLINE typename nsHashSetBase<K, H>::ConstIterator nsHashSetBase<K, H>::Find(const CompatibleKeyType& key) const
+{
+  nsUInt32 uiIndex = FindEntry(key);
+  if (uiIndex == nsInvalidIndex)
+  {
+    return GetEndIterator();
+  }
+
+  ConstIterator it(*this);
+  it.m_uiCurrentIndex = uiIndex;
+  it.m_uiCurrentCount = 0; // we do not know the 'count' (which is used as an optimization), so we just use 0
+
+  return it;
+}
+
+template <typename K, typename H>
+bool nsHashSetBase<K, H>::ContainsSet(const nsHashSetBase<K, H>& operand) const
 {
   for (const K& key : operand)
   {
@@ -394,7 +403,7 @@ bool wdHashSetBase<K, H>::ContainsSet(const wdHashSetBase<K, H>& operand) const
 }
 
 template <typename K, typename H>
-void wdHashSetBase<K, H>::Union(const wdHashSetBase<K, H>& operand)
+void nsHashSetBase<K, H>::Union(const nsHashSetBase<K, H>& operand)
 {
   Reserve(GetCount() + operand.GetCount());
   for (const auto& key : operand)
@@ -404,7 +413,7 @@ void wdHashSetBase<K, H>::Union(const wdHashSetBase<K, H>& operand)
 }
 
 template <typename K, typename H>
-void wdHashSetBase<K, H>::Difference(const wdHashSetBase<K, H>& operand)
+void nsHashSetBase<K, H>::Difference(const nsHashSetBase<K, H>& operand)
 {
   for (const auto& key : operand)
   {
@@ -413,7 +422,7 @@ void wdHashSetBase<K, H>::Difference(const wdHashSetBase<K, H>& operand)
 }
 
 template <typename K, typename H>
-void wdHashSetBase<K, H>::Intersection(const wdHashSetBase<K, H>& operand)
+void nsHashSetBase<K, H>::Intersection(const nsHashSetBase<K, H>& operand)
 {
   for (auto it = GetIterator(); it.IsValid();)
   {
@@ -425,7 +434,7 @@ void wdHashSetBase<K, H>::Intersection(const wdHashSetBase<K, H>& operand)
 }
 
 template <typename K, typename H>
-WD_FORCE_INLINE typename wdHashSetBase<K, H>::ConstIterator wdHashSetBase<K, H>::GetIterator() const
+NS_FORCE_INLINE typename nsHashSetBase<K, H>::ConstIterator nsHashSetBase<K, H>::GetIterator() const
 {
   ConstIterator iterator(*this);
   iterator.SetToBegin();
@@ -433,7 +442,7 @@ WD_FORCE_INLINE typename wdHashSetBase<K, H>::ConstIterator wdHashSetBase<K, H>:
 }
 
 template <typename K, typename H>
-WD_FORCE_INLINE typename wdHashSetBase<K, H>::ConstIterator wdHashSetBase<K, H>::GetEndIterator() const
+NS_FORCE_INLINE typename nsHashSetBase<K, H>::ConstIterator nsHashSetBase<K, H>::GetEndIterator() const
 {
   ConstIterator iterator(*this);
   iterator.SetToEnd();
@@ -441,62 +450,62 @@ WD_FORCE_INLINE typename wdHashSetBase<K, H>::ConstIterator wdHashSetBase<K, H>:
 }
 
 template <typename K, typename H>
-WD_ALWAYS_INLINE wdAllocatorBase* wdHashSetBase<K, H>::GetAllocator() const
+NS_ALWAYS_INLINE nsAllocator* nsHashSetBase<K, H>::GetAllocator() const
 {
   return m_pAllocator;
 }
 
 template <typename K, typename H>
-wdUInt64 wdHashSetBase<K, H>::GetHeapMemoryUsage() const
+nsUInt64 nsHashSetBase<K, H>::GetHeapMemoryUsage() const
 {
-  return ((wdUInt64)m_uiCapacity * sizeof(K)) + (sizeof(wdUInt32) * (wdUInt64)GetFlagsCapacity());
+  return ((nsUInt64)m_uiCapacity * sizeof(K)) + (sizeof(nsUInt32) * (nsUInt64)GetFlagsCapacity());
 }
 
 // private methods
 template <typename K, typename H>
-void wdHashSetBase<K, H>::SetCapacity(wdUInt32 uiCapacity)
+void nsHashSetBase<K, H>::SetCapacity(nsUInt32 uiCapacity)
 {
-  WD_ASSERT_DEV(wdMath::IsPowerOf2(uiCapacity), "uiCapacity must be a power of two to avoid modulo during lookup.");
-  const wdUInt32 uiOldCapacity = m_uiCapacity;
+  NS_ASSERT_DEBUG(nsMath::IsPowerOf2(uiCapacity), "uiCapacity must be a power of two to avoid modulo during lookup.");
+  const nsUInt32 uiOldCapacity = m_uiCapacity;
   m_uiCapacity = uiCapacity;
 
   K* pOldEntries = m_pEntries;
-  wdUInt32* pOldEntryFlags = m_pEntryFlags;
+  nsUInt32* pOldEntryFlags = m_pEntryFlags;
 
-  m_pEntries = WD_NEW_RAW_BUFFER(m_pAllocator, K, m_uiCapacity);
-  m_pEntryFlags = WD_NEW_RAW_BUFFER(m_pAllocator, wdUInt32, GetFlagsCapacity());
-  wdMemoryUtils::ZeroFill(m_pEntryFlags, GetFlagsCapacity());
+  m_pEntries = NS_NEW_RAW_BUFFER(m_pAllocator, K, m_uiCapacity);
+  m_pEntryFlags = NS_NEW_RAW_BUFFER(m_pAllocator, nsUInt32, GetFlagsCapacity());
+  nsMemoryUtils::ZeroFill(m_pEntryFlags, GetFlagsCapacity());
 
   m_uiCount = 0;
-  for (wdUInt32 i = 0; i < uiOldCapacity; ++i)
+  for (nsUInt32 i = 0; i < uiOldCapacity; ++i)
   {
     if (GetFlags(pOldEntryFlags, i) == VALID_ENTRY)
     {
-      WD_VERIFY(!Insert(std::move(pOldEntries[i])), "Implementation error");
+      NS_VERIFY(!Insert(std::move(pOldEntries[i])), "Implementation error");
 
-      wdMemoryUtils::Destruct(&pOldEntries[i], 1);
+      nsMemoryUtils::Destruct(&pOldEntries[i], 1);
     }
   }
 
-  WD_DELETE_RAW_BUFFER(m_pAllocator, pOldEntries);
-  WD_DELETE_RAW_BUFFER(m_pAllocator, pOldEntryFlags);
+  NS_DELETE_RAW_BUFFER(m_pAllocator, pOldEntries);
+  NS_DELETE_RAW_BUFFER(m_pAllocator, pOldEntryFlags);
 }
 
 template <typename K, typename H>
 template <typename CompatibleKeyType>
-WD_FORCE_INLINE wdUInt32 wdHashSetBase<K, H>::FindEntry(const CompatibleKeyType& key) const
+NS_FORCE_INLINE nsUInt32 nsHashSetBase<K, H>::FindEntry(const CompatibleKeyType& key) const
 {
   return FindEntry(H::Hash(key), key);
 }
 
 template <typename K, typename H>
 template <typename CompatibleKeyType>
-inline wdUInt32 wdHashSetBase<K, H>::FindEntry(wdUInt32 uiHash, const CompatibleKeyType& key) const
+inline nsUInt32 nsHashSetBase<K, H>::FindEntry(nsUInt32 uiHash, const CompatibleKeyType& key) const
 {
   if (m_uiCapacity > 0)
   {
-    wdUInt32 uiIndex = uiHash & (m_uiCapacity - 1);
-    wdUInt32 uiCounter = 0;
+    nsUInt32 uiIndex = uiHash & (m_uiCapacity - 1);
+    nsUInt32 uiCounter = 0;
     while (!IsFreeEntry(uiIndex) && uiCounter < m_uiCapacity)
     {
       if (IsValidEntry(uiIndex) && H::Equal(m_pEntries[uiIndex], key))
@@ -510,15 +519,15 @@ inline wdUInt32 wdHashSetBase<K, H>::FindEntry(wdUInt32 uiHash, const Compatible
     }
   }
   // not found
-  return wdInvalidIndex;
+  return nsInvalidIndex;
 }
 
-#define WD_HASHSET_USE_BITFLAGS WD_ON
+#define NS_HASHSET_USE_BITFLAGS NS_ON
 
 template <typename K, typename H>
-WD_FORCE_INLINE wdUInt32 wdHashSetBase<K, H>::GetFlagsCapacity() const
+NS_FORCE_INLINE nsUInt32 nsHashSetBase<K, H>::GetFlagsCapacity() const
 {
-#if WD_ENABLED(WD_HASHSET_USE_BITFLAGS)
+#if NS_ENABLED(NS_HASHSET_USE_BITFLAGS)
   return (m_uiCapacity + 15) / 16;
 #else
   return m_uiCapacity;
@@ -526,11 +535,11 @@ WD_FORCE_INLINE wdUInt32 wdHashSetBase<K, H>::GetFlagsCapacity() const
 }
 
 template <typename K, typename H>
-wdUInt32 wdHashSetBase<K, H>::GetFlags(wdUInt32* pFlags, wdUInt32 uiEntryIndex) const
+nsUInt32 nsHashSetBase<K, H>::GetFlags(nsUInt32* pFlags, nsUInt32 uiEntryIndex) const
 {
-#if WD_ENABLED(WD_HASHSET_USE_BITFLAGS)
-  const wdUInt32 uiIndex = uiEntryIndex / 16;
-  const wdUInt32 uiSubIndex = (uiEntryIndex & 15) * 2;
+#if NS_ENABLED(NS_HASHSET_USE_BITFLAGS)
+  const nsUInt32 uiIndex = uiEntryIndex / 16;
+  const nsUInt32 uiSubIndex = (uiEntryIndex & 15) * 2;
   return (pFlags[uiIndex] >> uiSubIndex) & FLAGS_MASK;
 #else
   return pFlags[uiEntryIndex] & FLAGS_MASK;
@@ -538,123 +547,124 @@ wdUInt32 wdHashSetBase<K, H>::GetFlags(wdUInt32* pFlags, wdUInt32 uiEntryIndex) 
 }
 
 template <typename K, typename H>
-void wdHashSetBase<K, H>::SetFlags(wdUInt32 uiEntryIndex, wdUInt32 uiFlags)
+void nsHashSetBase<K, H>::SetFlags(nsUInt32 uiEntryIndex, nsUInt32 uiFlags)
 {
-#if WD_ENABLED(WD_HASHSET_USE_BITFLAGS)
-  const wdUInt32 uiIndex = uiEntryIndex / 16;
-  const wdUInt32 uiSubIndex = (uiEntryIndex & 15) * 2;
-  WD_ASSERT_DEV(uiIndex < GetFlagsCapacity(), "Out of bounds access");
+#if NS_ENABLED(NS_HASHSET_USE_BITFLAGS)
+  const nsUInt32 uiIndex = uiEntryIndex / 16;
+  const nsUInt32 uiSubIndex = (uiEntryIndex & 15) * 2;
+  NS_ASSERT_DEBUG(uiIndex < GetFlagsCapacity(), "Out of bounds access");
   m_pEntryFlags[uiIndex] &= ~(FLAGS_MASK << uiSubIndex);
   m_pEntryFlags[uiIndex] |= (uiFlags << uiSubIndex);
 #else
-  WD_ASSERT_DEV(uiEntryIndex < GetFlagsCapacity(), "Out of bounds access");
+  NS_ASSERT_DEBUG(uiEntryIndex < GetFlagsCapacity(), "Out of bounds access");
   m_pEntryFlags[uiEntryIndex] = uiFlags;
 #endif
 }
 
 template <typename K, typename H>
-WD_FORCE_INLINE bool wdHashSetBase<K, H>::IsFreeEntry(wdUInt32 uiEntryIndex) const
+NS_FORCE_INLINE bool nsHashSetBase<K, H>::IsFreeEntry(nsUInt32 uiEntryIndex) const
 {
   return GetFlags(m_pEntryFlags, uiEntryIndex) == FREE_ENTRY;
 }
 
 template <typename K, typename H>
-WD_FORCE_INLINE bool wdHashSetBase<K, H>::IsValidEntry(wdUInt32 uiEntryIndex) const
+NS_FORCE_INLINE bool nsHashSetBase<K, H>::IsValidEntry(nsUInt32 uiEntryIndex) const
 {
+  NS_ASSERT_DEBUG(uiEntryIndex < m_uiCapacity, "Out of bounds access");
   return GetFlags(m_pEntryFlags, uiEntryIndex) == VALID_ENTRY;
 }
 
 template <typename K, typename H>
-WD_FORCE_INLINE bool wdHashSetBase<K, H>::IsDeletedEntry(wdUInt32 uiEntryIndex) const
+NS_FORCE_INLINE bool nsHashSetBase<K, H>::IsDeletedEntry(nsUInt32 uiEntryIndex) const
 {
   return GetFlags(m_pEntryFlags, uiEntryIndex) == DELETED_ENTRY;
 }
 
 template <typename K, typename H>
-WD_FORCE_INLINE void wdHashSetBase<K, H>::MarkEntryAsFree(wdUInt32 uiEntryIndex)
+NS_FORCE_INLINE void nsHashSetBase<K, H>::MarkEntryAsFree(nsUInt32 uiEntryIndex)
 {
   SetFlags(uiEntryIndex, FREE_ENTRY);
 }
 
 template <typename K, typename H>
-WD_FORCE_INLINE void wdHashSetBase<K, H>::MarkEntryAsValid(wdUInt32 uiEntryIndex)
+NS_FORCE_INLINE void nsHashSetBase<K, H>::MarkEntryAsValid(nsUInt32 uiEntryIndex)
 {
   SetFlags(uiEntryIndex, VALID_ENTRY);
 }
 
 template <typename K, typename H>
-WD_FORCE_INLINE void wdHashSetBase<K, H>::MarkEntryAsDeleted(wdUInt32 uiEntryIndex)
+NS_FORCE_INLINE void nsHashSetBase<K, H>::MarkEntryAsDeleted(nsUInt32 uiEntryIndex)
 {
   SetFlags(uiEntryIndex, DELETED_ENTRY);
 }
 
 
 template <typename K, typename H, typename A>
-wdHashSet<K, H, A>::wdHashSet()
-  : wdHashSetBase<K, H>(A::GetAllocator())
+nsHashSet<K, H, A>::nsHashSet()
+  : nsHashSetBase<K, H>(A::GetAllocator())
 {
 }
 
 template <typename K, typename H, typename A>
-wdHashSet<K, H, A>::wdHashSet(wdAllocatorBase* pAllocator)
-  : wdHashSetBase<K, H>(pAllocator)
+nsHashSet<K, H, A>::nsHashSet(nsAllocator* pAllocator)
+  : nsHashSetBase<K, H>(pAllocator)
 {
 }
 
 template <typename K, typename H, typename A>
-wdHashSet<K, H, A>::wdHashSet(const wdHashSet<K, H, A>& other)
-  : wdHashSetBase<K, H>(other, A::GetAllocator())
+nsHashSet<K, H, A>::nsHashSet(const nsHashSet<K, H, A>& other)
+  : nsHashSetBase<K, H>(other, A::GetAllocator())
 {
 }
 
 template <typename K, typename H, typename A>
-wdHashSet<K, H, A>::wdHashSet(const wdHashSetBase<K, H>& other)
-  : wdHashSetBase<K, H>(other, A::GetAllocator())
+nsHashSet<K, H, A>::nsHashSet(const nsHashSetBase<K, H>& other)
+  : nsHashSetBase<K, H>(other, A::GetAllocator())
 {
 }
 
 template <typename K, typename H, typename A>
-wdHashSet<K, H, A>::wdHashSet(wdHashSet<K, H, A>&& other)
-  : wdHashSetBase<K, H>(std::move(other), other.GetAllocator())
+nsHashSet<K, H, A>::nsHashSet(nsHashSet<K, H, A>&& other)
+  : nsHashSetBase<K, H>(std::move(other), other.GetAllocator())
 {
 }
 
 template <typename K, typename H, typename A>
-wdHashSet<K, H, A>::wdHashSet(wdHashSetBase<K, H>&& other)
-  : wdHashSetBase<K, H>(std::move(other), other.GetAllocator())
+nsHashSet<K, H, A>::nsHashSet(nsHashSetBase<K, H>&& other)
+  : nsHashSetBase<K, H>(std::move(other), other.GetAllocator())
 {
 }
 
 template <typename K, typename H, typename A>
-void wdHashSet<K, H, A>::operator=(const wdHashSet<K, H, A>& rhs)
+void nsHashSet<K, H, A>::operator=(const nsHashSet<K, H, A>& rhs)
 {
-  wdHashSetBase<K, H>::operator=(rhs);
+  nsHashSetBase<K, H>::operator=(rhs);
 }
 
 template <typename K, typename H, typename A>
-void wdHashSet<K, H, A>::operator=(const wdHashSetBase<K, H>& rhs)
+void nsHashSet<K, H, A>::operator=(const nsHashSetBase<K, H>& rhs)
 {
-  wdHashSetBase<K, H>::operator=(rhs);
+  nsHashSetBase<K, H>::operator=(rhs);
 }
 
 template <typename K, typename H, typename A>
-void wdHashSet<K, H, A>::operator=(wdHashSet<K, H, A>&& rhs)
+void nsHashSet<K, H, A>::operator=(nsHashSet<K, H, A>&& rhs)
 {
-  wdHashSetBase<K, H>::operator=(std::move(rhs));
+  nsHashSetBase<K, H>::operator=(std::move(rhs));
 }
 
 template <typename K, typename H, typename A>
-void wdHashSet<K, H, A>::operator=(wdHashSetBase<K, H>&& rhs)
+void nsHashSet<K, H, A>::operator=(nsHashSetBase<K, H>&& rhs)
 {
-  wdHashSetBase<K, H>::operator=(std::move(rhs));
+  nsHashSetBase<K, H>::operator=(std::move(rhs));
 }
 
 template <typename KeyType, typename Hasher>
-void wdHashSetBase<KeyType, Hasher>::Swap(wdHashSetBase<KeyType, Hasher>& other)
+void nsHashSetBase<KeyType, Hasher>::Swap(nsHashSetBase<KeyType, Hasher>& other)
 {
-  wdMath::Swap(this->m_pEntries, other.m_pEntries);
-  wdMath::Swap(this->m_pEntryFlags, other.m_pEntryFlags);
-  wdMath::Swap(this->m_uiCount, other.m_uiCount);
-  wdMath::Swap(this->m_uiCapacity, other.m_uiCapacity);
-  wdMath::Swap(this->m_pAllocator, other.m_pAllocator);
+  nsMath::Swap(this->m_pEntries, other.m_pEntries);
+  nsMath::Swap(this->m_pEntryFlags, other.m_pEntryFlags);
+  nsMath::Swap(this->m_uiCount, other.m_uiCount);
+  nsMath::Swap(this->m_uiCapacity, other.m_uiCapacity);
+  nsMath::Swap(this->m_pAllocator, other.m_pAllocator);
 }

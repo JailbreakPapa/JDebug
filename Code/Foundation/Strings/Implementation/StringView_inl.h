@@ -1,208 +1,231 @@
 #pragma once
 
-WD_ALWAYS_INLINE constexpr wdStringView::wdStringView() = default;
+NS_ALWAYS_INLINE constexpr nsStringView::nsStringView() = default;
 
-WD_ALWAYS_INLINE wdStringView::wdStringView(char* pStart)
+NS_ALWAYS_INLINE nsStringView::nsStringView(char* pStart)
   : m_pStart(pStart)
-  , m_pEnd(pStart + wdStringUtils::GetStringElementCount(pStart))
+  , m_uiElementCount(nsStringUtils::GetStringElementCount(pStart))
 {
 }
 
 template <typename T>
-constexpr WD_ALWAYS_INLINE wdStringView::wdStringView(T pStart, typename std::enable_if<std::is_same<T, const char*>::value, int>::type*)
+constexpr NS_ALWAYS_INLINE nsStringView::nsStringView(T pStart, typename std::enable_if<std::is_same<T, const char*>::value, int>::type*)
   : m_pStart(pStart)
-  , m_pEnd(pStart + wdStringUtils::GetStringElementCount(pStart))
+  , m_uiElementCount(nsStringUtils::GetStringElementCount(pStart))
 {
 }
 
 template <typename T>
-WD_ALWAYS_INLINE wdStringView::wdStringView(const T&& str, typename std::enable_if<std::is_same<T, const char*>::value == false && std::is_convertible<T, const char*>::value, int>::type*)
+constexpr NS_ALWAYS_INLINE nsStringView::nsStringView(const T&& str, typename std::enable_if<std::is_same<T, const char*>::value == false && std::is_convertible<T, const char*>::value, int>::type*)
 {
   m_pStart = str;
-  m_pEnd = m_pStart + wdStringUtils::GetStringElementCount(m_pStart);
+  m_uiElementCount = nsStringUtils::GetStringElementCount(m_pStart);
 }
 
-WD_ALWAYS_INLINE wdStringView::wdStringView(const char* pStart, const char* pEnd)
+constexpr NS_ALWAYS_INLINE nsStringView::nsStringView(const char* pStart, const char* pEnd)
 {
-  WD_ASSERT_DEV(pStart <= pEnd, "It should start BEFORE it ends.");
+  NS_ASSERT_DEBUG(pStart <= pEnd, "Invalid pointers to construct a string view from.");
 
   m_pStart = pStart;
-  m_pEnd = pEnd;
+  m_uiElementCount = static_cast<nsUInt32>(pEnd - pStart);
 }
 
-constexpr WD_ALWAYS_INLINE wdStringView::wdStringView(const char* pStart, wdUInt32 uiLength)
+constexpr NS_ALWAYS_INLINE nsStringView::nsStringView(const char* pStart, nsUInt32 uiLength)
   : m_pStart(pStart)
-  , m_pEnd(pStart + uiLength)
+  , m_uiElementCount(uiLength)
 {
 }
 
 template <size_t N>
-WD_ALWAYS_INLINE wdStringView::wdStringView(const char (&str)[N])
+constexpr NS_ALWAYS_INLINE nsStringView::nsStringView(const char (&str)[N])
   : m_pStart(str)
-  , m_pEnd(str + N - 1)
+  , m_uiElementCount(N - 1)
 {
   static_assert(N > 0, "Not a string literal");
-  WD_ASSERT_DEBUG(str[N - 1] == '\0', "Not a string literal. Manually cast to 'const char*' if you are trying to pass a const char fixed size array.");
 }
 
 template <size_t N>
-WD_ALWAYS_INLINE wdStringView::wdStringView(char (&str)[N])
+constexpr NS_ALWAYS_INLINE nsStringView::nsStringView(char (&str)[N])
 {
   m_pStart = str;
-  m_pEnd = m_pStart + wdStringUtils::GetStringElementCount(str, str + N);
+  m_uiElementCount = nsStringUtils::GetStringElementCount(str, str + N);
 }
 
-inline void wdStringView::operator++()
+inline void nsStringView::operator++()
 {
   if (!IsValid())
     return;
 
-  wdUnicodeUtils::MoveToNextUtf8(m_pStart, m_pEnd);
+  const char* pEnd = m_pStart + m_uiElementCount;
+  nsUnicodeUtils::MoveToNextUtf8(m_pStart, pEnd).IgnoreResult(); // if it fails, the string is just empty
+  m_uiElementCount = static_cast<nsUInt32>(pEnd - m_pStart);
 }
 
-inline void wdStringView::operator+=(wdUInt32 d)
+inline void nsStringView::operator+=(nsUInt32 d)
 {
-  wdUnicodeUtils::MoveToNextUtf8(m_pStart, m_pEnd, d);
-}
-WD_ALWAYS_INLINE bool wdStringView::IsValid() const
-{
-  return (m_pStart != nullptr) && (m_pStart < m_pEnd);
+  const char* pEnd = m_pStart + m_uiElementCount;
+  nsUnicodeUtils::MoveToNextUtf8(m_pStart, pEnd, d).IgnoreResult(); // if it fails, the string is just empty
+  m_uiElementCount = static_cast<nsUInt32>(pEnd - m_pStart);
 }
 
-WD_ALWAYS_INLINE void wdStringView::SetStartPosition(const char* szCurPos)
+NS_ALWAYS_INLINE bool nsStringView::IsValid() const
 {
-  WD_ASSERT_DEV((szCurPos >= m_pStart) && (szCurPos <= m_pEnd), "New start position must still be inside the view's range.");
+  return (m_pStart != nullptr) && (m_uiElementCount > 0);
+}
 
+NS_ALWAYS_INLINE void nsStringView::SetStartPosition(const char* szCurPos)
+{
+  NS_ASSERT_DEV((szCurPos >= m_pStart) && (szCurPos <= m_pStart + m_uiElementCount), "New start position must still be inside the view's range.");
+
+  const char* pEnd = m_pStart + m_uiElementCount;
   m_pStart = szCurPos;
+  m_uiElementCount = static_cast<nsUInt32>(pEnd - m_pStart);
 }
 
-WD_ALWAYS_INLINE bool wdStringView::IsEmpty() const
+NS_ALWAYS_INLINE bool nsStringView::IsEmpty() const
 {
-  return m_pStart == m_pEnd || wdStringUtils::IsNullOrEmpty(m_pStart);
+  return m_uiElementCount == 0;
 }
 
-WD_ALWAYS_INLINE bool wdStringView::IsEqual(wdStringView sOther) const
+NS_ALWAYS_INLINE bool nsStringView::IsEqual(nsStringView sOther) const
 {
-  return wdStringUtils::IsEqual(m_pStart, sOther.GetStartPointer(), m_pEnd, sOther.GetEndPointer());
+  return nsStringUtils::IsEqual(m_pStart, sOther.GetStartPointer(), m_pStart + m_uiElementCount, sOther.GetEndPointer());
 }
 
-WD_ALWAYS_INLINE bool wdStringView::IsEqual_NoCase(wdStringView sOther) const
+NS_ALWAYS_INLINE bool nsStringView::IsEqual_NoCase(nsStringView sOther) const
 {
-  return wdStringUtils::IsEqual_NoCase(m_pStart, sOther.GetStartPointer(), m_pEnd, sOther.GetEndPointer());
+  return nsStringUtils::IsEqual_NoCase(m_pStart, sOther.GetStartPointer(), m_pStart + m_uiElementCount, sOther.GetEndPointer());
 }
 
-WD_ALWAYS_INLINE bool wdStringView::StartsWith(wdStringView sStartsWith) const
+NS_ALWAYS_INLINE bool nsStringView::StartsWith(nsStringView sStartsWith) const
 {
-  return wdStringUtils::StartsWith(m_pStart, sStartsWith.GetStartPointer(), m_pEnd, sStartsWith.GetEndPointer());
+  return nsStringUtils::StartsWith(m_pStart, sStartsWith.GetStartPointer(), m_pStart + m_uiElementCount, sStartsWith.GetEndPointer());
 }
 
-WD_ALWAYS_INLINE bool wdStringView::StartsWith_NoCase(wdStringView sStartsWith) const
+NS_ALWAYS_INLINE bool nsStringView::StartsWith_NoCase(nsStringView sStartsWith) const
 {
-  return wdStringUtils::StartsWith_NoCase(m_pStart, sStartsWith.GetStartPointer(), m_pEnd, sStartsWith.GetEndPointer());
+  return nsStringUtils::StartsWith_NoCase(m_pStart, sStartsWith.GetStartPointer(), m_pStart + m_uiElementCount, sStartsWith.GetEndPointer());
 }
 
-WD_ALWAYS_INLINE bool wdStringView::EndsWith(wdStringView sEndsWith) const
+NS_ALWAYS_INLINE bool nsStringView::EndsWith(nsStringView sEndsWith) const
 {
-  return wdStringUtils::EndsWith(m_pStart, sEndsWith.GetStartPointer(), m_pEnd, sEndsWith.GetEndPointer());
+  return nsStringUtils::EndsWith(m_pStart, sEndsWith.GetStartPointer(), m_pStart + m_uiElementCount, sEndsWith.GetEndPointer());
 }
 
-WD_ALWAYS_INLINE bool wdStringView::EndsWith_NoCase(wdStringView sEndsWith) const
+NS_ALWAYS_INLINE bool nsStringView::EndsWith_NoCase(nsStringView sEndsWith) const
 {
-  return wdStringUtils::EndsWith_NoCase(m_pStart, sEndsWith.GetStartPointer(), m_pEnd, sEndsWith.GetEndPointer());
+  return nsStringUtils::EndsWith_NoCase(m_pStart, sEndsWith.GetStartPointer(), m_pStart + m_uiElementCount, sEndsWith.GetEndPointer());
 }
 
-WD_ALWAYS_INLINE void wdStringView::Trim(const char* szTrimChars)
+NS_ALWAYS_INLINE void nsStringView::Trim(const char* szTrimChars)
 {
   return Trim(szTrimChars, szTrimChars);
 }
 
-WD_ALWAYS_INLINE void wdStringView::Trim(const char* szTrimCharsStart, const char* szTrimCharsEnd)
+NS_ALWAYS_INLINE void nsStringView::Trim(const char* szTrimCharsStart, const char* szTrimCharsEnd)
 {
   if (IsValid())
   {
-    wdStringUtils::Trim(m_pStart, m_pEnd, szTrimCharsStart, szTrimCharsEnd);
+    const char* pEnd = m_pStart + m_uiElementCount;
+    nsStringUtils::Trim(m_pStart, pEnd, szTrimCharsStart, szTrimCharsEnd);
+    m_uiElementCount = static_cast<nsUInt32>(pEnd - m_pStart);
   }
 }
 
-constexpr WD_ALWAYS_INLINE wdStringView operator"" _wdsv(const char* pString, size_t uiLen)
+constexpr NS_ALWAYS_INLINE nsStringView operator"" _nssv(const char* pString, size_t uiLen)
 {
-  return wdStringView(pString, static_cast<wdUInt32>(uiLen));
+  return nsStringView(pString, static_cast<nsUInt32>(uiLen));
 }
 
 template <typename Container>
-void wdStringView::Split(bool bReturnEmptyStrings, Container& ref_output, const char* szSeparator1, const char* szSeparator2 /*= nullptr*/, const char* szSeparator3 /*= nullptr*/, const char* szSeparator4 /*= nullptr*/, const char* szSeparator5 /*= nullptr*/, const char* szSeparator6 /*= nullptr*/) const
+void nsStringView::Split(bool bReturnEmptyStrings, Container& ref_output, const char* szSeparator1, const char* szSeparator2 /*= nullptr*/, const char* szSeparator3 /*= nullptr*/, const char* szSeparator4 /*= nullptr*/, const char* szSeparator5 /*= nullptr*/, const char* szSeparator6 /*= nullptr*/) const
 {
   ref_output.Clear();
 
   if (IsEmpty())
     return;
 
-  const wdUInt32 uiParams = 6;
+  const nsUInt32 uiParams = 6;
 
-  const wdStringView seps[uiParams] = {szSeparator1, szSeparator2, szSeparator3, szSeparator4, szSeparator5, szSeparator6};
+  const nsStringView seps[uiParams] = {szSeparator1, szSeparator2, szSeparator3, szSeparator4, szSeparator5, szSeparator6};
 
   const char* szReadPos = GetStartPointer();
 
   while (true)
   {
-    const char* szFoundPos = wdUnicodeUtils::GetMaxStringEnd<char>();
-    wdInt32 iFoundSeparator = 0;
+    const char* szFoundPos = nsUnicodeUtils::GetMaxStringEnd<char>();
+    nsUInt32 uiFoundSeparator = 0;
 
-    for (wdInt32 i = 0; i < uiParams; ++i)
+    for (nsUInt32 i = 0; i < uiParams; ++i)
     {
-      const char* szFound = wdStringUtils::FindSubString(szReadPos, seps[i].GetStartPointer(), GetEndPointer(), seps[i].GetEndPointer());
+      const char* szFound = nsStringUtils::FindSubString(szReadPos, seps[i].GetStartPointer(), GetEndPointer(), seps[i].GetEndPointer());
 
       if ((szFound != nullptr) && (szFound < szFoundPos))
       {
         szFoundPos = szFound;
-        iFoundSeparator = i;
+        uiFoundSeparator = i;
       }
     }
 
     // nothing found
-    if (szFoundPos == wdUnicodeUtils::GetMaxStringEnd<char>())
+    if (szFoundPos == nsUnicodeUtils::GetMaxStringEnd<char>())
     {
-      const wdUInt32 uiLen = wdStringUtils::GetStringElementCount(szReadPos, GetEndPointer());
+      const nsUInt32 uiLen = nsStringUtils::GetStringElementCount(szReadPos, GetEndPointer());
 
       if (bReturnEmptyStrings || (uiLen > 0))
-        ref_output.PushBack(wdStringView(szReadPos, szReadPos + uiLen));
+        ref_output.PushBack(nsStringView(szReadPos, szReadPos + uiLen));
 
       return;
     }
 
     if (bReturnEmptyStrings || (szFoundPos > szReadPos))
-      ref_output.PushBack(wdStringView(szReadPos, szFoundPos));
+      ref_output.PushBack(nsStringView(szReadPos, szFoundPos));
 
-    szReadPos = szFoundPos + seps[iFoundSeparator].GetElementCount();
+    szReadPos = szFoundPos + seps[uiFoundSeparator].GetElementCount();
   }
 }
 
-WD_ALWAYS_INLINE bool operator==(wdStringView lhs, wdStringView rhs)
+NS_ALWAYS_INLINE bool operator==(nsStringView lhs, nsStringView rhs)
 {
   return lhs.IsEqual(rhs);
 }
 
-WD_ALWAYS_INLINE bool operator!=(wdStringView lhs, wdStringView rhs)
+#if NS_DISABLED(NS_USE_CPP20_OPERATORS)
+
+NS_ALWAYS_INLINE bool operator!=(nsStringView lhs, nsStringView rhs)
 {
   return !lhs.IsEqual(rhs);
 }
 
-WD_ALWAYS_INLINE bool operator<(wdStringView lhs, wdStringView rhs)
+#endif
+
+#if NS_ENABLED(NS_USE_CPP20_OPERATORS)
+
+NS_ALWAYS_INLINE std::strong_ordering operator<=>(nsStringView lhs, nsStringView rhs)
+{
+  return lhs.Compare(rhs) <=> 0;
+}
+
+#else
+
+NS_ALWAYS_INLINE bool operator<(nsStringView lhs, nsStringView rhs)
 {
   return lhs.Compare(rhs) < 0;
 }
 
-WD_ALWAYS_INLINE bool operator<=(wdStringView lhs, wdStringView rhs)
+NS_ALWAYS_INLINE bool operator<=(nsStringView lhs, nsStringView rhs)
 {
   return lhs.Compare(rhs) <= 0;
 }
 
-WD_ALWAYS_INLINE bool operator>(wdStringView lhs, wdStringView rhs)
+NS_ALWAYS_INLINE bool operator>(nsStringView lhs, nsStringView rhs)
 {
   return lhs.Compare(rhs) > 0;
 }
 
-WD_ALWAYS_INLINE bool operator>=(wdStringView lhs, wdStringView rhs)
+NS_ALWAYS_INLINE bool operator>=(nsStringView lhs, nsStringView rhs)
 {
   return lhs.Compare(rhs) >= 0;
 }
+
+#endif

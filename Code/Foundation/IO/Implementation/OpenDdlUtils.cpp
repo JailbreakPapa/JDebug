@@ -11,21 +11,21 @@
 #include <Foundation/Types/Variant.h>
 #include <Foundation/Types/VariantTypeRegistry.h>
 
-wdResult wdOpenDdlUtils::ConvertToColor(const wdOpenDdlReaderElement* pElement, wdColor& out_result)
+nsResult nsOpenDdlUtils::ConvertToColor(const nsOpenDdlReaderElement* pElement, nsColor& out_result)
 {
   if (pElement == nullptr)
-    return WD_FAILURE;
+    return NS_FAILURE;
 
   // go into the element, if we are at the group level
   if (pElement->IsCustomType())
   {
     if (pElement->GetNumChildObjects() != 1)
-      return WD_FAILURE;
+      return NS_FAILURE;
 
     pElement = pElement->GetFirstChild();
   }
 
-  if (pElement->GetPrimitivesType() == wdOpenDdlPrimitiveType::Float)
+  if (pElement->GetPrimitivesType() == nsOpenDdlPrimitiveType::Float)
   {
     const float* pValues = pElement->GetPrimitivesFloat();
 
@@ -36,7 +36,7 @@ wdResult wdOpenDdlUtils::ConvertToColor(const wdOpenDdlReaderElement* pElement, 
       out_result.b = pValues[2];
       out_result.a = pValues[3];
 
-      return WD_SUCCESS;
+      return NS_SUCCESS;
     }
 
     if (pElement->GetNumPrimitives() == 3)
@@ -46,66 +46,66 @@ wdResult wdOpenDdlUtils::ConvertToColor(const wdOpenDdlReaderElement* pElement, 
       out_result.b = pValues[2];
       out_result.a = 1.0f;
 
-      return WD_SUCCESS;
+      return NS_SUCCESS;
     }
   }
-  else if (pElement->GetPrimitivesType() == wdOpenDdlPrimitiveType::UInt8)
+  else if (pElement->GetPrimitivesType() == nsOpenDdlPrimitiveType::UInt8)
   {
-    const wdUInt8* pValues = pElement->GetPrimitivesUInt8();
+    const nsUInt8* pValues = pElement->GetPrimitivesUInt8();
 
     if (pElement->GetNumPrimitives() == 4)
     {
-      out_result = wdColorGammaUB(pValues[0], pValues[1], pValues[2], pValues[3]);
+      out_result = nsColorGammaUB(pValues[0], pValues[1], pValues[2], pValues[3]);
 
-      return WD_SUCCESS;
+      return NS_SUCCESS;
     }
 
     if (pElement->GetNumPrimitives() == 3)
     {
-      out_result = wdColorGammaUB(pValues[0], pValues[1], pValues[2]);
+      out_result = nsColorGammaUB(pValues[0], pValues[1], pValues[2]);
 
-      return WD_SUCCESS;
+      return NS_SUCCESS;
     }
   }
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
-wdResult wdOpenDdlUtils::ConvertToColorGamma(const wdOpenDdlReaderElement* pElement, wdColorGammaUB& out_result)
+nsResult nsOpenDdlUtils::ConvertToColorGamma(const nsOpenDdlReaderElement* pElement, nsColorGammaUB& out_result)
 {
   if (pElement == nullptr)
-    return WD_FAILURE;
+    return NS_FAILURE;
 
   // go into the element, if we are at the group level
   if (pElement->IsCustomType())
   {
     if (pElement->GetNumChildObjects() != 1)
-      return WD_FAILURE;
+      return NS_FAILURE;
 
     pElement = pElement->GetFirstChild();
   }
 
-  if (pElement->GetPrimitivesType() == wdOpenDdlPrimitiveType::Float)
+  if (pElement->GetPrimitivesType() == nsOpenDdlPrimitiveType::Float)
   {
     const float* pValues = pElement->GetPrimitivesFloat();
 
     if (pElement->GetNumPrimitives() == 4)
     {
-      out_result = wdColor(pValues[0], pValues[1], pValues[2], pValues[3]);
+      out_result = nsColor(pValues[0], pValues[1], pValues[2], pValues[3]);
 
-      return WD_SUCCESS;
+      return NS_SUCCESS;
     }
 
     if (pElement->GetNumPrimitives() == 3)
     {
-      out_result = wdColor(pValues[0], pValues[1], pValues[2]);
+      out_result = nsColor(pValues[0], pValues[1], pValues[2]);
 
-      return WD_SUCCESS;
+      return NS_SUCCESS;
     }
   }
-  else if (pElement->GetPrimitivesType() == wdOpenDdlPrimitiveType::UInt8)
+  else if (pElement->GetPrimitivesType() == nsOpenDdlPrimitiveType::UInt8)
   {
-    const wdUInt8* pValues = pElement->GetPrimitivesUInt8();
+    const nsUInt8* pValues = pElement->GetPrimitivesUInt8();
 
     if (pElement->GetNumPrimitives() == 4)
     {
@@ -114,7 +114,7 @@ wdResult wdOpenDdlUtils::ConvertToColorGamma(const wdOpenDdlReaderElement* pElem
       out_result.b = pValues[2];
       out_result.a = pValues[3];
 
-      return WD_SUCCESS;
+      return NS_SUCCESS;
     }
 
     if (pElement->GetNumPrimitives() == 3)
@@ -124,986 +124,1070 @@ wdResult wdOpenDdlUtils::ConvertToColorGamma(const wdOpenDdlReaderElement* pElem
       out_result.b = pValues[2];
       out_result.a = 255;
 
-      return WD_SUCCESS;
+      return NS_SUCCESS;
     }
   }
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
-wdResult wdOpenDdlUtils::ConvertToTime(const wdOpenDdlReaderElement* pElement, wdTime& out_result)
+nsResult nsOpenDdlUtils::ConvertToTime(const nsOpenDdlReaderElement* pElement, nsTime& out_result)
 {
   if (pElement == nullptr)
-    return WD_FAILURE;
+    return NS_FAILURE;
 
   // go into the element, if we are at the group level
   if (pElement->IsCustomType())
   {
     if (pElement->GetNumChildObjects() != 1)
-      return WD_FAILURE;
+      return NS_FAILURE;
 
     pElement = pElement->GetFirstChild();
   }
 
   if (pElement->GetNumPrimitives() != 1)
-    return WD_FAILURE;
+    return NS_FAILURE;
 
-  if (pElement->GetPrimitivesType() == wdOpenDdlPrimitiveType::Float)
+  if (pElement->GetPrimitivesType() == nsOpenDdlPrimitiveType::Float)
   {
     const float* pValues = pElement->GetPrimitivesFloat();
 
-    out_result = wdTime::Seconds(pValues[0]);
+    out_result = nsTime::MakeFromSeconds(pValues[0]);
 
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
 
-  if (pElement->GetPrimitivesType() == wdOpenDdlPrimitiveType::Double)
+  if (pElement->GetPrimitivesType() == nsOpenDdlPrimitiveType::Double)
   {
     const double* pValues = pElement->GetPrimitivesDouble();
 
-    out_result = wdTime::Seconds(pValues[0]);
+    out_result = nsTime::MakeFromSeconds(pValues[0]);
 
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
-wdResult wdOpenDdlUtils::ConvertToVec2(const wdOpenDdlReaderElement* pElement, wdVec2& out_vResult)
+nsResult nsOpenDdlUtils::ConvertToVec2(const nsOpenDdlReaderElement* pElement, nsVec2& out_vResult)
 {
   if (pElement == nullptr)
-    return WD_FAILURE;
+    return NS_FAILURE;
 
   // go into the element, if we are at the group level
   if (pElement->IsCustomType())
   {
     if (pElement->GetNumChildObjects() != 1)
-      return WD_FAILURE;
+      return NS_FAILURE;
 
     pElement = pElement->GetFirstChild();
   }
 
   if (pElement->GetNumPrimitives() != 2)
-    return WD_FAILURE;
+    return NS_FAILURE;
 
-  if (pElement->GetPrimitivesType() == wdOpenDdlPrimitiveType::Float)
+  if (pElement->GetPrimitivesType() == nsOpenDdlPrimitiveType::Float)
   {
     const float* pValues = pElement->GetPrimitivesFloat();
 
     out_vResult.Set(pValues[0], pValues[1]);
 
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
-wdResult wdOpenDdlUtils::ConvertToVec3(const wdOpenDdlReaderElement* pElement, wdVec3& out_vResult)
+nsResult nsOpenDdlUtils::ConvertToVec3(const nsOpenDdlReaderElement* pElement, nsVec3& out_vResult)
 {
   if (pElement == nullptr)
-    return WD_FAILURE;
+    return NS_FAILURE;
 
   // go into the element, if we are at the group level
   if (pElement->IsCustomType())
   {
     if (pElement->GetNumChildObjects() != 1)
-      return WD_FAILURE;
+      return NS_FAILURE;
 
     pElement = pElement->GetFirstChild();
   }
 
   if (pElement->GetNumPrimitives() != 3)
-    return WD_FAILURE;
+    return NS_FAILURE;
 
-  if (pElement->GetPrimitivesType() == wdOpenDdlPrimitiveType::Float)
+  if (pElement->GetPrimitivesType() == nsOpenDdlPrimitiveType::Float)
   {
     const float* pValues = pElement->GetPrimitivesFloat();
 
     out_vResult.Set(pValues[0], pValues[1], pValues[2]);
 
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
-wdResult wdOpenDdlUtils::ConvertToVec4(const wdOpenDdlReaderElement* pElement, wdVec4& out_vResult)
+nsResult nsOpenDdlUtils::ConvertToVec4(const nsOpenDdlReaderElement* pElement, nsVec4& out_vResult)
 {
   if (pElement == nullptr)
-    return WD_FAILURE;
+    return NS_FAILURE;
 
   // go into the element, if we are at the group level
   if (pElement->IsCustomType())
   {
     if (pElement->GetNumChildObjects() != 1)
-      return WD_FAILURE;
+      return NS_FAILURE;
 
     pElement = pElement->GetFirstChild();
   }
 
   if (pElement->GetNumPrimitives() != 4)
-    return WD_FAILURE;
+    return NS_FAILURE;
 
-  if (pElement->GetPrimitivesType() == wdOpenDdlPrimitiveType::Float)
+  if (pElement->GetPrimitivesType() == nsOpenDdlPrimitiveType::Float)
   {
     const float* pValues = pElement->GetPrimitivesFloat();
 
     out_vResult.Set(pValues[0], pValues[1], pValues[2], pValues[3]);
 
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
-wdResult wdOpenDdlUtils::ConvertToVec2I(const wdOpenDdlReaderElement* pElement, wdVec2I32& out_vResult)
+nsResult nsOpenDdlUtils::ConvertToVec2I(const nsOpenDdlReaderElement* pElement, nsVec2I32& out_vResult)
 {
   if (pElement == nullptr)
-    return WD_FAILURE;
+    return NS_FAILURE;
 
   // go into the element, if we are at the group level
   if (pElement->IsCustomType())
   {
     if (pElement->GetNumChildObjects() != 1)
-      return WD_FAILURE;
+      return NS_FAILURE;
 
     pElement = pElement->GetFirstChild();
   }
 
   if (pElement->GetNumPrimitives() != 2)
-    return WD_FAILURE;
+    return NS_FAILURE;
 
-  if (pElement->GetPrimitivesType() == wdOpenDdlPrimitiveType::Int32)
+  if (pElement->GetPrimitivesType() == nsOpenDdlPrimitiveType::Int32)
   {
-    const wdInt32* pValues = pElement->GetPrimitivesInt32();
+    const nsInt32* pValues = pElement->GetPrimitivesInt32();
 
     out_vResult.Set(pValues[0], pValues[1]);
 
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
-wdResult wdOpenDdlUtils::ConvertToVec3I(const wdOpenDdlReaderElement* pElement, wdVec3I32& out_vResult)
+nsResult nsOpenDdlUtils::ConvertToVec3I(const nsOpenDdlReaderElement* pElement, nsVec3I32& out_vResult)
 {
   if (pElement == nullptr)
-    return WD_FAILURE;
+    return NS_FAILURE;
 
   // go into the element, if we are at the group level
   if (pElement->IsCustomType())
   {
     if (pElement->GetNumChildObjects() != 1)
-      return WD_FAILURE;
+      return NS_FAILURE;
 
     pElement = pElement->GetFirstChild();
   }
 
   if (pElement->GetNumPrimitives() != 3)
-    return WD_FAILURE;
+    return NS_FAILURE;
 
-  if (pElement->GetPrimitivesType() == wdOpenDdlPrimitiveType::Int32)
+  if (pElement->GetPrimitivesType() == nsOpenDdlPrimitiveType::Int32)
   {
-    const wdInt32* pValues = pElement->GetPrimitivesInt32();
+    const nsInt32* pValues = pElement->GetPrimitivesInt32();
 
     out_vResult.Set(pValues[0], pValues[1], pValues[2]);
 
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
-wdResult wdOpenDdlUtils::ConvertToVec4I(const wdOpenDdlReaderElement* pElement, wdVec4I32& out_vResult)
+nsResult nsOpenDdlUtils::ConvertToVec4I(const nsOpenDdlReaderElement* pElement, nsVec4I32& out_vResult)
 {
   if (pElement == nullptr)
-    return WD_FAILURE;
+    return NS_FAILURE;
 
   // go into the element, if we are at the group level
   if (pElement->IsCustomType())
   {
     if (pElement->GetNumChildObjects() != 1)
-      return WD_FAILURE;
+      return NS_FAILURE;
 
     pElement = pElement->GetFirstChild();
   }
 
   if (pElement->GetNumPrimitives() != 4)
-    return WD_FAILURE;
+    return NS_FAILURE;
 
-  if (pElement->GetPrimitivesType() == wdOpenDdlPrimitiveType::Int32)
+  if (pElement->GetPrimitivesType() == nsOpenDdlPrimitiveType::Int32)
   {
-    const wdInt32* pValues = pElement->GetPrimitivesInt32();
+    const nsInt32* pValues = pElement->GetPrimitivesInt32();
 
     out_vResult.Set(pValues[0], pValues[1], pValues[2], pValues[3]);
 
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
 
-wdResult wdOpenDdlUtils::ConvertToVec2U(const wdOpenDdlReaderElement* pElement, wdVec2U32& out_vResult)
+nsResult nsOpenDdlUtils::ConvertToVec2U(const nsOpenDdlReaderElement* pElement, nsVec2U32& out_vResult)
 {
   if (pElement == nullptr)
-    return WD_FAILURE;
+    return NS_FAILURE;
 
   // go into the element, if we are at the group level
   if (pElement->IsCustomType())
   {
     if (pElement->GetNumChildObjects() != 1)
-      return WD_FAILURE;
+      return NS_FAILURE;
 
     pElement = pElement->GetFirstChild();
   }
 
   if (pElement->GetNumPrimitives() != 2)
-    return WD_FAILURE;
+    return NS_FAILURE;
 
-  if (pElement->GetPrimitivesType() == wdOpenDdlPrimitiveType::UInt32)
+  if (pElement->GetPrimitivesType() == nsOpenDdlPrimitiveType::UInt32)
   {
-    const wdUInt32* pValues = pElement->GetPrimitivesUInt32();
+    const nsUInt32* pValues = pElement->GetPrimitivesUInt32();
 
     out_vResult.Set(pValues[0], pValues[1]);
 
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
-wdResult wdOpenDdlUtils::ConvertToVec3U(const wdOpenDdlReaderElement* pElement, wdVec3U32& out_vResult)
+nsResult nsOpenDdlUtils::ConvertToVec3U(const nsOpenDdlReaderElement* pElement, nsVec3U32& out_vResult)
 {
   if (pElement == nullptr)
-    return WD_FAILURE;
+    return NS_FAILURE;
 
   // go into the element, if we are at the group level
   if (pElement->IsCustomType())
   {
     if (pElement->GetNumChildObjects() != 1)
-      return WD_FAILURE;
+      return NS_FAILURE;
 
     pElement = pElement->GetFirstChild();
   }
 
   if (pElement->GetNumPrimitives() != 3)
-    return WD_FAILURE;
+    return NS_FAILURE;
 
-  if (pElement->GetPrimitivesType() == wdOpenDdlPrimitiveType::UInt32)
+  if (pElement->GetPrimitivesType() == nsOpenDdlPrimitiveType::UInt32)
   {
-    const wdUInt32* pValues = pElement->GetPrimitivesUInt32();
+    const nsUInt32* pValues = pElement->GetPrimitivesUInt32();
 
     out_vResult.Set(pValues[0], pValues[1], pValues[2]);
 
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
-wdResult wdOpenDdlUtils::ConvertToVec4U(const wdOpenDdlReaderElement* pElement, wdVec4U32& out_vResult)
+nsResult nsOpenDdlUtils::ConvertToVec4U(const nsOpenDdlReaderElement* pElement, nsVec4U32& out_vResult)
 {
   if (pElement == nullptr)
-    return WD_FAILURE;
+    return NS_FAILURE;
 
   // go into the element, if we are at the group level
   if (pElement->IsCustomType())
   {
     if (pElement->GetNumChildObjects() != 1)
-      return WD_FAILURE;
+      return NS_FAILURE;
 
     pElement = pElement->GetFirstChild();
   }
 
   if (pElement->GetNumPrimitives() != 4)
-    return WD_FAILURE;
+    return NS_FAILURE;
 
-  if (pElement->GetPrimitivesType() == wdOpenDdlPrimitiveType::UInt32)
+  if (pElement->GetPrimitivesType() == nsOpenDdlPrimitiveType::UInt32)
   {
-    const wdUInt32* pValues = pElement->GetPrimitivesUInt32();
+    const nsUInt32* pValues = pElement->GetPrimitivesUInt32();
 
     out_vResult.Set(pValues[0], pValues[1], pValues[2], pValues[3]);
 
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
 
 
-wdResult wdOpenDdlUtils::ConvertToMat3(const wdOpenDdlReaderElement* pElement, wdMat3& out_mResult)
+nsResult nsOpenDdlUtils::ConvertToMat3(const nsOpenDdlReaderElement* pElement, nsMat3& out_mResult)
 {
   if (pElement == nullptr)
-    return WD_FAILURE;
+    return NS_FAILURE;
 
   // go into the element, if we are at the group level
   if (pElement->IsCustomType())
   {
     if (pElement->GetNumChildObjects() != 1)
-      return WD_FAILURE;
+      return NS_FAILURE;
 
     pElement = pElement->GetFirstChild();
   }
 
   if (pElement->GetNumPrimitives() != 9)
-    return WD_FAILURE;
+    return NS_FAILURE;
 
-  if (pElement->GetPrimitivesType() == wdOpenDdlPrimitiveType::Float)
+  if (pElement->GetPrimitivesType() == nsOpenDdlPrimitiveType::Float)
   {
     const float* pValues = pElement->GetPrimitivesFloat();
 
-    out_mResult.SetFromArray(pValues, wdMatrixLayout::ColumnMajor);
+    out_mResult = nsMat3::MakeFromColumnMajorArray(pValues);
 
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
-wdResult wdOpenDdlUtils::ConvertToMat4(const wdOpenDdlReaderElement* pElement, wdMat4& out_mResult)
+nsResult nsOpenDdlUtils::ConvertToMat4(const nsOpenDdlReaderElement* pElement, nsMat4& out_mResult)
 {
   if (pElement == nullptr)
-    return WD_FAILURE;
+    return NS_FAILURE;
 
   // go into the element, if we are at the group level
   if (pElement->IsCustomType())
   {
     if (pElement->GetNumChildObjects() != 1)
-      return WD_FAILURE;
+      return NS_FAILURE;
 
     pElement = pElement->GetFirstChild();
   }
 
   if (pElement->GetNumPrimitives() != 16)
-    return WD_FAILURE;
+    return NS_FAILURE;
 
-  if (pElement->GetPrimitivesType() == wdOpenDdlPrimitiveType::Float)
+  if (pElement->GetPrimitivesType() == nsOpenDdlPrimitiveType::Float)
   {
     const float* pValues = pElement->GetPrimitivesFloat();
 
-    out_mResult.SetFromArray(pValues, wdMatrixLayout::ColumnMajor);
+    out_mResult = nsMat4::MakeFromColumnMajorArray(pValues);
 
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
 
-wdResult wdOpenDdlUtils::ConvertToTransform(const wdOpenDdlReaderElement* pElement, wdTransform& out_result)
+nsResult nsOpenDdlUtils::ConvertToTransform(const nsOpenDdlReaderElement* pElement, nsTransform& out_result)
 {
   if (pElement == nullptr)
-    return WD_FAILURE;
+    return NS_FAILURE;
 
   // go into the element, if we are at the group level
   if (pElement->IsCustomType())
   {
     if (pElement->GetNumChildObjects() != 1)
-      return WD_FAILURE;
+      return NS_FAILURE;
 
     pElement = pElement->GetFirstChild();
   }
 
   if (pElement->GetNumPrimitives() != 10)
-    return WD_FAILURE;
+    return NS_FAILURE;
 
-  if (pElement->GetPrimitivesType() == wdOpenDdlPrimitiveType::Float)
+  if (pElement->GetPrimitivesType() == nsOpenDdlPrimitiveType::Float)
   {
     const float* pValues = pElement->GetPrimitivesFloat();
 
     out_result.m_vPosition.x = pValues[0];
     out_result.m_vPosition.y = pValues[1];
     out_result.m_vPosition.z = pValues[2];
-    out_result.m_qRotation.v.x = pValues[3];
-    out_result.m_qRotation.v.y = pValues[4];
-    out_result.m_qRotation.v.z = pValues[5];
+    out_result.m_qRotation.x = pValues[3];
+    out_result.m_qRotation.y = pValues[4];
+    out_result.m_qRotation.z = pValues[5];
     out_result.m_qRotation.w = pValues[6];
     out_result.m_vScale.x = pValues[7];
     out_result.m_vScale.y = pValues[8];
     out_result.m_vScale.z = pValues[9];
 
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
-wdResult wdOpenDdlUtils::ConvertToQuat(const wdOpenDdlReaderElement* pElement, wdQuat& out_qResult)
+nsResult nsOpenDdlUtils::ConvertToQuat(const nsOpenDdlReaderElement* pElement, nsQuat& out_qResult)
 {
   if (pElement == nullptr)
-    return WD_FAILURE;
+    return NS_FAILURE;
 
   // go into the element, if we are at the group level
   if (pElement->IsCustomType())
   {
     if (pElement->GetNumChildObjects() != 1)
-      return WD_FAILURE;
+      return NS_FAILURE;
 
     pElement = pElement->GetFirstChild();
   }
 
   if (pElement->GetNumPrimitives() != 4)
-    return WD_FAILURE;
+    return NS_FAILURE;
 
-  if (pElement->GetPrimitivesType() == wdOpenDdlPrimitiveType::Float)
+  if (pElement->GetPrimitivesType() == nsOpenDdlPrimitiveType::Float)
   {
     const float* pValues = pElement->GetPrimitivesFloat();
 
-    out_qResult.SetElements(pValues[0], pValues[1], pValues[2], pValues[3]);
+    out_qResult = nsQuat(pValues[0], pValues[1], pValues[2], pValues[3]);
 
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
-wdResult wdOpenDdlUtils::ConvertToUuid(const wdOpenDdlReaderElement* pElement, wdUuid& out_result)
+nsResult nsOpenDdlUtils::ConvertToUuid(const nsOpenDdlReaderElement* pElement, nsUuid& out_result)
 {
   if (pElement == nullptr)
-    return WD_FAILURE;
+    return NS_FAILURE;
 
   // go into the element, if we are at the group level
   if (pElement->IsCustomType())
   {
     if (pElement->GetNumChildObjects() != 1)
-      return WD_FAILURE;
+      return NS_FAILURE;
 
     pElement = pElement->GetFirstChild();
   }
 
   if (pElement->GetNumPrimitives() != 2)
-    return WD_FAILURE;
+    return NS_FAILURE;
 
-  if (pElement->GetPrimitivesType() == wdOpenDdlPrimitiveType::UInt64)
+  if (pElement->GetPrimitivesType() == nsOpenDdlPrimitiveType::UInt64)
   {
-    const wdUInt64* pValues = pElement->GetPrimitivesUInt64();
+    const nsUInt64* pValues = pElement->GetPrimitivesUInt64();
 
-    out_result = wdUuid(pValues[0], pValues[1]);
+    out_result = nsUuid(pValues[0], pValues[1]);
 
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
-wdResult wdOpenDdlUtils::ConvertToAngle(const wdOpenDdlReaderElement* pElement, wdAngle& out_result)
+nsResult nsOpenDdlUtils::ConvertToAngle(const nsOpenDdlReaderElement* pElement, nsAngle& out_result)
 {
   if (pElement == nullptr)
-    return WD_FAILURE;
+    return NS_FAILURE;
 
   // go into the element, if we are at the group level
   if (pElement->IsCustomType())
   {
     if (pElement->GetNumChildObjects() != 1)
-      return WD_FAILURE;
+      return NS_FAILURE;
 
     pElement = pElement->GetFirstChild();
   }
 
   if (pElement->GetNumPrimitives() != 1)
-    return WD_FAILURE;
+    return NS_FAILURE;
 
-  if (pElement->GetPrimitivesType() == wdOpenDdlPrimitiveType::Float)
+  if (pElement->GetPrimitivesType() == nsOpenDdlPrimitiveType::Float)
   {
     const float* pValues = pElement->GetPrimitivesFloat();
 
     // have to use radians to prevent precision loss
-    out_result = wdAngle::Radian(pValues[0]);
+    out_result = nsAngle::MakeFromRadian(pValues[0]);
 
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
-wdResult wdOpenDdlUtils::ConvertToVariant(const wdOpenDdlReaderElement* pElement, wdVariant& out_result)
+nsResult nsOpenDdlUtils::ConvertToHashedString(const nsOpenDdlReaderElement* pElement, nsHashedString& out_sResult)
 {
   if (pElement == nullptr)
-    return WD_FAILURE;
+    return NS_FAILURE;
+
+  // go into the element, if we are at the group level
+  if (pElement->IsCustomType())
+  {
+    if (pElement->GetNumChildObjects() != 1)
+      return NS_FAILURE;
+
+    pElement = pElement->GetFirstChild();
+  }
+
+  if (pElement->GetNumPrimitives() != 1)
+    return NS_FAILURE;
+
+  if (pElement->GetPrimitivesType() == nsOpenDdlPrimitiveType::String)
+  {
+    const nsStringView* pValues = pElement->GetPrimitivesString();
+
+    out_sResult.Assign(pValues[0]);
+
+    return NS_SUCCESS;
+  }
+
+  return NS_FAILURE;
+}
+
+nsResult nsOpenDdlUtils::ConvertToTempHashedString(const nsOpenDdlReaderElement* pElement, nsTempHashedString& out_sResult)
+{
+  if (pElement == nullptr)
+    return NS_FAILURE;
+
+  // go into the element, if we are at the group level
+  if (pElement->IsCustomType())
+  {
+    if (pElement->GetNumChildObjects() != 1)
+      return NS_FAILURE;
+
+    pElement = pElement->GetFirstChild();
+  }
+
+  if (pElement->GetNumPrimitives() != 1)
+    return NS_FAILURE;
+
+  if (pElement->GetPrimitivesType() == nsOpenDdlPrimitiveType::UInt64)
+  {
+    const nsUInt64* pValues = pElement->GetPrimitivesUInt64();
+
+    out_sResult = nsTempHashedString(pValues[0]);
+
+    return NS_SUCCESS;
+  }
+
+  return NS_FAILURE;
+}
+
+nsResult nsOpenDdlUtils::ConvertToVariant(const nsOpenDdlReaderElement* pElement, nsVariant& out_result)
+{
+  if (pElement == nullptr)
+    return NS_FAILURE;
 
   // expect a custom type
   if (pElement->IsCustomType())
   {
-    if (wdStringUtils::IsEqual(pElement->GetCustomType(), "VarArray"))
+    if (pElement->GetCustomType() == "VarArray")
     {
-      wdVariantArray value;
-      wdVariant varChild;
+      nsVariantArray value;
+      nsVariant varChild;
 
       /// \test This is just quickly hacked
       /// \todo Store array size for reserving var array length
 
-      for (const wdOpenDdlReaderElement* pChild = pElement->GetFirstChild(); pChild != nullptr; pChild = pChild->GetSibling())
+      for (const nsOpenDdlReaderElement* pChild = pElement->GetFirstChild(); pChild != nullptr; pChild = pChild->GetSibling())
       {
         if (ConvertToVariant(pChild, varChild).Failed())
-          return WD_FAILURE;
+          return NS_FAILURE;
 
         value.PushBack(varChild);
       }
 
       out_result = value;
-      return WD_SUCCESS;
+      return NS_SUCCESS;
     }
 
-    if (wdStringUtils::IsEqual(pElement->GetCustomType(), "VarDict"))
+    if (pElement->GetCustomType() == "VarDict")
     {
-      wdVariantDictionary value;
-      wdVariant varChild;
+      nsVariantDictionary value;
+      nsVariant varChild;
 
       /// \test This is just quickly hacked
       /// \todo Store array size for reserving var array length
 
-      for (const wdOpenDdlReaderElement* pChild = pElement->GetFirstChild(); pChild != nullptr; pChild = pChild->GetSibling())
+      for (const nsOpenDdlReaderElement* pChild = pElement->GetFirstChild(); pChild != nullptr; pChild = pChild->GetSibling())
       {
         // no name -> invalid dictionary entry
         if (!pChild->HasName())
           continue;
 
         if (ConvertToVariant(pChild, varChild).Failed())
-          return WD_FAILURE;
+          return NS_FAILURE;
 
         value[pChild->GetName()] = varChild;
       }
 
       out_result = value;
-      return WD_SUCCESS;
+      return NS_SUCCESS;
     }
 
-    if (wdStringUtils::IsEqual(pElement->GetCustomType(), "VarDataBuffer"))
+    if (pElement->GetCustomType() == "VarDataBuffer")
     {
       /// \test This is just quickly hacked
 
-      wdDataBuffer value;
+      nsDataBuffer value;
 
-      const wdOpenDdlReaderElement* pString = pElement->GetFirstChild();
+      const nsOpenDdlReaderElement* pString = pElement->GetFirstChild();
 
-      if (!pString->HasPrimitives(wdOpenDdlPrimitiveType::String))
-        return WD_FAILURE;
+      if (!pString->HasPrimitives(nsOpenDdlPrimitiveType::String))
+        return NS_FAILURE;
 
-      const wdStringView* pValues = pString->GetPrimitivesString();
+      const nsStringView* pValues = pString->GetPrimitivesString();
 
       value.SetCountUninitialized(pValues[0].GetElementCount() / 2);
-      wdConversionUtils::ConvertHexToBinary(pValues[0].GetStartPointer(), value.GetData(), value.GetCount());
+      nsConversionUtils::ConvertHexToBinary(pValues[0].GetStartPointer(), value.GetData(), value.GetCount());
 
       out_result = value;
-      return WD_SUCCESS;
+      return NS_SUCCESS;
     }
 
-    if (wdStringUtils::IsEqual(pElement->GetCustomType(), "Color"))
+    if (pElement->GetCustomType() == "Color")
     {
-      wdColor value;
+      nsColor value;
       if (ConvertToColor(pElement, value).Failed())
-        return WD_FAILURE;
+        return NS_FAILURE;
 
       out_result = value;
-      return WD_SUCCESS;
+      return NS_SUCCESS;
     }
 
-    if (wdStringUtils::IsEqual(pElement->GetCustomType(), "ColorGamma"))
+    if (pElement->GetCustomType() == "ColorGamma")
     {
-      wdColorGammaUB value;
+      nsColorGammaUB value;
       if (ConvertToColorGamma(pElement, value).Failed())
-        return WD_FAILURE;
+        return NS_FAILURE;
 
       out_result = value;
-      return WD_SUCCESS;
+      return NS_SUCCESS;
     }
 
-    if (wdStringUtils::IsEqual(pElement->GetCustomType(), "Time"))
+    if (pElement->GetCustomType() == "Time")
     {
-      wdTime value;
+      nsTime value;
       if (ConvertToTime(pElement, value).Failed())
-        return WD_FAILURE;
+        return NS_FAILURE;
 
       out_result = value;
-      return WD_SUCCESS;
+      return NS_SUCCESS;
     }
 
-    if (wdStringUtils::IsEqual(pElement->GetCustomType(), "Vec2"))
+    if (pElement->GetCustomType() == "Vec2")
     {
-      wdVec2 value;
+      nsVec2 value;
       if (ConvertToVec2(pElement, value).Failed())
-        return WD_FAILURE;
+        return NS_FAILURE;
 
       out_result = value;
-      return WD_SUCCESS;
+      return NS_SUCCESS;
     }
 
-    if (wdStringUtils::IsEqual(pElement->GetCustomType(), "Vec3"))
+    if (pElement->GetCustomType() == "Vec3")
     {
-      wdVec3 value;
+      nsVec3 value;
       if (ConvertToVec3(pElement, value).Failed())
-        return WD_FAILURE;
+        return NS_FAILURE;
 
       out_result = value;
-      return WD_SUCCESS;
+      return NS_SUCCESS;
     }
 
-    if (wdStringUtils::IsEqual(pElement->GetCustomType(), "Vec4"))
+    if (pElement->GetCustomType() == "Vec4")
     {
-      wdVec4 value;
+      nsVec4 value;
       if (ConvertToVec4(pElement, value).Failed())
-        return WD_FAILURE;
+        return NS_FAILURE;
 
       out_result = value;
-      return WD_SUCCESS;
+      return NS_SUCCESS;
     }
 
-    if (wdStringUtils::IsEqual(pElement->GetCustomType(), "Vec2i"))
+    if (pElement->GetCustomType() == "Vec2i")
     {
-      wdVec2I32 value;
+      nsVec2I32 value;
       if (ConvertToVec2I(pElement, value).Failed())
-        return WD_FAILURE;
+        return NS_FAILURE;
 
       out_result = value;
-      return WD_SUCCESS;
+      return NS_SUCCESS;
     }
 
-    if (wdStringUtils::IsEqual(pElement->GetCustomType(), "Vec3i"))
+    if (pElement->GetCustomType() == "Vec3i")
     {
-      wdVec3I32 value;
+      nsVec3I32 value;
       if (ConvertToVec3I(pElement, value).Failed())
-        return WD_FAILURE;
+        return NS_FAILURE;
 
       out_result = value;
-      return WD_SUCCESS;
+      return NS_SUCCESS;
     }
 
-    if (wdStringUtils::IsEqual(pElement->GetCustomType(), "Vec4i"))
+    if (pElement->GetCustomType() == "Vec4i")
     {
-      wdVec4I32 value;
+      nsVec4I32 value;
       if (ConvertToVec4I(pElement, value).Failed())
-        return WD_FAILURE;
+        return NS_FAILURE;
 
       out_result = value;
-      return WD_SUCCESS;
+      return NS_SUCCESS;
     }
 
-    if (wdStringUtils::IsEqual(pElement->GetCustomType(), "Vec2u"))
+    if (pElement->GetCustomType() == "Vec2u")
     {
-      wdVec2U32 value;
+      nsVec2U32 value;
       if (ConvertToVec2U(pElement, value).Failed())
-        return WD_FAILURE;
+        return NS_FAILURE;
 
       out_result = value;
-      return WD_SUCCESS;
+      return NS_SUCCESS;
     }
 
-    if (wdStringUtils::IsEqual(pElement->GetCustomType(), "Vec3u"))
+    if (pElement->GetCustomType() == "Vec3u")
     {
-      wdVec3U32 value;
+      nsVec3U32 value;
       if (ConvertToVec3U(pElement, value).Failed())
-        return WD_FAILURE;
+        return NS_FAILURE;
 
       out_result = value;
-      return WD_SUCCESS;
+      return NS_SUCCESS;
     }
 
-    if (wdStringUtils::IsEqual(pElement->GetCustomType(), "Vec4u"))
+    if (pElement->GetCustomType() == "Vec4u")
     {
-      wdVec4U32 value;
+      nsVec4U32 value;
       if (ConvertToVec4U(pElement, value).Failed())
-        return WD_FAILURE;
+        return NS_FAILURE;
 
       out_result = value;
-      return WD_SUCCESS;
+      return NS_SUCCESS;
     }
 
-    if (wdStringUtils::IsEqual(pElement->GetCustomType(), "Mat3"))
+    if (pElement->GetCustomType() == "Mat3")
     {
-      wdMat3 value;
+      nsMat3 value;
       if (ConvertToMat3(pElement, value).Failed())
-        return WD_FAILURE;
+        return NS_FAILURE;
 
       out_result = value;
-      return WD_SUCCESS;
+      return NS_SUCCESS;
     }
 
-    if (wdStringUtils::IsEqual(pElement->GetCustomType(), "Mat4"))
+    if (pElement->GetCustomType() == "Mat4")
     {
-      wdMat4 value;
+      nsMat4 value;
       if (ConvertToMat4(pElement, value).Failed())
-        return WD_FAILURE;
+        return NS_FAILURE;
 
       out_result = value;
-      return WD_SUCCESS;
+      return NS_SUCCESS;
     }
 
-    if (wdStringUtils::IsEqual(pElement->GetCustomType(), "Transform"))
+    if (pElement->GetCustomType() == "Transform")
     {
-      wdTransform value;
+      nsTransform value;
       if (ConvertToTransform(pElement, value).Failed())
-        return WD_FAILURE;
+        return NS_FAILURE;
 
       out_result = value;
-      return WD_SUCCESS;
+      return NS_SUCCESS;
     }
 
-    if (wdStringUtils::IsEqual(pElement->GetCustomType(), "Quat"))
+    if (pElement->GetCustomType() == "Quat")
     {
-      wdQuat value;
+      nsQuat value;
       if (ConvertToQuat(pElement, value).Failed())
-        return WD_FAILURE;
+        return NS_FAILURE;
 
       out_result = value;
-      return WD_SUCCESS;
+      return NS_SUCCESS;
     }
 
-    if (wdStringUtils::IsEqual(pElement->GetCustomType(), "Uuid"))
+    if (pElement->GetCustomType() == "Uuid")
     {
-      wdUuid value;
+      nsUuid value;
       if (ConvertToUuid(pElement, value).Failed())
-        return WD_FAILURE;
+        return NS_FAILURE;
 
       out_result = value;
-      return WD_SUCCESS;
+      return NS_SUCCESS;
     }
 
-    if (wdStringUtils::IsEqual(pElement->GetCustomType(), "Angle"))
+    if (pElement->GetCustomType() == "Angle")
     {
-      wdAngle value;
+      nsAngle value;
       if (ConvertToAngle(pElement, value).Failed())
-        return WD_FAILURE;
+        return NS_FAILURE;
 
       out_result = value;
-      return WD_SUCCESS;
+      return NS_SUCCESS;
     }
 
-    if (const wdRTTI* pRTTI = wdRTTI::FindTypeByName(pElement->GetCustomType()))
+    if (pElement->GetCustomType() == "HashedString")
     {
-      if (wdVariantTypeRegistry::GetSingleton()->FindVariantTypeInfo(pRTTI))
+      nsHashedString value;
+      if (ConvertToHashedString(pElement, value).Failed())
+        return NS_FAILURE;
+
+      out_result = value;
+      return NS_SUCCESS;
+    }
+
+    if (pElement->GetCustomType() == "TempHashedString")
+    {
+      nsTempHashedString value;
+      if (ConvertToTempHashedString(pElement, value).Failed())
+        return NS_FAILURE;
+
+      out_result = value;
+      return NS_SUCCESS;
+    }
+
+    if (pElement->GetCustomType() == "Invalid")
+    {
+      out_result = nsVariant();
+      return NS_SUCCESS;
+    }
+
+    if (const nsRTTI* pRTTI = nsRTTI::FindTypeByName(pElement->GetCustomType()))
+    {
+      if (nsVariantTypeRegistry::GetSingleton()->FindVariantTypeInfo(pRTTI))
       {
         if (pElement == nullptr)
-          return WD_FAILURE;
+          return NS_FAILURE;
 
         void* pObject = pRTTI->GetAllocator()->Allocate<void>();
 
-        for (const wdOpenDdlReaderElement* pChildElement = pElement->GetFirstChild(); pChildElement != nullptr; pChildElement = pChildElement->GetSibling())
+        for (const nsOpenDdlReaderElement* pChildElement = pElement->GetFirstChild(); pChildElement != nullptr; pChildElement = pChildElement->GetSibling())
         {
           if (!pChildElement->HasName())
             continue;
 
-          if (wdAbstractProperty* pProp = pRTTI->FindPropertyByName(pChildElement->GetName()))
+          if (const nsAbstractProperty* pProp = pRTTI->FindPropertyByName(pChildElement->GetName()))
           {
             // Custom types should be POD and only consist of member properties.
-            if (pProp->GetCategory() == wdPropertyCategory::Member)
+            if (pProp->GetCategory() == nsPropertyCategory::Member)
             {
-              wdVariant subValue;
+              nsVariant subValue;
               if (ConvertToVariant(pChildElement, subValue).Succeeded())
               {
-                wdReflectionUtils::SetMemberPropertyValue(static_cast<wdAbstractMemberProperty*>(pProp), pObject, subValue);
+                nsReflectionUtils::SetMemberPropertyValue(static_cast<const nsAbstractMemberProperty*>(pProp), pObject, subValue);
               }
             }
           }
         }
         out_result.MoveTypedObject(pObject, pRTTI);
-        return WD_SUCCESS;
+        return NS_SUCCESS;
       }
       else
       {
-        wdLog::Error("The type '{0}' was declared but not defined, add WD_DEFINE_CUSTOM_VARIANT_TYPE({0}); to a cpp to enable serialization of this variant type.", pElement->GetCustomType());
+        nsLog::Error("The type '{0}' was declared but not defined, add NS_DEFINE_CUSTOM_VARIANT_TYPE({0}); to a cpp to enable serialization of this variant type.", pElement->GetCustomType());
       }
     }
     else
     {
-      wdLog::Error("The type '{0}' is unknown.", pElement->GetCustomType());
+      nsLog::Error("The type '{0}' is unknown.", pElement->GetCustomType());
     }
   }
   else
   {
     // always expect exactly one value
     if (pElement->GetNumPrimitives() != 1)
-      return WD_FAILURE;
+      return NS_FAILURE;
 
     switch (pElement->GetPrimitivesType())
     {
-      case wdOpenDdlPrimitiveType::Bool:
+      case nsOpenDdlPrimitiveType::Bool:
         out_result = pElement->GetPrimitivesBool()[0];
-        return WD_SUCCESS;
+        return NS_SUCCESS;
 
-      case wdOpenDdlPrimitiveType::Int8:
+      case nsOpenDdlPrimitiveType::Int8:
         out_result = pElement->GetPrimitivesInt8()[0];
-        return WD_SUCCESS;
+        return NS_SUCCESS;
 
-      case wdOpenDdlPrimitiveType::Int16:
+      case nsOpenDdlPrimitiveType::Int16:
         out_result = pElement->GetPrimitivesInt16()[0];
-        return WD_SUCCESS;
+        return NS_SUCCESS;
 
-      case wdOpenDdlPrimitiveType::Int32:
+      case nsOpenDdlPrimitiveType::Int32:
         out_result = pElement->GetPrimitivesInt32()[0];
-        return WD_SUCCESS;
+        return NS_SUCCESS;
 
-      case wdOpenDdlPrimitiveType::Int64:
+      case nsOpenDdlPrimitiveType::Int64:
         out_result = pElement->GetPrimitivesInt64()[0];
-        return WD_SUCCESS;
+        return NS_SUCCESS;
 
-      case wdOpenDdlPrimitiveType::UInt8:
+      case nsOpenDdlPrimitiveType::UInt8:
         out_result = pElement->GetPrimitivesUInt8()[0];
-        return WD_SUCCESS;
+        return NS_SUCCESS;
 
-      case wdOpenDdlPrimitiveType::UInt16:
+      case nsOpenDdlPrimitiveType::UInt16:
         out_result = pElement->GetPrimitivesUInt16()[0];
-        return WD_SUCCESS;
+        return NS_SUCCESS;
 
-      case wdOpenDdlPrimitiveType::UInt32:
+      case nsOpenDdlPrimitiveType::UInt32:
         out_result = pElement->GetPrimitivesUInt32()[0];
-        return WD_SUCCESS;
+        return NS_SUCCESS;
 
-      case wdOpenDdlPrimitiveType::UInt64:
+      case nsOpenDdlPrimitiveType::UInt64:
         out_result = pElement->GetPrimitivesUInt64()[0];
-        return WD_SUCCESS;
+        return NS_SUCCESS;
 
-      case wdOpenDdlPrimitiveType::Float:
+      case nsOpenDdlPrimitiveType::Float:
         out_result = pElement->GetPrimitivesFloat()[0];
-        return WD_SUCCESS;
+        return NS_SUCCESS;
 
-      case wdOpenDdlPrimitiveType::Double:
+      case nsOpenDdlPrimitiveType::Double:
         out_result = pElement->GetPrimitivesDouble()[0];
-        return WD_SUCCESS;
+        return NS_SUCCESS;
 
-      case wdOpenDdlPrimitiveType::String:
-        out_result = wdString(pElement->GetPrimitivesString()[0]); // make sure this isn't stored as a string view by copying to to an wdString first
-        return WD_SUCCESS;
+      case nsOpenDdlPrimitiveType::String:
+        out_result = nsString(pElement->GetPrimitivesString()[0]); // make sure this isn't stored as a string view by copying to to an nsString first
+        return NS_SUCCESS;
 
       default:
-        WD_ASSERT_NOT_IMPLEMENTED;
+        NS_ASSERT_NOT_IMPLEMENTED;
         break;
     }
   }
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
-void wdOpenDdlUtils::StoreColor(wdOpenDdlWriter& ref_writer, const wdColor& value, const char* szName /*= nullptr*/, bool bGlobalName /*= false*/)
+void nsOpenDdlUtils::StoreColor(nsOpenDdlWriter& ref_writer, const nsColor& value, nsStringView sName /*= {}*/, bool bGlobalName /*= false*/)
 {
-  ref_writer.BeginObject("Color", szName, bGlobalName, true);
+  ref_writer.BeginObject("Color", sName, bGlobalName, true);
   {
-    ref_writer.BeginPrimitiveList(wdOpenDdlPrimitiveType::Float);
+    ref_writer.BeginPrimitiveList(nsOpenDdlPrimitiveType::Float);
     ref_writer.WriteFloat(value.GetData(), 4);
     ref_writer.EndPrimitiveList();
   }
   ref_writer.EndObject();
 }
 
-void wdOpenDdlUtils::StoreColorGamma(
-  wdOpenDdlWriter& ref_writer, const wdColorGammaUB& value, const char* szName /*= nullptr*/, bool bGlobalName /*= false*/)
+void nsOpenDdlUtils::StoreColorGamma(
+  nsOpenDdlWriter& ref_writer, const nsColorGammaUB& value, nsStringView sName /*= {}*/, bool bGlobalName /*= false*/)
 {
-  ref_writer.BeginObject("ColorGamma", szName, bGlobalName, true);
+  ref_writer.BeginObject("ColorGamma", sName, bGlobalName, true);
   {
-    ref_writer.BeginPrimitiveList(wdOpenDdlPrimitiveType::UInt8);
+    ref_writer.BeginPrimitiveList(nsOpenDdlPrimitiveType::UInt8);
     ref_writer.WriteUInt8(value.GetData(), 4);
     ref_writer.EndPrimitiveList();
   }
   ref_writer.EndObject();
 }
 
-void wdOpenDdlUtils::StoreTime(wdOpenDdlWriter& ref_writer, const wdTime& value, const char* szName /*= nullptr*/, bool bGlobalName /*= false*/)
+void nsOpenDdlUtils::StoreTime(nsOpenDdlWriter& ref_writer, const nsTime& value, nsStringView sName /*= {}*/, bool bGlobalName /*= false*/)
 {
-  ref_writer.BeginObject("Time", szName, bGlobalName, true);
+  ref_writer.BeginObject("Time", sName, bGlobalName, true);
   {
     const double d = value.GetSeconds();
 
-    ref_writer.BeginPrimitiveList(wdOpenDdlPrimitiveType::Double);
+    ref_writer.BeginPrimitiveList(nsOpenDdlPrimitiveType::Double);
     ref_writer.WriteDouble(&d, 1);
     ref_writer.EndPrimitiveList();
   }
   ref_writer.EndObject();
 }
 
-void wdOpenDdlUtils::StoreVec2(wdOpenDdlWriter& ref_writer, const wdVec2& value, const char* szName /*= nullptr*/, bool bGlobalName /*= false*/)
+void nsOpenDdlUtils::StoreVec2(nsOpenDdlWriter& ref_writer, const nsVec2& value, nsStringView sName /*= {}*/, bool bGlobalName /*= false*/)
 {
-  ref_writer.BeginObject("Vec2", szName, bGlobalName, true);
+  ref_writer.BeginObject("Vec2", sName, bGlobalName, true);
   {
-    ref_writer.BeginPrimitiveList(wdOpenDdlPrimitiveType::Float);
+    ref_writer.BeginPrimitiveList(nsOpenDdlPrimitiveType::Float);
     ref_writer.WriteFloat(value.GetData(), 2);
     ref_writer.EndPrimitiveList();
   }
   ref_writer.EndObject();
 }
 
-void wdOpenDdlUtils::StoreVec3(wdOpenDdlWriter& ref_writer, const wdVec3& value, const char* szName /*= nullptr*/, bool bGlobalName /*= false*/)
+void nsOpenDdlUtils::StoreVec3(nsOpenDdlWriter& ref_writer, const nsVec3& value, nsStringView sName /*= {}*/, bool bGlobalName /*= false*/)
 {
-  ref_writer.BeginObject("Vec3", szName, bGlobalName, true);
+  ref_writer.BeginObject("Vec3", sName, bGlobalName, true);
   {
-    ref_writer.BeginPrimitiveList(wdOpenDdlPrimitiveType::Float);
+    ref_writer.BeginPrimitiveList(nsOpenDdlPrimitiveType::Float);
     ref_writer.WriteFloat(value.GetData(), 3);
     ref_writer.EndPrimitiveList();
   }
   ref_writer.EndObject();
 }
 
-void wdOpenDdlUtils::StoreVec4(wdOpenDdlWriter& ref_writer, const wdVec4& value, const char* szName /*= nullptr*/, bool bGlobalName /*= false*/)
+void nsOpenDdlUtils::StoreVec4(nsOpenDdlWriter& ref_writer, const nsVec4& value, nsStringView sName /*= {}*/, bool bGlobalName /*= false*/)
 {
-  ref_writer.BeginObject("Vec4", szName, bGlobalName, true);
+  ref_writer.BeginObject("Vec4", sName, bGlobalName, true);
   {
-    ref_writer.BeginPrimitiveList(wdOpenDdlPrimitiveType::Float);
+    ref_writer.BeginPrimitiveList(nsOpenDdlPrimitiveType::Float);
     ref_writer.WriteFloat(value.GetData(), 4);
     ref_writer.EndPrimitiveList();
   }
   ref_writer.EndObject();
 }
 
-void wdOpenDdlUtils::StoreVec2I(wdOpenDdlWriter& ref_writer, const wdVec2I32& value, const char* szName /*= nullptr*/, bool bGlobalName /*= false*/)
+void nsOpenDdlUtils::StoreVec2I(nsOpenDdlWriter& ref_writer, const nsVec2I32& value, nsStringView sName /*= {}*/, bool bGlobalName /*= false*/)
 {
-  ref_writer.BeginObject("Vec2i", szName, bGlobalName, true);
+  ref_writer.BeginObject("Vec2i", sName, bGlobalName, true);
   {
-    ref_writer.BeginPrimitiveList(wdOpenDdlPrimitiveType::Int32);
+    ref_writer.BeginPrimitiveList(nsOpenDdlPrimitiveType::Int32);
     ref_writer.WriteInt32(value.GetData(), 2);
     ref_writer.EndPrimitiveList();
   }
   ref_writer.EndObject();
 }
 
-void wdOpenDdlUtils::StoreVec3I(wdOpenDdlWriter& ref_writer, const wdVec3I32& value, const char* szName /*= nullptr*/, bool bGlobalName /*= false*/)
+void nsOpenDdlUtils::StoreVec3I(nsOpenDdlWriter& ref_writer, const nsVec3I32& value, nsStringView sName /*= {}*/, bool bGlobalName /*= false*/)
 {
-  ref_writer.BeginObject("Vec3i", szName, bGlobalName, true);
+  ref_writer.BeginObject("Vec3i", sName, bGlobalName, true);
   {
-    ref_writer.BeginPrimitiveList(wdOpenDdlPrimitiveType::Int32);
+    ref_writer.BeginPrimitiveList(nsOpenDdlPrimitiveType::Int32);
     ref_writer.WriteInt32(value.GetData(), 3);
     ref_writer.EndPrimitiveList();
   }
   ref_writer.EndObject();
 }
 
-void wdOpenDdlUtils::StoreVec4I(wdOpenDdlWriter& ref_writer, const wdVec4I32& value, const char* szName /*= nullptr*/, bool bGlobalName /*= false*/)
+void nsOpenDdlUtils::StoreVec4I(nsOpenDdlWriter& ref_writer, const nsVec4I32& value, nsStringView sName /*= {}*/, bool bGlobalName /*= false*/)
 {
-  ref_writer.BeginObject("Vec4i", szName, bGlobalName, true);
+  ref_writer.BeginObject("Vec4i", sName, bGlobalName, true);
   {
-    ref_writer.BeginPrimitiveList(wdOpenDdlPrimitiveType::Int32);
+    ref_writer.BeginPrimitiveList(nsOpenDdlPrimitiveType::Int32);
     ref_writer.WriteInt32(value.GetData(), 4);
     ref_writer.EndPrimitiveList();
   }
   ref_writer.EndObject();
 }
 
-void wdOpenDdlUtils::StoreVec2U(wdOpenDdlWriter& ref_writer, const wdVec2U32& value, const char* szName /*= nullptr*/, bool bGlobalName /*= false*/)
+void nsOpenDdlUtils::StoreVec2U(nsOpenDdlWriter& ref_writer, const nsVec2U32& value, nsStringView sName /*= {}*/, bool bGlobalName /*= false*/)
 {
-  ref_writer.BeginObject("Vec2u", szName, bGlobalName, true);
+  ref_writer.BeginObject("Vec2u", sName, bGlobalName, true);
   {
-    ref_writer.BeginPrimitiveList(wdOpenDdlPrimitiveType::UInt32);
+    ref_writer.BeginPrimitiveList(nsOpenDdlPrimitiveType::UInt32);
     ref_writer.WriteUInt32(value.GetData(), 2);
     ref_writer.EndPrimitiveList();
   }
   ref_writer.EndObject();
 }
 
-void wdOpenDdlUtils::StoreVec3U(wdOpenDdlWriter& ref_writer, const wdVec3U32& value, const char* szName /*= nullptr*/, bool bGlobalName /*= false*/)
+void nsOpenDdlUtils::StoreVec3U(nsOpenDdlWriter& ref_writer, const nsVec3U32& value, nsStringView sName /*= {}*/, bool bGlobalName /*= false*/)
 {
-  ref_writer.BeginObject("Vec3u", szName, bGlobalName, true);
+  ref_writer.BeginObject("Vec3u", sName, bGlobalName, true);
   {
-    ref_writer.BeginPrimitiveList(wdOpenDdlPrimitiveType::UInt32);
+    ref_writer.BeginPrimitiveList(nsOpenDdlPrimitiveType::UInt32);
     ref_writer.WriteUInt32(value.GetData(), 3);
     ref_writer.EndPrimitiveList();
   }
   ref_writer.EndObject();
 }
 
-void wdOpenDdlUtils::StoreVec4U(wdOpenDdlWriter& ref_writer, const wdVec4U32& value, const char* szName /*= nullptr*/, bool bGlobalName /*= false*/)
+void nsOpenDdlUtils::StoreVec4U(nsOpenDdlWriter& ref_writer, const nsVec4U32& value, nsStringView sName /*= {}*/, bool bGlobalName /*= false*/)
 {
-  ref_writer.BeginObject("Vec4u", szName, bGlobalName, true);
+  ref_writer.BeginObject("Vec4u", sName, bGlobalName, true);
   {
-    ref_writer.BeginPrimitiveList(wdOpenDdlPrimitiveType::UInt32);
+    ref_writer.BeginPrimitiveList(nsOpenDdlPrimitiveType::UInt32);
     ref_writer.WriteUInt32(value.GetData(), 4);
     ref_writer.EndPrimitiveList();
   }
@@ -1111,39 +1195,39 @@ void wdOpenDdlUtils::StoreVec4U(wdOpenDdlWriter& ref_writer, const wdVec4U32& va
 }
 
 
-void wdOpenDdlUtils::StoreMat3(wdOpenDdlWriter& ref_writer, const wdMat3& value, const char* szName /*= nullptr*/, bool bGlobalName /*= false*/)
+void nsOpenDdlUtils::StoreMat3(nsOpenDdlWriter& ref_writer, const nsMat3& value, nsStringView sName /*= {}*/, bool bGlobalName /*= false*/)
 {
-  ref_writer.BeginObject("Mat3", szName, bGlobalName, true);
+  ref_writer.BeginObject("Mat3", sName, bGlobalName, true);
   {
-    ref_writer.BeginPrimitiveList(wdOpenDdlPrimitiveType::Float);
+    ref_writer.BeginPrimitiveList(nsOpenDdlPrimitiveType::Float);
 
     float f[9];
-    value.GetAsArray(f, wdMatrixLayout::ColumnMajor);
+    value.GetAsArray(f, nsMatrixLayout::ColumnMajor);
     ref_writer.WriteFloat(f, 9);
     ref_writer.EndPrimitiveList();
   }
   ref_writer.EndObject();
 }
 
-void wdOpenDdlUtils::StoreMat4(wdOpenDdlWriter& ref_writer, const wdMat4& value, const char* szName /*= nullptr*/, bool bGlobalName /*= false*/)
+void nsOpenDdlUtils::StoreMat4(nsOpenDdlWriter& ref_writer, const nsMat4& value, nsStringView sName /*= {}*/, bool bGlobalName /*= false*/)
 {
-  ref_writer.BeginObject("Mat4", szName, bGlobalName, true);
+  ref_writer.BeginObject("Mat4", sName, bGlobalName, true);
   {
-    ref_writer.BeginPrimitiveList(wdOpenDdlPrimitiveType::Float);
+    ref_writer.BeginPrimitiveList(nsOpenDdlPrimitiveType::Float);
 
     float f[16];
-    value.GetAsArray(f, wdMatrixLayout::ColumnMajor);
+    value.GetAsArray(f, nsMatrixLayout::ColumnMajor);
     ref_writer.WriteFloat(f, 16);
     ref_writer.EndPrimitiveList();
   }
   ref_writer.EndObject();
 }
 
-void wdOpenDdlUtils::StoreTransform(wdOpenDdlWriter& ref_writer, const wdTransform& value, const char* szName /*= nullptr*/, bool bGlobalName /*= false*/)
+void nsOpenDdlUtils::StoreTransform(nsOpenDdlWriter& ref_writer, const nsTransform& value, nsStringView sName /*= {}*/, bool bGlobalName /*= false*/)
 {
-  ref_writer.BeginObject("Transform", szName, bGlobalName, true);
+  ref_writer.BeginObject("Transform", sName, bGlobalName, true);
   {
-    ref_writer.BeginPrimitiveList(wdOpenDdlPrimitiveType::Float);
+    ref_writer.BeginPrimitiveList(nsOpenDdlPrimitiveType::Float);
 
     float f[10];
 
@@ -1151,9 +1235,9 @@ void wdOpenDdlUtils::StoreTransform(wdOpenDdlWriter& ref_writer, const wdTransfo
     f[1] = value.m_vPosition.y;
     f[2] = value.m_vPosition.z;
 
-    f[3] = value.m_qRotation.v.x;
-    f[4] = value.m_qRotation.v.y;
-    f[5] = value.m_qRotation.v.z;
+    f[3] = value.m_qRotation.x;
+    f[4] = value.m_qRotation.y;
+    f[5] = value.m_qRotation.z;
     f[6] = value.m_qRotation.w;
 
     f[7] = value.m_vScale.x;
@@ -1166,244 +1250,249 @@ void wdOpenDdlUtils::StoreTransform(wdOpenDdlWriter& ref_writer, const wdTransfo
   ref_writer.EndObject();
 }
 
-void wdOpenDdlUtils::StoreQuat(wdOpenDdlWriter& ref_writer, const wdQuat& value, const char* szName /*= nullptr*/, bool bGlobalName /*= false*/)
+void nsOpenDdlUtils::StoreQuat(nsOpenDdlWriter& ref_writer, const nsQuat& value, nsStringView sName /*= {}*/, bool bGlobalName /*= false*/)
 {
-  ref_writer.BeginObject("Quat", szName, bGlobalName, true);
+  ref_writer.BeginObject("Quat", sName, bGlobalName, true);
   {
-    ref_writer.BeginPrimitiveList(wdOpenDdlPrimitiveType::Float);
-    ref_writer.WriteFloat(value.v.GetData(), 4);
+    ref_writer.BeginPrimitiveList(nsOpenDdlPrimitiveType::Float);
+    ref_writer.WriteFloat(&value.x, 4);
     ref_writer.EndPrimitiveList();
   }
   ref_writer.EndObject();
 }
 
-void wdOpenDdlUtils::StoreUuid(wdOpenDdlWriter& ref_writer, const wdUuid& value, const char* szName /*= nullptr*/, bool bGlobalName /*= false*/)
+void nsOpenDdlUtils::StoreUuid(nsOpenDdlWriter& ref_writer, const nsUuid& value, nsStringView sName /*= {}*/, bool bGlobalName /*= false*/)
 {
-  ref_writer.BeginObject("Uuid", szName, bGlobalName, true);
+  ref_writer.BeginObject("Uuid", sName, bGlobalName, true);
   {
-    wdUInt64 ui[2];
+    nsUInt64 ui[2];
     value.GetValues(ui[0], ui[1]);
 
-    ref_writer.BeginPrimitiveList(wdOpenDdlPrimitiveType::UInt64);
+    ref_writer.BeginPrimitiveList(nsOpenDdlPrimitiveType::UInt64);
     ref_writer.WriteUInt64(ui, 2);
     ref_writer.EndPrimitiveList();
   }
   ref_writer.EndObject();
 }
 
-void wdOpenDdlUtils::StoreAngle(wdOpenDdlWriter& ref_writer, const wdAngle& value, const char* szName /*= nullptr*/, bool bGlobalName /*= false*/)
+void nsOpenDdlUtils::StoreAngle(nsOpenDdlWriter& ref_writer, const nsAngle& value, nsStringView sName /*= {}*/, bool bGlobalName /*= false*/)
 {
-  ref_writer.BeginObject("Angle", szName, bGlobalName, true);
+  ref_writer.BeginObject("Angle", sName, bGlobalName, true);
   {
     // have to use radians to prevent precision loss
     const float f = value.GetRadian();
 
-    ref_writer.BeginPrimitiveList(wdOpenDdlPrimitiveType::Float);
+    ref_writer.BeginPrimitiveList(nsOpenDdlPrimitiveType::Float);
     ref_writer.WriteFloat(&f, 1);
     ref_writer.EndPrimitiveList();
   }
   ref_writer.EndObject();
 }
 
-void wdOpenDdlUtils::StoreVariant(wdOpenDdlWriter& ref_writer, const wdVariant& value, const char* szName /*= nullptr*/, bool bGlobalName /*= false*/)
+void nsOpenDdlUtils::StoreHashedString(nsOpenDdlWriter& ref_writer, const nsHashedString& value, nsStringView sName /*= {}*/, bool bGlobalName /*= false*/)
+{
+  ref_writer.BeginObject("HashedString", sName, bGlobalName, true);
+  {
+    ref_writer.BeginPrimitiveList(nsOpenDdlPrimitiveType::String);
+    ref_writer.WriteString(value.GetView());
+    ref_writer.EndPrimitiveList();
+  }
+  ref_writer.EndObject();
+}
+
+void nsOpenDdlUtils::StoreTempHashedString(nsOpenDdlWriter& ref_writer, const nsTempHashedString& value, nsStringView sName /*= {}*/, bool bGlobalName /*= false*/)
+{
+  ref_writer.BeginObject("TempHashedString", sName, bGlobalName, true);
+  {
+    const nsUInt64 uiHash = value.GetHash();
+
+    ref_writer.BeginPrimitiveList(nsOpenDdlPrimitiveType::UInt64);
+    ref_writer.WriteUInt64(&uiHash);
+    ref_writer.EndPrimitiveList();
+  }
+  ref_writer.EndObject();
+}
+
+void nsOpenDdlUtils::StoreVariant(nsOpenDdlWriter& ref_writer, const nsVariant& value, nsStringView sName /*= {}*/, bool bGlobalName /*= false*/)
 {
   switch (value.GetType())
   {
-    case wdVariant::Type::Invalid:
-      return; // store anything ?
-
-    case wdVariant::Type::Bool:
-    {
-      StoreBool(ref_writer, value.Get<bool>(), szName, bGlobalName);
-    }
+    case nsVariant::Type::Invalid:
+      StoreInvalid(ref_writer, sName, bGlobalName);
       return;
 
-    case wdVariant::Type::Int8:
-    {
-      StoreInt8(ref_writer, value.Get<wdInt8>(), szName, bGlobalName);
-    }
+    case nsVariant::Type::Bool:
+      StoreBool(ref_writer, value.Get<bool>(), sName, bGlobalName);
       return;
 
-    case wdVariant::Type::UInt8:
-    {
-      StoreUInt8(ref_writer, value.Get<wdUInt8>(), szName, bGlobalName);
-    }
+    case nsVariant::Type::Int8:
+      StoreInt8(ref_writer, value.Get<nsInt8>(), sName, bGlobalName);
       return;
 
-    case wdVariant::Type::Int16:
-    {
-      StoreInt16(ref_writer, value.Get<wdInt16>(), szName, bGlobalName);
-    }
+    case nsVariant::Type::UInt8:
+      StoreUInt8(ref_writer, value.Get<nsUInt8>(), sName, bGlobalName);
       return;
 
-    case wdVariant::Type::UInt16:
-    {
-      StoreUInt16(ref_writer, value.Get<wdUInt16>(), szName, bGlobalName);
-    }
+    case nsVariant::Type::Int16:
+      StoreInt16(ref_writer, value.Get<nsInt16>(), sName, bGlobalName);
       return;
 
-    case wdVariant::Type::Int32:
-    {
-      StoreInt32(ref_writer, value.Get<wdInt32>(), szName, bGlobalName);
-    }
+    case nsVariant::Type::UInt16:
+      StoreUInt16(ref_writer, value.Get<nsUInt16>(), sName, bGlobalName);
       return;
 
-    case wdVariant::Type::UInt32:
-    {
-      StoreUInt32(ref_writer, value.Get<wdUInt32>(), szName, bGlobalName);
-    }
+    case nsVariant::Type::Int32:
+      StoreInt32(ref_writer, value.Get<nsInt32>(), sName, bGlobalName);
       return;
 
-    case wdVariant::Type::Int64:
-    {
-      StoreInt64(ref_writer, value.Get<wdInt64>(), szName, bGlobalName);
-    }
+    case nsVariant::Type::UInt32:
+      StoreUInt32(ref_writer, value.Get<nsUInt32>(), sName, bGlobalName);
       return;
 
-    case wdVariant::Type::UInt64:
-    {
-      StoreUInt64(ref_writer, value.Get<wdUInt64>(), szName, bGlobalName);
-    }
+    case nsVariant::Type::Int64:
+      StoreInt64(ref_writer, value.Get<nsInt64>(), sName, bGlobalName);
       return;
 
-    case wdVariant::Type::Float:
-    {
-      StoreFloat(ref_writer, value.Get<float>(), szName, bGlobalName);
-    }
+    case nsVariant::Type::UInt64:
+      StoreUInt64(ref_writer, value.Get<nsUInt64>(), sName, bGlobalName);
       return;
 
-    case wdVariant::Type::Double:
-    {
-      StoreDouble(ref_writer, value.Get<double>(), szName, bGlobalName);
-    }
+    case nsVariant::Type::Float:
+      StoreFloat(ref_writer, value.Get<float>(), sName, bGlobalName);
       return;
 
-    case wdVariant::Type::String:
-    {
-      const wdString& var = value.Get<wdString>();
-      wdOpenDdlUtils::StoreString(ref_writer, var, szName, bGlobalName);
-    }
+    case nsVariant::Type::Double:
+      StoreDouble(ref_writer, value.Get<double>(), sName, bGlobalName);
       return;
 
-    case wdVariant::Type::StringView:
-    {
-      const wdStringView& var = value.Get<wdStringView>();
-      wdOpenDdlUtils::StoreString(ref_writer, var, szName, bGlobalName);
-    }
+    case nsVariant::Type::String:
+      nsOpenDdlUtils::StoreString(ref_writer, value.Get<nsString>(), sName, bGlobalName);
       return;
 
-    case wdVariant::Type::Color:
-      StoreColor(ref_writer, value.Get<wdColor>(), szName, bGlobalName);
+    case nsVariant::Type::StringView:
+      nsOpenDdlUtils::StoreString(ref_writer, value.Get<nsStringView>(), sName, bGlobalName);
       return;
 
-    case wdVariant::Type::Vector2:
-      StoreVec2(ref_writer, value.Get<wdVec2>(), szName, bGlobalName);
+    case nsVariant::Type::Color:
+      StoreColor(ref_writer, value.Get<nsColor>(), sName, bGlobalName);
       return;
 
-    case wdVariant::Type::Vector3:
-      StoreVec3(ref_writer, value.Get<wdVec3>(), szName, bGlobalName);
+    case nsVariant::Type::Vector2:
+      StoreVec2(ref_writer, value.Get<nsVec2>(), sName, bGlobalName);
       return;
 
-    case wdVariant::Type::Vector4:
-      StoreVec4(ref_writer, value.Get<wdVec4>(), szName, bGlobalName);
+    case nsVariant::Type::Vector3:
+      StoreVec3(ref_writer, value.Get<nsVec3>(), sName, bGlobalName);
       return;
 
-    case wdVariant::Type::Vector2I:
-      StoreVec2I(ref_writer, value.Get<wdVec2I32>(), szName, bGlobalName);
+    case nsVariant::Type::Vector4:
+      StoreVec4(ref_writer, value.Get<nsVec4>(), sName, bGlobalName);
       return;
 
-    case wdVariant::Type::Vector3I:
-      StoreVec3I(ref_writer, value.Get<wdVec3I32>(), szName, bGlobalName);
+    case nsVariant::Type::Vector2I:
+      StoreVec2I(ref_writer, value.Get<nsVec2I32>(), sName, bGlobalName);
       return;
 
-    case wdVariant::Type::Vector4I:
-      StoreVec4I(ref_writer, value.Get<wdVec4I32>(), szName, bGlobalName);
+    case nsVariant::Type::Vector3I:
+      StoreVec3I(ref_writer, value.Get<nsVec3I32>(), sName, bGlobalName);
       return;
 
-    case wdVariant::Type::Vector2U:
-      StoreVec2U(ref_writer, value.Get<wdVec2U32>(), szName, bGlobalName);
+    case nsVariant::Type::Vector4I:
+      StoreVec4I(ref_writer, value.Get<nsVec4I32>(), sName, bGlobalName);
       return;
 
-    case wdVariant::Type::Vector3U:
-      StoreVec3U(ref_writer, value.Get<wdVec3U32>(), szName, bGlobalName);
+    case nsVariant::Type::Vector2U:
+      StoreVec2U(ref_writer, value.Get<nsVec2U32>(), sName, bGlobalName);
       return;
 
-    case wdVariant::Type::Vector4U:
-      StoreVec4U(ref_writer, value.Get<wdVec4U32>(), szName, bGlobalName);
+    case nsVariant::Type::Vector3U:
+      StoreVec3U(ref_writer, value.Get<nsVec3U32>(), sName, bGlobalName);
       return;
 
-    case wdVariant::Type::Quaternion:
-      StoreQuat(ref_writer, value.Get<wdQuat>(), szName, bGlobalName);
+    case nsVariant::Type::Vector4U:
+      StoreVec4U(ref_writer, value.Get<nsVec4U32>(), sName, bGlobalName);
       return;
 
-    case wdVariant::Type::Matrix3:
-      StoreMat3(ref_writer, value.Get<wdMat3>(), szName, bGlobalName);
+    case nsVariant::Type::Quaternion:
+      StoreQuat(ref_writer, value.Get<nsQuat>(), sName, bGlobalName);
       return;
 
-    case wdVariant::Type::Matrix4:
-      StoreMat4(ref_writer, value.Get<wdMat4>(), szName, bGlobalName);
+    case nsVariant::Type::Matrix3:
+      StoreMat3(ref_writer, value.Get<nsMat3>(), sName, bGlobalName);
       return;
 
-    case wdVariant::Type::Transform:
-      StoreTransform(ref_writer, value.Get<wdTransform>(), szName, bGlobalName);
+    case nsVariant::Type::Matrix4:
+      StoreMat4(ref_writer, value.Get<nsMat4>(), sName, bGlobalName);
       return;
 
-    case wdVariant::Type::Time:
-      StoreTime(ref_writer, value.Get<wdTime>(), szName, bGlobalName);
+    case nsVariant::Type::Transform:
+      StoreTransform(ref_writer, value.Get<nsTransform>(), sName, bGlobalName);
       return;
 
-    case wdVariant::Type::Uuid:
-      StoreUuid(ref_writer, value.Get<wdUuid>(), szName, bGlobalName);
+    case nsVariant::Type::Time:
+      StoreTime(ref_writer, value.Get<nsTime>(), sName, bGlobalName);
       return;
 
-    case wdVariant::Type::Angle:
-      StoreAngle(ref_writer, value.Get<wdAngle>(), szName, bGlobalName);
+    case nsVariant::Type::Uuid:
+      StoreUuid(ref_writer, value.Get<nsUuid>(), sName, bGlobalName);
       return;
 
-    case wdVariant::Type::ColorGamma:
-      StoreColorGamma(ref_writer, value.Get<wdColorGammaUB>(), szName, bGlobalName);
+    case nsVariant::Type::Angle:
+      StoreAngle(ref_writer, value.Get<nsAngle>(), sName, bGlobalName);
       return;
 
-    case wdVariant::Type::VariantArray:
+    case nsVariant::Type::ColorGamma:
+      StoreColorGamma(ref_writer, value.Get<nsColorGammaUB>(), sName, bGlobalName);
+      return;
+
+    case nsVariant::Type::HashedString:
+      StoreHashedString(ref_writer, value.Get<nsHashedString>(), sName, bGlobalName);
+      return;
+
+    case nsVariant::Type::TempHashedString:
+      StoreTempHashedString(ref_writer, value.Get<nsTempHashedString>(), sName, bGlobalName);
+      return;
+
+    case nsVariant::Type::VariantArray:
     {
       /// \test This is just quickly hacked
 
-      ref_writer.BeginObject("VarArray", szName, bGlobalName);
+      ref_writer.BeginObject("VarArray", sName, bGlobalName);
 
-      const wdVariantArray& arr = value.Get<wdVariantArray>();
-      for (wdUInt32 i = 0; i < arr.GetCount(); ++i)
+      const nsVariantArray& arr = value.Get<nsVariantArray>();
+      for (nsUInt32 i = 0; i < arr.GetCount(); ++i)
       {
-        wdOpenDdlUtils::StoreVariant(ref_writer, arr[i]);
+        nsOpenDdlUtils::StoreVariant(ref_writer, arr[i]);
       }
 
       ref_writer.EndObject();
     }
       return;
 
-    case wdVariant::Type::VariantDictionary:
+    case nsVariant::Type::VariantDictionary:
     {
       /// \test This is just quickly hacked
 
-      ref_writer.BeginObject("VarDict", szName, bGlobalName);
+      ref_writer.BeginObject("VarDict", sName, bGlobalName);
 
-      const wdVariantDictionary& dict = value.Get<wdVariantDictionary>();
+      const nsVariantDictionary& dict = value.Get<nsVariantDictionary>();
       for (auto it = dict.GetIterator(); it.IsValid(); ++it)
       {
-        wdOpenDdlUtils::StoreVariant(ref_writer, it.Value(), it.Key(), false);
+        nsOpenDdlUtils::StoreVariant(ref_writer, it.Value(), it.Key(), false);
       }
 
       ref_writer.EndObject();
     }
       return;
 
-    case wdVariant::Type::DataBuffer:
+    case nsVariant::Type::DataBuffer:
     {
       /// \test This is just quickly hacked
 
-      ref_writer.BeginObject("VarDataBuffer", szName, bGlobalName);
-      ref_writer.BeginPrimitiveList(wdOpenDdlPrimitiveType::String);
+      ref_writer.BeginObject("VarDataBuffer", sName, bGlobalName);
+      ref_writer.BeginPrimitiveList(nsOpenDdlPrimitiveType::String);
 
-      const wdDataBuffer& db = value.Get<wdDataBuffer>();
+      const nsDataBuffer& db = value.Get<nsDataBuffer>();
       ref_writer.WriteBinaryAsString(db.GetData(), db.GetCount());
 
       ref_writer.EndPrimitiveList();
@@ -1411,33 +1500,33 @@ void wdOpenDdlUtils::StoreVariant(wdOpenDdlWriter& ref_writer, const wdVariant& 
     }
       return;
 
-    case wdVariant::Type::TypedObject:
+    case nsVariant::Type::TypedObject:
     {
-      wdTypedObject obj = value.Get<wdTypedObject>();
-      if (wdVariantTypeRegistry::GetSingleton()->FindVariantTypeInfo(obj.m_pType))
+      nsTypedObject obj = value.Get<nsTypedObject>();
+      if (nsVariantTypeRegistry::GetSingleton()->FindVariantTypeInfo(obj.m_pType))
       {
-        ref_writer.BeginObject(obj.m_pType->GetTypeName(), szName, bGlobalName);
+        ref_writer.BeginObject(obj.m_pType->GetTypeName(), sName, bGlobalName);
         {
-          wdHybridArray<wdAbstractProperty*, 32> properties;
+          nsHybridArray<const nsAbstractProperty*, 32> properties;
           obj.m_pType->GetAllProperties(properties);
-          for (const wdAbstractProperty* pProp : properties)
+          for (const nsAbstractProperty* pProp : properties)
           {
             // Custom types should be POD and only consist of member properties.
             switch (pProp->GetCategory())
             {
-              case wdPropertyCategory::Member:
+              case nsPropertyCategory::Member:
               {
-                wdVariant subValue = wdReflectionUtils::GetMemberPropertyValue(static_cast<const wdAbstractMemberProperty*>(pProp), obj.m_pObject);
+                nsVariant subValue = nsReflectionUtils::GetMemberPropertyValue(static_cast<const nsAbstractMemberProperty*>(pProp), obj.m_pObject);
                 StoreVariant(ref_writer, subValue, pProp->GetPropertyName(), false);
               }
               break;
-              case wdPropertyCategory::Array:
-              case wdPropertyCategory::Set:
-              case wdPropertyCategory::Map:
-                WD_REPORT_FAILURE("Only member properties are supported in custom variant types!");
+              case nsPropertyCategory::Array:
+              case nsPropertyCategory::Set:
+              case nsPropertyCategory::Map:
+                NS_REPORT_FAILURE("Only member properties are supported in custom variant types!");
                 break;
-              case wdPropertyCategory::Constant:
-              case wdPropertyCategory::Function:
+              case nsPropertyCategory::Constant:
+              case nsPropertyCategory::Function:
                 break;
             }
           }
@@ -1446,99 +1535,101 @@ void wdOpenDdlUtils::StoreVariant(wdOpenDdlWriter& ref_writer, const wdVariant& 
       }
       else
       {
-        wdLog::Error("The type '{0}' was declared but not defined, add WD_DEFINE_CUSTOM_VARIANT_TYPE({0}); to a cpp to enable serialization of this variant type.", obj.m_pType->GetTypeName());
+        nsLog::Error("The type '{0}' was declared but not defined, add NS_DEFINE_CUSTOM_VARIANT_TYPE({0}); to a cpp to enable serialization of this variant type.", obj.m_pType->GetTypeName());
       }
     }
       return;
     default:
-      WD_REPORT_FAILURE("Can't write this type of Variant");
+      NS_REPORT_FAILURE("Can't write this type of Variant");
   }
 }
 
-void wdOpenDdlUtils::StoreString(wdOpenDdlWriter& ref_writer, const wdStringView& value, const char* szName /*= nullptr*/, bool bGlobalName /*= false*/)
+void nsOpenDdlUtils::StoreString(nsOpenDdlWriter& ref_writer, const nsStringView& value, nsStringView sName /*= {}*/, bool bGlobalName /*= false*/)
 {
-  ref_writer.BeginPrimitiveList(wdOpenDdlPrimitiveType::String, szName, bGlobalName);
+  ref_writer.BeginPrimitiveList(nsOpenDdlPrimitiveType::String, sName, bGlobalName);
   ref_writer.WriteString(value);
   ref_writer.EndPrimitiveList();
 }
 
-void wdOpenDdlUtils::StoreBool(wdOpenDdlWriter& ref_writer, bool value, const char* szName /*= nullptr*/, bool bGlobalName /*= false*/)
+void nsOpenDdlUtils::StoreBool(nsOpenDdlWriter& ref_writer, bool value, nsStringView sName /*= {}*/, bool bGlobalName /*= false*/)
 {
-  ref_writer.BeginPrimitiveList(wdOpenDdlPrimitiveType::Bool, szName, bGlobalName);
+  ref_writer.BeginPrimitiveList(nsOpenDdlPrimitiveType::Bool, sName, bGlobalName);
   ref_writer.WriteBool(&value);
   ref_writer.EndPrimitiveList();
 }
 
-void wdOpenDdlUtils::StoreFloat(wdOpenDdlWriter& ref_writer, float value, const char* szName /*= nullptr*/, bool bGlobalName /*= false*/)
+void nsOpenDdlUtils::StoreFloat(nsOpenDdlWriter& ref_writer, float value, nsStringView sName /*= {}*/, bool bGlobalName /*= false*/)
 {
-  ref_writer.BeginPrimitiveList(wdOpenDdlPrimitiveType::Float, szName, bGlobalName);
+  ref_writer.BeginPrimitiveList(nsOpenDdlPrimitiveType::Float, sName, bGlobalName);
   ref_writer.WriteFloat(&value);
   ref_writer.EndPrimitiveList();
 }
 
-void wdOpenDdlUtils::StoreDouble(wdOpenDdlWriter& ref_writer, double value, const char* szName /*= nullptr*/, bool bGlobalName /*= false*/)
+void nsOpenDdlUtils::StoreDouble(nsOpenDdlWriter& ref_writer, double value, nsStringView sName /*= {}*/, bool bGlobalName /*= false*/)
 {
-  ref_writer.BeginPrimitiveList(wdOpenDdlPrimitiveType::Double, szName, bGlobalName);
+  ref_writer.BeginPrimitiveList(nsOpenDdlPrimitiveType::Double, sName, bGlobalName);
   ref_writer.WriteDouble(&value);
   ref_writer.EndPrimitiveList();
 }
 
-void wdOpenDdlUtils::StoreInt8(wdOpenDdlWriter& ref_writer, wdInt8 value, const char* szName /*= nullptr*/, bool bGlobalName /*= false*/)
+void nsOpenDdlUtils::StoreInt8(nsOpenDdlWriter& ref_writer, nsInt8 value, nsStringView sName /*= {}*/, bool bGlobalName /*= false*/)
 {
-  ref_writer.BeginPrimitiveList(wdOpenDdlPrimitiveType::Int8, szName, bGlobalName);
+  ref_writer.BeginPrimitiveList(nsOpenDdlPrimitiveType::Int8, sName, bGlobalName);
   ref_writer.WriteInt8(&value);
   ref_writer.EndPrimitiveList();
 }
 
-void wdOpenDdlUtils::StoreInt16(wdOpenDdlWriter& ref_writer, wdInt16 value, const char* szName /*= nullptr*/, bool bGlobalName /*= false*/)
+void nsOpenDdlUtils::StoreInt16(nsOpenDdlWriter& ref_writer, nsInt16 value, nsStringView sName /*= {}*/, bool bGlobalName /*= false*/)
 {
-  ref_writer.BeginPrimitiveList(wdOpenDdlPrimitiveType::Int16, szName, bGlobalName);
+  ref_writer.BeginPrimitiveList(nsOpenDdlPrimitiveType::Int16, sName, bGlobalName);
   ref_writer.WriteInt16(&value);
   ref_writer.EndPrimitiveList();
 }
 
-void wdOpenDdlUtils::StoreInt32(wdOpenDdlWriter& ref_writer, wdInt32 value, const char* szName /*= nullptr*/, bool bGlobalName /*= false*/)
+void nsOpenDdlUtils::StoreInt32(nsOpenDdlWriter& ref_writer, nsInt32 value, nsStringView sName /*= {}*/, bool bGlobalName /*= false*/)
 {
-  ref_writer.BeginPrimitiveList(wdOpenDdlPrimitiveType::Int32, szName, bGlobalName);
+  ref_writer.BeginPrimitiveList(nsOpenDdlPrimitiveType::Int32, sName, bGlobalName);
   ref_writer.WriteInt32(&value);
   ref_writer.EndPrimitiveList();
 }
 
-void wdOpenDdlUtils::StoreInt64(wdOpenDdlWriter& ref_writer, wdInt64 value, const char* szName /*= nullptr*/, bool bGlobalName /*= false*/)
+void nsOpenDdlUtils::StoreInt64(nsOpenDdlWriter& ref_writer, nsInt64 value, nsStringView sName /*= {}*/, bool bGlobalName /*= false*/)
 {
-  ref_writer.BeginPrimitiveList(wdOpenDdlPrimitiveType::Int64, szName, bGlobalName);
+  ref_writer.BeginPrimitiveList(nsOpenDdlPrimitiveType::Int64, sName, bGlobalName);
   ref_writer.WriteInt64(&value);
   ref_writer.EndPrimitiveList();
 }
 
-void wdOpenDdlUtils::StoreUInt8(wdOpenDdlWriter& ref_writer, wdUInt8 value, const char* szName /*= nullptr*/, bool bGlobalName /*= false*/)
+void nsOpenDdlUtils::StoreUInt8(nsOpenDdlWriter& ref_writer, nsUInt8 value, nsStringView sName /*= {}*/, bool bGlobalName /*= false*/)
 {
-  ref_writer.BeginPrimitiveList(wdOpenDdlPrimitiveType::UInt8, szName, bGlobalName);
+  ref_writer.BeginPrimitiveList(nsOpenDdlPrimitiveType::UInt8, sName, bGlobalName);
   ref_writer.WriteUInt8(&value);
   ref_writer.EndPrimitiveList();
 }
 
-void wdOpenDdlUtils::StoreUInt16(wdOpenDdlWriter& ref_writer, wdUInt16 value, const char* szName /*= nullptr*/, bool bGlobalName /*= false*/)
+void nsOpenDdlUtils::StoreUInt16(nsOpenDdlWriter& ref_writer, nsUInt16 value, nsStringView sName /*= {}*/, bool bGlobalName /*= false*/)
 {
-  ref_writer.BeginPrimitiveList(wdOpenDdlPrimitiveType::UInt16, szName, bGlobalName);
+  ref_writer.BeginPrimitiveList(nsOpenDdlPrimitiveType::UInt16, sName, bGlobalName);
   ref_writer.WriteUInt16(&value);
   ref_writer.EndPrimitiveList();
 }
 
-void wdOpenDdlUtils::StoreUInt32(wdOpenDdlWriter& ref_writer, wdUInt32 value, const char* szName /*= nullptr*/, bool bGlobalName /*= false*/)
+void nsOpenDdlUtils::StoreUInt32(nsOpenDdlWriter& ref_writer, nsUInt32 value, nsStringView sName /*= {}*/, bool bGlobalName /*= false*/)
 {
-  ref_writer.BeginPrimitiveList(wdOpenDdlPrimitiveType::UInt32, szName, bGlobalName);
+  ref_writer.BeginPrimitiveList(nsOpenDdlPrimitiveType::UInt32, sName, bGlobalName);
   ref_writer.WriteUInt32(&value);
   ref_writer.EndPrimitiveList();
 }
 
-void wdOpenDdlUtils::StoreUInt64(wdOpenDdlWriter& ref_writer, wdUInt64 value, const char* szName /*= nullptr*/, bool bGlobalName /*= false*/)
+void nsOpenDdlUtils::StoreUInt64(nsOpenDdlWriter& ref_writer, nsUInt64 value, nsStringView sName /*= {}*/, bool bGlobalName /*= false*/)
 {
-  ref_writer.BeginPrimitiveList(wdOpenDdlPrimitiveType::UInt64, szName, bGlobalName);
+  ref_writer.BeginPrimitiveList(nsOpenDdlPrimitiveType::UInt64, sName, bGlobalName);
   ref_writer.WriteUInt64(&value);
   ref_writer.EndPrimitiveList();
 }
 
-
-
-WD_STATICLINK_FILE(Foundation, Foundation_IO_Implementation_OpenDdlUtils);
+NS_FOUNDATION_DLL void nsOpenDdlUtils::StoreInvalid(nsOpenDdlWriter& ref_writer, nsStringView sName /*= {}*/, bool bGlobalName /*= false*/)
+{
+  ref_writer.BeginObject("Invalid", sName, bGlobalName, true);
+  ref_writer.EndObject();
+}

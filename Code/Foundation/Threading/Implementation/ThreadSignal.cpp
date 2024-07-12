@@ -3,16 +3,16 @@
 #include <Foundation/Threading/Lock.h>
 #include <Foundation/Threading/ThreadSignal.h>
 
-wdThreadSignal::wdThreadSignal(Mode mode /*= Mode::AutoReset*/)
+nsThreadSignal::nsThreadSignal(Mode mode /*= Mode::AutoReset*/)
 {
   m_Mode = mode;
 }
 
-wdThreadSignal::~wdThreadSignal() = default;
+nsThreadSignal::~nsThreadSignal() = default;
 
-void wdThreadSignal::WaitForSignal() const
+void nsThreadSignal::WaitForSignal() const
 {
-  WD_LOCK(m_ConditionVariable);
+  NS_LOCK(m_ConditionVariable);
 
   while (!m_bSignalState)
   {
@@ -25,21 +25,21 @@ void wdThreadSignal::WaitForSignal() const
   }
 }
 
-wdThreadSignal::WaitResult wdThreadSignal::WaitForSignal(wdTime timeout) const
+nsThreadSignal::WaitResult nsThreadSignal::WaitForSignal(nsTime timeout) const
 {
-  WD_LOCK(m_ConditionVariable);
+  NS_LOCK(m_ConditionVariable);
 
-  const wdTime tStart = wdTime::Now();
-  wdTime tElapsed = wdTime::Zero();
+  const nsTime tStart = nsTime::Now();
+  nsTime tElapsed = nsTime::MakeZero();
 
   while (!m_bSignalState)
   {
-    if (m_ConditionVariable.UnlockWaitForSignalAndLock(timeout - tElapsed) == wdConditionVariable::WaitResult::Timeout)
+    if (m_ConditionVariable.UnlockWaitForSignalAndLock(timeout - tElapsed) == nsConditionVariable::WaitResult::Timeout)
     {
       return WaitResult::Timeout;
     }
 
-    tElapsed = wdTime::Now() - tStart;
+    tElapsed = nsTime::Now() - tStart;
     if (tElapsed >= timeout)
     {
       return WaitResult::Timeout;
@@ -54,10 +54,10 @@ wdThreadSignal::WaitResult wdThreadSignal::WaitForSignal(wdTime timeout) const
   return WaitResult::Signaled;
 }
 
-void wdThreadSignal::RaiseSignal()
+void nsThreadSignal::RaiseSignal()
 {
   {
-    WD_LOCK(m_ConditionVariable);
+    NS_LOCK(m_ConditionVariable);
     m_bSignalState = true;
   }
 
@@ -72,10 +72,8 @@ void wdThreadSignal::RaiseSignal()
   }
 }
 
-void wdThreadSignal::ClearSignal()
+void nsThreadSignal::ClearSignal()
 {
-  WD_LOCK(m_ConditionVariable);
+  NS_LOCK(m_ConditionVariable);
   m_bSignalState = false;
 }
-
-WD_STATICLINK_FILE(Foundation, Foundation_Threading_Implementation_ThreadSignal);

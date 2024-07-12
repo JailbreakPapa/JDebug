@@ -3,7 +3,7 @@ HeaderV2
 o
 {
 	Uuid %id{u4{9590887590273961751,422574222501478884}}
-	s %t{"wdExposedParameter"}
+	s %t{"nsExposedParameter"}
 	u3 %v{2}
 	p
 	{
@@ -16,7 +16,7 @@ o
 o
 {
 	Uuid %id{u4{13433385428442821431,4437064958207892370}}
-	s %t{"wdExposedParameter"}
+	s %t{"nsExposedParameter"}
 	u3 %v{2}
 	p
 	{
@@ -29,7 +29,7 @@ o
 o
 {
 	Uuid %id{u4{17781538484779151528,5535055942864058015}}
-	s %t{"wdAssetDocumentInfo"}
+	s %t{"nsAssetDocumentInfo"}
 	u3 %v{2}
 	s %n{"Header"}
 	p
@@ -52,7 +52,7 @@ o
 o
 {
 	Uuid %id{u4{12092629925948861714,12748918113162636892}}
-	s %t{"wdExposedParameters"}
+	s %t{"nsExposedParameters"}
 	u3 %v{3}
 	p
 	{
@@ -69,7 +69,7 @@ o
 o
 {
 	Uuid %id{u4{9027672620557818964,15531580296339152323}}
-	s %t{"wdExposedParameter"}
+	s %t{"nsExposedParameter"}
 	u3 %v{2}
 	p
 	{
@@ -82,7 +82,7 @@ o
 o
 {
 	Uuid %id{u4{5706404944023251895,16754246385200959503}}
-	s %t{"wdExposedParameter"}
+	s %t{"nsExposedParameter"}
 	u3 %v{2}
 	p
 	{
@@ -95,7 +95,7 @@ o
 o
 {
 	Uuid %id{u4{13865204737861145261,17626783530858998310}}
-	s %t{"wdExposedParameter"}
+	s %t{"nsExposedParameter"}
 	u3 %v{2}
 	p
 	{
@@ -111,7 +111,7 @@ Objects
 o
 {
 	Uuid %id{u4{13503731567904594319,4650596265286182374}}
-	s %t{"wdTypeScriptAssetProperties"}
+	s %t{"nsTypeScriptAssetProperties"}
 	u3 %v{1}
 	p
 	{
@@ -141,7 +141,7 @@ o
 o
 {
 	Uuid %id{u4{9668690935778468995,4746235029188646396}}
-	s %t{"wdTypeScriptParameterBool"}
+	s %t{"nsTypeScriptParameterBool"}
 	u3 %v{1}
 	p
 	{
@@ -152,7 +152,7 @@ o
 o
 {
 	Uuid %id{u4{10165370888712758450,4908257612867273535}}
-	s %t{"wdTypeScriptParameterNumber"}
+	s %t{"nsTypeScriptParameterNumber"}
 	u3 %v{1}
 	p
 	{
@@ -163,7 +163,7 @@ o
 o
 {
 	Uuid %id{u4{12264122117766274722,4928915732991513286}}
-	s %t{"wdTypeScriptParameterVec3"}
+	s %t{"nsTypeScriptParameterVec3"}
 	u3 %v{1}
 	p
 	{
@@ -174,7 +174,7 @@ o
 o
 {
 	Uuid %id{u4{3733979440204813739,5138486256535495365}}
-	s %t{"wdTypeScriptParameterColor"}
+	s %t{"nsTypeScriptParameterColor"}
 	u3 %v{1}
 	p
 	{
@@ -185,7 +185,7 @@ o
 o
 {
 	Uuid %id{u4{5030693555621232259,5746547826005927615}}
-	s %t{"wdTypeScriptParameterString"}
+	s %t{"nsTypeScriptParameterString"}
 	u3 %v{1}
 	p
 	{
@@ -196,7 +196,7 @@ o
 o
 {
 	Uuid %id{u4{18096612296587978288,6449934965513159559}}
-	s %t{"wdDocumentRoot"}
+	s %t{"nsDocumentRoot"}
 	u3 %v{1}
 	s %n{"ObjectTree"}
 	p
@@ -213,17 +213,17 @@ Types
 o
 {
 	Uuid %id{u4{2240511302173689179,2703173325265816714}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdTypeScriptParameter"}
-		s %PluginName{"wdEditorPluginTypeScript"}
+		s %ParentTypeName{"nsTypeScriptParameter"}
+		s %PluginName{"nsEditorPluginTypeScript"}
 		VarArray %Properties{}
-		s %TypeName{"wdTypeScriptParameterString"}
+		s %TypeName{"nsTypeScriptParameterString"}
 		u3 %TypeSize{136}
 		u3 %TypeVersion{1}
 	}
@@ -231,17 +231,17 @@ o
 o
 {
 	Uuid %id{u4{2210350094203572486,5399788602566693581}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdReflectedClass"}
-		s %PluginName{"wdEditorPluginTypeScript"}
+		s %ParentTypeName{"nsReflectedClass"}
+		s %PluginName{"nsEditorPluginTypeScript"}
 		VarArray %Properties{}
-		s %TypeName{"wdTypeScriptAssetProperties"}
+		s %TypeName{"nsTypeScriptAssetProperties"}
 		u3 %TypeSize{192}
 		u3 %TypeVersion{1}
 	}
@@ -249,17 +249,17 @@ o
 o
 {
 	Uuid %id{u4{15173286799798070773,6138599035276477466}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdTypeScriptParameter"}
-		s %PluginName{"wdEditorPluginTypeScript"}
+		s %ParentTypeName{"nsTypeScriptParameter"}
+		s %PluginName{"nsEditorPluginTypeScript"}
 		VarArray %Properties{}
-		s %TypeName{"wdTypeScriptParameterColor"}
+		s %TypeName{"nsTypeScriptParameterColor"}
 		u3 %TypeSize{88}
 		u3 %TypeVersion{1}
 	}
@@ -267,17 +267,17 @@ o
 o
 {
 	Uuid %id{u4{6089094783765586323,8705960867921430659}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdReflectedClass"}
+		s %ParentTypeName{"nsReflectedClass"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdDocumentRoot"}
+		s %TypeName{"nsDocumentRoot"}
 		u3 %TypeSize{72}
 		u3 %TypeVersion{1}
 	}
@@ -285,17 +285,17 @@ o
 o
 {
 	Uuid %id{u4{12150617948573266325,14322766287966293674}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdReflectedClass"}
-		s %PluginName{"wdEditorPluginTypeScript"}
+		s %ParentTypeName{"nsReflectedClass"}
+		s %PluginName{"nsEditorPluginTypeScript"}
 		VarArray %Properties{}
-		s %TypeName{"wdTypeScriptParameter"}
+		s %TypeName{"nsTypeScriptParameter"}
 		u3 %TypeSize{72}
 		u3 %TypeVersion{1}
 	}
@@ -303,17 +303,17 @@ o
 o
 {
 	Uuid %id{u4{17374214829508657989,14417081421920061278}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdTypeScriptParameter"}
-		s %PluginName{"wdEditorPluginTypeScript"}
+		s %ParentTypeName{"nsTypeScriptParameter"}
+		s %PluginName{"nsEditorPluginTypeScript"}
 		VarArray %Properties{}
-		s %TypeName{"wdTypeScriptParameterVec3"}
+		s %TypeName{"nsTypeScriptParameterVec3"}
 		u3 %TypeSize{88}
 		u3 %TypeVersion{1}
 	}
@@ -321,17 +321,17 @@ o
 o
 {
 	Uuid %id{u4{1906593913559848105,14475620603728329546}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdTypeScriptParameter"}
-		s %PluginName{"wdEditorPluginTypeScript"}
+		s %ParentTypeName{"nsTypeScriptParameter"}
+		s %PluginName{"nsEditorPluginTypeScript"}
 		VarArray %Properties{}
-		s %TypeName{"wdTypeScriptParameterNumber"}
+		s %TypeName{"nsTypeScriptParameterNumber"}
 		u3 %TypeSize{80}
 		u3 %TypeVersion{1}
 	}
@@ -339,17 +339,17 @@ o
 o
 {
 	Uuid %id{u4{983387834180907111,17935407260904399048}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
 		s %ParentTypeName{""}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdReflectedClass"}
+		s %TypeName{"nsReflectedClass"}
 		u3 %TypeSize{8}
 		u3 %TypeVersion{1}
 	}
@@ -357,17 +357,17 @@ o
 o
 {
 	Uuid %id{u4{4125384624966386702,18426699712145839704}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdTypeScriptParameter"}
-		s %PluginName{"wdEditorPluginTypeScript"}
+		s %ParentTypeName{"nsTypeScriptParameter"}
+		s %PluginName{"nsEditorPluginTypeScript"}
 		VarArray %Properties{}
-		s %TypeName{"wdTypeScriptParameterBool"}
+		s %TypeName{"nsTypeScriptParameterBool"}
 		u3 %TypeSize{80}
 		u3 %TypeVersion{1}
 	}

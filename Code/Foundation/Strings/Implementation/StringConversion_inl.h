@@ -4,113 +4,113 @@
 
 #include <Foundation/Strings/UnicodeUtils.h>
 
-// **************** wdStringWChar ****************
+// **************** nsStringWChar ****************
 
-inline wdStringWChar::wdStringWChar(wdAllocatorBase* pAllocator)
+inline nsStringWChar::nsStringWChar(nsAllocator* pAllocator)
   : m_Data(pAllocator)
 {
   m_Data.PushBack('\0');
 }
 
-inline wdStringWChar::wdStringWChar(const wdUInt16* pUtf16, wdAllocatorBase* pAllocator)
+inline nsStringWChar::nsStringWChar(const nsUInt16* pUtf16, nsAllocator* pAllocator)
   : m_Data(pAllocator)
 {
   *this = pUtf16;
 }
 
-inline wdStringWChar::wdStringWChar(const wdUInt32* pUtf32, wdAllocatorBase* pAllocator)
+inline nsStringWChar::nsStringWChar(const nsUInt32* pUtf32, nsAllocator* pAllocator)
   : m_Data(pAllocator)
 {
   *this = pUtf32;
 }
 
-inline wdStringWChar::wdStringWChar(const wchar_t* pWChar, wdAllocatorBase* pAllocator)
+inline nsStringWChar::nsStringWChar(const wchar_t* pWChar, nsAllocator* pAllocator)
   : m_Data(pAllocator)
 {
   *this = pWChar;
 }
 
-inline wdStringWChar::wdStringWChar(wdStringView sUtf8, wdAllocatorBase* pAllocator /*= wdFoundation::GetDefaultAllocator()*/)
+inline nsStringWChar::nsStringWChar(nsStringView sUtf8, nsAllocator* pAllocator /*= nsFoundation::GetDefaultAllocator()*/)
 {
   *this = sUtf8;
 }
 
 
-// **************** wdStringUtf8 ****************
+// **************** nsStringUtf8 ****************
 
-inline wdStringUtf8::wdStringUtf8(wdAllocatorBase* pAllocator)
+inline nsStringUtf8::nsStringUtf8(nsAllocator* pAllocator)
   : m_Data(pAllocator)
 {
   m_Data.PushBack('\0');
 }
 
-inline wdStringUtf8::wdStringUtf8(const char* szUtf8, wdAllocatorBase* pAllocator)
+inline nsStringUtf8::nsStringUtf8(const char* szUtf8, nsAllocator* pAllocator)
   : m_Data(pAllocator)
 {
   *this = szUtf8;
 }
 
-inline wdStringUtf8::wdStringUtf8(const wdUInt16* pUtf16, wdAllocatorBase* pAllocator)
+inline nsStringUtf8::nsStringUtf8(const nsUInt16* pUtf16, nsAllocator* pAllocator)
   : m_Data(pAllocator)
 {
   *this = pUtf16;
 }
 
-inline wdStringUtf8::wdStringUtf8(const wdUInt32* pUtf32, wdAllocatorBase* pAllocator)
+inline nsStringUtf8::nsStringUtf8(const nsUInt32* pUtf32, nsAllocator* pAllocator)
   : m_Data(pAllocator)
 {
   *this = pUtf32;
 }
 
-inline wdStringUtf8::wdStringUtf8(const wchar_t* pWChar, wdAllocatorBase* pAllocator)
+inline nsStringUtf8::nsStringUtf8(const wchar_t* pWChar, nsAllocator* pAllocator)
   : m_Data(pAllocator)
 {
   *this = pWChar;
 }
 
-#if WD_ENABLED(WD_PLATFORM_WINDOWS_UWP)
+#if NS_ENABLED(NS_PLATFORM_WINDOWS_UWP)
 
-inline wdStringUtf8::wdStringUtf8(
-  const Microsoft::WRL::Wrappers::HString& hstring, wdAllocatorBase* pAllocator /*= wdFoundation::GetDefaultAllocator()*/)
+inline nsStringUtf8::nsStringUtf8(
+  const Microsoft::WRL::Wrappers::HString& hstring, nsAllocator* pAllocator /*= nsFoundation::GetDefaultAllocator()*/)
   : m_Data(pAllocator)
 {
   *this = hstring;
 }
 
-inline wdStringUtf8::wdStringUtf8(const HSTRING& hstring, wdAllocatorBase* pAllocator /*= wdFoundation::GetDefaultAllocator()*/)
+inline nsStringUtf8::nsStringUtf8(const HSTRING& hstring, nsAllocator* pAllocator /*= nsFoundation::GetDefaultAllocator()*/)
 {
   *this = hstring;
 }
 
 #endif
 
-// **************** wdStringUtf16 ****************
+// **************** nsStringUtf16 ****************
 
-inline wdStringUtf16::wdStringUtf16(wdAllocatorBase* pAllocator)
+inline nsStringUtf16::nsStringUtf16(nsAllocator* pAllocator)
   : m_Data(pAllocator)
 {
   m_Data.PushBack('\0');
 }
 
-inline wdStringUtf16::wdStringUtf16(const char* szUtf8, wdAllocatorBase* pAllocator)
+inline nsStringUtf16::nsStringUtf16(const char* szUtf8, nsAllocator* pAllocator)
   : m_Data(pAllocator)
 {
   *this = szUtf8;
 }
 
-inline wdStringUtf16::wdStringUtf16(const wdUInt16* pUtf16, wdAllocatorBase* pAllocator)
+inline nsStringUtf16::nsStringUtf16(const nsUInt16* pUtf16, nsAllocator* pAllocator)
   : m_Data(pAllocator)
 {
   *this = pUtf16;
 }
 
-inline wdStringUtf16::wdStringUtf16(const wdUInt32* pUtf32, wdAllocatorBase* pAllocator)
+inline nsStringUtf16::nsStringUtf16(const nsUInt32* pUtf32, nsAllocator* pAllocator)
   : m_Data(pAllocator)
 {
   *this = pUtf32;
 }
 
-inline wdStringUtf16::wdStringUtf16(const wchar_t* pWChar, wdAllocatorBase* pAllocator)
+inline nsStringUtf16::nsStringUtf16(const wchar_t* pWChar, nsAllocator* pAllocator)
   : m_Data(pAllocator)
 {
   *this = pWChar;
@@ -118,33 +118,33 @@ inline wdStringUtf16::wdStringUtf16(const wchar_t* pWChar, wdAllocatorBase* pAll
 
 
 
-// **************** wdStringUtf32 ****************
+// **************** nsStringUtf32 ****************
 
-inline wdStringUtf32::wdStringUtf32(wdAllocatorBase* pAllocator)
+inline nsStringUtf32::nsStringUtf32(nsAllocator* pAllocator)
   : m_Data(pAllocator)
 {
   m_Data.PushBack('\0');
 }
 
-inline wdStringUtf32::wdStringUtf32(const char* szUtf8, wdAllocatorBase* pAllocator)
+inline nsStringUtf32::nsStringUtf32(const char* szUtf8, nsAllocator* pAllocator)
   : m_Data(pAllocator)
 {
   *this = szUtf8;
 }
 
-inline wdStringUtf32::wdStringUtf32(const wdUInt16* pUtf16, wdAllocatorBase* pAllocator)
+inline nsStringUtf32::nsStringUtf32(const nsUInt16* pUtf16, nsAllocator* pAllocator)
   : m_Data(pAllocator)
 {
   *this = pUtf16;
 }
 
-inline wdStringUtf32::wdStringUtf32(const wdUInt32* pUtf32, wdAllocatorBase* pAllocator)
+inline nsStringUtf32::nsStringUtf32(const nsUInt32* pUtf32, nsAllocator* pAllocator)
   : m_Data(pAllocator)
 {
   *this = pUtf32;
 }
 
-inline wdStringUtf32::wdStringUtf32(const wchar_t* pWChar, wdAllocatorBase* pAllocator)
+inline nsStringUtf32::nsStringUtf32(const wchar_t* pWChar, nsAllocator* pAllocator)
   : m_Data(pAllocator)
 {
   *this = pWChar;

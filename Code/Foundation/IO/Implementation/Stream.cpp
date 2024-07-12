@@ -4,19 +4,19 @@
 #include <Foundation/IO/StringDeduplicationContext.h>
 #include <Foundation/Strings/String.h>
 
-wdStreamReader::wdStreamReader() = default;
-wdStreamReader::~wdStreamReader() = default;
+nsStreamReader::nsStreamReader() = default;
+nsStreamReader::~nsStreamReader() = default;
 
-wdResult wdStreamReader::ReadString(wdStringBuilder& ref_sBuilder)
+nsResult nsStreamReader::ReadString(nsStringBuilder& ref_sBuilder)
 {
-  if (auto context = wdStringDeduplicationReadContext::GetContext())
+  if (auto context = nsStringDeduplicationReadContext::GetContext())
   {
     ref_sBuilder = context->DeserializeString(*this);
   }
   else
   {
-    wdUInt32 uiCount = 0;
-    WD_SUCCEED_OR_RETURN(ReadDWordValue(&uiCount));
+    nsUInt32 uiCount = 0;
+    NS_SUCCEED_OR_RETURN(ReadDWordValue(&uiCount));
 
     if (uiCount > 0)
     {
@@ -25,7 +25,6 @@ wdResult wdStreamReader::ReadString(wdStringBuilder& ref_sBuilder)
       ref_sBuilder.m_Data.Reserve(uiCount + 1);
       ref_sBuilder.m_Data.SetCountUninitialized(uiCount);
       ReadBytes(ref_sBuilder.m_Data.GetData(), uiCount);
-      ref_sBuilder.m_uiCharacterCount = uiCount;
       ref_sBuilder.AppendTerminator();
     }
     else
@@ -34,40 +33,37 @@ wdResult wdStreamReader::ReadString(wdStringBuilder& ref_sBuilder)
     }
   }
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
-wdResult wdStreamReader::ReadString(wdString& ref_sString)
+nsResult nsStreamReader::ReadString(nsString& ref_sString)
 {
-  wdStringBuilder tmp;
-  const wdResult res = ReadString(tmp);
+  nsStringBuilder tmp;
+  const nsResult res = ReadString(tmp);
   ref_sString = tmp;
 
   return res;
 }
 
-wdStreamWriter::wdStreamWriter() = default;
-wdStreamWriter::~wdStreamWriter() = default;
+nsStreamWriter::nsStreamWriter() = default;
+nsStreamWriter::~nsStreamWriter() = default;
 
-wdResult wdStreamWriter::WriteString(const wdStringView sStringView)
+nsResult nsStreamWriter::WriteString(const nsStringView sStringView)
 {
-  const wdUInt32 uiCount = sStringView.GetElementCount();
+  const nsUInt32 uiCount = sStringView.GetElementCount();
 
-  if (auto context = wdStringDeduplicationWriteContext::GetContext())
+  if (auto context = nsStringDeduplicationWriteContext::GetContext())
   {
     context->SerializeString(sStringView, *this);
   }
   else
   {
-    WD_SUCCEED_OR_RETURN(WriteDWordValue(&uiCount));
+    NS_SUCCEED_OR_RETURN(WriteDWordValue(&uiCount));
     if (uiCount > 0)
     {
-      WD_SUCCEED_OR_RETURN(WriteBytes(sStringView.GetStartPointer(), uiCount));
+      NS_SUCCEED_OR_RETURN(WriteBytes(sStringView.GetStartPointer(), uiCount));
     }
   }
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
-
-
-WD_STATICLINK_FILE(Foundation, Foundation_IO_Implementation_Stream);

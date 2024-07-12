@@ -6,29 +6,29 @@
 #include <Foundation/Utilities/CommandLineOptions.h>
 #include <Foundation/Utilities/ConversionUtils.h>
 
-WD_ENUMERABLE_CLASS_IMPLEMENTATION(wdCommandLineOption);
+NS_ENUMERABLE_CLASS_IMPLEMENTATION(nsCommandLineOption);
 
-void wdCommandLineOption::GetSortingGroup(wdStringBuilder& ref_sOut) const
+void nsCommandLineOption::GetSortingGroup(nsStringBuilder& ref_sOut) const
 {
-  ref_sOut = m_szSortingGroup;
+  ref_sOut = m_sSortingGroup;
 }
 
-void wdCommandLineOption::GetSplitOptions(wdStringBuilder& out_sAll, wdDynamicArray<wdStringView>& ref_splitOptions) const
+void nsCommandLineOption::GetSplitOptions(nsStringBuilder& out_sAll, nsDynamicArray<nsStringView>& ref_splitOptions) const
 {
   GetOptions(out_sAll);
   out_sAll.Split(false, ref_splitOptions, ";", "|");
 }
 
-bool wdCommandLineOption::IsHelpRequested(const wdCommandLineUtils* pUtils /*= wdCommandLineUtils::GetGlobalInstance()*/)
+bool nsCommandLineOption::IsHelpRequested(const nsCommandLineUtils* pUtils /*= nsCommandLineUtils::GetGlobalInstance()*/)
 {
   return pUtils->GetBoolOption("-help") || pUtils->GetBoolOption("--help") || pUtils->GetBoolOption("-h") || pUtils->GetBoolOption("-?");
 }
 
-wdResult wdCommandLineOption::RequireOptions(const char* szRequiredOptions, wdString* pMissingOption /*= nullptr*/, const wdCommandLineUtils* pUtils /*= wdCommandLineUtils::GetGlobalInstance()*/)
+nsResult nsCommandLineOption::RequireOptions(nsStringView sRequiredOptions, nsString* pMissingOption /*= nullptr*/, const nsCommandLineUtils* pUtils /*= nsCommandLineUtils::GetGlobalInstance()*/)
 {
-  wdStringBuilder tmp;
-  wdStringBuilder allOpts = szRequiredOptions;
-  wdHybridArray<wdStringView, 16> options;
+  nsStringBuilder tmp;
+  nsStringBuilder allOpts = sRequiredOptions;
+  nsHybridArray<nsStringView, 16> options;
   allOpts.Split(false, options, ";");
 
   for (auto opt : options)
@@ -42,7 +42,7 @@ wdResult wdCommandLineOption::RequireOptions(const char* szRequiredOptions, wdSt
         *pMissingOption = opt;
       }
 
-      return WD_FAILURE;
+      return NS_FAILURE;
     }
   }
 
@@ -51,10 +51,10 @@ wdResult wdCommandLineOption::RequireOptions(const char* szRequiredOptions, wdSt
     pMissingOption->Clear();
   }
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
-bool wdCommandLineOption::LogAvailableOptions(LogAvailableModes mode, const char* szGroupFilter /*= nullptr*/, const wdCommandLineUtils* pUtils /*= wdCommandLineUtils::GetGlobalInstance()*/)
+bool nsCommandLineOption::LogAvailableOptions(LogAvailableModes mode, nsStringView sGroupFilter0 /*= {} */, const nsCommandLineUtils* pUtils /*= nsCommandLineUtils::GetGlobalInstance()*/)
 {
   if (mode == LogAvailableModes::IfHelpRequested)
   {
@@ -62,17 +62,17 @@ bool wdCommandLineOption::LogAvailableOptions(LogAvailableModes mode, const char
       return false;
   }
 
-  wdMap<wdString, wdHybridArray<wdCommandLineOption*, 16>> sorted;
+  nsMap<nsString, nsHybridArray<nsCommandLineOption*, 16>> sorted;
 
-  wdStringBuilder sGroupFilter;
-  if (!wdStringUtils::IsNullOrEmpty(szGroupFilter))
+  nsStringBuilder sGroupFilter;
+  if (!sGroupFilter0.IsEmpty())
   {
-    sGroupFilter.Set(";", szGroupFilter, ";");
+    sGroupFilter.Set(";", sGroupFilter0, ";");
   }
 
-  for (wdCommandLineOption* pOpt = wdCommandLineOption::GetFirstInstance(); pOpt != nullptr; pOpt = pOpt->GetNextInstance())
+  for (nsCommandLineOption* pOpt = nsCommandLineOption::GetFirstInstance(); pOpt != nullptr; pOpt = pOpt->GetNextInstance())
   {
-    wdStringBuilder sGroup;
+    nsStringBuilder sGroup;
     pOpt->GetSortingGroup(sGroup);
     sGroup.Prepend(";");
     sGroup.Append(";");
@@ -86,25 +86,25 @@ bool wdCommandLineOption::LogAvailableOptions(LogAvailableModes mode, const char
     sorted[sGroup].PushBack(pOpt);
   }
 
-  if (wdApplication::GetApplicationInstance())
+  if (nsApplication::GetApplicationInstance())
   {
-    wdLog::Info("");
-    wdLog::Info("{} command line options:", wdApplication::GetApplicationInstance()->GetApplicationName());
+    nsLog::Info("");
+    nsLog::Info("{} command line options:", nsApplication::GetApplicationInstance()->GetApplicationName());
   }
 
   if (sorted.IsEmpty())
   {
-    wdLog::Info("This application has no documented command line options.");
+    nsLog::Info("This application has no documented command line options.");
     return true;
   }
 
-  wdStringBuilder sLine;
+  nsStringBuilder sLine;
 
   for (auto optIt : sorted)
   {
     for (auto pOpt : optIt.Value())
     {
-      wdStringBuilder sOptions, sParamShort, sParamDefault, sLongDesc;
+      nsStringBuilder sOptions, sParamShort, sParamDefault, sLongDesc;
 
       sLine.Clear();
 
@@ -113,7 +113,7 @@ bool wdCommandLineOption::LogAvailableOptions(LogAvailableModes mode, const char
       pOpt->GetParamDefaultValueDesc(sParamDefault);
       pOpt->GetLongDesc(sLongDesc);
 
-      wdHybridArray<wdStringView, 4> lines;
+      nsHybridArray<nsStringView, 4> lines;
 
       sOptions.Split(false, lines, ";", "|");
 
@@ -132,8 +132,8 @@ bool wdCommandLineOption::LogAvailableOptions(LogAvailableModes mode, const char
         }
       }
 
-      wdLog::Info("");
-      wdLog::Info(sLine);
+      nsLog::Info("");
+      nsLog::Info(sLine);
 
       sLongDesc.Trim(" \t\n\r");
       sLongDesc.Split(true, lines, "\n");
@@ -144,25 +144,25 @@ bool wdCommandLineOption::LogAvailableOptions(LogAvailableModes mode, const char
         sLine.Trim("\t\n\r");
         sLine.Prepend("    ");
 
-        wdLog::Info(sLine);
+        nsLog::Info(sLine);
       }
     }
 
-    wdLog::Info("");
+    nsLog::Info("");
   }
 
-  wdLog::Info("");
+  nsLog::Info("");
 
   return true;
 }
 
 
-bool wdCommandLineOption::LogAvailableOptionsToBuffer(wdStringBuilder& out_sBuffer, LogAvailableModes mode, const char* szGroupFilter /*= nullptr*/, const wdCommandLineUtils* pUtils /*= wdCommandLineUtils::GetGlobalInstance()*/)
+bool nsCommandLineOption::LogAvailableOptionsToBuffer(nsStringBuilder& out_sBuffer, LogAvailableModes mode, nsStringView sGroupFilter /*= {} */, const nsCommandLineUtils* pUtils /*= nsCommandLineUtils::GetGlobalInstance()*/)
 {
-  wdLogSystemToBuffer log;
-  wdLogSystemScope ls(&log);
+  nsLogSystemToBuffer log;
+  nsLogSystemScope ls(&log);
 
-  const bool res = wdCommandLineOption::LogAvailableOptions(mode, szGroupFilter, pUtils);
+  const bool res = nsCommandLineOption::LogAvailableOptions(mode, sGroupFilter, pUtils);
 
   out_sBuffer = log.m_sBuffer;
 
@@ -173,40 +173,40 @@ bool wdCommandLineOption::LogAvailableOptionsToBuffer(wdStringBuilder& out_sBuff
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
-wdCommandLineOptionDoc::wdCommandLineOptionDoc(const char* szSortingGroup, const char* szArgument, const char* szParamShortDesc, const char* szLongDesc, const char* szDefaultValue, bool bCaseSensitive /*= false*/)
-  : wdCommandLineOption(szSortingGroup)
+nsCommandLineOptionDoc::nsCommandLineOptionDoc(nsStringView sSortingGroup, nsStringView sArgument, nsStringView sParamShortDesc, nsStringView sLongDesc, nsStringView sDefaultValue, bool bCaseSensitive /*= false*/)
+  : nsCommandLineOption(sSortingGroup)
 {
-  m_szArgument = szArgument;
-  m_szParamShortDesc = szParamShortDesc;
-  m_szParamDefaultValue = szDefaultValue;
-  m_szLongDesc = szLongDesc;
+  m_sArgument = sArgument;
+  m_sParamShortDesc = sParamShortDesc;
+  m_sParamDefaultValue = sDefaultValue;
+  m_sLongDesc = sLongDesc;
   m_bCaseSensitive = bCaseSensitive;
 }
 
-void wdCommandLineOptionDoc::GetOptions(wdStringBuilder& ref_sOut) const
+void nsCommandLineOptionDoc::GetOptions(nsStringBuilder& ref_sOut) const
 {
-  ref_sOut = m_szArgument;
+  ref_sOut = m_sArgument;
 }
 
-void wdCommandLineOptionDoc::GetParamShortDesc(wdStringBuilder& ref_sOut) const
+void nsCommandLineOptionDoc::GetParamShortDesc(nsStringBuilder& ref_sOut) const
 {
-  ref_sOut = m_szParamShortDesc;
+  ref_sOut = m_sParamShortDesc;
 }
 
-void wdCommandLineOptionDoc::GetParamDefaultValueDesc(wdStringBuilder& ref_sOut) const
+void nsCommandLineOptionDoc::GetParamDefaultValueDesc(nsStringBuilder& ref_sOut) const
 {
-  ref_sOut = m_szParamDefaultValue;
+  ref_sOut = m_sParamDefaultValue;
 }
 
-void wdCommandLineOptionDoc::GetLongDesc(wdStringBuilder& ref_sOut) const
+void nsCommandLineOptionDoc::GetLongDesc(nsStringBuilder& ref_sOut) const
 {
-  ref_sOut = m_szLongDesc;
+  ref_sOut = m_sLongDesc;
 }
 
-bool wdCommandLineOptionDoc::IsOptionSpecified(wdStringBuilder* out_pWhich, const wdCommandLineUtils* pUtils /*= wdCommandLineUtils::GetGlobalInstance()*/) const
+bool nsCommandLineOptionDoc::IsOptionSpecified(nsStringBuilder* out_pWhich, const nsCommandLineUtils* pUtils /*= nsCommandLineUtils::GetGlobalInstance()*/) const
 {
-  wdStringBuilder sOptions, tmp;
-  wdHybridArray<wdStringView, 4> eachOption;
+  nsStringBuilder sOptions, tmp;
+  nsHybridArray<nsStringView, 4> eachOption;
   GetSplitOptions(sOptions, eachOption);
 
   for (auto o : eachOption)
@@ -224,14 +224,14 @@ bool wdCommandLineOptionDoc::IsOptionSpecified(wdStringBuilder* out_pWhich, cons
 
   if (out_pWhich)
   {
-    *out_pWhich = m_szArgument;
+    *out_pWhich = m_sArgument;
   }
 
   return false;
 }
 
 
-bool wdCommandLineOptionDoc::ShouldLog(LogMode mode, bool bWasSpecified) const
+bool nsCommandLineOptionDoc::ShouldLog(LogMode mode, bool bWasSpecified) const
 {
   if (mode == LogMode::Never)
     return false;
@@ -245,17 +245,17 @@ bool wdCommandLineOptionDoc::ShouldLog(LogMode mode, bool bWasSpecified) const
   return true;
 }
 
-void wdCommandLineOptionDoc::LogOption(const char* szOption, const char* szValue, bool bWasSpecified) const
+void nsCommandLineOptionDoc::LogOption(nsStringView sOption, nsStringView sValue, bool bWasSpecified) const
 {
   m_bLoggedOnce = true;
 
   if (bWasSpecified)
   {
-    wdLog::Info("Option '{}' is set to '{}'", szOption, szValue);
+    nsLog::Info("Option '{}' is set to '{}'", sOption, sValue);
   }
   else
   {
-    wdLog::Info("Option '{}' is not set, default value is '{}'", szOption, szValue);
+    nsLog::Info("Option '{}' is not set, default value is '{}'", sOption, sValue);
   }
 }
 
@@ -263,17 +263,17 @@ void wdCommandLineOptionDoc::LogOption(const char* szOption, const char* szValue
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
-wdCommandLineOptionBool::wdCommandLineOptionBool(const char* szSortingGroup, const char* szArgument, const char* szLongDesc, bool bDefaultValue, bool bCaseSensitive /*= false*/)
-  : wdCommandLineOptionDoc(szSortingGroup, szArgument, "<bool>", szLongDesc, bDefaultValue ? "true" : "false", bCaseSensitive)
+nsCommandLineOptionBool::nsCommandLineOptionBool(nsStringView sSortingGroup, nsStringView sArgument, nsStringView sLongDesc, bool bDefaultValue, bool bCaseSensitive /*= false*/)
+  : nsCommandLineOptionDoc(sSortingGroup, sArgument, "<bool>", sLongDesc, bDefaultValue ? "true" : "false", bCaseSensitive)
 {
   m_bDefaultValue = bDefaultValue;
 }
 
-bool wdCommandLineOptionBool::GetOptionValue(LogMode logMode, const wdCommandLineUtils* pUtils /*= wdCommandLineUtils::GetGlobalInstance()*/) const
+bool nsCommandLineOptionBool::GetOptionValue(LogMode logMode, const nsCommandLineUtils* pUtils /*= nsCommandLineUtils::GetGlobalInstance()*/) const
 {
   bool result = m_bDefaultValue;
 
-  wdStringBuilder sOption;
+  nsStringBuilder sOption;
   const bool bSpecified = IsOptionSpecified(&sOption, pUtils);
 
   if (bSpecified)
@@ -293,39 +293,39 @@ bool wdCommandLineOptionBool::GetOptionValue(LogMode logMode, const wdCommandLin
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
-wdCommandLineOptionInt::wdCommandLineOptionInt(const char* szSortingGroup, const char* szArgument, const char* szLongDesc, int iDefaultValue, int iMinValue /*= wdMath::MinValue<int>()*/, int iMaxValue /*= wdMath::MaxValue<int>()*/, bool bCaseSensitive /*= false*/)
-  : wdCommandLineOptionDoc(szSortingGroup, szArgument, "<int>", szLongDesc, "0", bCaseSensitive)
+nsCommandLineOptionInt::nsCommandLineOptionInt(nsStringView sSortingGroup, nsStringView sArgument, nsStringView sLongDesc, int iDefaultValue, int iMinValue /*= nsMath::MinValue<int>()*/, int iMaxValue /*= nsMath::MaxValue<int>()*/, bool bCaseSensitive /*= false*/)
+  : nsCommandLineOptionDoc(sSortingGroup, sArgument, "<int>", sLongDesc, "0", bCaseSensitive)
 {
   m_iDefaultValue = iDefaultValue;
   m_iMinValue = iMinValue;
   m_iMaxValue = iMaxValue;
 
-  WD_ASSERT_DEV(m_iMinValue < m_iMaxValue, "Invalid min/max value");
+  NS_ASSERT_DEV(m_iMinValue < m_iMaxValue, "Invalid min/max value");
 }
 
-void wdCommandLineOptionInt::GetParamDefaultValueDesc(wdStringBuilder& ref_sOut) const
+void nsCommandLineOptionInt::GetParamDefaultValueDesc(nsStringBuilder& ref_sOut) const
 {
-  ref_sOut.Format("{}", m_iDefaultValue);
+  ref_sOut.SetFormat("{}", m_iDefaultValue);
 }
 
 
-void wdCommandLineOptionInt::GetParamShortDesc(wdStringBuilder& ref_sOut) const
+void nsCommandLineOptionInt::GetParamShortDesc(nsStringBuilder& ref_sOut) const
 {
-  if (m_iMinValue == wdMath::MinValue<int>() && m_iMaxValue == wdMath::MaxValue<int>())
+  if (m_iMinValue == nsMath::MinValue<int>() && m_iMaxValue == nsMath::MaxValue<int>())
   {
     ref_sOut = "<int>";
   }
   else
   {
-    ref_sOut.Format("<int> [{} .. {}]", m_iMinValue, m_iMaxValue);
+    ref_sOut.SetFormat("<int> [{} .. {}]", m_iMinValue, m_iMaxValue);
   }
 }
 
-int wdCommandLineOptionInt::GetOptionValue(LogMode logMode, const wdCommandLineUtils* pUtils /*= wdCommandLineUtils::GetGlobalInstance()*/) const
+int nsCommandLineOptionInt::GetOptionValue(LogMode logMode, const nsCommandLineUtils* pUtils /*= nsCommandLineUtils::GetGlobalInstance()*/) const
 {
   int result = m_iDefaultValue;
 
-  wdStringBuilder sOption, tmp;
+  nsStringBuilder sOption, tmp;
   const bool bSpecified = IsOptionSpecified(&sOption, pUtils);
 
   if (bSpecified)
@@ -336,7 +336,7 @@ int wdCommandLineOptionInt::GetOptionValue(LogMode logMode, const wdCommandLineU
     {
       if (ShouldLog(logMode, bSpecified))
       {
-        wdLog::Warning("Option '{}' selected value '{}' is outside valid range [{} .. {}]. Using default value instead.", sOption, result, m_iMinValue, m_iMaxValue);
+        nsLog::Warning("Option '{}' selected value '{}' is outside valid range [{} .. {}]. Using default value instead.", sOption, result, m_iMinValue, m_iMaxValue);
       }
 
       result = m_iDefaultValue;
@@ -345,7 +345,7 @@ int wdCommandLineOptionInt::GetOptionValue(LogMode logMode, const wdCommandLineU
 
   if (ShouldLog(logMode, bSpecified))
   {
-    tmp.Format("{}", result);
+    tmp.SetFormat("{}", result);
     LogOption(sOption, tmp, bSpecified);
   }
 
@@ -356,38 +356,38 @@ int wdCommandLineOptionInt::GetOptionValue(LogMode logMode, const wdCommandLineU
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
-wdCommandLineOptionFloat::wdCommandLineOptionFloat(const char* szSortingGroup, const char* szArgument, const char* szLongDesc, float fDefaultValue, float fMinValue /*= wdMath::MinValue<float>()*/, float fMaxValue /*= wdMath::MaxValue<float>()*/, bool bCaseSensitive /*= false*/)
-  : wdCommandLineOptionDoc(szSortingGroup, szArgument, "<float>", szLongDesc, "0", bCaseSensitive)
+nsCommandLineOptionFloat::nsCommandLineOptionFloat(nsStringView sSortingGroup, nsStringView sArgument, nsStringView sLongDesc, float fDefaultValue, float fMinValue /*= nsMath::MinValue<float>()*/, float fMaxValue /*= nsMath::MaxValue<float>()*/, bool bCaseSensitive /*= false*/)
+  : nsCommandLineOptionDoc(sSortingGroup, sArgument, "<float>", sLongDesc, "0", bCaseSensitive)
 {
   m_fDefaultValue = fDefaultValue;
   m_fMinValue = fMinValue;
   m_fMaxValue = fMaxValue;
 
-  WD_ASSERT_DEV(m_fMinValue < m_fMaxValue, "Invalid min/max value");
+  NS_ASSERT_DEV(m_fMinValue < m_fMaxValue, "Invalid min/max value");
 }
 
-void wdCommandLineOptionFloat::GetParamDefaultValueDesc(wdStringBuilder& ref_sOut) const
+void nsCommandLineOptionFloat::GetParamDefaultValueDesc(nsStringBuilder& ref_sOut) const
 {
-  ref_sOut.Format("{}", m_fDefaultValue);
+  ref_sOut.SetFormat("{}", m_fDefaultValue);
 }
 
-void wdCommandLineOptionFloat::GetParamShortDesc(wdStringBuilder& ref_sOut) const
+void nsCommandLineOptionFloat::GetParamShortDesc(nsStringBuilder& ref_sOut) const
 {
-  if (m_fMinValue == wdMath::MinValue<float>() && m_fMaxValue == wdMath::MaxValue<float>())
+  if (m_fMinValue == nsMath::MinValue<float>() && m_fMaxValue == nsMath::MaxValue<float>())
   {
     ref_sOut = "<float>";
   }
   else
   {
-    ref_sOut.Format("<float> [{} .. {}]", m_fMinValue, m_fMaxValue);
+    ref_sOut.SetFormat("<float> [{} .. {}]", m_fMinValue, m_fMaxValue);
   }
 }
 
-float wdCommandLineOptionFloat::GetOptionValue(LogMode logMode, const wdCommandLineUtils* pUtils /*= wdCommandLineUtils::GetGlobalInstance()*/) const
+float nsCommandLineOptionFloat::GetOptionValue(LogMode logMode, const nsCommandLineUtils* pUtils /*= nsCommandLineUtils::GetGlobalInstance()*/) const
 {
   float result = m_fDefaultValue;
 
-  wdStringBuilder sOption, tmp;
+  nsStringBuilder sOption, tmp;
   const bool bSpecified = IsOptionSpecified(&sOption, pUtils);
 
   if (bSpecified)
@@ -398,7 +398,7 @@ float wdCommandLineOptionFloat::GetOptionValue(LogMode logMode, const wdCommandL
     {
       if (ShouldLog(logMode, bSpecified))
       {
-        wdLog::Warning("Option '{}' selected value '{}' is outside valid range [{} .. {}]. Using default value instead.", sOption, result, m_fMinValue, m_fMaxValue);
+        nsLog::Warning("Option '{}' selected value '{}' is outside valid range [{} .. {}]. Using default value instead.", sOption, result, m_fMinValue, m_fMaxValue);
       }
 
       result = m_fDefaultValue;
@@ -407,7 +407,7 @@ float wdCommandLineOptionFloat::GetOptionValue(LogMode logMode, const wdCommandL
 
   if (ShouldLog(logMode, bSpecified))
   {
-    tmp.Format("{}", result);
+    tmp.SetFormat("{}", result);
     LogOption(sOption, tmp, bSpecified);
   }
 
@@ -418,22 +418,22 @@ float wdCommandLineOptionFloat::GetOptionValue(LogMode logMode, const wdCommandL
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
-wdCommandLineOptionString::wdCommandLineOptionString(const char* szSortingGroup, const char* szArgument, const char* szLongDesc, const char* szDefaultValue, bool bCaseSensitive /*= false*/)
-  : wdCommandLineOptionDoc(szSortingGroup, szArgument, "<string>", szLongDesc, szDefaultValue, bCaseSensitive)
+nsCommandLineOptionString::nsCommandLineOptionString(nsStringView sSortingGroup, nsStringView sArgument, nsStringView sLongDesc, nsStringView sDefaultValue, bool bCaseSensitive /*= false*/)
+  : nsCommandLineOptionDoc(sSortingGroup, sArgument, "<string>", sLongDesc, sDefaultValue, bCaseSensitive)
 {
-  m_szDefaultValue = szDefaultValue;
+  m_sDefaultValue = sDefaultValue;
 }
 
-const char* wdCommandLineOptionString::GetOptionValue(LogMode logMode, const wdCommandLineUtils* pUtils /*= wdCommandLineUtils::GetGlobalInstance()*/) const
+nsStringView nsCommandLineOptionString::GetOptionValue(LogMode logMode, const nsCommandLineUtils* pUtils /*= nsCommandLineUtils::GetGlobalInstance()*/) const
 {
-  const char* result = m_szDefaultValue;
+  nsStringView result = m_sDefaultValue;
 
-  wdStringBuilder sOption;
+  nsStringBuilder sOption;
   const bool bSpecified = IsOptionSpecified(&sOption, pUtils);
 
   if (bSpecified)
   {
-    result = pUtils->GetStringOption(sOption, 0, m_szDefaultValue, m_bCaseSensitive);
+    result = pUtils->GetStringOption(sOption, 0, m_sDefaultValue, m_bCaseSensitive);
   }
 
   if (ShouldLog(logMode, bSpecified))
@@ -448,22 +448,22 @@ const char* wdCommandLineOptionString::GetOptionValue(LogMode logMode, const wdC
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
-wdCommandLineOptionPath::wdCommandLineOptionPath(const char* szSortingGroup, const char* szArgument, const char* szLongDesc, const char* szDefaultValue, bool bCaseSensitive /*= false*/)
-  : wdCommandLineOptionDoc(szSortingGroup, szArgument, "<path>", szLongDesc, szDefaultValue, bCaseSensitive)
+nsCommandLineOptionPath::nsCommandLineOptionPath(nsStringView sSortingGroup, nsStringView sArgument, nsStringView sLongDesc, nsStringView sDefaultValue, bool bCaseSensitive /*= false*/)
+  : nsCommandLineOptionDoc(sSortingGroup, sArgument, "<path>", sLongDesc, sDefaultValue, bCaseSensitive)
 {
-  m_szDefaultValue = szDefaultValue;
+  m_sDefaultValue = sDefaultValue;
 }
 
-wdString wdCommandLineOptionPath::GetOptionValue(LogMode logMode, const wdCommandLineUtils* pUtils /*= wdCommandLineUtils::GetGlobalInstance()*/) const
+nsString nsCommandLineOptionPath::GetOptionValue(LogMode logMode, const nsCommandLineUtils* pUtils /*= nsCommandLineUtils::GetGlobalInstance()*/) const
 {
-  wdString result = m_szDefaultValue;
+  nsString result = m_sDefaultValue;
 
-  wdStringBuilder sOption;
+  nsStringBuilder sOption;
   const bool bSpecified = IsOptionSpecified(&sOption, pUtils);
 
   if (bSpecified)
   {
-    result = pUtils->GetAbsolutePathOption(sOption, 0, m_szDefaultValue, m_bCaseSensitive);
+    result = pUtils->GetAbsolutePathOption(sOption, 0, m_sDefaultValue, m_bCaseSensitive);
   }
 
   if (ShouldLog(logMode, bSpecified))
@@ -474,26 +474,26 @@ wdString wdCommandLineOptionPath::GetOptionValue(LogMode logMode, const wdComman
   return result;
 }
 
-wdCommandLineOptionEnum::wdCommandLineOptionEnum(const char* szSortingGroup, const char* szArgument, const char* szLongDesc, const char* szEnumKeysAndValues, wdInt32 iDefaultValue, bool bCaseSensitive /*= false*/)
-  : wdCommandLineOptionDoc(szSortingGroup, szArgument, "<enum>", szLongDesc, "", bCaseSensitive)
+nsCommandLineOptionEnum::nsCommandLineOptionEnum(nsStringView sSortingGroup, nsStringView sArgument, nsStringView sLongDesc, nsStringView sEnumKeysAndValues, nsInt32 iDefaultValue, bool bCaseSensitive /*= false*/)
+  : nsCommandLineOptionDoc(sSortingGroup, sArgument, "<enum>", sLongDesc, "", bCaseSensitive)
 {
   m_iDefaultValue = iDefaultValue;
-  m_szEnumKeysAndValues = szEnumKeysAndValues;
+  m_sEnumKeysAndValues = sEnumKeysAndValues;
 }
 
-wdInt32 wdCommandLineOptionEnum::GetOptionValue(LogMode logMode, const wdCommandLineUtils* pUtils /*= wdCommandLineUtils::GetGlobalInstance()*/) const
+nsInt32 nsCommandLineOptionEnum::GetOptionValue(LogMode logMode, const nsCommandLineUtils* pUtils /*= nsCommandLineUtils::GetGlobalInstance()*/) const
 {
-  wdInt32 result = m_iDefaultValue;
+  nsInt32 result = m_iDefaultValue;
 
-  wdStringBuilder sOption;
+  nsStringBuilder sOption;
   const bool bSpecified = IsOptionSpecified(&sOption, pUtils);
 
-  wdHybridArray<EnumKeyValue, 16> keysAndValues;
+  nsHybridArray<EnumKeyValue, 16> keysAndValues;
   GetEnumKeysAndValues(keysAndValues);
 
   if (bSpecified)
   {
-    const char* selected = pUtils->GetStringOption(sOption, 0, "", m_bCaseSensitive);
+    nsStringView selected = pUtils->GetStringOption(sOption, 0, "", m_bCaseSensitive);
 
     for (const auto& e : keysAndValues)
     {
@@ -506,7 +506,7 @@ wdInt32 wdCommandLineOptionEnum::GetOptionValue(LogMode logMode, const wdCommand
 
     if (ShouldLog(logMode, bSpecified))
     {
-      wdLog::Warning("Option '{}' selected value '{}' is unknown. Using default value instead.", sOption, selected);
+      nsLog::Warning("Option '{}' selected value '{}' is unknown. Using default value instead.", sOption, selected);
     }
   }
 
@@ -514,7 +514,7 @@ found:
 
   if (ShouldLog(logMode, bSpecified))
   {
-    wdStringBuilder opt;
+    nsStringBuilder opt;
 
     for (const auto& e : keysAndValues)
     {
@@ -531,9 +531,9 @@ found:
   return result;
 }
 
-void wdCommandLineOptionEnum::GetParamShortDesc(wdStringBuilder& ref_sOut) const
+void nsCommandLineOptionEnum::GetParamShortDesc(nsStringBuilder& ref_sOut) const
 {
-  wdHybridArray<EnumKeyValue, 16> keysAndValues;
+  nsHybridArray<EnumKeyValue, 16> keysAndValues;
   GetEnumKeysAndValues(keysAndValues);
 
   for (const auto& e : keysAndValues)
@@ -545,9 +545,9 @@ void wdCommandLineOptionEnum::GetParamShortDesc(wdStringBuilder& ref_sOut) const
   ref_sOut.Append(">");
 }
 
-void wdCommandLineOptionEnum::GetParamDefaultValueDesc(wdStringBuilder& ref_sOut) const
+void nsCommandLineOptionEnum::GetParamDefaultValueDesc(nsStringBuilder& ref_sOut) const
 {
-  wdHybridArray<EnumKeyValue, 16> keysAndValues;
+  nsHybridArray<EnumKeyValue, 16> keysAndValues;
   GetEnumKeysAndValues(keysAndValues);
 
   for (const auto& e : keysAndValues)
@@ -560,25 +560,25 @@ void wdCommandLineOptionEnum::GetParamDefaultValueDesc(wdStringBuilder& ref_sOut
   }
 }
 
-void wdCommandLineOptionEnum::GetEnumKeysAndValues(wdDynamicArray<EnumKeyValue>& out_keysAndValues) const
+void nsCommandLineOptionEnum::GetEnumKeysAndValues(nsDynamicArray<EnumKeyValue>& out_keysAndValues) const
 {
-  wdStringBuilder tmp = m_szEnumKeysAndValues;
+  nsStringBuilder tmp = m_sEnumKeysAndValues;
 
-  wdHybridArray<wdStringView, 16> enums;
+  nsHybridArray<nsStringView, 16> enums;
   tmp.Split(false, enums, ";", "|");
 
   out_keysAndValues.SetCount(enums.GetCount());
 
-  wdInt32 eVal = 0;
-  for (wdUInt32 e = 0; e < enums.GetCount(); ++e)
+  nsInt32 eVal = 0;
+  for (nsUInt32 e = 0; e < enums.GetCount(); ++e)
   {
-    wdStringView eName;
+    nsStringView eName;
 
     if (const char* eq = enums[e].FindSubString("="))
     {
-      eName = wdStringView(enums[e].GetStartPointer(), eq);
+      eName = nsStringView(enums[e].GetStartPointer(), eq);
 
-      WD_VERIFY(wdConversionUtils::StringToInt(eq + 1, eVal).Succeeded(), "Invalid enum declaration");
+      NS_VERIFY(nsConversionUtils::StringToInt(eq + 1, eVal).Succeeded(), "Invalid enum declaration");
     }
     else
     {
@@ -587,16 +587,13 @@ void wdCommandLineOptionEnum::GetEnumKeysAndValues(wdDynamicArray<EnumKeyValue>&
 
     eName.Trim(" \n\r\t=");
 
-    const char* pStart = m_szEnumKeysAndValues;
-    pStart += (wdInt64)eName.GetStartPointer();
-    pStart -= (wdInt64)tmp.GetData();
+    const char* pStart = m_sEnumKeysAndValues.GetStartPointer();
+    pStart += (nsInt64)eName.GetStartPointer();
+    pStart -= (nsInt64)tmp.GetData();
 
     out_keysAndValues[e].m_iValue = eVal;
-    out_keysAndValues[e].m_Key = wdStringView(pStart, eName.GetElementCount());
+    out_keysAndValues[e].m_Key = nsStringView(pStart, eName.GetElementCount());
 
     eVal++;
   }
 }
-
-
-WD_STATICLINK_FILE(Foundation, Foundation_Utilities_Implementation_CommandLineOptions);

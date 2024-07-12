@@ -10,60 +10,60 @@
 #include <Foundation/Math/Math.h>
 
 /// \brief Value used by containers for indices to indicate an invalid index.
-#ifndef wdInvalidIndex
-#  define wdInvalidIndex 0xFFFFFFFF
+#ifndef nsInvalidIndex
+#  define nsInvalidIndex 0xFFFFFFFF
 #endif
 
-namespace wdArrayPtrDetail
+namespace nsArrayPtrDetail
 {
   template <typename U>
   struct ByteTypeHelper
   {
-    using type = wdUInt8;
+    using type = nsUInt8;
   };
 
   template <typename U>
   struct ByteTypeHelper<const U>
   {
-    using type = const wdUInt8;
+    using type = const nsUInt8;
   };
-} // namespace wdArrayPtrDetail
+} // namespace nsArrayPtrDetail
 
 /// \brief This class encapsulates an array and it's size. It is recommended to use this class instead of plain C arrays.
 ///
-/// No data is deallocated at destruction, the wdArrayPtr only allows for easier access.
+/// No data is deallocated at destruction, the nsArrayPtr only allows for easier access.
 template <typename T>
-class wdArrayPtr
+class nsArrayPtr
 {
   template <typename U>
-  friend class wdArrayPtr;
+  friend class nsArrayPtr;
 
 public:
-  WD_DECLARE_POD_TYPE();
+  NS_DECLARE_POD_TYPE();
 
-  static_assert(!std::is_same_v<T, void>, "wdArrayPtr<void> is not allowed (anymore)");
-  static_assert(!std::is_same_v<T, const void>, "wdArrayPtr<void> is not allowed (anymore)");
+  static_assert(!std::is_same_v<T, void>, "nsArrayPtr<void> is not allowed (anymore)");
+  static_assert(!std::is_same_v<T, const void>, "nsArrayPtr<void> is not allowed (anymore)");
 
-  using ByteType = typename wdArrayPtrDetail::ByteTypeHelper<T>::type;
+  using ByteType = typename nsArrayPtrDetail::ByteTypeHelper<T>::type;
   using ValueType = T;
   using PointerType = T*;
 
-  /// \brief Initializes the wdArrayPtr to be empty.
-  WD_ALWAYS_INLINE wdArrayPtr() // [tested]
+  /// \brief Initializes the nsArrayPtr to be empty.
+  NS_ALWAYS_INLINE nsArrayPtr() // [tested]
     : m_pPtr(nullptr)
     , m_uiCount(0u)
   {
   }
 
   /// \brief Copies the pointer and size of /a other. Does not allocate any data.
-  WD_ALWAYS_INLINE wdArrayPtr(const wdArrayPtr<T>& other) // [tested]
+  NS_ALWAYS_INLINE nsArrayPtr(const nsArrayPtr<T>& other) // [tested]
   {
     m_pPtr = other.m_pPtr;
     m_uiCount = other.m_uiCount;
   }
 
-  /// \brief Initializes the wdArrayPtr with the given pointer and number of elements. No memory is allocated or copied.
-  inline wdArrayPtr(T* pPtr, wdUInt32 uiCount) // [tested]
+  /// \brief Initializes the nsArrayPtr with the given pointer and number of elements. No memory is allocated or copied.
+  inline nsArrayPtr(T* pPtr, nsUInt32 uiCount) // [tested]
     : m_pPtr(pPtr)
     , m_uiCount(uiCount)
   {
@@ -75,134 +75,135 @@ public:
     }
   }
 
-  /// \brief Initializes the wdArrayPtr to encapsulate the given array.
+  /// \brief Initializes the nsArrayPtr to encapsulate the given array.
   template <size_t N>
-  WD_ALWAYS_INLINE wdArrayPtr(T (&staticArray)[N]) // [tested]
+  NS_ALWAYS_INLINE nsArrayPtr(T (&staticArray)[N]) // [tested]
     : m_pPtr(staticArray)
-    , m_uiCount(static_cast<wdUInt32>(N))
+    , m_uiCount(static_cast<nsUInt32>(N))
   {
   }
 
-  /// \brief Initializes the wdArrayPtr to be a copy of \a other. No memory is allocated or copied.
+  /// \brief Initializes the nsArrayPtr to be a copy of \a other. No memory is allocated or copied.
   template <typename U>
-  WD_ALWAYS_INLINE wdArrayPtr(const wdArrayPtr<U>& other) // [tested]
+  NS_ALWAYS_INLINE nsArrayPtr(const nsArrayPtr<U>& other) // [tested]
     : m_pPtr(other.m_pPtr)
     , m_uiCount(other.m_uiCount)
   {
   }
 
   /// \brief Convert to const version.
-  operator wdArrayPtr<const T>() const { return wdArrayPtr<const T>(static_cast<const T*>(GetPtr()), GetCount()); } // [tested]
+  operator nsArrayPtr<const T>() const { return nsArrayPtr<const T>(static_cast<const T*>(GetPtr()), GetCount()); } // [tested]
 
   /// \brief Copies the pointer and size of /a other. Does not allocate any data.
-  WD_ALWAYS_INLINE void operator=(const wdArrayPtr<T>& other) // [tested]
+  NS_ALWAYS_INLINE void operator=(const nsArrayPtr<T>& other) // [tested]
   {
     m_pPtr = other.m_pPtr;
     m_uiCount = other.m_uiCount;
   }
 
   /// \brief Clears the array
-  WD_ALWAYS_INLINE void Clear()
+  NS_ALWAYS_INLINE void Clear()
   {
     m_pPtr = nullptr;
     m_uiCount = 0;
   }
 
-  WD_ALWAYS_INLINE void operator=(std::nullptr_t) // [tested]
+  NS_ALWAYS_INLINE void operator=(std::nullptr_t) // [tested]
   {
     m_pPtr = nullptr;
     m_uiCount = 0;
   }
 
   /// \brief Returns the pointer to the array.
-  WD_ALWAYS_INLINE PointerType GetPtr() const // [tested]
+  NS_ALWAYS_INLINE PointerType GetPtr() const // [tested]
   {
     return m_pPtr;
   }
 
   /// \brief Returns the pointer to the array.
-  WD_ALWAYS_INLINE PointerType GetPtr() // [tested]
+  NS_ALWAYS_INLINE PointerType GetPtr() // [tested]
   {
     return m_pPtr;
   }
 
   /// \brief Returns the pointer behind the last element of the array
-  WD_ALWAYS_INLINE PointerType GetEndPtr() { return m_pPtr + m_uiCount; }
+  NS_ALWAYS_INLINE PointerType GetEndPtr() { return m_pPtr + m_uiCount; }
 
   /// \brief Returns the pointer behind the last element of the array
-  WD_ALWAYS_INLINE PointerType GetEndPtr() const { return m_pPtr + m_uiCount; }
+  NS_ALWAYS_INLINE PointerType GetEndPtr() const { return m_pPtr + m_uiCount; }
 
   /// \brief Returns whether the array is empty.
-  WD_ALWAYS_INLINE bool IsEmpty() const // [tested]
+  NS_ALWAYS_INLINE bool IsEmpty() const // [tested]
   {
     return GetCount() == 0;
   }
 
   /// \brief Returns the number of elements in the array.
-  WD_ALWAYS_INLINE wdUInt32 GetCount() const // [tested]
+  NS_ALWAYS_INLINE nsUInt32 GetCount() const // [tested]
   {
     return m_uiCount;
   }
 
   /// \brief Creates a sub-array from this array.
-  WD_FORCE_INLINE wdArrayPtr<T> GetSubArray(wdUInt32 uiStart, wdUInt32 uiCount) const // [tested]
+  NS_FORCE_INLINE nsArrayPtr<T> GetSubArray(nsUInt32 uiStart, nsUInt32 uiCount) const // [tested]
   {
     // the first check is necessary to also detect errors when uiStart+uiCount would overflow
-    WD_ASSERT_DEV(uiStart <= GetCount() && uiStart + uiCount <= GetCount(), "uiStart+uiCount ({0}) has to be smaller or equal than the count ({1}).",
+    NS_ASSERT_DEV(uiStart <= GetCount() && uiStart + uiCount <= GetCount(), "uiStart+uiCount ({0}) has to be smaller or equal than the count ({1}).",
       uiStart + uiCount, GetCount());
-    return wdArrayPtr<T>(GetPtr() + uiStart, uiCount);
+    return nsArrayPtr<T>(GetPtr() + uiStart, uiCount);
   }
 
   /// \brief Creates a sub-array from this array.
   /// \note \code ap.GetSubArray(i) \endcode is equivalent to \code ap.GetSubArray(i, ap.GetCount() - i) \endcode.
-  WD_FORCE_INLINE wdArrayPtr<T> GetSubArray(wdUInt32 uiStart) const // [tested]
+  NS_FORCE_INLINE nsArrayPtr<T> GetSubArray(nsUInt32 uiStart) const // [tested]
   {
-    WD_ASSERT_DEV(uiStart <= GetCount(), "uiStart ({0}) has to be smaller or equal than the count ({1}).", uiStart, GetCount());
-    return wdArrayPtr<T>(GetPtr() + uiStart, GetCount() - uiStart);
+    NS_ASSERT_DEV(uiStart <= GetCount(), "uiStart ({0}) has to be smaller or equal than the count ({1}).", uiStart, GetCount());
+    return nsArrayPtr<T>(GetPtr() + uiStart, GetCount() - uiStart);
   }
 
   /// \brief Reinterprets this array as a byte array.
-  WD_ALWAYS_INLINE wdArrayPtr<const ByteType> ToByteArray() const
+  NS_ALWAYS_INLINE nsArrayPtr<const ByteType> ToByteArray() const
   {
-    return wdArrayPtr<const ByteType>(reinterpret_cast<const ByteType*>(GetPtr()), GetCount() * sizeof(T));
+    return nsArrayPtr<const ByteType>(reinterpret_cast<const ByteType*>(GetPtr()), GetCount() * sizeof(T));
   }
 
   /// \brief Reinterprets this array as a byte array.
-  WD_ALWAYS_INLINE wdArrayPtr<ByteType> ToByteArray() { return wdArrayPtr<ByteType>(reinterpret_cast<ByteType*>(GetPtr()), GetCount() * sizeof(T)); }
+  NS_ALWAYS_INLINE nsArrayPtr<ByteType> ToByteArray() { return nsArrayPtr<ByteType>(reinterpret_cast<ByteType*>(GetPtr()), GetCount() * sizeof(T)); }
 
 
   /// \brief Cast an ArrayPtr to an ArrayPtr to a different, but same size, type
   template <typename U>
-  WD_ALWAYS_INLINE wdArrayPtr<U> Cast()
+  NS_ALWAYS_INLINE nsArrayPtr<U> Cast()
   {
     static_assert(sizeof(T) == sizeof(U), "Can only cast with equivalent element size.");
-    return wdArrayPtr<U>(reinterpret_cast<U*>(GetPtr()), GetCount());
+    return nsArrayPtr<U>(reinterpret_cast<U*>(GetPtr()), GetCount());
   }
 
   /// \brief Cast an ArrayPtr to an ArrayPtr to a different, but same size, type
   template <typename U>
-  WD_ALWAYS_INLINE wdArrayPtr<const U> Cast() const
+  NS_ALWAYS_INLINE nsArrayPtr<const U> Cast() const
   {
     static_assert(sizeof(T) == sizeof(U), "Can only cast with equivalent element size.");
-    return wdArrayPtr<const U>(reinterpret_cast<const U*>(GetPtr()), GetCount());
+    return nsArrayPtr<const U>(reinterpret_cast<const U*>(GetPtr()), GetCount());
   }
 
   /// \brief Index access.
-  WD_FORCE_INLINE const ValueType& operator[](wdUInt32 uiIndex) const // [tested]
+  NS_FORCE_INLINE const ValueType& operator[](nsUInt32 uiIndex) const // [tested]
   {
-    WD_ASSERT_DEV(uiIndex < GetCount(), "Cannot access element {0}, the array only holds {1} elements.", uiIndex, GetCount());
+    NS_ASSERT_DEBUG(uiIndex < GetCount(), "Cannot access element {0}, the array only holds {1} elements.", uiIndex, GetCount());
     return *static_cast<const ValueType*>(GetPtr() + uiIndex);
   }
 
   /// \brief Index access.
-  WD_FORCE_INLINE ValueType& operator[](wdUInt32 uiIndex) // [tested]
+  NS_FORCE_INLINE ValueType& operator[](nsUInt32 uiIndex) // [tested]
   {
-    WD_ASSERT_DEV(uiIndex < GetCount(), "Cannot access element {0}, the array only holds {1} elements.", uiIndex, GetCount());
+    NS_ASSERT_DEBUG(uiIndex < GetCount(), "Cannot access element {0}, the array only holds {1} elements.", uiIndex, GetCount());
     return *static_cast<ValueType*>(GetPtr() + uiIndex);
   }
 
   /// \brief Compares the two arrays for equality.
-  inline bool operator==(const wdArrayPtr<const T>& other) const // [tested]
+  template <typename = typename std::enable_if<std::is_const<T>::value == false>>
+  inline bool operator==(const nsArrayPtr<const T>& other) const // [tested]
   {
     if (GetCount() != other.GetCount())
       return false;
@@ -210,22 +211,37 @@ public:
     if (GetPtr() == other.GetPtr())
       return true;
 
-    return wdMemoryUtils::IsEqual(static_cast<const ValueType*>(GetPtr()), static_cast<const ValueType*>(other.GetPtr()), GetCount());
+    return nsMemoryUtils::IsEqual(static_cast<const ValueType*>(GetPtr()), static_cast<const ValueType*>(other.GetPtr()), GetCount());
   }
 
-  /// \brief Compares the two arrays for inequality.
-  WD_ALWAYS_INLINE bool operator!=(const wdArrayPtr<const T>& other) const // [tested]
+#if NS_DISABLED(NS_USE_CPP20_OPERATORS)
+  template <typename = typename std::enable_if<std::is_const<T>::value == false>>
+  inline bool operator!=(const nsArrayPtr<const T>& other) const // [tested]
   {
     return !(*this == other);
   }
+#endif
+
+  /// \brief Compares the two arrays for equality.
+  inline bool operator==(const nsArrayPtr<T>& other) const // [tested]
+  {
+    if (GetCount() != other.GetCount())
+      return false;
+
+    if (GetPtr() == other.GetPtr())
+      return true;
+
+    return nsMemoryUtils::IsEqual(static_cast<const ValueType*>(GetPtr()), static_cast<const ValueType*>(other.GetPtr()), GetCount());
+  }
+  NS_ADD_DEFAULT_OPERATOR_NOTEQUAL(const nsArrayPtr<T>&);
 
   /// \brief Compares the two arrays for less.
-  inline bool operator<(const wdArrayPtr<const T>& other) const // [tested]
+  inline bool operator<(const nsArrayPtr<const T>& other) const // [tested]
   {
     if (GetCount() != other.GetCount())
       return GetCount() < other.GetCount();
 
-    for (wdUInt32 i = 0; i < GetCount(); ++i)
+    for (nsUInt32 i = 0; i < GetCount(); ++i)
     {
       if (GetPtr()[i] < other.GetPtr()[i])
         return true;
@@ -238,47 +254,46 @@ public:
   }
 
   /// \brief Copies the data from \a other into this array. The arrays must have the exact same size.
-  inline void CopyFrom(const wdArrayPtr<const T>& other) // [tested]
+  inline void CopyFrom(const nsArrayPtr<const T>& other) // [tested]
   {
-    WD_ASSERT_DEV(
-      GetCount() == other.GetCount(), "Count for copy does not match. Target has {0} elements, source {1} elements", GetCount(), other.GetCount());
+    NS_ASSERT_DEV(GetCount() == other.GetCount(), "Count for copy does not match. Target has {0} elements, source {1} elements", GetCount(), other.GetCount());
 
-    wdMemoryUtils::Copy(static_cast<ValueType*>(GetPtr()), static_cast<const ValueType*>(other.GetPtr()), GetCount());
+    nsMemoryUtils::Copy(static_cast<ValueType*>(GetPtr()), static_cast<const ValueType*>(other.GetPtr()), GetCount());
   }
 
-  WD_ALWAYS_INLINE void Swap(wdArrayPtr<T>& other)
+  NS_ALWAYS_INLINE void Swap(nsArrayPtr<T>& other)
   {
-    ::wdMath::Swap(m_pPtr, other.m_pPtr);
-    ::wdMath::Swap(m_uiCount, other.m_uiCount);
+    ::nsMath::Swap(m_pPtr, other.m_pPtr);
+    ::nsMath::Swap(m_uiCount, other.m_uiCount);
   }
 
   /// \brief Checks whether the given value can be found in the array. O(n) complexity.
-  WD_ALWAYS_INLINE bool Contains(const T& value) const // [tested]
+  NS_ALWAYS_INLINE bool Contains(const T& value) const // [tested]
   {
-    return IndexOf(value) != wdInvalidIndex;
+    return IndexOf(value) != nsInvalidIndex;
   }
 
-  /// \brief Searches for the first occurrence of the given value and returns its index or wdInvalidIndex if not found.
-  inline wdUInt32 IndexOf(const T& value, wdUInt32 uiStartIndex = 0) const // [tested]
+  /// \brief Searches for the first occurrence of the given value and returns its index or nsInvalidIndex if not found.
+  inline nsUInt32 IndexOf(const T& value, nsUInt32 uiStartIndex = 0) const // [tested]
   {
-    for (wdUInt32 i = uiStartIndex; i < m_uiCount; ++i)
+    for (nsUInt32 i = uiStartIndex; i < m_uiCount; ++i)
     {
-      if (wdMemoryUtils::IsEqual(m_pPtr + i, &value))
+      if (nsMemoryUtils::IsEqual(m_pPtr + i, &value))
         return i;
     }
 
-    return wdInvalidIndex;
+    return nsInvalidIndex;
   }
 
-  /// \brief Searches for the last occurrence of the given value and returns its index or wdInvalidIndex if not found.
-  inline wdUInt32 LastIndexOf(const T& value, wdUInt32 uiStartIndex = wdInvalidIndex) const // [tested]
+  /// \brief Searches for the last occurrence of the given value and returns its index or nsInvalidIndex if not found.
+  inline nsUInt32 LastIndexOf(const T& value, nsUInt32 uiStartIndex = nsInvalidIndex) const // [tested]
   {
-    for (wdUInt32 i = ::wdMath::Min(uiStartIndex, m_uiCount); i-- > 0;)
+    for (nsUInt32 i = ::nsMath::Min(uiStartIndex, m_uiCount); i-- > 0;)
     {
-      if (wdMemoryUtils::IsEqual(m_pPtr + i, &value))
+      if (nsMemoryUtils::IsEqual(m_pPtr + i, &value))
         return i;
     }
-    return wdInvalidIndex;
+    return nsInvalidIndex;
   }
 
   using const_iterator = const T*;
@@ -288,126 +303,126 @@ public:
 
 private:
   PointerType m_pPtr;
-  wdUInt32 m_uiCount;
+  nsUInt32 m_uiCount;
 };
 
 //////////////////////////////////////////////////////////////////////////
 
-using wdByteArrayPtr = wdArrayPtr<wdUInt8>;
-using wdConstByteArrayPtr = wdArrayPtr<const wdUInt8>;
+using nsByteArrayPtr = nsArrayPtr<nsUInt8>;
+using nsConstByteArrayPtr = nsArrayPtr<const nsUInt8>;
 
 //////////////////////////////////////////////////////////////////////////
 
-/// \brief Helper function to create wdArrayPtr from a pointer of some type and a count.
+/// \brief Helper function to create nsArrayPtr from a pointer of some type and a count.
 template <typename T>
-WD_ALWAYS_INLINE wdArrayPtr<T> wdMakeArrayPtr(T* pPtr, wdUInt32 uiCount)
+NS_ALWAYS_INLINE nsArrayPtr<T> nsMakeArrayPtr(T* pPtr, nsUInt32 uiCount)
 {
-  return wdArrayPtr<T>(pPtr, uiCount);
+  return nsArrayPtr<T>(pPtr, uiCount);
 }
 
-/// \brief Helper function to create wdArrayPtr from a static array the a size known at compile-time.
-template <typename T, wdUInt32 N>
-WD_ALWAYS_INLINE wdArrayPtr<T> wdMakeArrayPtr(T (&staticArray)[N])
+/// \brief Helper function to create nsArrayPtr from a static array the a size known at compile-time.
+template <typename T, nsUInt32 N>
+NS_ALWAYS_INLINE nsArrayPtr<T> nsMakeArrayPtr(T (&staticArray)[N])
 {
-  return wdArrayPtr<T>(staticArray);
+  return nsArrayPtr<T>(staticArray);
 }
 
-/// \brief Helper function to create wdConstByteArrayPtr from a pointer of some type and a count.
+/// \brief Helper function to create nsConstByteArrayPtr from a pointer of some type and a count.
 template <typename T>
-WD_ALWAYS_INLINE wdConstByteArrayPtr wdMakeByteArrayPtr(const T* pPtr, wdUInt32 uiCount)
+NS_ALWAYS_INLINE nsConstByteArrayPtr nsMakeByteArrayPtr(const T* pPtr, nsUInt32 uiCount)
 {
-  return wdConstByteArrayPtr(static_cast<const wdUInt8*>(pPtr), uiCount * sizeof(T));
+  return nsConstByteArrayPtr(static_cast<const nsUInt8*>(pPtr), uiCount * sizeof(T));
 }
 
-/// \brief Helper function to create wdByteArrayPtr from a pointer of some type and a count.
+/// \brief Helper function to create nsByteArrayPtr from a pointer of some type and a count.
 template <typename T>
-WD_ALWAYS_INLINE wdByteArrayPtr wdMakeByteArrayPtr(T* pPtr, wdUInt32 uiCount)
+NS_ALWAYS_INLINE nsByteArrayPtr nsMakeByteArrayPtr(T* pPtr, nsUInt32 uiCount)
 {
-  return wdByteArrayPtr(reinterpret_cast<wdUInt8*>(pPtr), uiCount * sizeof(T));
+  return nsByteArrayPtr(reinterpret_cast<nsUInt8*>(pPtr), uiCount * sizeof(T));
 }
 
-/// \brief Helper function to create wdByteArrayPtr from a void pointer and a count.
-WD_ALWAYS_INLINE wdByteArrayPtr wdMakeByteArrayPtr(void* pPtr, wdUInt32 uiBytes)
+/// \brief Helper function to create nsByteArrayPtr from a void pointer and a count.
+NS_ALWAYS_INLINE nsByteArrayPtr nsMakeByteArrayPtr(void* pPtr, nsUInt32 uiBytes)
 {
-  return wdByteArrayPtr(reinterpret_cast<wdUInt8*>(pPtr), uiBytes);
+  return nsByteArrayPtr(reinterpret_cast<nsUInt8*>(pPtr), uiBytes);
 }
 
-/// \brief Helper function to create wdConstByteArrayPtr from a const void pointer and a count.
-WD_ALWAYS_INLINE wdConstByteArrayPtr wdMakeByteArrayPtr(const void* pPtr, wdUInt32 uiBytes)
+/// \brief Helper function to create nsConstByteArrayPtr from a const void pointer and a count.
+NS_ALWAYS_INLINE nsConstByteArrayPtr nsMakeByteArrayPtr(const void* pPtr, nsUInt32 uiBytes)
 {
-  return wdConstByteArrayPtr(static_cast<const wdUInt8*>(pPtr), uiBytes);
+  return nsConstByteArrayPtr(static_cast<const nsUInt8*>(pPtr), uiBytes);
 }
 
 //////////////////////////////////////////////////////////////////////////
 
 template <typename T>
-typename wdArrayPtr<T>::iterator begin(wdArrayPtr<T>& ref_container)
+typename nsArrayPtr<T>::iterator begin(nsArrayPtr<T>& ref_container)
 {
   return ref_container.GetPtr();
 }
 
 template <typename T>
-typename wdArrayPtr<T>::const_iterator begin(const wdArrayPtr<T>& container)
+typename nsArrayPtr<T>::const_iterator begin(const nsArrayPtr<T>& container)
 {
   return container.GetPtr();
 }
 
 template <typename T>
-typename wdArrayPtr<T>::const_iterator cbegin(const wdArrayPtr<T>& container)
+typename nsArrayPtr<T>::const_iterator cbegin(const nsArrayPtr<T>& container)
 {
   return container.GetPtr();
 }
 
 template <typename T>
-typename wdArrayPtr<T>::reverse_iterator rbegin(wdArrayPtr<T>& ref_container)
+typename nsArrayPtr<T>::reverse_iterator rbegin(nsArrayPtr<T>& ref_container)
 {
-  return typename wdArrayPtr<T>::reverse_iterator(ref_container.GetPtr() + ref_container.GetCount() - 1);
+  return typename nsArrayPtr<T>::reverse_iterator(ref_container.GetPtr() + ref_container.GetCount() - 1);
 }
 
 template <typename T>
-typename wdArrayPtr<T>::const_reverse_iterator rbegin(const wdArrayPtr<T>& container)
+typename nsArrayPtr<T>::const_reverse_iterator rbegin(const nsArrayPtr<T>& container)
 {
-  return typename wdArrayPtr<T>::const_reverse_iterator(container.GetPtr() + container.GetCount() - 1);
+  return typename nsArrayPtr<T>::const_reverse_iterator(container.GetPtr() + container.GetCount() - 1);
 }
 
 template <typename T>
-typename wdArrayPtr<T>::const_reverse_iterator crbegin(const wdArrayPtr<T>& container)
+typename nsArrayPtr<T>::const_reverse_iterator crbegin(const nsArrayPtr<T>& container)
 {
-  return typename wdArrayPtr<T>::const_reverse_iterator(container.GetPtr() + container.GetCount() - 1);
+  return typename nsArrayPtr<T>::const_reverse_iterator(container.GetPtr() + container.GetCount() - 1);
 }
 
 template <typename T>
-typename wdArrayPtr<T>::iterator end(wdArrayPtr<T>& ref_container)
+typename nsArrayPtr<T>::iterator end(nsArrayPtr<T>& ref_container)
 {
   return ref_container.GetPtr() + ref_container.GetCount();
 }
 
 template <typename T>
-typename wdArrayPtr<T>::const_iterator end(const wdArrayPtr<T>& container)
+typename nsArrayPtr<T>::const_iterator end(const nsArrayPtr<T>& container)
 {
   return container.GetPtr() + container.GetCount();
 }
 
 template <typename T>
-typename wdArrayPtr<T>::const_iterator cend(const wdArrayPtr<T>& container)
+typename nsArrayPtr<T>::const_iterator cend(const nsArrayPtr<T>& container)
 {
   return container.GetPtr() + container.GetCount();
 }
 
 template <typename T>
-typename wdArrayPtr<T>::reverse_iterator rend(wdArrayPtr<T>& ref_container)
+typename nsArrayPtr<T>::reverse_iterator rend(nsArrayPtr<T>& ref_container)
 {
-  return typename wdArrayPtr<T>::reverse_iterator(ref_container.GetPtr() - 1);
+  return typename nsArrayPtr<T>::reverse_iterator(ref_container.GetPtr() - 1);
 }
 
 template <typename T>
-typename wdArrayPtr<T>::const_reverse_iterator rend(const wdArrayPtr<T>& container)
+typename nsArrayPtr<T>::const_reverse_iterator rend(const nsArrayPtr<T>& container)
 {
-  return typename wdArrayPtr<T>::const_reverse_iterator(container.GetPtr() - 1);
+  return typename nsArrayPtr<T>::const_reverse_iterator(container.GetPtr() - 1);
 }
 
 template <typename T>
-typename wdArrayPtr<T>::const_reverse_iterator crend(const wdArrayPtr<T>& container)
+typename nsArrayPtr<T>::const_reverse_iterator crend(const nsArrayPtr<T>& container)
 {
-  return typename wdArrayPtr<T>::const_reverse_iterator(container.GetPtr() - 1);
+  return typename nsArrayPtr<T>::const_reverse_iterator(container.GetPtr() - 1);
 }

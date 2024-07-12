@@ -4,59 +4,62 @@
 
 #include <Foundation/Basics.h>
 
-#if WD_ENABLED(WD_MATH_CHECK_FOR_NAN)
-#  define WD_NAN_ASSERT(obj) (obj)->AssertNotNaN();
+#if NS_ENABLED(NS_MATH_CHECK_FOR_NAN)
+#  define NS_NAN_ASSERT(obj) (obj)->AssertNotNaN();
 #else
-#  define WD_NAN_ASSERT(obj)
+#  define NS_NAN_ASSERT(obj)
 #endif
 
+#define NS_DECLARE_IF_FLOAT_TYPE template <typename = typename std::enable_if<std::is_floating_point_v<Type> == true>>
+#define NS_IMPLEMENT_IF_FLOAT_TYPE template <typename ENABLE_IF_FLOAT>
+
 /// \brief Simple helper union to store ints and floats to modify their bit patterns.
-union wdIntFloatUnion
+union nsIntFloatUnion
 {
-  constexpr wdIntFloatUnion(float fInit)
+  constexpr nsIntFloatUnion(float fInit)
     : f(fInit)
   {
   }
 
-  constexpr wdIntFloatUnion(wdUInt32 uiInit)
+  constexpr nsIntFloatUnion(nsUInt32 uiInit)
     : i(uiInit)
   {
   }
 
-  wdUInt32 i;
+  nsUInt32 i;
   float f;
 };
 
 /// \brief Simple helper union to store ints and doubles to modify their bit patterns.
-union wdInt64DoubleUnion
+union nsInt64DoubleUnion
 {
 
-  constexpr wdInt64DoubleUnion(double fInit)
+  constexpr nsInt64DoubleUnion(double fInit)
     : f(fInit)
   {
   }
-  constexpr wdInt64DoubleUnion(wdUInt64 uiInit)
+  constexpr nsInt64DoubleUnion(nsUInt64 uiInit)
     : i(uiInit)
   {
   }
 
-  wdUInt64 i;
+  nsUInt64 i;
   double f;
 };
 
 /// \brief Enum to describe which memory layout is used to store a matrix in a float array.
 ///
-/// All wdMatX classes use column-major format internally. That means they contain one array
+/// All nsMatX classes use column-major format internally. That means they contain one array
 /// of, e.g. 16 elements, and the first elements represent the first column, then the second column, etc.
 /// So the data is stored column by column and is thus column-major.
 /// Some other libraries, such as OpenGL or DirectX require data represented either in column-major
-/// or row-major format. wdMatrixLayout allows to retrieve the data from an wdMatX class in the proper format,
-/// and it also allows to pass matrix data as an array back in the wdMatX class, and have it converted properly.
-/// That means, if you need to pass the content of an wdMatX to a function that requires the data in row-major
-/// format, you specify that you want to convert the matrix to wdMatrixLayout::RowMajor format and you will get
+/// or row-major format. nsMatrixLayout allows to retrieve the data from an nsMatX class in the proper format,
+/// and it also allows to pass matrix data as an array back in the nsMatX class, and have it converted properly.
+/// That means, if you need to pass the content of an nsMatX to a function that requires the data in row-major
+/// format, you specify that you want to convert the matrix to nsMatrixLayout::RowMajor format and you will get
 /// the data properly transposed. If a function requires data in column-major format, you specify
-/// wdMatrixLayout::ColumnMajor and you get it in column-major format (which is simply a memcpy).
-struct wdMatrixLayout
+/// nsMatrixLayout::ColumnMajor and you get it in column-major format (which is simply a memcpy).
+struct nsMatrixLayout
 {
   enum Enum
   {
@@ -70,7 +73,7 @@ struct wdMatrixLayout
 /// Different Rendering APIs use different depth ranges.
 /// E.g. OpenGL uses -1 for the near plane and +1 for the far plane.
 /// DirectX uses 0 for the near plane and 1 for the far plane.
-struct wdClipSpaceDepthRange
+struct nsClipSpaceDepthRange
 {
   enum Enum
   {
@@ -81,7 +84,7 @@ struct wdClipSpaceDepthRange
   /// \brief Holds the default value for the projection depth range on each platform.
   /// This can be overridden by renderers to ensure the proper range is used when they become active.
   /// On Windows/D3D this is initialized with 'ZeroToOne' by default on all other platforms/OpenGL it is initialized with 'MinusOneToOne' by default.
-  WD_FOUNDATION_DLL static Enum Default;
+  NS_FOUNDATION_DLL static Enum Default;
 };
 
 /// \brief Specifies whether a projection matrix should flip the result along the Y axis or not.
@@ -91,9 +94,9 @@ struct wdClipSpaceDepthRange
 /// to modify content to compensate, instead textures are simply flipped along Y on texture load.
 /// The same has to be done for all render targets, ie. content has to be rendered upside-down.
 ///
-/// Use wdClipSpaceYMode::RenderToTextureDefault when rendering to a texture, to always get the correct
+/// Use nsClipSpaceYMode::RenderToTextureDefault when rendering to a texture, to always get the correct
 /// projection matrix.
-struct wdClipSpaceYMode
+struct nsClipSpaceYMode
 {
   enum Enum
   {
@@ -105,11 +108,11 @@ struct wdClipSpaceYMode
   /// \brief Holds the platform default value for the clip space Y mode when rendering to a texture.
   /// This can be overridden by renderers to ensure the proper mode is used when they become active.
   /// On Windows/D3D this is initialized with 'Regular' by default on all other platforms/OpenGL it is initialized with 'Flipped' by default.
-  WD_FOUNDATION_DLL static Enum RenderToTextureDefault;
+  NS_FOUNDATION_DLL static Enum RenderToTextureDefault;
 };
 
 /// \brief For selecting a left-handed or right-handed convention
-struct wdHandedness
+struct nsHandedness
 {
   enum Enum
   {
@@ -117,107 +120,125 @@ struct wdHandedness
     RightHanded,
   };
 
-  /// \brief Holds the default handedness value to use. wd uses 'LeftHanded' by default.
-  WD_FOUNDATION_DLL static Enum Default /*= wdHandedness::LeftHanded*/;
+  /// \brief Holds the default handedness value to use. ns uses 'LeftHanded' by default.
+  NS_FOUNDATION_DLL static Enum Default /*= nsHandedness::LeftHanded*/;
 };
 
 // forward declarations
 template <typename Type>
-class wdVec2Template;
+class nsVec2Template;
 
-using wdVec2 = wdVec2Template<float>;
-using wdVec2d = wdVec2Template<double>;
-using wdVec2I32 = wdVec2Template<wdInt32>;
-using wdVec2U32 = wdVec2Template<wdUInt32>;
-
-template <typename Type>
-class wdVec3Template;
-
-using wdVec3 = wdVec3Template<float>;
-using wdVec3d = wdVec3Template<double>;
-using wdVec3I32 = wdVec3Template<wdInt32>;
-using wdVec3U32 = wdVec3Template<wdUInt32>;
+using nsVec2 = nsVec2Template<float>;
+using nsVec2d = nsVec2Template<double>;
+using nsVec2I32 = nsVec2Template<nsInt32>;
+using nsVec2U32 = nsVec2Template<nsUInt32>;
+using nsVec2I64 = nsVec2Template<nsInt64>;
+using nsVec2U64 = nsVec2Template<nsUInt64>;
 
 template <typename Type>
-class wdVec4Template;
+class nsVec3Template;
 
-using wdVec4 = wdVec4Template<float>;
-using wdVec4d = wdVec4Template<double>;
-using wdVec4I32 = wdVec4Template<wdInt32>;
-using wdVec4I16 = wdVec4Template<wdInt16>;
-using wdVec4I8 = wdVec4Template<wdInt8>;
-using wdVec4U32 = wdVec4Template<wdUInt32>;
-using wdVec4U16 = wdVec4Template<wdUInt16>;
-using wdVec4U8 = wdVec4Template<wdUInt8>;
+using nsVec3 = nsVec3Template<float>;
+using nsVec3d = nsVec3Template<double>;
+using nsVec3I32 = nsVec3Template<nsInt32>;
+using nsVec3U32 = nsVec3Template<nsUInt32>;
+using nsVec3I64 = nsVec3Template<nsInt64>;
+using nsVec3U64 = nsVec3Template<nsUInt64>;
 
 template <typename Type>
-class wdMat3Template;
+class nsVec4Template;
 
-using wdMat3 = wdMat3Template<float>;
-using wdMat3d = wdMat3Template<double>;
-
-template <typename Type>
-class wdMat4Template;
-
-using wdMat4 = wdMat4Template<float>;
-using wdMat4d = wdMat4Template<double>;
-
-template <typename Type>
-struct wdPlaneTemplate;
-
-using wdPlane = wdPlaneTemplate<float>;
-using wdPlaned = wdPlaneTemplate<double>;
+using nsVec4 = nsVec4Template<float>;
+using nsVec4d = nsVec4Template<double>;
+using nsVec4I64 = nsVec4Template<nsInt64>;
+using nsVec4I32 = nsVec4Template<nsInt32>;
+using nsVec4I16 = nsVec4Template<nsInt16>;
+using nsVec4I8 = nsVec4Template<nsInt8>;
+using nsVec4U64 = nsVec4Template<nsUInt64>;
+using nsVec4U32 = nsVec4Template<nsUInt32>;
+using nsVec4U16 = nsVec4Template<nsUInt16>;
+using nsVec4U8 = nsVec4Template<nsUInt8>;
 
 template <typename Type>
-class wdQuatTemplate;
+class nsMat3Template;
 
-using wdQuat = wdQuatTemplate<float>;
-using wdQuatd = wdQuatTemplate<double>;
-
-template <typename Type>
-class wdBoundingBoxTemplate;
-
-using wdBoundingBox = wdBoundingBoxTemplate<float>;
-using wdBoundingBoxd = wdBoundingBoxTemplate<double>;
-using wdBoundingBoxu32 = wdBoundingBoxTemplate<wdUInt32>;
+using nsMat3 = nsMat3Template<float>;
+using nsMat3d = nsMat3Template<double>;
 
 template <typename Type>
-class wdBoundingBoxSphereTemplate;
+class nsMat4Template;
 
-using wdBoundingBoxSphere = wdBoundingBoxSphereTemplate<float>;
-using wdBoundingBoxSphered = wdBoundingBoxSphereTemplate<double>;
-
-template <typename Type>
-class wdBoundingSphereTemplate;
-
-using wdBoundingSphere = wdBoundingSphereTemplate<float>;
-using wdBoundingSphered = wdBoundingSphereTemplate<double>;
-
-template <wdUInt8 DecimalBits>
-class wdFixedPoint;
-
-class wdAngle;
+using nsMat4 = nsMat4Template<float>;
+using nsMat4d = nsMat4Template<double>;
 
 template <typename Type>
-class wdTransformTemplate;
+struct nsPlaneTemplate;
 
-using wdTransform = wdTransformTemplate<float>;
-using wdTransformd = wdTransformTemplate<double>;
+using nsPlane = nsPlaneTemplate<float>;
+using nsPlaned = nsPlaneTemplate<double>;
 
-class wdColor;
-class wdColorLinearUB;
-class wdColorGammaUB;
+template <typename Type>
+class nsQuatTemplate;
 
-class wdRandom;
+using nsQuat = nsQuatTemplate<float>;
+using nsQuatd = nsQuatTemplate<double>;
+
+template <typename Type>
+class nsBoundingBoxTemplate;
+
+using nsBoundingBox = nsBoundingBoxTemplate<float>;
+using nsBoundingBoxd = nsBoundingBoxTemplate<double>;
+using nsBoundingBoxu32 = nsBoundingBoxTemplate<nsUInt32>;
+
+template <typename Type>
+class nsBoundingBoxSphereTemplate;
+
+using nsBoundingBoxSphere = nsBoundingBoxSphereTemplate<float>;
+using nsBoundingBoxSphered = nsBoundingBoxSphereTemplate<double>;
+
+template <typename Type>
+class nsBoundingSphereTemplate;
+
+using nsBoundingSphere = nsBoundingSphereTemplate<float>;
+using nsBoundingSphered = nsBoundingSphereTemplate<double>;
+
+template <nsUInt8 DecimalBits>
+class nsFixedPoint;
+
+class nsAngle;
+
+template <typename Type>
+class nsTransformTemplate;
+
+using nsTransform = nsTransformTemplate<float>;
+using nsTransformd = nsTransformTemplate<double>;
+
+class nsColor;
+class nsColorLinearUB;
+class nsColorGammaUB;
+
+class nsRandom;
+
+template <typename Type>
+class nsRectTemplate;
+
+using nsRectU32 = nsRectTemplate<nsUInt32>;
+using nsRectU16 = nsRectTemplate<nsUInt16>;
+using nsRectI32 = nsRectTemplate<nsInt32>;
+using nsRectI16 = nsRectTemplate<nsInt16>;
+using nsRectFloat = nsRectTemplate<float>;
+using nsRectDouble = nsRectTemplate<double>;
+
+class nsFrustum;
 
 
 /// \brief An enum that allows to select on of the six main axis (positive / negative)
-struct WD_FOUNDATION_DLL wdBasisAxis
+struct NS_FOUNDATION_DLL nsBasisAxis
 {
-  using StorageType = wdInt8;
+  using StorageType = nsInt8;
 
   /// \brief An enum that allows to select on of the six main axis (positive / negative)
-  enum Enum : wdInt8
+  enum Enum : nsInt8
   {
     PositiveX,
     PositiveY,
@@ -230,27 +251,27 @@ struct WD_FOUNDATION_DLL wdBasisAxis
   };
 
   /// \brief Returns the vector for the given axis. E.g. (1, 0, 0) or (0, -1, 0), etc.
-  static wdVec3 GetBasisVector(wdBasisAxis::Enum basisAxis);
+  static nsVec3 GetBasisVector(nsBasisAxis::Enum basisAxis);
 
   /// \brief Computes a matrix representing the transformation. 'Forward' represents the X axis, 'Right' the Y axis and 'Up' the Z axis.
-  static wdMat3 CalculateTransformationMatrix(wdBasisAxis::Enum forwardDir, wdBasisAxis::Enum rightDir, wdBasisAxis::Enum dir, float fUniformScale = 1.0f, float fScaleX = 1.0f, float fScaleY = 1.0f, float fScaleZ = 1.0f);
+  static nsMat3 CalculateTransformationMatrix(nsBasisAxis::Enum forwardDir, nsBasisAxis::Enum rightDir, nsBasisAxis::Enum dir, float fUniformScale = 1.0f, float fScaleX = 1.0f, float fScaleY = 1.0f, float fScaleZ = 1.0f);
 
   /// \brief Returns a quaternion that rotates from 'identity' to 'axis'
-  static wdQuat GetBasisRotation(wdBasisAxis::Enum identity, wdBasisAxis::Enum axis);
+  static nsQuat GetBasisRotation(nsBasisAxis::Enum identity, nsBasisAxis::Enum axis);
 
   /// \brief Returns a quaternion that rotates from 'PositiveX' to 'axis'
-  static wdQuat GetBasisRotation_PosX(wdBasisAxis::Enum axis);
+  static nsQuat GetBasisRotation_PosX(nsBasisAxis::Enum axis);
 
   /// \brief Returns the axis that is orthogonal to axis1 and axis2. If 'flip' is set, it returns the negated axis.
   ///
   /// If axis1 and axis2 are not orthogonal to each other, the value of axis1 is returned as the result.
-  static wdBasisAxis::Enum GetOrthogonalAxis(wdBasisAxis::Enum axis1, wdBasisAxis::Enum axis2, bool bFlip);
+  static nsBasisAxis::Enum GetOrthogonalAxis(nsBasisAxis::Enum axis1, nsBasisAxis::Enum axis2, bool bFlip);
 };
 
 /// \brief An enum that represents the operator of a comparison
-struct WD_FOUNDATION_DLL wdComparisonOperator
+struct NS_FOUNDATION_DLL nsComparisonOperator
 {
-  using StorageType = wdUInt8;
+  using StorageType = nsUInt8;
 
   enum Enum
   {
@@ -264,5 +285,7 @@ struct WD_FOUNDATION_DLL wdComparisonOperator
     Default = Equal
   };
 
-  static bool Compare(wdComparisonOperator::Enum cmp, double f1, double f2);
+  /// \brief Compares a to b with the given operator. This function only needs the == and < operator for T.
+  template <typename T>
+  static bool Compare(nsComparisonOperator::Enum cmp, const T& a, const T& b); // [tested]
 };

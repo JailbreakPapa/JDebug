@@ -2,7 +2,7 @@
 
 #include <Foundation/Math/Math.h>
 
-struct wdMathAcc
+struct nsMathAcc
 {
   enum Enum
   {
@@ -12,10 +12,12 @@ struct wdMathAcc
   };
 };
 
-#if WD_SIMD_IMPLEMENTATION == WD_SIMD_IMPLEMENTATION_SSE
+#if NS_SIMD_IMPLEMENTATION == NS_SIMD_IMPLEMENTATION_SSE
 #  include <Foundation/SimdMath/Implementation/SSE/SSETypes_inl.h>
-#elif WD_SIMD_IMPLEMENTATION == WD_SIMD_IMPLEMENTATION_FPU
+#elif NS_SIMD_IMPLEMENTATION == NS_SIMD_IMPLEMENTATION_FPU
 #  include <Foundation/SimdMath/Implementation/FPU/FPUTypes_inl.h>
+#elif NS_SIMD_IMPLEMENTATION == NS_SIMD_IMPLEMENTATION_NEON
+#  include <Foundation/SimdMath/Implementation/NEON/NEONTypes_inl.h>
 #else
 #  error "Unknown SIMD implementation."
 #endif

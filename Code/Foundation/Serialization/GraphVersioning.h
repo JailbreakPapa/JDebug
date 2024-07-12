@@ -11,119 +11,119 @@
 #include <Foundation/Serialization/GraphPatch.h>
 #include <Foundation/Strings/HashedString.h>
 
-class wdRTTI;
-class wdAbstractObjectNode;
-class wdAbstractObjectGraph;
-class wdGraphPatch;
-class wdGraphPatchContext;
-class wdGraphVersioning;
+class nsRTTI;
+class nsAbstractObjectNode;
+class nsAbstractObjectGraph;
+class nsGraphPatch;
+class nsGraphPatchContext;
+class nsGraphVersioning;
 
 /// \brief Tuple used for identifying patches and tracking patch progression.
-struct wdVersionKey
+struct nsVersionKey
 {
-  wdVersionKey() {}
-  wdVersionKey(wdStringView sType, wdUInt32 uiTypeVersion)
+  nsVersionKey() = default;
+  nsVersionKey(nsStringView sType, nsUInt32 uiTypeVersion)
   {
     m_sType.Assign(sType);
     m_uiTypeVersion = uiTypeVersion;
   }
-  WD_DECLARE_POD_TYPE();
-  wdHashedString m_sType;
-  wdUInt32 m_uiTypeVersion;
+  NS_DECLARE_POD_TYPE();
+  nsHashedString m_sType;
+  nsUInt32 m_uiTypeVersion;
 };
 
-/// \brief Hash helper class for wdVersionKey
-struct wdGraphVersioningHash
+/// \brief Hash helper class for nsVersionKey
+struct nsGraphVersioningHash
 {
-  WD_FORCE_INLINE static wdUInt32 Hash(const wdVersionKey& a)
+  NS_FORCE_INLINE static nsUInt32 Hash(const nsVersionKey& a)
   {
     auto typeNameHash = a.m_sType.GetHash();
-    wdUInt32 uiHash = wdHashingUtils::xxHash32(&typeNameHash, sizeof(typeNameHash));
-    uiHash = wdHashingUtils::xxHash32(&a.m_uiTypeVersion, sizeof(a.m_uiTypeVersion), uiHash);
+    nsUInt32 uiHash = nsHashingUtils::xxHash32(&typeNameHash, sizeof(typeNameHash));
+    uiHash = nsHashingUtils::xxHash32(&a.m_uiTypeVersion, sizeof(a.m_uiTypeVersion), uiHash);
     return uiHash;
   }
 
-  WD_ALWAYS_INLINE static bool Equal(const wdVersionKey& a, const wdVersionKey& b)
+  NS_ALWAYS_INLINE static bool Equal(const nsVersionKey& a, const nsVersionKey& b)
   {
     return a.m_sType == b.m_sType && a.m_uiTypeVersion == b.m_uiTypeVersion;
   }
 };
 
-/// \brief A class that overlaps wdReflectedTypeDescriptor with the properties needed for patching.
-struct WD_FOUNDATION_DLL wdTypeVersionInfo
+/// \brief A class that overlaps nsReflectedTypeDescriptor with the properties needed for patching.
+struct NS_FOUNDATION_DLL nsTypeVersionInfo
 {
   const char* GetTypeName() const;
   void SetTypeName(const char* szName);
   const char* GetParentTypeName() const;
   void SetParentTypeName(const char* szName);
 
-  wdHashedString m_sTypeName;
-  wdHashedString m_sParentTypeName;
-  wdUInt32 m_uiTypeVersion;
+  nsHashedString m_sTypeName;
+  nsHashedString m_sParentTypeName;
+  nsUInt32 m_uiTypeVersion;
 };
-WD_DECLARE_REFLECTABLE_TYPE(WD_FOUNDATION_DLL, wdTypeVersionInfo);
+NS_DECLARE_REFLECTABLE_TYPE(NS_FOUNDATION_DLL, nsTypeVersionInfo);
 
 /// \brief Handles the patching of a node. Is passed into the patch
 ///  classes to provide utility functions and track the node's patching progress.
-class WD_FOUNDATION_DLL wdGraphPatchContext
+class NS_FOUNDATION_DLL nsGraphPatchContext
 {
 public:
   /// \brief Ensures that the base class named szType is at version uiTypeVersion.
   ///  If bForcePatch is set, the current version of the base class is reset back to force the execution
   ///  of this patch if necessary. This is mainly necessary for backwards compatibility with patches that
   ///  were written before the type information of all base classes was written to the doc.
-  void PatchBaseClass(const char* szType, wdUInt32 uiTypeVersion, bool bForcePatch = false); // [tested]
+  void PatchBaseClass(const char* szType, nsUInt32 uiTypeVersion, bool bForcePatch = false); // [tested]
 
   /// \brief Renames current class type.
   void RenameClass(const char* szTypeName); // [tested]
 
   /// \brief Renames current class type.
-  void RenameClass(const char* szTypeName, wdUInt32 uiVersion);
+  void RenameClass(const char* szTypeName, nsUInt32 uiVersion);
 
   /// \brief Changes the base class hierarchy to the given one.
-  void ChangeBaseClass(wdArrayPtr<wdVersionKey> baseClasses); // [tested]
+  void ChangeBaseClass(nsArrayPtr<nsVersionKey> baseClasses); // [tested]
 
 private:
-  friend class wdGraphVersioning;
-  wdGraphPatchContext(wdGraphVersioning* pParent, wdAbstractObjectGraph* pGraph, wdAbstractObjectGraph* pTypesGraph);
-  void Patch(wdAbstractObjectNode* pNode);
-  void Patch(wdUInt32 uiBaseClassIndex, wdUInt32 uiTypeVersion, bool bForcePatch);
+  friend class nsGraphVersioning;
+  nsGraphPatchContext(nsGraphVersioning* pParent, nsAbstractObjectGraph* pGraph, nsAbstractObjectGraph* pTypesGraph);
+  void Patch(nsAbstractObjectNode* pNode);
+  void Patch(nsUInt32 uiBaseClassIndex, nsUInt32 uiTypeVersion, bool bForcePatch);
   void UpdateBaseClasses();
 
 private:
-  wdGraphVersioning* m_pParent = nullptr;
-  wdAbstractObjectGraph* m_pGraph = nullptr;
-  wdAbstractObjectNode* m_pNode = nullptr;
-  wdDynamicArray<wdVersionKey> m_BaseClasses;
-  wdUInt32 m_uiBaseClassIndex = 0;
-  mutable wdHashTable<wdHashedString, wdTypeVersionInfo> m_TypeToInfo;
+  nsGraphVersioning* m_pParent = nullptr;
+  nsAbstractObjectGraph* m_pGraph = nullptr;
+  nsAbstractObjectNode* m_pNode = nullptr;
+  nsDynamicArray<nsVersionKey> m_BaseClasses;
+  nsUInt32 m_uiBaseClassIndex = 0;
+  mutable nsHashTable<nsHashedString, nsTypeVersionInfo> m_TypeToInfo;
 };
 
-/// \brief Singleton that allows version patching of wdAbstractObjectGraph.
+/// \brief Singleton that allows version patching of nsAbstractObjectGraph.
 ///
-/// Patching is automatically executed of wdAbstractObjectGraph de-serialize functions.
-class WD_FOUNDATION_DLL wdGraphVersioning
+/// Patching is automatically executed of nsAbstractObjectGraph de-serialize functions.
+class NS_FOUNDATION_DLL nsGraphVersioning
 {
-  WD_DECLARE_SINGLETON(wdGraphVersioning);
+  NS_DECLARE_SINGLETON(nsGraphVersioning);
 
 public:
-  wdGraphVersioning();
-  ~wdGraphVersioning();
+  nsGraphVersioning();
+  ~nsGraphVersioning();
 
   /// \brief Patches all nodes inside pGraph to the current version. pTypesGraph is the graph of serialized
   /// used types in pGraph at the time of saving. If not provided, any base class is assumed to be at max version.
-  void PatchGraph(wdAbstractObjectGraph* pGraph, wdAbstractObjectGraph* pTypesGraph = nullptr);
+  void PatchGraph(nsAbstractObjectGraph* pGraph, nsAbstractObjectGraph* pTypesGraph = nullptr);
 
 private:
-  friend class wdGraphPatchContext;
+  friend class nsGraphPatchContext;
 
-  WD_MAKE_SUBSYSTEM_STARTUP_FRIEND(Foundation, GraphVersioning);
+  NS_MAKE_SUBSYSTEM_STARTUP_FRIEND(Foundation, GraphVersioning);
 
-  void PluginEventHandler(const wdPluginEvent& EventData);
+  void PluginEventHandler(const nsPluginEvent& EventData);
   void UpdatePatches();
-  wdUInt32 GetMaxPatchVersion(const wdHashedString& sType) const;
+  nsUInt32 GetMaxPatchVersion(const nsHashedString& sType) const;
 
-  wdHashTable<wdHashedString, wdUInt32> m_MaxPatchVersion; ///< Max version the given type can be patched to.
-  wdDynamicArray<const wdGraphPatch*> m_GraphPatches;
-  wdHashTable<wdVersionKey, const wdGraphPatch*, wdGraphVersioningHash> m_NodePatches;
+  nsHashTable<nsHashedString, nsUInt32> m_MaxPatchVersion; ///< Max version the given type can be patched to.
+  nsDynamicArray<const nsGraphPatch*> m_GraphPatches;
+  nsHashTable<nsVersionKey, const nsGraphPatch*, nsGraphVersioningHash> m_NodePatches;
 };

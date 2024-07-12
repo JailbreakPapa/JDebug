@@ -12,21 +12,21 @@ jobs:
 - job: StartVM
   displayName: StartVM
   pool:
-    vmImage: 'windows-2019'
+    vmImage: 'windows-2022'
   steps:
   - checkout: none
   - task: AzureKeyVault@1
-    displayName: 'Azure Key Vault: ezKeys'
+    displayName: 'Azure Key Vault: nsKeys'
     inputs:
       ConnectedServiceName: a416236e-0672-4024-bca3-853beb235e5e
-      KeyVaultName: ezKeys
+      KeyVaultName: nsKeys
       SecretsFilter: AzureFunctionKey
   - task: PowerShell@2
     displayName: StartVM
     continueOnError: true
     inputs:
       targetType: inline
-      script: Invoke-RestMethod -Uri "https://ezengineci.azurewebsites.net/api/StartVM?code=$(AzureFunctionKey)&vmname=Ubuntu-22.04"
+      script: Invoke-RestMethod -Uri "https://nsengineci.azurewebsites.net/api/StartVM?code=$(AzureFunctionKey)&vmname=Ubuntu-22.04"
 - job: Job_1
   displayName: Linux-x64
   pool:
@@ -57,8 +57,8 @@ jobs:
       targetType: inline
       script: |
         sudo apt-get update
-        sudo apt-get install -y cmake uuid-dev gcc-12 g++-12 libx11-dev build-essential qt6-base-dev libqt6svg6-dev qt6-base-private-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev xvfb lightdm libtinfo5 vulkan-tools
-        # sudo add-apt-repository ppa:kisak/kisak-mesa -y
+        sudo apt-get install -y cmake uuid-dev gcc-12 g++-12 libx11-dev build-essential libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev xvfb lightdm libtinfo5 vulkan-tools
+        # sudo add-apt-repository ppa:kisak/kisak-mesa -y 
         # sudo apt-get install -y mesa-vulkan-drivers libgl1-mesa-dev
   - task: Bash@3
     displayName: Info
@@ -73,7 +73,7 @@ jobs:
   - task: CMake@1
     displayName: CMake
     inputs:
-      cmakeArgs: -DCMAKE_BUILD_TYPE=Dev -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12 -DWD_ENABLE_FOLDER_UNITY_FILES=$(unityfiles) -DWD_BUILD_EXPERIMENTAL_VULKAN=ON -DWD_EXPERIMENTAL_EDITOR_ON_LINUX=ON -G "Unix Makefiles" ../
+      cmakeArgs: -DCMAKE_BUILD_TYPE=Dev -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12 -DNS_QT_DIR=/opt/qt/6.4.3/gcc_64 -DNS_ENABLE_FOLDER_UNITY_FILES=$(unityfiles) -DNS_BUILD_EXPERIMENTAL_VULKAN=ON -DNS_EXPERIMENTAL_EDITOR_ON_LINUX=ON -G "Unix Makefiles" ../
   - task: Bash@3
     displayName: Make
     inputs:

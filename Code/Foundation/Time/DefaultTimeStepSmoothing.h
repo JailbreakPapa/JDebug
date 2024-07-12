@@ -11,14 +11,14 @@
 ///
 /// This class implements that algorithm pretty much verbatim.
 /// It does not implement keeping track of the time dept and paying that off later, though.
-class WD_FOUNDATION_DLL wdDefaultTimeStepSmoothing : public wdTimeStepSmoothing
+class NS_FOUNDATION_DLL nsDefaultTimeStepSmoothing : public nsTimeStepSmoothing
 {
 public:
-  wdDefaultTimeStepSmoothing();
+  nsDefaultTimeStepSmoothing();
 
-  virtual wdTime GetSmoothedTimeStep(wdTime rawTimeStep, const wdClock* pClock) override;
+  virtual nsTime GetSmoothedTimeStep(nsTime rawTimeStep, const nsClock* pClock) override;
 
-  virtual void Reset(const wdClock* pClock) override;
+  virtual void Reset(const nsClock* pClock) override;
 
   /// \brief Changes the factor with which to lerp from the last used time step to the new average time step. Default is 0.2
   ///
@@ -28,6 +28,6 @@ public:
 
 private:
   float m_fLerpFactor;
-  wdTime m_LastTimeStepTaken;
-  wdStaticRingBuffer<wdTime, 11> m_LastTimeSteps;
+  nsTime m_LastTimeStepTaken;
+  nsStaticRingBuffer<nsTime, 11> m_LastTimeSteps;
 };

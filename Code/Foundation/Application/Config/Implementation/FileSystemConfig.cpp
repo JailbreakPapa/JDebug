@@ -10,87 +10,87 @@
 #include <Foundation/IO/OpenDdlWriter.h>
 
 // clang-format off
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdApplicationFileSystemConfig, wdNoBase, 1, wdRTTIDefaultAllocator<wdApplicationFileSystemConfig>)
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsApplicationFileSystemConfig, nsNoBase, 1, nsRTTIDefaultAllocator<nsApplicationFileSystemConfig>)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_ARRAY_MEMBER_PROPERTY("DataDirs", m_DataDirs),
+    NS_ARRAY_MEMBER_PROPERTY("DataDirs", m_DataDirs),
   }
-  WD_END_PROPERTIES;
+  NS_END_PROPERTIES;
 }
-WD_END_STATIC_REFLECTED_TYPE;
+NS_END_STATIC_REFLECTED_TYPE;
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdApplicationFileSystemConfig_DataDirConfig, wdNoBase, 1, wdRTTIDefaultAllocator<wdApplicationFileSystemConfig_DataDirConfig>)
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsApplicationFileSystemConfig_DataDirConfig, nsNoBase, 1, nsRTTIDefaultAllocator<nsApplicationFileSystemConfig_DataDirConfig>)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("RelativePath", m_sDataDirSpecialPath),
-    WD_MEMBER_PROPERTY("Writable", m_bWritable),
-    WD_MEMBER_PROPERTY("RootName", m_sRootName),
+    NS_MEMBER_PROPERTY("RelativePath", m_sDataDirSpecialPath),
+    NS_MEMBER_PROPERTY("Writable", m_bWritable),
+    NS_MEMBER_PROPERTY("RootName", m_sRootName),
   }
-  WD_END_PROPERTIES;
+  NS_END_PROPERTIES;
 }
-WD_END_STATIC_REFLECTED_TYPE;
+NS_END_STATIC_REFLECTED_TYPE;
 // clang-format on
 
-wdResult wdApplicationFileSystemConfig::Save(wdStringView sPath)
+nsResult nsApplicationFileSystemConfig::Save(nsStringView sPath)
 {
-  wdFileWriter file;
+  nsFileWriter file;
   if (file.Open(sPath).Failed())
-    return WD_FAILURE;
+    return NS_FAILURE;
 
-  wdOpenDdlWriter writer;
+  nsOpenDdlWriter writer;
   writer.SetOutputStream(&file);
   writer.SetCompactMode(false);
-  writer.SetPrimitiveTypeStringMode(wdOpenDdlWriter::TypeStringMode::Compliant);
+  writer.SetPrimitiveTypeStringMode(nsOpenDdlWriter::TypeStringMode::Compliant);
 
-  for (wdUInt32 i = 0; i < m_DataDirs.GetCount(); ++i)
+  for (nsUInt32 i = 0; i < m_DataDirs.GetCount(); ++i)
   {
     writer.BeginObject("DataDir");
 
-    wdOpenDdlUtils::StoreString(writer, m_DataDirs[i].m_sDataDirSpecialPath, "Path");
-    wdOpenDdlUtils::StoreString(writer, m_DataDirs[i].m_sRootName, "RootName");
-    wdOpenDdlUtils::StoreBool(writer, m_DataDirs[i].m_bWritable, "Writable");
+    nsOpenDdlUtils::StoreString(writer, m_DataDirs[i].m_sDataDirSpecialPath, "Path");
+    nsOpenDdlUtils::StoreString(writer, m_DataDirs[i].m_sRootName, "RootName");
+    nsOpenDdlUtils::StoreBool(writer, m_DataDirs[i].m_bWritable, "Writable");
 
     writer.EndObject();
   }
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
-void wdApplicationFileSystemConfig::Load(wdStringView sPath)
+void nsApplicationFileSystemConfig::Load(nsStringView sPath)
 {
-  WD_LOG_BLOCK("wdApplicationFileSystemConfig::Load()");
+  NS_LOG_BLOCK("nsApplicationFileSystemConfig::Load()");
 
   m_DataDirs.Clear();
 
-#if WD_ENABLED(WD_MIGRATE_RUNTIMECONFIGS)
-  wdStringBuilder sOldLoc;
+#if NS_ENABLED(NS_MIGRATE_RUNTIMECONFIGS)
+  nsStringBuilder sOldLoc;
   if (sPath.FindSubString("RuntimeConfigs/"))
   {
     sOldLoc = sPath;
     sOldLoc.ReplaceLast("RuntimeConfigs/", "");
-    sPath = wdFileSystem::MigrateFileLocation(sOldLoc, sPath);
+    sPath = nsFileSystem::MigrateFileLocation(sOldLoc, sPath);
   }
 #endif
 
-  wdFileReader file;
+  nsFileReader file;
   if (file.Open(sPath).Failed())
   {
-    wdLog::Dev("File-system config file '{0}' does not exist.", sPath);
+    nsLog::Dev("File-system config file '{0}' does not exist.", sPath);
     return;
   }
 
-  wdOpenDdlReader reader;
-  if (reader.ParseDocument(file, 0, wdLog::GetThreadLocalLogSystem()).Failed())
+  nsOpenDdlReader reader;
+  if (reader.ParseDocument(file, 0, nsLog::GetThreadLocalLogSystem()).Failed())
   {
-    wdLog::Error("Failed to parse file-system config file '{0}'", sPath);
+    nsLog::Error("Failed to parse file-system config file '{0}'", sPath);
     return;
   }
 
-  const wdOpenDdlReaderElement* pTree = reader.GetRootElement();
+  const nsOpenDdlReaderElement* pTree = reader.GetRootElement();
 
-  for (const wdOpenDdlReaderElement* pDirs = pTree->GetFirstChild(); pDirs != nullptr; pDirs = pDirs->GetSibling())
+  for (const nsOpenDdlReaderElement* pDirs = pTree->GetFirstChild(); pDirs != nullptr; pDirs = pDirs->GetSibling())
   {
     if (!pDirs->IsCustomType("DataDir"))
       continue;
@@ -98,9 +98,9 @@ void wdApplicationFileSystemConfig::Load(wdStringView sPath)
     DataDirConfig cfg;
     cfg.m_bWritable = false;
 
-    const wdOpenDdlReaderElement* pPath = pDirs->FindChildOfType(wdOpenDdlPrimitiveType::String, "Path");
-    const wdOpenDdlReaderElement* pRoot = pDirs->FindChildOfType(wdOpenDdlPrimitiveType::String, "RootName");
-    const wdOpenDdlReaderElement* pWrite = pDirs->FindChildOfType(wdOpenDdlPrimitiveType::Bool, "Writable");
+    const nsOpenDdlReaderElement* pPath = pDirs->FindChildOfType(nsOpenDdlPrimitiveType::String, "Path");
+    const nsOpenDdlReaderElement* pRoot = pDirs->FindChildOfType(nsOpenDdlPrimitiveType::String, "RootName");
+    const nsOpenDdlReaderElement* pWrite = pDirs->FindChildOfType(nsOpenDdlPrimitiveType::Bool, "Writable");
 
     if (pPath)
       cfg.m_sDataDirSpecialPath = pPath->GetPrimitivesString()[0];
@@ -117,19 +117,19 @@ void wdApplicationFileSystemConfig::Load(wdStringView sPath)
       }
       else if (cfg.m_sDataDirSpecialPath.StartsWith_NoCase(":project/"))
       {
-        wdStringBuilder temp(">project/");
+        nsStringBuilder temp(">project/");
         temp.AppendPath(cfg.m_sDataDirSpecialPath.GetData() + 9);
         cfg.m_sDataDirSpecialPath = temp;
       }
       else if (cfg.m_sDataDirSpecialPath.StartsWith_NoCase(":sdk/"))
       {
-        wdStringBuilder temp(">sdk/");
+        nsStringBuilder temp(">sdk/");
         temp.AppendPath(cfg.m_sDataDirSpecialPath.GetData() + 5);
         cfg.m_sDataDirSpecialPath = temp;
       }
       else if (!cfg.m_sDataDirSpecialPath.StartsWith_NoCase(">sdk/"))
       {
-        wdStringBuilder temp(">sdk/");
+        nsStringBuilder temp(">sdk/");
         temp.AppendPath(cfg.m_sDataDirSpecialPath);
         cfg.m_sDataDirSpecialPath = temp;
       }
@@ -139,59 +139,59 @@ void wdApplicationFileSystemConfig::Load(wdStringView sPath)
   }
 }
 
-void wdApplicationFileSystemConfig::Apply()
+void nsApplicationFileSystemConfig::Apply()
 {
-  WD_LOG_BLOCK("wdApplicationFileSystemConfig::Apply");
+  NS_LOG_BLOCK("nsApplicationFileSystemConfig::Apply");
 
-  // wdStringBuilder s;
+  // nsStringBuilder s;
 
   // Make sure previous calls to Apply do not accumulate
   Clear();
 
   for (const auto& var : m_DataDirs)
   {
-    // if (wdFileSystem::ResolveSpecialDirectory(var.m_sDataDirSpecialPath, s).Succeeded())
+    // if (nsFileSystem::ResolveSpecialDirectory(var.m_sDataDirSpecialPath, s).Succeeded())
     {
-      wdFileSystem::AddDataDirectory(var.m_sDataDirSpecialPath, "AppFileSystemConfig", var.m_sRootName, (!var.m_sRootName.IsEmpty() && var.m_bWritable) ? wdFileSystem::DataDirUsage::AllowWrites : wdFileSystem::DataDirUsage::ReadOnly).IgnoreResult();
+      nsFileSystem::AddDataDirectory(var.m_sDataDirSpecialPath, "AppFileSystemConfig", var.m_sRootName, (!var.m_sRootName.IsEmpty() && var.m_bWritable) ? nsFileSystem::DataDirUsage::AllowWrites : nsFileSystem::DataDirUsage::ReadOnly).IgnoreResult();
     }
   }
 }
 
 
-void wdApplicationFileSystemConfig::Clear()
+void nsApplicationFileSystemConfig::Clear()
 {
-  wdFileSystem::RemoveDataDirectoryGroup("AppFileSystemConfig");
+  nsFileSystem::RemoveDataDirectoryGroup("AppFileSystemConfig");
 }
 
-wdResult wdApplicationFileSystemConfig::CreateDataDirStubFiles()
+nsResult nsApplicationFileSystemConfig::CreateDataDirStubFiles()
 {
-  WD_LOG_BLOCK("wdApplicationFileSystemConfig::CreateDataDirStubFiles");
+  NS_LOG_BLOCK("nsApplicationFileSystemConfig::CreateDataDirStubFiles");
 
-  wdStringBuilder s;
-  wdResult res = WD_SUCCESS;
+  nsStringBuilder s;
+  nsResult res = NS_SUCCESS;
 
   for (const auto& var : m_DataDirs)
   {
-    if (wdFileSystem::ResolveSpecialDirectory(var.m_sDataDirSpecialPath, s).Failed())
+    if (nsFileSystem::ResolveSpecialDirectory(var.m_sDataDirSpecialPath, s).Failed())
     {
-      wdLog::Error("Failed to get special directory '{0}'", var.m_sDataDirSpecialPath);
-      res = WD_FAILURE;
+      nsLog::Error("Failed to get special directory '{0}'", var.m_sDataDirSpecialPath);
+      res = NS_FAILURE;
       continue;
     }
 
-    s.AppendPath("DataDir.wdManifest");
+    s.AppendPath("DataDir.nsManifest");
 
-    wdOSFile file;
-    if (file.Open(s, wdFileOpenMode::Write).Failed())
+    nsOSFile file;
+    if (file.Open(s, nsFileOpenMode::Write).Failed())
     {
-      wdLog::Error("Failed to create stub file '{0}'", s);
-      res = WD_FAILURE;
+      nsLog::Error("Failed to create stub file '{0}'", s);
+      res = NS_FAILURE;
     }
   }
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
 
 
-WD_STATICLINK_FILE(Foundation, Foundation_Application_Config_Implementation_FileSystemConfig);
+NS_STATICLINK_FILE(Foundation, Foundation_Application_Config_Implementation_FileSystemConfig);

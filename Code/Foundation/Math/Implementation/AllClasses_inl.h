@@ -7,71 +7,71 @@
 #include <Foundation/Math/Plane.h>
 
 template <typename Type>
-WD_ALWAYS_INLINE bool wdBoundingBoxTemplate<Type>::Contains(const wdBoundingSphereTemplate<Type>& sphere) const
+NS_ALWAYS_INLINE bool nsBoundingBoxTemplate<Type>::Contains(const nsBoundingSphereTemplate<Type>& sphere) const
 {
   return Contains(sphere.GetBoundingBox());
 }
 
 template <typename Type>
-WD_ALWAYS_INLINE bool wdBoundingBoxTemplate<Type>::Overlaps(const wdBoundingSphereTemplate<Type>& sphere) const
+NS_ALWAYS_INLINE bool nsBoundingBoxTemplate<Type>::Overlaps(const nsBoundingSphereTemplate<Type>& sphere) const
 {
   // check whether the closest point between box and sphere is inside the sphere (it is definitely inside the box)
   return sphere.Contains(GetClampedPoint(sphere.m_vCenter));
 }
 
 template <typename Type>
-inline Type wdBoundingBoxTemplate<Type>::GetDistanceTo(const wdBoundingSphereTemplate<Type>& sphere) const
+inline Type nsBoundingBoxTemplate<Type>::GetDistanceTo(const nsBoundingSphereTemplate<Type>& sphere) const
 {
   return (GetClampedPoint(sphere.m_vCenter) - sphere.m_vCenter).GetLength() - sphere.m_fRadius;
 }
 
 template <typename Type>
-inline const wdBoundingSphereTemplate<Type> wdBoundingBoxTemplate<Type>::GetBoundingSphere() const
+inline const nsBoundingSphereTemplate<Type> nsBoundingBoxTemplate<Type>::GetBoundingSphere() const
 {
-  return wdBoundingSphereTemplate<Type>(GetCenter(), (m_vMax - m_vMin).GetLength() * (Type)0.5);
+  return nsBoundingSphereTemplate<Type>::MakeFromCenterAndRadius(GetCenter(), (m_vMax - m_vMin).GetLength() * (Type)0.5);
 }
 
 template <typename Type>
-void wdBoundingSphereTemplate<Type>::ExpandToInclude(const wdBoundingBoxTemplate<Type>& rhs)
+void nsBoundingSphereTemplate<Type>::ExpandToInclude(const nsBoundingBoxTemplate<Type>& rhs)
 {
   // compute the min and max extends of the AABB relative to the sphere (sphere center is the new origin)
-  const wdVec3 vDiffMax = rhs.m_vMax - m_vCenter;
-  const wdVec3 vDiffMin = rhs.m_vMin - m_vCenter;
+  const nsVec3 vDiffMax = rhs.m_vMax - m_vCenter;
+  const nsVec3 vDiffMin = rhs.m_vMin - m_vCenter;
 
   // compute the absolute distance to each AABB extremum, per axis
-  const wdVec3 vDiffMaxAbs(wdMath::Abs(vDiffMax.x), wdMath::Abs(vDiffMax.y), wdMath::Abs(vDiffMax.z));
-  const wdVec3 vDiffMinAbs(wdMath::Abs(vDiffMin.x), wdMath::Abs(vDiffMin.y), wdMath::Abs(vDiffMin.z));
+  const nsVec3 vDiffMaxAbs(nsMath::Abs(vDiffMax.x), nsMath::Abs(vDiffMax.y), nsMath::Abs(vDiffMax.z));
+  const nsVec3 vDiffMinAbs(nsMath::Abs(vDiffMin.x), nsMath::Abs(vDiffMin.y), nsMath::Abs(vDiffMin.z));
 
   // take the maximum distance for each axis, to compute the point that is the farthest away from the sphere
-  const wdVec3 vMostDistantPoint = vDiffMinAbs.CompMax(vDiffMaxAbs);
+  const nsVec3 vMostDistantPoint = vDiffMinAbs.CompMax(vDiffMaxAbs);
 
   const Type fDistSQR = vMostDistantPoint.GetLengthSquared();
 
-  if (wdMath::Square(m_fRadius) < fDistSQR)
-    m_fRadius = wdMath::Sqrt(fDistSQR);
+  if (nsMath::Square(m_fRadius) < fDistSQR)
+    m_fRadius = nsMath::Sqrt(fDistSQR);
 }
 
 template <typename Type>
-Type wdBoundingSphereTemplate<Type>::GetDistanceTo(const wdBoundingBoxTemplate<Type>& rhs) const
+Type nsBoundingSphereTemplate<Type>::GetDistanceTo(const nsBoundingBoxTemplate<Type>& rhs) const
 {
-  const wdVec3Template<Type> vPointOnBox = rhs.GetClampedPoint(m_vCenter);
+  const nsVec3Template<Type> vPointOnBox = rhs.GetClampedPoint(m_vCenter);
 
   return GetDistanceTo(vPointOnBox);
 }
 
 template <typename Type>
-bool wdBoundingSphereTemplate<Type>::Contains(const wdBoundingBoxTemplate<Type>& rhs) const
+bool nsBoundingSphereTemplate<Type>::Contains(const nsBoundingBoxTemplate<Type>& rhs) const
 {
   // compute the min and max extends of the AABB relative to the sphere (sphere center is the new origin)
-  const wdVec3 vDiffMax = rhs.m_vMax - m_vCenter;
-  const wdVec3 vDiffMin = rhs.m_vMin - m_vCenter;
+  const nsVec3 vDiffMax = rhs.m_vMax - m_vCenter;
+  const nsVec3 vDiffMin = rhs.m_vMin - m_vCenter;
 
   // compute the absolute distance to each AABB extremum, per axis
-  const wdVec3 vDiffMaxAbs(wdMath::Abs(vDiffMax.x), wdMath::Abs(vDiffMax.y), wdMath::Abs(vDiffMax.z));
-  const wdVec3 vDiffMinAbs(wdMath::Abs(vDiffMin.x), wdMath::Abs(vDiffMin.y), wdMath::Abs(vDiffMin.z));
+  const nsVec3 vDiffMaxAbs(nsMath::Abs(vDiffMax.x), nsMath::Abs(vDiffMax.y), nsMath::Abs(vDiffMax.z));
+  const nsVec3 vDiffMinAbs(nsMath::Abs(vDiffMin.x), nsMath::Abs(vDiffMin.y), nsMath::Abs(vDiffMin.z));
 
   // take the maximum distance for each axis, to compute the point that is the farthest away from the sphere
-  const wdVec3 vMostDistantPoint = vDiffMinAbs.CompMax(vDiffMaxAbs);
+  const nsVec3 vMostDistantPoint = vDiffMinAbs.CompMax(vDiffMaxAbs);
 
   // if the squared length of that point is still smaller than the sphere radius, it is inside the sphere
   // and thus the whole AABB is inside the sphere
@@ -79,37 +79,37 @@ bool wdBoundingSphereTemplate<Type>::Contains(const wdBoundingBoxTemplate<Type>&
 }
 
 template <typename Type>
-bool wdBoundingSphereTemplate<Type>::Overlaps(const wdBoundingBoxTemplate<Type>& rhs) const
+bool nsBoundingSphereTemplate<Type>::Overlaps(const nsBoundingBoxTemplate<Type>& rhs) const
 {
   return Contains(rhs.GetClampedPoint(m_vCenter));
 }
 
 template <typename Type>
-const wdBoundingBoxTemplate<Type> wdBoundingSphereTemplate<Type>::GetBoundingBox() const
+const nsBoundingBoxTemplate<Type> nsBoundingSphereTemplate<Type>::GetBoundingBox() const
 {
-  return wdBoundingBoxTemplate<Type>(m_vCenter - wdVec3Template<Type>(m_fRadius), m_vCenter + wdVec3Template<Type>(m_fRadius));
+  return nsBoundingBoxTemplate<Type>::MakeFromMinMax(m_vCenter - nsVec3Template<Type>(m_fRadius), m_vCenter + nsVec3Template<Type>(m_fRadius));
 }
 
 
 template <typename Type>
-wdPositionOnPlane::Enum wdPlaneTemplate<Type>::GetObjectPosition(const wdBoundingSphereTemplate<Type>& sphere) const
+nsPositionOnPlane::Enum nsPlaneTemplate<Type>::GetObjectPosition(const nsBoundingSphereTemplate<Type>& sphere) const
 {
   const Type fDist = GetDistanceTo(sphere.m_vCenter);
 
   if (fDist >= sphere.m_fRadius)
-    return wdPositionOnPlane::Front;
+    return nsPositionOnPlane::Front;
 
   if (-fDist >= sphere.m_fRadius)
-    return wdPositionOnPlane::Back;
+    return nsPositionOnPlane::Back;
 
-  return wdPositionOnPlane::Spanning;
+  return nsPositionOnPlane::Spanning;
 }
 
 template <typename Type>
-wdPositionOnPlane::Enum wdPlaneTemplate<Type>::GetObjectPosition(const wdBoundingBoxTemplate<Type>& box) const
+nsPositionOnPlane::Enum nsPlaneTemplate<Type>::GetObjectPosition(const nsBoundingBoxTemplate<Type>& box) const
 {
-  wdVec3Template<Type> vPos = box.m_vMin;
-  wdVec3Template<Type> vNeg = box.m_vMax;
+  nsVec3Template<Type> vPos = box.m_vMin;
+  nsVec3Template<Type> vNeg = box.m_vMax;
 
   if (m_vNormal.x >= (Type)0)
   {
@@ -130,18 +130,18 @@ wdPositionOnPlane::Enum wdPlaneTemplate<Type>::GetObjectPosition(const wdBoundin
   }
 
   if (GetDistanceTo(vPos) <= (Type)0)
-    return wdPositionOnPlane::Back;
+    return nsPositionOnPlane::Back;
 
   if (GetDistanceTo(vNeg) >= (Type)0)
-    return wdPositionOnPlane::Front;
+    return nsPositionOnPlane::Front;
 
-  return wdPositionOnPlane::Spanning;
+  return nsPositionOnPlane::Spanning;
 }
 
 template <typename Type>
-Type wdPlaneTemplate<Type>::GetMinimumDistanceTo(const wdBoundingBoxTemplate<Type>& box) const
+Type nsPlaneTemplate<Type>::GetMinimumDistanceTo(const nsBoundingBoxTemplate<Type>& box) const
 {
-  wdVec3Template<Type> vNeg = box.m_vMax;
+  nsVec3Template<Type> vNeg = box.m_vMax;
 
   if (m_vNormal.x >= (Type)0)
   {
@@ -162,9 +162,9 @@ Type wdPlaneTemplate<Type>::GetMinimumDistanceTo(const wdBoundingBoxTemplate<Typ
 }
 
 template <typename Type>
-Type wdPlaneTemplate<Type>::GetMaximumDistanceTo(const wdBoundingBoxTemplate<Type>& box) const
+Type nsPlaneTemplate<Type>::GetMaximumDistanceTo(const nsBoundingBoxTemplate<Type>& box) const
 {
-  wdVec3Template<Type> vPos = box.m_vMin;
+  nsVec3Template<Type> vPos = box.m_vMin;
 
   if (m_vNormal.x >= (Type)0)
   {
@@ -184,13 +184,14 @@ Type wdPlaneTemplate<Type>::GetMaximumDistanceTo(const wdBoundingBoxTemplate<Typ
   return GetDistanceTo(vPos);
 }
 
-template <typename Type>
-void wdMat3Template<Type>::SetRotationMatrix(const wdVec3Template<Type>& vAxis, wdAngle angle)
-{
-  WD_ASSERT_DEBUG(vAxis.IsNormalized(0.1f), "vAxis must be normalized.");
 
-  const Type cos = wdMath::Cos(angle);
-  const Type sin = wdMath::Sin(angle);
+template <typename Type>
+nsMat3Template<Type> nsMat3Template<Type>::MakeAxisRotation(const nsVec3Template<Type>& vAxis, nsAngle angle)
+{
+  NS_ASSERT_DEBUG(vAxis.IsNormalized(0.1f), "vAxis must be normalized.");
+
+  const Type cos = nsMath::Cos(angle);
+  const Type sin = nsMath::Sin(angle);
   const Type oneminuscos = (Type)1 - cos;
 
   const Type xy = vAxis.x * vAxis.y;
@@ -205,35 +206,39 @@ void wdMat3Template<Type>::SetRotationMatrix(const wdVec3Template<Type>& vAxis, 
   const Type onecos_xz = oneminuscos * xz;
   const Type onecos_yz = oneminuscos * yz;
 
+  nsMat3Template<Type> res;
+
   // Column 1
-  Element(0, 0) = cos + (oneminuscos * (vAxis.x * vAxis.x));
-  Element(0, 1) = onecos_xy + zsin;
-  Element(0, 2) = onecos_xz - ysin;
+  res.Element(0, 0) = cos + (oneminuscos * (vAxis.x * vAxis.x));
+  res.Element(0, 1) = onecos_xy + zsin;
+  res.Element(0, 2) = onecos_xz - ysin;
 
   // Column 2  )
-  Element(1, 0) = onecos_xy - zsin;
-  Element(1, 1) = cos + (oneminuscos * (vAxis.y * vAxis.y));
-  Element(1, 2) = onecos_yz + xsin;
+  res.Element(1, 0) = onecos_xy - zsin;
+  res.Element(1, 1) = cos + (oneminuscos * (vAxis.y * vAxis.y));
+  res.Element(1, 2) = onecos_yz + xsin;
 
   // Column 3  )
-  Element(2, 0) = onecos_xz + ysin;
-  Element(2, 1) = onecos_yz - xsin;
-  Element(2, 2) = cos + (oneminuscos * (vAxis.z * vAxis.z));
+  res.Element(2, 0) = onecos_xz + ysin;
+  res.Element(2, 1) = onecos_yz - xsin;
+  res.Element(2, 2) = cos + (oneminuscos * (vAxis.z * vAxis.z));
+
+  return res;
 }
 
 template <typename Type>
-wdResult wdMat3Template<Type>::Invert(Type fEpsilon)
+nsResult nsMat3Template<Type>::Invert(Type fEpsilon)
 {
   const Type fDet = Element(0, 0) * (Element(2, 2) * Element(1, 1) - Element(1, 2) * Element(2, 1)) -
                     Element(0, 1) * (Element(2, 2) * Element(1, 0) - Element(1, 2) * Element(2, 0)) +
                     Element(0, 2) * (Element(2, 1) * Element(1, 0) - Element(1, 1) * Element(2, 0));
 
-  if (wdMath::IsZero(fDet, fEpsilon))
-    return WD_FAILURE;
+  if (nsMath::IsZero(fDet, fEpsilon))
+    return NS_FAILURE;
 
   const Type fOneDivDet = (Type)1 / fDet;
 
-  wdMat3Template<Type> Inverse;
+  nsMat3Template<Type> Inverse;
 
   Inverse.Element(0, 0) = (Element(2, 2) * Element(1, 1) - Element(1, 2) * Element(2, 1));
   Inverse.Element(0, 1) = -(Element(2, 2) * Element(0, 1) - Element(0, 2) * Element(2, 1));
@@ -248,16 +253,16 @@ wdResult wdMat3Template<Type>::Invert(Type fEpsilon)
   Inverse.Element(2, 2) = (Element(1, 1) * Element(0, 0) - Element(0, 1) * Element(1, 0));
 
   *this = Inverse * fOneDivDet;
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
 template <typename Type>
-void wdMat4Template<Type>::SetRotationMatrix(const wdVec3Template<Type>& vAxis, wdAngle angle)
+nsMat4Template<Type> nsMat4Template<Type>::MakeAxisRotation(const nsVec3Template<Type>& vAxis, nsAngle angle)
 {
-  WD_ASSERT_DEBUG(vAxis.IsNormalized(), "vAxis must be normalized.");
+  NS_ASSERT_DEBUG(vAxis.IsNormalized(), "vAxis must be normalized.");
 
-  const Type cos = wdMath::Cos(angle);
-  const Type sin = wdMath::Sin(angle);
+  const Type cos = nsMath::Cos(angle);
+  const Type sin = nsMath::Sin(angle);
   const Type oneminuscos = (Type)1 - cos;
 
   const Type xy = vAxis.x * vAxis.y;
@@ -272,44 +277,48 @@ void wdMat4Template<Type>::SetRotationMatrix(const wdVec3Template<Type>& vAxis, 
   const Type onecos_xz = oneminuscos * xz;
   const Type onecos_yz = oneminuscos * yz;
 
+  nsMat4Template<Type> res;
+
   // Column 1
-  Element(0, 0) = cos + (oneminuscos * (vAxis.x * vAxis.x));
-  Element(0, 1) = onecos_xy + zsin;
-  Element(0, 2) = onecos_xz - ysin;
-  Element(0, 3) = 0;
+  res.Element(0, 0) = cos + (oneminuscos * (vAxis.x * vAxis.x));
+  res.Element(0, 1) = onecos_xy + zsin;
+  res.Element(0, 2) = onecos_xz - ysin;
+  res.Element(0, 3) = 0;
 
   // Column 2
-  Element(1, 0) = onecos_xy - zsin;
-  Element(1, 1) = cos + (oneminuscos * (vAxis.y * vAxis.y));
-  Element(1, 2) = onecos_yz + xsin;
-  Element(1, 3) = 0;
+  res.Element(1, 0) = onecos_xy - zsin;
+  res.Element(1, 1) = cos + (oneminuscos * (vAxis.y * vAxis.y));
+  res.Element(1, 2) = onecos_yz + xsin;
+  res.Element(1, 3) = 0;
 
   // Column 3
-  Element(2, 0) = onecos_xz + ysin;
-  Element(2, 1) = onecos_yz - xsin;
-  Element(2, 2) = cos + (oneminuscos * (vAxis.z * vAxis.z));
-  Element(2, 3) = 0;
+  res.Element(2, 0) = onecos_xz + ysin;
+  res.Element(2, 1) = onecos_yz - xsin;
+  res.Element(2, 2) = cos + (oneminuscos * (vAxis.z * vAxis.z));
+  res.Element(2, 3) = 0;
 
   // Column 4
-  Element(3, 0) = 0;
-  Element(3, 1) = 0;
-  Element(3, 2) = 0;
-  Element(3, 3) = 1;
+  res.Element(3, 0) = 0;
+  res.Element(3, 1) = 0;
+  res.Element(3, 2) = 0;
+  res.Element(3, 3) = 1;
+
+  return res;
 }
 
 template <typename Type>
-wdResult wdMat4Template<Type>::Invert(Type fEpsilon)
+nsResult nsMat4Template<Type>::Invert(Type fEpsilon)
 {
-  wdMat4Template<Type> Inverse;
+  nsMat4Template<Type> Inverse;
 
   const Type fDet = GetDeterminantOf4x4Matrix(*this);
 
-  if (wdMath::IsZero(fDet, fEpsilon))
-    return WD_FAILURE;
+  if (nsMath::IsZero(fDet, fEpsilon))
+    return NS_FAILURE;
 
-  Type fOneDivDet = wdMath::Invert(fDet);
+  Type fOneDivDet = nsMath::Invert(fDet);
 
-  for (wdInt32 i = 0; i < 4; ++i)
+  for (nsInt32 i = 0; i < 4; ++i)
   {
 
     Inverse.Element(i, 0) = GetDeterminantOf3x3SubMatrix(*this, i, 0) * fOneDivDet;
@@ -322,5 +331,32 @@ wdResult wdMat4Template<Type>::Invert(Type fEpsilon)
   }
 
   *this = Inverse;
-  return WD_SUCCESS;
+  return NS_SUCCESS;
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+// static
+template <typename T>
+bool nsComparisonOperator::Compare(nsComparisonOperator::Enum cmp, const T& a, const T& b)
+{
+  switch (cmp)
+  {
+    case nsComparisonOperator::Equal:
+      return a == b;
+    case nsComparisonOperator::NotEqual:
+      return !(a == b);
+    case nsComparisonOperator::Less:
+      return a < b;
+    case nsComparisonOperator::LessEqual:
+      return !(b < a);
+    case nsComparisonOperator::Greater:
+      return b < a;
+    case nsComparisonOperator::GreaterEqual:
+      return !(a < b);
+
+      NS_DEFAULT_CASE_NOT_IMPLEMENTED;
+  }
+
+  return false;
 }

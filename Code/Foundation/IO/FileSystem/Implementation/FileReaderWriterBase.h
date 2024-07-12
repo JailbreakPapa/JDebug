@@ -5,84 +5,84 @@
 #include <Foundation/IO/Stream.h>
 
 /// The base class for all file readers.
-/// Provides access to wdFileSystem::GetFileReader, which is necessary to get access to the streams that
-/// wdDataDirectoryType's provide.
+/// Provides access to nsFileSystem::GetFileReader, which is necessary to get access to the streams that
+/// nsDataDirectoryType's provide.
 /// Derive from this class if you want to implement different policies on how to read files.
-/// E.g. the default reader (wdFileReader) implements a buffered read policy (using an internal cache).
-class WD_FOUNDATION_DLL wdFileReaderBase : public wdStreamReader
+/// E.g. the default reader (nsFileReader) implements a buffered read policy (using an internal cache).
+class NS_FOUNDATION_DLL nsFileReaderBase : public nsStreamReader
 {
-  WD_DISALLOW_COPY_AND_ASSIGN(wdFileReaderBase);
+  NS_DISALLOW_COPY_AND_ASSIGN(nsFileReaderBase);
 
 public:
-  wdFileReaderBase() { m_pDataDirReader = nullptr; }
+  nsFileReaderBase() { m_pDataDirReader = nullptr; }
 
   /// Returns the absolute path with which the file was opened (including the prefix of the data directory).
-  wdString128 GetFilePathAbsolute() const
+  nsString128 GetFilePathAbsolute() const
   {
-    wdStringBuilder sAbs = m_pDataDirReader->GetDataDirectory()->GetRedirectedDataDirectoryPath();
+    nsStringBuilder sAbs = m_pDataDirReader->GetDataDirectory()->GetRedirectedDataDirectoryPath();
     sAbs.AppendPath(m_pDataDirReader->GetFilePath().GetView());
     return sAbs;
   }
 
   /// Returns the relative path of the file within its data directory (excluding the prefix of the data directory).
-  wdString128 GetFilePathRelative() const { return m_pDataDirReader->GetFilePath(); }
+  nsString128 GetFilePathRelative() const { return m_pDataDirReader->GetFilePath(); }
 
-  /// Returns the wdDataDirectoryType over which this file has been opened.
-  wdDataDirectoryType* GetDataDirectory() const { return m_pDataDirReader->GetDataDirectory(); }
+  /// Returns the nsDataDirectoryType over which this file has been opened.
+  nsDataDirectoryType* GetDataDirectory() const { return m_pDataDirReader->GetDataDirectory(); }
 
   /// Returns true, if the file is currently open.
   bool IsOpen() const { return m_pDataDirReader != nullptr; }
 
   /// \brief Returns the current total size of the file.
-  wdUInt64 GetFileSize() const { return m_pDataDirReader->GetFileSize(); }
+  nsUInt64 GetFileSize() const { return m_pDataDirReader->GetFileSize(); }
 
 protected:
-  wdDataDirectoryReader* GetFileReader(wdStringView sFile, wdFileShareMode::Enum FileShareMode, bool bAllowFileEvents)
+  nsDataDirectoryReader* GetFileReader(nsStringView sFile, nsFileShareMode::Enum FileShareMode, bool bAllowFileEvents)
   {
-    return wdFileSystem::GetFileReader(sFile, FileShareMode, bAllowFileEvents);
+    return nsFileSystem::GetFileReader(sFile, FileShareMode, bAllowFileEvents);
   }
 
-  wdDataDirectoryReader* m_pDataDirReader;
+  nsDataDirectoryReader* m_pDataDirReader;
 };
 
 
 /// The base class for all file writers.
-/// Provides access to wdFileSystem::GetFileWriter, which is necessary to get access to the streams that
-/// wdDataDirectoryType's provide.
+/// Provides access to nsFileSystem::GetFileWriter, which is necessary to get access to the streams that
+/// nsDataDirectoryType's provide.
 /// Derive from this class if you want to implement different policies on how to write files.
-/// E.g. the default writer (wdFileWriter) implements a buffered write policy (using an internal cache).
-class WD_FOUNDATION_DLL wdFileWriterBase : public wdStreamWriter
+/// E.g. the default writer (nsFileWriter) implements a buffered write policy (using an internal cache).
+class NS_FOUNDATION_DLL nsFileWriterBase : public nsStreamWriter
 {
-  WD_DISALLOW_COPY_AND_ASSIGN(wdFileWriterBase);
+  NS_DISALLOW_COPY_AND_ASSIGN(nsFileWriterBase);
 
 public:
-  wdFileWriterBase() { m_pDataDirWriter = nullptr; }
+  nsFileWriterBase() { m_pDataDirWriter = nullptr; }
 
   /// Returns the absolute path with which the file was opened (including the prefix of the data directory).
-  wdString128 GetFilePathAbsolute() const
+  nsString128 GetFilePathAbsolute() const
   {
-    wdStringBuilder sAbs = m_pDataDirWriter->GetDataDirectory()->GetRedirectedDataDirectoryPath();
+    nsStringBuilder sAbs = m_pDataDirWriter->GetDataDirectory()->GetRedirectedDataDirectoryPath();
     sAbs.AppendPath(m_pDataDirWriter->GetFilePath().GetView());
     return sAbs;
   }
 
   /// Returns the relative path of the file within its data directory (excluding the prefix of the data directory).
-  wdString128 GetFilePathRelative() const { return m_pDataDirWriter->GetFilePath(); }
+  nsString128 GetFilePathRelative() const { return m_pDataDirWriter->GetFilePath(); }
 
-  /// Returns the wdDataDirectoryType over which this file has been opened.
-  wdDataDirectoryType* GetDataDirectory() const { return m_pDataDirWriter->GetDataDirectory(); }
+  /// Returns the nsDataDirectoryType over which this file has been opened.
+  nsDataDirectoryType* GetDataDirectory() const { return m_pDataDirWriter->GetDataDirectory(); }
 
   /// Returns true, if the file is currently open.
   bool IsOpen() const { return m_pDataDirWriter != nullptr; }
 
   /// \brief Returns the current total size of the file.
-  wdUInt64 GetFileSize() const { return m_pDataDirWriter->GetFileSize(); } // [tested]
+  nsUInt64 GetFileSize() const { return m_pDataDirWriter->GetFileSize(); } // [tested]
 
 protected:
-  wdDataDirectoryWriter* GetFileWriter(wdStringView sFile, wdFileShareMode::Enum FileShareMode, bool bAllowFileEvents)
+  nsDataDirectoryWriter* GetFileWriter(nsStringView sFile, nsFileShareMode::Enum FileShareMode, bool bAllowFileEvents)
   {
-    return wdFileSystem::GetFileWriter(sFile, FileShareMode, bAllowFileEvents);
+    return nsFileSystem::GetFileWriter(sFile, FileShareMode, bAllowFileEvents);
   }
 
-  wdDataDirectoryWriter* m_pDataDirWriter;
+  nsDataDirectoryWriter* m_pDataDirWriter;
 };

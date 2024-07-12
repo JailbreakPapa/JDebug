@@ -5,33 +5,33 @@
 #include <Foundation/Profiling/Profiling.h>
 #include <Foundation/Strings/StringBuilder.h>
 
-wdDoubleBufferedStackAllocator::wdDoubleBufferedStackAllocator(const char* szName, wdAllocatorBase* pParent)
+nsDoubleBufferedLinearAllocator::nsDoubleBufferedLinearAllocator(nsStringView sName0, nsAllocator* pParent)
 {
-  wdStringBuilder sName = szName;
+  nsStringBuilder sName = sName0;
   sName.Append("0");
 
-  m_pCurrentAllocator = WD_DEFAULT_NEW(StackAllocatorType, sName, pParent);
+  m_pCurrentAllocator = NS_DEFAULT_NEW(StackAllocatorType, sName, pParent);
 
-  sName = szName;
+  sName = sName0;
   sName.Append("1");
 
-  m_pOtherAllocator = WD_DEFAULT_NEW(StackAllocatorType, sName, pParent);
+  m_pOtherAllocator = NS_DEFAULT_NEW(StackAllocatorType, sName, pParent);
 }
 
-wdDoubleBufferedStackAllocator::~wdDoubleBufferedStackAllocator()
+nsDoubleBufferedLinearAllocator::~nsDoubleBufferedLinearAllocator()
 {
-  WD_DEFAULT_DELETE(m_pCurrentAllocator);
-  WD_DEFAULT_DELETE(m_pOtherAllocator);
+  NS_DEFAULT_DELETE(m_pCurrentAllocator);
+  NS_DEFAULT_DELETE(m_pOtherAllocator);
 }
 
-void wdDoubleBufferedStackAllocator::Swap()
+void nsDoubleBufferedLinearAllocator::Swap()
 {
-  wdMath::Swap(m_pCurrentAllocator, m_pOtherAllocator);
+  nsMath::Swap(m_pCurrentAllocator, m_pOtherAllocator);
 
   m_pCurrentAllocator->Reset();
 }
 
-void wdDoubleBufferedStackAllocator::Reset()
+void nsDoubleBufferedLinearAllocator::Reset()
 {
   m_pCurrentAllocator->Reset();
   m_pOtherAllocator->Reset();
@@ -39,33 +39,33 @@ void wdDoubleBufferedStackAllocator::Reset()
 
 
 // clang-format off
-WD_BEGIN_SUBSYSTEM_DECLARATION(Foundation, FrameAllocator)
+NS_BEGIN_SUBSYSTEM_DECLARATION(Foundation, FrameAllocator)
 
   ON_CORESYSTEMS_STARTUP
   {
-    wdFrameAllocator::Startup();
+    nsFrameAllocator::Startup();
   }
 
   ON_CORESYSTEMS_SHUTDOWN
   {
-    wdFrameAllocator::Shutdown();
+    nsFrameAllocator::Shutdown();
   }
 
-WD_END_SUBSYSTEM_DECLARATION;
+NS_END_SUBSYSTEM_DECLARATION;
 // clang-format on
 
-wdDoubleBufferedStackAllocator* wdFrameAllocator::s_pAllocator;
+nsDoubleBufferedLinearAllocator* nsFrameAllocator::s_pAllocator;
 
 // static
-void wdFrameAllocator::Swap()
+void nsFrameAllocator::Swap()
 {
-  WD_PROFILE_SCOPE("FrameAllocator.Swap");
+  NS_PROFILE_SCOPE("FrameAllocator.Swap");
 
   s_pAllocator->Swap();
 }
 
 // static
-void wdFrameAllocator::Reset()
+void nsFrameAllocator::Reset()
 {
   if (s_pAllocator)
   {
@@ -74,15 +74,15 @@ void wdFrameAllocator::Reset()
 }
 
 // static
-void wdFrameAllocator::Startup()
+void nsFrameAllocator::Startup()
 {
-  s_pAllocator = WD_DEFAULT_NEW(wdDoubleBufferedStackAllocator, "FrameAllocator", wdFoundation::GetAlignedAllocator());
+  s_pAllocator = NS_DEFAULT_NEW(nsDoubleBufferedLinearAllocator, "FrameAllocator", nsFoundation::GetAlignedAllocator());
 }
 
 // static
-void wdFrameAllocator::Shutdown()
+void nsFrameAllocator::Shutdown()
 {
-  WD_DEFAULT_DELETE(s_pAllocator);
+  NS_DEFAULT_DELETE(s_pAllocator);
 }
 
-WD_STATICLINK_FILE(Foundation, Foundation_Memory_Implementation_FrameAllocator);
+NS_STATICLINK_FILE(Foundation, Foundation_Memory_Implementation_FrameAllocator);

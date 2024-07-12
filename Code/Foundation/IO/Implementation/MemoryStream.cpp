@@ -4,37 +4,37 @@
 
 // Reader implementation
 
-wdMemoryStreamReader::wdMemoryStreamReader(const wdMemoryStreamStorageInterface* pStreamStorage)
+nsMemoryStreamReader::nsMemoryStreamReader(const nsMemoryStreamStorageInterface* pStreamStorage)
   : m_pStreamStorage(pStreamStorage)
 {
 }
 
-wdMemoryStreamReader::~wdMemoryStreamReader() {}
+nsMemoryStreamReader::~nsMemoryStreamReader() = default;
 
-wdUInt64 wdMemoryStreamReader::ReadBytes(void* pReadBuffer, wdUInt64 uiBytesToRead)
+nsUInt64 nsMemoryStreamReader::ReadBytes(void* pReadBuffer, nsUInt64 uiBytesToRead)
 {
-  WD_ASSERT_RELEASE(m_pStreamStorage != nullptr, "The memory stream reader needs a valid memory storage object!");
+  NS_ASSERT_RELEASE(m_pStreamStorage != nullptr, "The memory stream reader needs a valid memory storage object!");
 
-  const wdUInt64 uiBytes = wdMath::Min<wdUInt64>(uiBytesToRead, m_pStreamStorage->GetStorageSize64() - m_uiReadPosition);
+  const nsUInt64 uiBytes = nsMath::Min<nsUInt64>(uiBytesToRead, m_pStreamStorage->GetStorageSize64() - m_uiReadPosition);
 
   if (uiBytes == 0)
     return 0;
 
   if (pReadBuffer)
   {
-    wdUInt64 uiBytesLeft = uiBytes;
+    nsUInt64 uiBytesLeft = uiBytes;
 
     while (uiBytesLeft > 0)
     {
-      wdArrayPtr<const wdUInt8> data = m_pStreamStorage->GetContiguousMemoryRange(m_uiReadPosition);
+      nsArrayPtr<const nsUInt8> data = m_pStreamStorage->GetContiguousMemoryRange(m_uiReadPosition);
 
-      WD_ASSERT_DEV(!data.IsEmpty(), "MemoryStreamStorage returned an empty contiguous memory block.");
+      NS_ASSERT_DEV(!data.IsEmpty(), "MemoryStreamStorage returned an empty contiguous memory block.");
 
-      const wdUInt64 toRead = wdMath::Min<wdUInt64>(data.GetCount(), uiBytesLeft);
+      const nsUInt64 toRead = nsMath::Min<nsUInt64>(data.GetCount(), uiBytesLeft);
 
-      wdMemoryUtils::Copy(static_cast<wdUInt8*>(pReadBuffer), data.GetPtr(), static_cast<size_t>(toRead)); // Down-cast to size_t for 32-bit.
+      nsMemoryUtils::Copy(static_cast<nsUInt8*>(pReadBuffer), data.GetPtr(), static_cast<size_t>(toRead)); // Down-cast to size_t for 32-bit.
 
-      pReadBuffer = wdMemoryUtils::AddByteOffset(pReadBuffer, static_cast<size_t>(toRead)); // Down-cast to size_t for 32-bit.
+      pReadBuffer = nsMemoryUtils::AddByteOffset(pReadBuffer, static_cast<size_t>(toRead));                // Down-cast to size_t for 32-bit.
 
       m_uiReadPosition += toRead;
       uiBytesLeft -= toRead;
@@ -48,38 +48,38 @@ wdUInt64 wdMemoryStreamReader::ReadBytes(void* pReadBuffer, wdUInt64 uiBytesToRe
   return uiBytes;
 }
 
-wdUInt64 wdMemoryStreamReader::SkipBytes(wdUInt64 uiBytesToSkip)
+nsUInt64 nsMemoryStreamReader::SkipBytes(nsUInt64 uiBytesToSkip)
 {
-  WD_ASSERT_RELEASE(m_pStreamStorage != nullptr, "The memory stream reader needs a valid memory storage object!");
+  NS_ASSERT_RELEASE(m_pStreamStorage != nullptr, "The memory stream reader needs a valid memory storage object!");
 
-  const wdUInt64 uiBytes = wdMath::Min<wdUInt64>(uiBytesToSkip, m_pStreamStorage->GetStorageSize64() - m_uiReadPosition);
+  const nsUInt64 uiBytes = nsMath::Min<nsUInt64>(uiBytesToSkip, m_pStreamStorage->GetStorageSize64() - m_uiReadPosition);
 
   m_uiReadPosition += uiBytes;
 
   return uiBytes;
 }
 
-void wdMemoryStreamReader::SetReadPosition(wdUInt64 uiReadPosition)
+void nsMemoryStreamReader::SetReadPosition(nsUInt64 uiReadPosition)
 {
-  WD_ASSERT_RELEASE(uiReadPosition <= GetByteCount64(), "Read position must be between 0 and GetByteCount()!");
+  NS_ASSERT_RELEASE(uiReadPosition <= GetByteCount64(), "Read position must be between 0 and GetByteCount()!");
   m_uiReadPosition = uiReadPosition;
 }
 
-wdUInt32 wdMemoryStreamReader::GetByteCount32() const
+nsUInt32 nsMemoryStreamReader::GetByteCount32() const
 {
-  WD_ASSERT_RELEASE(m_pStreamStorage != nullptr, "The memory stream reader needs a valid memory storage object!");
+  NS_ASSERT_RELEASE(m_pStreamStorage != nullptr, "The memory stream reader needs a valid memory storage object!");
 
   return m_pStreamStorage->GetStorageSize32();
 }
 
-wdUInt64 wdMemoryStreamReader::GetByteCount64() const
+nsUInt64 nsMemoryStreamReader::GetByteCount64() const
 {
-  WD_ASSERT_RELEASE(m_pStreamStorage != nullptr, "The memory stream reader needs a valid memory storage object!");
+  NS_ASSERT_RELEASE(m_pStreamStorage != nullptr, "The memory stream reader needs a valid memory storage object!");
 
   return m_pStreamStorage->GetStorageSize64();
 }
 
-void wdMemoryStreamReader::SetDebugSourceInformation(wdStringView sDebugSourceInformation)
+void nsMemoryStreamReader::SetDebugSourceInformation(nsStringView sDebugSourceInformation)
 {
   m_sDebugSourceInformation = sDebugSourceInformation;
 }
@@ -87,85 +87,85 @@ void wdMemoryStreamReader::SetDebugSourceInformation(wdStringView sDebugSourceIn
 //////////////////////////////////////////////////////////////////////////
 
 // Writer implementation
-wdMemoryStreamWriter::wdMemoryStreamWriter(wdMemoryStreamStorageInterface* pStreamStorage)
+nsMemoryStreamWriter::nsMemoryStreamWriter(nsMemoryStreamStorageInterface* pStreamStorage)
   : m_pStreamStorage(pStreamStorage)
-  , m_uiWritePosition(0)
+
 {
 }
 
-wdMemoryStreamWriter::~wdMemoryStreamWriter() = default;
+nsMemoryStreamWriter::~nsMemoryStreamWriter() = default;
 
-wdResult wdMemoryStreamWriter::WriteBytes(const void* pWriteBuffer, wdUInt64 uiBytesToWrite)
+nsResult nsMemoryStreamWriter::WriteBytes(const void* pWriteBuffer, nsUInt64 uiBytesToWrite)
 {
-  WD_ASSERT_DEV(m_pStreamStorage != nullptr, "The memory stream writer needs a valid memory storage object!");
+  NS_ASSERT_DEV(m_pStreamStorage != nullptr, "The memory stream writer needs a valid memory storage object!");
 
   if (uiBytesToWrite == 0)
-    return WD_SUCCESS;
+    return NS_SUCCESS;
 
-  WD_ASSERT_DEBUG(pWriteBuffer != nullptr, "No valid buffer containing data given!");
+  NS_ASSERT_DEBUG(pWriteBuffer != nullptr, "No valid buffer containing data given!");
 
   // Reserve the memory in the storage object, grow size if appending data (don't shrink)
-  m_pStreamStorage->SetInternalSize(wdMath::Max(m_pStreamStorage->GetStorageSize64(), m_uiWritePosition + uiBytesToWrite));
+  m_pStreamStorage->SetInternalSize(nsMath::Max(m_pStreamStorage->GetStorageSize64(), m_uiWritePosition + uiBytesToWrite));
 
   {
-    wdUInt64 uiBytesLeft = uiBytesToWrite;
+    nsUInt64 uiBytesLeft = uiBytesToWrite;
 
     while (uiBytesLeft > 0)
     {
-      wdArrayPtr<wdUInt8> data = m_pStreamStorage->GetContiguousMemoryRange(m_uiWritePosition);
+      nsArrayPtr<nsUInt8> data = m_pStreamStorage->GetContiguousMemoryRange(m_uiWritePosition);
 
-      WD_ASSERT_DEV(!data.IsEmpty(), "MemoryStreamStorage returned an empty contiguous memory block.");
+      NS_ASSERT_DEV(!data.IsEmpty(), "MemoryStreamStorage returned an empty contiguous memory block.");
 
-      const wdUInt64 toWrite = wdMath::Min<wdUInt64>(data.GetCount(), uiBytesLeft);
+      const nsUInt64 toWrite = nsMath::Min<nsUInt64>(data.GetCount(), uiBytesLeft);
 
-      wdMemoryUtils::Copy(data.GetPtr(), static_cast<const wdUInt8*>(pWriteBuffer), static_cast<size_t>(toWrite)); // Down-cast to size_t for 32-bit.
+      nsMemoryUtils::Copy(data.GetPtr(), static_cast<const nsUInt8*>(pWriteBuffer), static_cast<size_t>(toWrite)); // Down-cast to size_t for 32-bit.
 
-      pWriteBuffer = wdMemoryUtils::AddByteOffset(pWriteBuffer, static_cast<size_t>(toWrite)); // Down-cast to size_t for 32-bit.
+      pWriteBuffer = nsMemoryUtils::AddByteOffset(pWriteBuffer, static_cast<size_t>(toWrite));                     // Down-cast to size_t for 32-bit.
 
       m_uiWritePosition += toWrite;
       uiBytesLeft -= toWrite;
     }
   }
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
-void wdMemoryStreamWriter::SetWritePosition(wdUInt64 uiWritePosition)
+void nsMemoryStreamWriter::SetWritePosition(nsUInt64 uiWritePosition)
 {
-  WD_ASSERT_RELEASE(m_pStreamStorage != nullptr, "The memory stream writer needs a valid memory storage object!");
+  NS_ASSERT_RELEASE(m_pStreamStorage != nullptr, "The memory stream writer needs a valid memory storage object!");
 
-  WD_ASSERT_RELEASE(uiWritePosition <= GetByteCount64(), "Write position must be between 0 and GetByteCount()!");
+  NS_ASSERT_RELEASE(uiWritePosition <= GetByteCount64(), "Write position must be between 0 and GetByteCount()!");
   m_uiWritePosition = uiWritePosition;
 }
 
-wdUInt32 wdMemoryStreamWriter::GetByteCount32() const
+nsUInt32 nsMemoryStreamWriter::GetByteCount32() const
 {
-  WD_ASSERT_DEV(m_uiWritePosition <= 0xFFFFFFFFllu, "Use GetByteCount64 instead of GetByteCount32");
-  return (wdUInt32)m_uiWritePosition;
+  NS_ASSERT_DEV(m_uiWritePosition <= 0xFFFFFFFFllu, "Use GetByteCount64 instead of GetByteCount32");
+  return (nsUInt32)m_uiWritePosition;
 }
 
-wdUInt64 wdMemoryStreamWriter::GetByteCount64() const
+nsUInt64 nsMemoryStreamWriter::GetByteCount64() const
 {
   return m_uiWritePosition;
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-wdMemoryStreamStorageInterface::wdMemoryStreamStorageInterface() = default;
-wdMemoryStreamStorageInterface::~wdMemoryStreamStorageInterface() = default;
+nsMemoryStreamStorageInterface::nsMemoryStreamStorageInterface() = default;
+nsMemoryStreamStorageInterface::~nsMemoryStreamStorageInterface() = default;
 
-void wdMemoryStreamStorageInterface::ReadAll(wdStreamReader& inout_stream, wdUInt64 uiMaxBytes /*= 0xFFFFFFFFFFFFFFFFllu*/)
+void nsMemoryStreamStorageInterface::ReadAll(nsStreamReader& inout_stream, nsUInt64 uiMaxBytes /*= 0xFFFFFFFFFFFFFFFFllu*/)
 {
   Clear();
-  wdMemoryStreamWriter w(this);
+  nsMemoryStreamWriter w(this);
 
-  wdUInt8 uiTemp[1024 * 8];
+  nsUInt8 uiTemp[1024 * 8];
 
   while (uiMaxBytes > 0)
   {
-    const wdUInt64 uiToRead = wdMath::Min<wdUInt64>(uiMaxBytes, WD_ARRAY_SIZE(uiTemp));
+    const nsUInt64 uiToRead = nsMath::Min<nsUInt64>(uiMaxBytes, NS_ARRAY_SIZE(uiTemp));
 
-    const wdUInt64 uiRead = inout_stream.ReadBytes(uiTemp, uiToRead);
+    const nsUInt64 uiRead = inout_stream.ReadBytes(uiTemp, uiToRead);
     uiMaxBytes -= uiRead;
 
     w.WriteBytes(uiTemp, uiRead).IgnoreResult();
@@ -178,32 +178,32 @@ void wdMemoryStreamStorageInterface::ReadAll(wdStreamReader& inout_stream, wdUIn
 //////////////////////////////////////////////////////////////////////////
 
 
-wdRawMemoryStreamReader::wdRawMemoryStreamReader() = default;
+nsRawMemoryStreamReader::nsRawMemoryStreamReader() = default;
 
-wdRawMemoryStreamReader::wdRawMemoryStreamReader(const void* pData, wdUInt64 uiDataSize)
+nsRawMemoryStreamReader::nsRawMemoryStreamReader(const void* pData, nsUInt64 uiDataSize)
 {
   Reset(pData, uiDataSize);
 }
 
-wdRawMemoryStreamReader::~wdRawMemoryStreamReader() = default;
+nsRawMemoryStreamReader::~nsRawMemoryStreamReader() = default;
 
-void wdRawMemoryStreamReader::Reset(const void* pData, wdUInt64 uiDataSize)
+void nsRawMemoryStreamReader::Reset(const void* pData, nsUInt64 uiDataSize)
 {
-  m_pRawMemory = static_cast<const wdUInt8*>(pData);
+  m_pRawMemory = static_cast<const nsUInt8*>(pData);
   m_uiChunkSize = uiDataSize;
   m_uiReadPosition = 0;
 }
 
-wdUInt64 wdRawMemoryStreamReader::ReadBytes(void* pReadBuffer, wdUInt64 uiBytesToRead)
+nsUInt64 nsRawMemoryStreamReader::ReadBytes(void* pReadBuffer, nsUInt64 uiBytesToRead)
 {
-  const wdUInt64 uiBytes = wdMath::Min<wdUInt64>(uiBytesToRead, m_uiChunkSize - m_uiReadPosition);
+  const nsUInt64 uiBytes = nsMath::Min<nsUInt64>(uiBytesToRead, m_uiChunkSize - m_uiReadPosition);
 
   if (uiBytes == 0)
     return 0;
 
   if (pReadBuffer)
   {
-    wdMemoryUtils::Copy(static_cast<wdUInt8*>(pReadBuffer), &m_pRawMemory[m_uiReadPosition], static_cast<size_t>(uiBytes));
+    nsMemoryUtils::Copy(static_cast<nsUInt8*>(pReadBuffer), &m_pRawMemory[m_uiReadPosition], static_cast<size_t>(uiBytes));
   }
 
   m_uiReadPosition += uiBytes;
@@ -211,27 +211,27 @@ wdUInt64 wdRawMemoryStreamReader::ReadBytes(void* pReadBuffer, wdUInt64 uiBytesT
   return uiBytes;
 }
 
-wdUInt64 wdRawMemoryStreamReader::SkipBytes(wdUInt64 uiBytesToSkip)
+nsUInt64 nsRawMemoryStreamReader::SkipBytes(nsUInt64 uiBytesToSkip)
 {
-  const wdUInt64 uiBytes = wdMath::Min<wdUInt64>(uiBytesToSkip, m_uiChunkSize - m_uiReadPosition);
+  const nsUInt64 uiBytes = nsMath::Min<nsUInt64>(uiBytesToSkip, m_uiChunkSize - m_uiReadPosition);
 
   m_uiReadPosition += uiBytes;
 
   return uiBytes;
 }
 
-void wdRawMemoryStreamReader::SetReadPosition(wdUInt64 uiReadPosition)
+void nsRawMemoryStreamReader::SetReadPosition(nsUInt64 uiReadPosition)
 {
-  WD_ASSERT_RELEASE(uiReadPosition < GetByteCount(), "Read position must be between 0 and GetByteCount()!");
+  NS_ASSERT_RELEASE(uiReadPosition < GetByteCount(), "Read position must be between 0 and GetByteCount()!");
   m_uiReadPosition = uiReadPosition;
 }
 
-wdUInt64 wdRawMemoryStreamReader::GetByteCount() const
+nsUInt64 nsRawMemoryStreamReader::GetByteCount() const
 {
   return m_uiChunkSize;
 }
 
-void wdRawMemoryStreamReader::SetDebugSourceInformation(wdStringView sDebugSourceInformation)
+void nsRawMemoryStreamReader::SetDebugSourceInformation(nsStringView sDebugSourceInformation)
 {
   m_sDebugSourceInformation = sDebugSourceInformation;
 }
@@ -239,49 +239,49 @@ void wdRawMemoryStreamReader::SetDebugSourceInformation(wdStringView sDebugSourc
 //////////////////////////////////////////////////////////////////////////
 
 
-wdRawMemoryStreamWriter::wdRawMemoryStreamWriter() = default;
+nsRawMemoryStreamWriter::nsRawMemoryStreamWriter() = default;
 
-wdRawMemoryStreamWriter::wdRawMemoryStreamWriter(void* pData, wdUInt64 uiDataSize)
+nsRawMemoryStreamWriter::nsRawMemoryStreamWriter(void* pData, nsUInt64 uiDataSize)
 {
   Reset(pData, uiDataSize);
 }
 
-wdRawMemoryStreamWriter::~wdRawMemoryStreamWriter() = default;
+nsRawMemoryStreamWriter::~nsRawMemoryStreamWriter() = default;
 
-void wdRawMemoryStreamWriter::Reset(void* pData, wdUInt64 uiDataSize)
+void nsRawMemoryStreamWriter::Reset(void* pData, nsUInt64 uiDataSize)
 {
-  WD_ASSERT_DEV(pData != nullptr, "Invalid memory stream storage");
+  NS_ASSERT_DEV(pData != nullptr, "Invalid memory stream storage");
 
-  m_pRawMemory = static_cast<wdUInt8*>(pData);
+  m_pRawMemory = static_cast<nsUInt8*>(pData);
   m_uiChunkSize = uiDataSize;
   m_uiWritePosition = 0;
 }
 
-wdResult wdRawMemoryStreamWriter::WriteBytes(const void* pWriteBuffer, wdUInt64 uiBytesToWrite)
+nsResult nsRawMemoryStreamWriter::WriteBytes(const void* pWriteBuffer, nsUInt64 uiBytesToWrite)
 {
-  const wdUInt64 uiBytes = wdMath::Min<wdUInt64>(uiBytesToWrite, m_uiChunkSize - m_uiWritePosition);
+  const nsUInt64 uiBytes = nsMath::Min<nsUInt64>(uiBytesToWrite, m_uiChunkSize - m_uiWritePosition);
 
-  wdMemoryUtils::Copy(&m_pRawMemory[m_uiWritePosition], static_cast<const wdUInt8*>(pWriteBuffer), static_cast<size_t>(uiBytes));
+  nsMemoryUtils::Copy(&m_pRawMemory[m_uiWritePosition], static_cast<const nsUInt8*>(pWriteBuffer), static_cast<size_t>(uiBytes));
 
   m_uiWritePosition += uiBytes;
 
   if (uiBytes < uiBytesToWrite)
-    return WD_FAILURE;
+    return NS_FAILURE;
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
-wdUInt64 wdRawMemoryStreamWriter::GetStorageSize() const
+nsUInt64 nsRawMemoryStreamWriter::GetStorageSize() const
 {
   return m_uiChunkSize;
 }
 
-wdUInt64 wdRawMemoryStreamWriter::GetNumWrittenBytes() const
+nsUInt64 nsRawMemoryStreamWriter::GetNumWrittenBytes() const
 {
   return m_uiWritePosition;
 }
 
-void wdRawMemoryStreamWriter::SetDebugSourceInformation(wdStringView sDebugSourceInformation)
+void nsRawMemoryStreamWriter::SetDebugSourceInformation(nsStringView sDebugSourceInformation)
 {
   m_sDebugSourceInformation = sDebugSourceInformation;
 }
@@ -290,39 +290,39 @@ void wdRawMemoryStreamWriter::SetDebugSourceInformation(wdStringView sDebugSourc
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
-wdDefaultMemoryStreamStorage::wdDefaultMemoryStreamStorage(wdUInt32 uiInitialCapacity, wdAllocatorBase* pAllocator)
+nsDefaultMemoryStreamStorage::nsDefaultMemoryStreamStorage(nsUInt32 uiInitialCapacity, nsAllocator* pAllocator)
   : m_Chunks(pAllocator)
 {
   Reserve(uiInitialCapacity);
 }
 
-wdDefaultMemoryStreamStorage::~wdDefaultMemoryStreamStorage()
+nsDefaultMemoryStreamStorage::~nsDefaultMemoryStreamStorage()
 {
   Clear();
 }
 
-void wdDefaultMemoryStreamStorage::Reserve(wdUInt64 uiBytes)
+void nsDefaultMemoryStreamStorage::Reserve(nsUInt64 uiBytes)
 {
   if (m_Chunks.IsEmpty())
   {
     auto& chunk = m_Chunks.ExpandAndGetRef();
-    chunk.m_Bytes = wdByteArrayPtr(m_InplaceMemory);
+    chunk.m_Bytes = nsByteArrayPtr(m_InplaceMemory);
     chunk.m_uiStartOffset = 0;
     m_uiCapacity = m_Chunks[0].m_Bytes.GetCount();
   }
 
   while (m_uiCapacity < uiBytes)
   {
-    AddChunk(static_cast<wdUInt32>(wdMath::Min<wdUInt64>(uiBytes - m_uiCapacity, wdMath::MaxValue<wdUInt32>())));
+    AddChunk(static_cast<nsUInt32>(nsMath::Min<nsUInt64>(uiBytes - m_uiCapacity, nsMath::MaxValue<nsUInt32>())));
   }
 }
 
-wdUInt64 wdDefaultMemoryStreamStorage::GetStorageSize64() const
+nsUInt64 nsDefaultMemoryStreamStorage::GetStorageSize64() const
 {
   return m_uiInternalSize;
 }
 
-void wdDefaultMemoryStreamStorage::Clear()
+void nsDefaultMemoryStreamStorage::Clear()
 {
   m_uiInternalSize = 0;
   m_uiLastByteAccessed = 0;
@@ -330,7 +330,7 @@ void wdDefaultMemoryStreamStorage::Clear()
   Compact();
 }
 
-void wdDefaultMemoryStreamStorage::Compact()
+void nsDefaultMemoryStreamStorage::Compact()
 {
   // skip chunk 0, because that's where our inplace storage is used
   while (m_Chunks.GetCount() > 1)
@@ -342,39 +342,39 @@ void wdDefaultMemoryStreamStorage::Compact()
 
     m_uiCapacity -= chunk.m_Bytes.GetCount();
 
-    wdUInt8* pData = chunk.m_Bytes.GetPtr();
-    WD_DELETE_RAW_BUFFER(m_Chunks.GetAllocator(), pData);
+    nsUInt8* pData = chunk.m_Bytes.GetPtr();
+    NS_DELETE_RAW_BUFFER(m_Chunks.GetAllocator(), pData);
 
     m_Chunks.PopBack();
   }
 }
 
-wdUInt64 wdDefaultMemoryStreamStorage::GetHeapMemoryUsage() const
+nsUInt64 nsDefaultMemoryStreamStorage::GetHeapMemoryUsage() const
 {
   return m_Chunks.GetHeapMemoryUsage() + m_uiCapacity - m_Chunks[0].m_Bytes.GetCount();
 }
 
-wdResult wdDefaultMemoryStreamStorage::CopyToStream(wdStreamWriter& inout_stream) const
+nsResult nsDefaultMemoryStreamStorage::CopyToStream(nsStreamWriter& inout_stream) const
 {
-  wdUInt64 uiBytesLeft = m_uiInternalSize;
-  wdUInt64 uiReadPosition = 0;
+  nsUInt64 uiBytesLeft = m_uiInternalSize;
+  nsUInt64 uiReadPosition = 0;
 
   while (uiBytesLeft > 0)
   {
-    wdArrayPtr<const wdUInt8> data = GetContiguousMemoryRange(uiReadPosition);
+    nsArrayPtr<const nsUInt8> data = GetContiguousMemoryRange(uiReadPosition);
 
-    WD_ASSERT_DEV(!data.IsEmpty(), "MemoryStreamStorage returned an empty contiguous memory block.");
+    NS_ASSERT_DEV(!data.IsEmpty(), "MemoryStreamStorage returned an empty contiguous memory block.");
 
-    WD_SUCCEED_OR_RETURN(inout_stream.WriteBytes(data.GetPtr(), data.GetCount()));
+    NS_SUCCEED_OR_RETURN(inout_stream.WriteBytes(data.GetPtr(), data.GetCount()));
 
     uiReadPosition += data.GetCount();
     uiBytesLeft -= data.GetCount();
   }
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
-wdArrayPtr<const wdUInt8> wdDefaultMemoryStreamStorage::GetContiguousMemoryRange(wdUInt64 uiStartByte) const
+nsArrayPtr<const nsUInt8> nsDefaultMemoryStreamStorage::GetContiguousMemoryRange(nsUInt64 uiStartByte) const
 {
   if (uiStartByte >= m_uiInternalSize)
     return {};
@@ -395,35 +395,35 @@ wdArrayPtr<const wdUInt8> wdDefaultMemoryStreamStorage::GetContiguousMemoryRange
 
     if (uiStartByte < chunk.m_uiStartOffset + chunk.m_Bytes.GetCount())
     {
-      const wdUInt64 uiStartByteRel = uiStartByte - chunk.m_uiStartOffset;    // start offset into the chunk
-      const wdUInt64 uiMaxLenRel = chunk.m_Bytes.GetCount() - uiStartByteRel; // max number of bytes to use from this chunk
-      const wdUInt64 uiMaxRangeRel = m_uiInternalSize - uiStartByte;          // the 'stored data' might be less than the capacity of the chunk
+      const nsUInt64 uiStartByteRel = uiStartByte - chunk.m_uiStartOffset;    // start offset into the chunk
+      const nsUInt64 uiMaxLenRel = chunk.m_Bytes.GetCount() - uiStartByteRel; // max number of bytes to use from this chunk
+      const nsUInt64 uiMaxRangeRel = m_uiInternalSize - uiStartByte;          // the 'stored data' might be less than the capacity of the chunk
 
-      return {chunk.m_Bytes.GetPtr() + uiStartByteRel, static_cast<wdUInt32>(wdMath::Min<wdUInt64>(uiMaxRangeRel, uiMaxLenRel))};
+      return {chunk.m_Bytes.GetPtr() + uiStartByteRel, static_cast<nsUInt32>(nsMath::Min<nsUInt64>(uiMaxRangeRel, uiMaxLenRel))};
     }
   }
 
   return {};
 }
 
-wdArrayPtr<wdUInt8> wdDefaultMemoryStreamStorage::GetContiguousMemoryRange(wdUInt64 uiStartByte)
+nsArrayPtr<nsUInt8> nsDefaultMemoryStreamStorage::GetContiguousMemoryRange(nsUInt64 uiStartByte)
 {
-  wdArrayPtr<const wdUInt8> constData = const_cast<const wdDefaultMemoryStreamStorage*>(this)->GetContiguousMemoryRange(uiStartByte);
-  return {const_cast<wdUInt8*>(constData.GetPtr()), constData.GetCount()};
+  nsArrayPtr<const nsUInt8> constData = const_cast<const nsDefaultMemoryStreamStorage*>(this)->GetContiguousMemoryRange(uiStartByte);
+  return {const_cast<nsUInt8*>(constData.GetPtr()), constData.GetCount()};
 }
 
-void wdDefaultMemoryStreamStorage::SetInternalSize(wdUInt64 uiSize)
+void nsDefaultMemoryStreamStorage::SetInternalSize(nsUInt64 uiSize)
 {
   Reserve(uiSize);
 
   m_uiInternalSize = uiSize;
 }
 
-void wdDefaultMemoryStreamStorage::AddChunk(wdUInt32 uiMinimumSize)
+void nsDefaultMemoryStreamStorage::AddChunk(nsUInt32 uiMinimumSize)
 {
   auto& chunk = m_Chunks.ExpandAndGetRef();
 
-  wdUInt32 uiSize = 0;
+  nsUInt32 uiSize = 0;
 
   if (m_Chunks.GetCount() < 4)
   {
@@ -442,14 +442,11 @@ void wdDefaultMemoryStreamStorage::AddChunk(wdUInt32 uiMinimumSize)
     uiSize = 1024 * 1024 * 64; // 64 MB
   }
 
-  uiSize = wdMath::Max(uiSize, uiMinimumSize);
+  uiSize = nsMath::Max(uiSize, uiMinimumSize);
 
   const auto& prevChunk = m_Chunks[m_Chunks.GetCount() - 2];
 
-  chunk.m_Bytes = wdArrayPtr<wdUInt8>(WD_NEW_RAW_BUFFER(m_Chunks.GetAllocator(), wdUInt8, uiSize), uiSize);
+  chunk.m_Bytes = nsArrayPtr<nsUInt8>(NS_NEW_RAW_BUFFER(m_Chunks.GetAllocator(), nsUInt8, uiSize), uiSize);
   chunk.m_uiStartOffset = prevChunk.m_uiStartOffset + prevChunk.m_Bytes.GetCount();
   m_uiCapacity += chunk.m_Bytes.GetCount();
 }
-
-
-WD_STATICLINK_FILE(Foundation, Foundation_IO_Implementation_MemoryStream);

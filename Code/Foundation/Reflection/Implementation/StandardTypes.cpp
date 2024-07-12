@@ -2,426 +2,464 @@
 
 #include <Foundation/Math/Transform.h>
 #include <Foundation/Reflection/Reflection.h>
+#include <Foundation/Strings/HashedString.h>
 
 // clang-format off
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdEnumBase, wdNoBase, 1, wdRTTINoAllocator)
-WD_END_STATIC_REFLECTED_TYPE;
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsEnumBase, nsNoBase, 1, nsRTTINoAllocator)
+NS_END_STATIC_REFLECTED_TYPE;
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdBitflagsBase, wdNoBase, 1, wdRTTINoAllocator)
-WD_END_STATIC_REFLECTED_TYPE;
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsBitflagsBase, nsNoBase, 1, nsRTTINoAllocator)
+NS_END_STATIC_REFLECTED_TYPE;
 
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdReflectedClass, 1, wdRTTINoAllocator)
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsReflectedClass, 1, nsRTTINoAllocator)
+NS_END_DYNAMIC_REFLECTED_TYPE;
 
 // *********************************************
 // ***** Standard POD Types for Properties *****
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(bool, wdNoBase, 1, wdRTTINoAllocator)
-WD_END_STATIC_REFLECTED_TYPE;
+NS_BEGIN_STATIC_REFLECTED_TYPE(bool, nsNoBase, 1, nsRTTINoAllocator)
+NS_END_STATIC_REFLECTED_TYPE;
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(float, wdNoBase, 1, wdRTTINoAllocator)
-WD_END_STATIC_REFLECTED_TYPE;
+NS_BEGIN_STATIC_REFLECTED_TYPE(float, nsNoBase, 1, nsRTTINoAllocator)
+NS_END_STATIC_REFLECTED_TYPE;
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(double, wdNoBase, 1, wdRTTINoAllocator)
-WD_END_STATIC_REFLECTED_TYPE;
+NS_BEGIN_STATIC_REFLECTED_TYPE(double, nsNoBase, 1, nsRTTINoAllocator)
+NS_END_STATIC_REFLECTED_TYPE;
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdInt8, wdNoBase, 1, wdRTTINoAllocator)
-WD_END_STATIC_REFLECTED_TYPE;
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsInt8, nsNoBase, 1, nsRTTINoAllocator)
+NS_END_STATIC_REFLECTED_TYPE;
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdUInt8, wdNoBase, 1, wdRTTINoAllocator)
-WD_END_STATIC_REFLECTED_TYPE;
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsUInt8, nsNoBase, 1, nsRTTINoAllocator)
+NS_END_STATIC_REFLECTED_TYPE;
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdInt16, wdNoBase, 1, wdRTTINoAllocator)
-WD_END_STATIC_REFLECTED_TYPE;
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsInt16, nsNoBase, 1, nsRTTINoAllocator)
+NS_END_STATIC_REFLECTED_TYPE;
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdUInt16, wdNoBase, 1, wdRTTINoAllocator)
-WD_END_STATIC_REFLECTED_TYPE;
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsUInt16, nsNoBase, 1, nsRTTINoAllocator)
+NS_END_STATIC_REFLECTED_TYPE;
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdInt32, wdNoBase, 1, wdRTTINoAllocator)
-WD_END_STATIC_REFLECTED_TYPE;
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsInt32, nsNoBase, 1, nsRTTINoAllocator)
+NS_END_STATIC_REFLECTED_TYPE;
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdUInt32, wdNoBase, 1, wdRTTINoAllocator)
-WD_END_STATIC_REFLECTED_TYPE;
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsUInt32, nsNoBase, 1, nsRTTINoAllocator)
+NS_END_STATIC_REFLECTED_TYPE;
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdInt64, wdNoBase, 1, wdRTTINoAllocator)
-WD_END_STATIC_REFLECTED_TYPE;
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsInt64, nsNoBase, 1, nsRTTINoAllocator)
+NS_END_STATIC_REFLECTED_TYPE;
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdUInt64, wdNoBase, 1, wdRTTINoAllocator)
-WD_END_STATIC_REFLECTED_TYPE;
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsUInt64, nsNoBase, 1, nsRTTINoAllocator)
+NS_END_STATIC_REFLECTED_TYPE;
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdConstCharPtr, wdNoBase, 1, wdRTTINoAllocator)
-WD_END_STATIC_REFLECTED_TYPE;
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsConstCharPtr, nsNoBase, 1, nsRTTINoAllocator)
+NS_END_STATIC_REFLECTED_TYPE;
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdTime, wdNoBase, 1, wdRTTINoAllocator)
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsTime, nsNoBase, 1, nsRTTINoAllocator)
 {
-  WD_BEGIN_FUNCTIONS
+  NS_BEGIN_FUNCTIONS
   {
-    WD_FUNCTION_PROPERTY(Nanoseconds),
-    WD_FUNCTION_PROPERTY(Microseconds),
-    WD_FUNCTION_PROPERTY(Milliseconds),
-    WD_FUNCTION_PROPERTY(Seconds),
-    WD_FUNCTION_PROPERTY(Zero),
+    NS_SCRIPT_FUNCTION_PROPERTY(MakeFromNanoseconds, In, "Nanoseconds")->AddFlags(nsPropertyFlags::Const),
+    NS_SCRIPT_FUNCTION_PROPERTY(MakeFromMicroseconds, In, "Microseconds")->AddFlags(nsPropertyFlags::Const),
+    NS_SCRIPT_FUNCTION_PROPERTY(MakeFromMilliseconds, In, "Milliseconds")->AddFlags(nsPropertyFlags::Const),
+    NS_SCRIPT_FUNCTION_PROPERTY(MakeFromSeconds, In, "Seconds")->AddFlags(nsPropertyFlags::Const),
+    NS_SCRIPT_FUNCTION_PROPERTY(MakeFromMinutes, In, "Minutes")->AddFlags(nsPropertyFlags::Const),
+    NS_SCRIPT_FUNCTION_PROPERTY(MakeFromHours, In, "Hours")->AddFlags(nsPropertyFlags::Const),
+    NS_SCRIPT_FUNCTION_PROPERTY(MakeZero)->AddFlags(nsPropertyFlags::Const),
+    NS_SCRIPT_FUNCTION_PROPERTY(AsFloatInSeconds),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_STATIC_REFLECTED_TYPE;
+NS_END_STATIC_REFLECTED_TYPE;
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdColor, wdNoBase, 1, wdRTTINoAllocator)
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsColor, nsNoBase, 1, nsRTTINoAllocator)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("r", r),
-    WD_MEMBER_PROPERTY("g", g),
-    WD_MEMBER_PROPERTY("b", b),
-    WD_MEMBER_PROPERTY("a", a),
+    NS_MEMBER_PROPERTY("r", r),
+    NS_MEMBER_PROPERTY("g", g),
+    NS_MEMBER_PROPERTY("b", b),
+    NS_MEMBER_PROPERTY("a", a),
   }
-  WD_END_PROPERTIES;
-  WD_BEGIN_FUNCTIONS
+  NS_END_PROPERTIES;
+  NS_BEGIN_FUNCTIONS
   {
-    WD_CONSTRUCTOR_PROPERTY(float, float, float),
-    WD_CONSTRUCTOR_PROPERTY(float, float, float, float),
-    WD_CONSTRUCTOR_PROPERTY(wdColorLinearUB),
-    WD_CONSTRUCTOR_PROPERTY(wdColorGammaUB),
+    NS_CONSTRUCTOR_PROPERTY(float, float, float),
+    NS_CONSTRUCTOR_PROPERTY(float, float, float, float),
+    NS_CONSTRUCTOR_PROPERTY(nsColorLinearUB),
+    NS_CONSTRUCTOR_PROPERTY(nsColorGammaUB),
+    NS_SCRIPT_FUNCTION_PROPERTY(MakeRGBA, In, "R", In, "G", In, "B", In, "A")->AddFlags(nsPropertyFlags::Const),
+    NS_SCRIPT_FUNCTION_PROPERTY(MakeHSV, In, "Hue", In, "Saturation", In, "Value")->AddFlags(nsPropertyFlags::Const),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_STATIC_REFLECTED_TYPE;
+NS_END_STATIC_REFLECTED_TYPE;
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdColorBaseUB, wdNoBase, 1, wdRTTINoAllocator)
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsColorBaseUB, nsNoBase, 1, nsRTTINoAllocator)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("r", r),
-    WD_MEMBER_PROPERTY("g", g),
-    WD_MEMBER_PROPERTY("b", b),
-    WD_MEMBER_PROPERTY("a", a),
+    NS_MEMBER_PROPERTY("r", r),
+    NS_MEMBER_PROPERTY("g", g),
+    NS_MEMBER_PROPERTY("b", b),
+    NS_MEMBER_PROPERTY("a", a),
   }
-  WD_END_PROPERTIES;
-  WD_BEGIN_FUNCTIONS
+  NS_END_PROPERTIES;
+  NS_BEGIN_FUNCTIONS
   {
-    WD_CONSTRUCTOR_PROPERTY(wdUInt8, wdUInt8, wdUInt8),
-    WD_CONSTRUCTOR_PROPERTY(wdUInt8, wdUInt8, wdUInt8, wdUInt8),
+    NS_CONSTRUCTOR_PROPERTY(nsUInt8, nsUInt8, nsUInt8),
+    NS_CONSTRUCTOR_PROPERTY(nsUInt8, nsUInt8, nsUInt8, nsUInt8),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_STATIC_REFLECTED_TYPE;
+NS_END_STATIC_REFLECTED_TYPE;
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdColorGammaUB, wdColorBaseUB, 1, wdRTTINoAllocator)
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsColorGammaUB, nsColorBaseUB, 1, nsRTTINoAllocator)
 {
-  WD_BEGIN_FUNCTIONS
+  NS_BEGIN_FUNCTIONS
   {
-    WD_CONSTRUCTOR_PROPERTY(wdUInt8, wdUInt8, wdUInt8),
-    WD_CONSTRUCTOR_PROPERTY(wdUInt8, wdUInt8, wdUInt8, wdUInt8),
-    WD_CONSTRUCTOR_PROPERTY(const wdColor&),
+    NS_CONSTRUCTOR_PROPERTY(nsUInt8, nsUInt8, nsUInt8),
+    NS_CONSTRUCTOR_PROPERTY(nsUInt8, nsUInt8, nsUInt8, nsUInt8),
+    NS_CONSTRUCTOR_PROPERTY(const nsColor&),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_STATIC_REFLECTED_TYPE;
+NS_END_STATIC_REFLECTED_TYPE;
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdColorLinearUB, wdColorBaseUB, 1, wdRTTINoAllocator)
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsColorLinearUB, nsColorBaseUB, 1, nsRTTINoAllocator)
 {
-  WD_BEGIN_FUNCTIONS
+  NS_BEGIN_FUNCTIONS
   {
-    WD_CONSTRUCTOR_PROPERTY(wdUInt8, wdUInt8, wdUInt8),
-    WD_CONSTRUCTOR_PROPERTY(wdUInt8, wdUInt8, wdUInt8, wdUInt8),
-    WD_CONSTRUCTOR_PROPERTY(const wdColor&),
+    NS_CONSTRUCTOR_PROPERTY(nsUInt8, nsUInt8, nsUInt8),
+    NS_CONSTRUCTOR_PROPERTY(nsUInt8, nsUInt8, nsUInt8, nsUInt8),
+    NS_CONSTRUCTOR_PROPERTY(const nsColor&),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_STATIC_REFLECTED_TYPE;
+NS_END_STATIC_REFLECTED_TYPE;
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdVec2, wdNoBase, 1, wdRTTINoAllocator)
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsVec2, nsNoBase, 1, nsRTTINoAllocator)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("x", x),
-    WD_MEMBER_PROPERTY("y", y),
+    NS_MEMBER_PROPERTY("x", x),
+    NS_MEMBER_PROPERTY("y", y),
   }
-  WD_END_PROPERTIES;
-  WD_BEGIN_FUNCTIONS
+  NS_END_PROPERTIES;
+  NS_BEGIN_FUNCTIONS
   {
-    WD_CONSTRUCTOR_PROPERTY(float),
-    WD_CONSTRUCTOR_PROPERTY(float, float),
+    NS_CONSTRUCTOR_PROPERTY(float),
+    NS_CONSTRUCTOR_PROPERTY(float, float),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_STATIC_REFLECTED_TYPE;
+NS_END_STATIC_REFLECTED_TYPE;
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdVec3, wdNoBase, 1, wdRTTINoAllocator)
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsVec3, nsNoBase, 1, nsRTTINoAllocator)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("x", x),
-    WD_MEMBER_PROPERTY("y", y),
-    WD_MEMBER_PROPERTY("z", z),
+    NS_MEMBER_PROPERTY("x", x),
+    NS_MEMBER_PROPERTY("y", y),
+    NS_MEMBER_PROPERTY("z", z),
   }
-  WD_END_PROPERTIES;
-  WD_BEGIN_FUNCTIONS
+  NS_END_PROPERTIES;
+  NS_BEGIN_FUNCTIONS
   {
-    WD_CONSTRUCTOR_PROPERTY(float),
-    WD_CONSTRUCTOR_PROPERTY(float, float, float),
+    NS_CONSTRUCTOR_PROPERTY(float),
+    NS_CONSTRUCTOR_PROPERTY(float, float, float),
+    NS_SCRIPT_FUNCTION_PROPERTY(Make, In, "X", In, "Y", In, "Z")->AddFlags(nsPropertyFlags::Const),
+    NS_SCRIPT_FUNCTION_PROPERTY(GetLength<float>),
+    NS_SCRIPT_FUNCTION_PROPERTY(GetLengthSquared),
+    NS_SCRIPT_FUNCTION_PROPERTY(GetNormalized<float>),
+    NS_SCRIPT_FUNCTION_PROPERTY(Dot, In, "v"),
+    NS_SCRIPT_FUNCTION_PROPERTY(CrossRH, In, "v"),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_STATIC_REFLECTED_TYPE;
+NS_END_STATIC_REFLECTED_TYPE;
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdVec4, wdNoBase, 1, wdRTTINoAllocator)
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsVec4, nsNoBase, 1, nsRTTINoAllocator)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("x", x),
-    WD_MEMBER_PROPERTY("y", y),
-    WD_MEMBER_PROPERTY("z", z),
-    WD_MEMBER_PROPERTY("w", w),
+    NS_MEMBER_PROPERTY("x", x),
+    NS_MEMBER_PROPERTY("y", y),
+    NS_MEMBER_PROPERTY("z", z),
+    NS_MEMBER_PROPERTY("w", w),
   }
-  WD_END_PROPERTIES;
-  WD_BEGIN_FUNCTIONS
+  NS_END_PROPERTIES;
+  NS_BEGIN_FUNCTIONS
   {
-    WD_CONSTRUCTOR_PROPERTY(float),
-    WD_CONSTRUCTOR_PROPERTY(float, float, float, float),
+    NS_CONSTRUCTOR_PROPERTY(float),
+    NS_CONSTRUCTOR_PROPERTY(float, float, float, float),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_STATIC_REFLECTED_TYPE;
+NS_END_STATIC_REFLECTED_TYPE;
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdVec2I32, wdNoBase, 1, wdRTTINoAllocator)
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsVec2I32, nsNoBase, 1, nsRTTINoAllocator)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("x", x),
-    WD_MEMBER_PROPERTY("y", y),
+    NS_MEMBER_PROPERTY("x", x),
+    NS_MEMBER_PROPERTY("y", y),
   }
-  WD_END_PROPERTIES;
-  WD_BEGIN_FUNCTIONS
+  NS_END_PROPERTIES;
+  NS_BEGIN_FUNCTIONS
   {
-    WD_CONSTRUCTOR_PROPERTY(wdInt32),
-    WD_CONSTRUCTOR_PROPERTY(wdInt32, wdInt32),
+    NS_CONSTRUCTOR_PROPERTY(nsInt32),
+    NS_CONSTRUCTOR_PROPERTY(nsInt32, nsInt32),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_STATIC_REFLECTED_TYPE;
+NS_END_STATIC_REFLECTED_TYPE;
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdVec3I32, wdNoBase, 1, wdRTTINoAllocator)
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsVec3I32, nsNoBase, 1, nsRTTINoAllocator)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("x", x),
-    WD_MEMBER_PROPERTY("y", y),
-    WD_MEMBER_PROPERTY("z", z),
+    NS_MEMBER_PROPERTY("x", x),
+    NS_MEMBER_PROPERTY("y", y),
+    NS_MEMBER_PROPERTY("z", z),
   }
-  WD_END_PROPERTIES;
-  WD_BEGIN_FUNCTIONS
+  NS_END_PROPERTIES;
+  NS_BEGIN_FUNCTIONS
   {
-    WD_CONSTRUCTOR_PROPERTY(wdInt32),
-    WD_CONSTRUCTOR_PROPERTY(wdInt32, wdInt32, wdInt32),
+    NS_CONSTRUCTOR_PROPERTY(nsInt32),
+    NS_CONSTRUCTOR_PROPERTY(nsInt32, nsInt32, nsInt32),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_STATIC_REFLECTED_TYPE;
+NS_END_STATIC_REFLECTED_TYPE;
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdVec4I32, wdNoBase, 1, wdRTTINoAllocator)
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsVec4I32, nsNoBase, 1, nsRTTINoAllocator)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("x", x),
-    WD_MEMBER_PROPERTY("y", y),
-    WD_MEMBER_PROPERTY("z", z),
-    WD_MEMBER_PROPERTY("w", w),
+    NS_MEMBER_PROPERTY("x", x),
+    NS_MEMBER_PROPERTY("y", y),
+    NS_MEMBER_PROPERTY("z", z),
+    NS_MEMBER_PROPERTY("w", w),
   }
-  WD_END_PROPERTIES;
-  WD_BEGIN_FUNCTIONS
+  NS_END_PROPERTIES;
+  NS_BEGIN_FUNCTIONS
   {
-    WD_CONSTRUCTOR_PROPERTY(wdInt32),
-    WD_CONSTRUCTOR_PROPERTY(wdInt32, wdInt32, wdInt32, wdInt32),
+    NS_CONSTRUCTOR_PROPERTY(nsInt32),
+    NS_CONSTRUCTOR_PROPERTY(nsInt32, nsInt32, nsInt32, nsInt32),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_STATIC_REFLECTED_TYPE;
+NS_END_STATIC_REFLECTED_TYPE;
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdVec2U32, wdNoBase, 1, wdRTTINoAllocator)
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsVec2U32, nsNoBase, 1, nsRTTINoAllocator)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("x", x),
-    WD_MEMBER_PROPERTY("y", y),
+    NS_MEMBER_PROPERTY("x", x),
+    NS_MEMBER_PROPERTY("y", y),
   }
-  WD_END_PROPERTIES;
-  WD_BEGIN_FUNCTIONS
+  NS_END_PROPERTIES;
+  NS_BEGIN_FUNCTIONS
   {
-    WD_CONSTRUCTOR_PROPERTY(wdUInt32),
-    WD_CONSTRUCTOR_PROPERTY(wdUInt32, wdUInt32),
+    NS_CONSTRUCTOR_PROPERTY(nsUInt32),
+    NS_CONSTRUCTOR_PROPERTY(nsUInt32, nsUInt32),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_STATIC_REFLECTED_TYPE;
+NS_END_STATIC_REFLECTED_TYPE;
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdVec3U32, wdNoBase, 1, wdRTTINoAllocator)
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsVec3U32, nsNoBase, 1, nsRTTINoAllocator)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("x", x),
-    WD_MEMBER_PROPERTY("y", y),
-    WD_MEMBER_PROPERTY("z", z),
+    NS_MEMBER_PROPERTY("x", x),
+    NS_MEMBER_PROPERTY("y", y),
+    NS_MEMBER_PROPERTY("z", z),
   }
-  WD_END_PROPERTIES;
-  WD_BEGIN_FUNCTIONS
+  NS_END_PROPERTIES;
+  NS_BEGIN_FUNCTIONS
   {
-    WD_CONSTRUCTOR_PROPERTY(wdUInt32),
-    WD_CONSTRUCTOR_PROPERTY(wdUInt32, wdUInt32, wdUInt32),
+    NS_CONSTRUCTOR_PROPERTY(nsUInt32),
+    NS_CONSTRUCTOR_PROPERTY(nsUInt32, nsUInt32, nsUInt32),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_STATIC_REFLECTED_TYPE;
+NS_END_STATIC_REFLECTED_TYPE;
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdVec4U32, wdNoBase, 1, wdRTTINoAllocator)
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsVec4U32, nsNoBase, 1, nsRTTINoAllocator)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("x", x),
-    WD_MEMBER_PROPERTY("y", y),
-    WD_MEMBER_PROPERTY("z", z),
-    WD_MEMBER_PROPERTY("w", w),
+    NS_MEMBER_PROPERTY("x", x),
+    NS_MEMBER_PROPERTY("y", y),
+    NS_MEMBER_PROPERTY("z", z),
+    NS_MEMBER_PROPERTY("w", w),
   }
-  WD_END_PROPERTIES;
-  WD_BEGIN_FUNCTIONS
+  NS_END_PROPERTIES;
+  NS_BEGIN_FUNCTIONS
   {
-    WD_CONSTRUCTOR_PROPERTY(wdUInt32),
-    WD_CONSTRUCTOR_PROPERTY(wdUInt32, wdUInt32, wdUInt32, wdUInt32),
+    NS_CONSTRUCTOR_PROPERTY(nsUInt32),
+    NS_CONSTRUCTOR_PROPERTY(nsUInt32, nsUInt32, nsUInt32, nsUInt32),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_STATIC_REFLECTED_TYPE;
+NS_END_STATIC_REFLECTED_TYPE;
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdQuat, wdNoBase, 1, wdRTTINoAllocator)
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsQuat, nsNoBase, 1, nsRTTINoAllocator)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("v", v),
-    WD_MEMBER_PROPERTY("w", w),
+    NS_MEMBER_PROPERTY("x", x),
+    NS_MEMBER_PROPERTY("y", y),
+    NS_MEMBER_PROPERTY("z", z),
+    NS_MEMBER_PROPERTY("w", w),
   }
-  WD_END_PROPERTIES;
-  WD_BEGIN_FUNCTIONS
+  NS_END_PROPERTIES;
+  NS_BEGIN_FUNCTIONS
   {
-    WD_CONSTRUCTOR_PROPERTY(float, float, float, float),
+    NS_CONSTRUCTOR_PROPERTY(float, float, float, float),
+    NS_SCRIPT_FUNCTION_PROPERTY(MakeFromAxisAndAngle, In, "Axis", In, "Angle")->AddFlags(nsPropertyFlags::Const),
+    NS_SCRIPT_FUNCTION_PROPERTY(MakeShortestRotation, In, "DirFrom", In, "DirTo")->AddFlags(nsPropertyFlags::Const),
+    NS_SCRIPT_FUNCTION_PROPERTY(MakeSlerp, In, "From", In, "To", In, "Lerp")->AddFlags(nsPropertyFlags::Const),
+    NS_SCRIPT_FUNCTION_PROPERTY(GetInverse),
+    NS_SCRIPT_FUNCTION_PROPERTY(Rotate, In, "v"),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_STATIC_REFLECTED_TYPE;
+NS_END_STATIC_REFLECTED_TYPE;
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdMat3, wdNoBase, 1, wdRTTINoAllocator)
-WD_END_STATIC_REFLECTED_TYPE;
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsMat3, nsNoBase, 1, nsRTTINoAllocator)
+NS_END_STATIC_REFLECTED_TYPE;
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdMat4, wdNoBase, 1, wdRTTINoAllocator)
-WD_END_STATIC_REFLECTED_TYPE;
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsMat4, nsNoBase, 1, nsRTTINoAllocator)
+NS_END_STATIC_REFLECTED_TYPE;
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdTransform, wdNoBase, 1, wdRTTINoAllocator)
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsTransform, nsNoBase, 1, nsRTTINoAllocator)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("Position", m_vPosition),
-    WD_MEMBER_PROPERTY("Rotation", m_qRotation),
-    WD_MEMBER_PROPERTY("Scale", m_vScale),
+    NS_MEMBER_PROPERTY("Position", m_vPosition),
+    NS_MEMBER_PROPERTY("Rotation", m_qRotation),
+    NS_MEMBER_PROPERTY("Scale", m_vScale),
   }
-  WD_END_PROPERTIES;
-  WD_BEGIN_FUNCTIONS
+  NS_END_PROPERTIES;
+  NS_BEGIN_FUNCTIONS
   {
-    WD_CONSTRUCTOR_PROPERTY(wdVec3, wdQuat),
-    WD_CONSTRUCTOR_PROPERTY(wdVec3, wdQuat, wdVec3),
+    NS_CONSTRUCTOR_PROPERTY(nsVec3, nsQuat),
+    NS_CONSTRUCTOR_PROPERTY(nsVec3, nsQuat, nsVec3),
+    NS_SCRIPT_FUNCTION_PROPERTY(Make, In, "Position", In, "Rotation", In, "Scale")->AddFlags(nsPropertyFlags::Const),
+    NS_SCRIPT_FUNCTION_PROPERTY(MakeLocalTransform, In, "Parent", In, "GlobalChild")->AddFlags(nsPropertyFlags::Const),
+    NS_SCRIPT_FUNCTION_PROPERTY(MakeGlobalTransform, In, "Parent", In, "LocalChild")->AddFlags(nsPropertyFlags::Const),
+    NS_SCRIPT_FUNCTION_PROPERTY(TransformPosition, In, "Position"),
+    NS_SCRIPT_FUNCTION_PROPERTY(TransformDirection, In, "Direction"),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_STATIC_REFLECTED_TYPE;
+NS_END_STATIC_REFLECTED_TYPE;
 
-WD_BEGIN_STATIC_REFLECTED_ENUM(wdBasisAxis, 1)
-WD_ENUM_CONSTANT(wdBasisAxis::PositiveX),
-WD_ENUM_CONSTANT(wdBasisAxis::PositiveY),
-WD_ENUM_CONSTANT(wdBasisAxis::PositiveZ),
-WD_ENUM_CONSTANT(wdBasisAxis::NegativeX),
-WD_ENUM_CONSTANT(wdBasisAxis::NegativeY),
-WD_ENUM_CONSTANT(wdBasisAxis::NegativeZ),
-WD_END_STATIC_REFLECTED_ENUM;
+NS_BEGIN_STATIC_REFLECTED_ENUM(nsBasisAxis, 1)
+NS_ENUM_CONSTANT(nsBasisAxis::PositiveX),
+NS_ENUM_CONSTANT(nsBasisAxis::PositiveY),
+NS_ENUM_CONSTANT(nsBasisAxis::PositiveZ),
+NS_ENUM_CONSTANT(nsBasisAxis::NegativeX),
+NS_ENUM_CONSTANT(nsBasisAxis::NegativeY),
+NS_ENUM_CONSTANT(nsBasisAxis::NegativeZ),
+NS_END_STATIC_REFLECTED_ENUM;
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdUuid, wdNoBase, 1, wdRTTINoAllocator)
-WD_END_STATIC_REFLECTED_TYPE;
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsUuid, nsNoBase, 1, nsRTTINoAllocator)
+NS_END_STATIC_REFLECTED_TYPE;
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdVariant, wdNoBase, 3, wdRTTINoAllocator)
-WD_END_STATIC_REFLECTED_TYPE;
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsVariant, nsNoBase, 3, nsRTTINoAllocator)
+NS_END_STATIC_REFLECTED_TYPE;
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdString, wdNoBase, 1, wdRTTINoAllocator)
-WD_END_STATIC_REFLECTED_TYPE;
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsVariantArray, nsNoBase, 1, nsRTTINoAllocator)
+NS_END_STATIC_REFLECTED_TYPE;
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdUntrackedString, wdNoBase, 1, wdRTTINoAllocator)
-WD_END_STATIC_REFLECTED_TYPE;
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsVariantDictionary, nsNoBase, 1, nsRTTINoAllocator)
+NS_END_STATIC_REFLECTED_TYPE;
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdStringView, wdNoBase, 1, wdRTTINoAllocator)
-WD_END_STATIC_REFLECTED_TYPE;
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsString, nsNoBase, 1, nsRTTINoAllocator)
+NS_END_STATIC_REFLECTED_TYPE;
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdDataBuffer, wdNoBase, 1, wdRTTINoAllocator)
-WD_END_STATIC_REFLECTED_TYPE;
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsUntrackedString, nsNoBase, 1, nsRTTINoAllocator)
+NS_END_STATIC_REFLECTED_TYPE;
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdAngle, wdNoBase, 1, wdRTTINoAllocator)
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsStringView, nsNoBase, 1, nsRTTINoAllocator)
+NS_END_STATIC_REFLECTED_TYPE;
+
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsDataBuffer, nsNoBase, 1, nsRTTINoAllocator)
+NS_END_STATIC_REFLECTED_TYPE;
+
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsHashedString, nsNoBase, 1, nsRTTINoAllocator)
+NS_END_STATIC_REFLECTED_TYPE;
+
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsTempHashedString, nsNoBase, 1, nsRTTINoAllocator)
+NS_END_STATIC_REFLECTED_TYPE;
+
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsAngle, nsNoBase, 1, nsRTTINoAllocator)
 {
-  WD_BEGIN_FUNCTIONS
+  NS_BEGIN_FUNCTIONS
   {
-    WD_FUNCTION_PROPERTY(Degree),
-    WD_FUNCTION_PROPERTY(Radian),
+    NS_SCRIPT_FUNCTION_PROPERTY(MakeFromDegree, In, "Degree")->AddFlags(nsPropertyFlags::Const),
+    NS_SCRIPT_FUNCTION_PROPERTY(MakeFromRadian, In, "Radian")->AddFlags(nsPropertyFlags::Const),
+    NS_SCRIPT_FUNCTION_PROPERTY(GetNormalizedRange),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_STATIC_REFLECTED_TYPE;
+NS_END_STATIC_REFLECTED_TYPE;
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdFloatInterval, wdNoBase, 1, wdRTTINoAllocator)
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsFloatInterval, nsNoBase, 1, nsRTTINoAllocator)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("Start", m_StartValue),
-    WD_MEMBER_PROPERTY("End", m_EndValue),
+    NS_MEMBER_PROPERTY("Start", m_StartValue),
+    NS_MEMBER_PROPERTY("End", m_EndValue),
   }
-  WD_END_PROPERTIES;
+  NS_END_PROPERTIES;
 }
-WD_END_STATIC_REFLECTED_TYPE;
+NS_END_STATIC_REFLECTED_TYPE;
 
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdIntInterval, wdNoBase, 1, wdRTTINoAllocator)
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsIntInterval, nsNoBase, 1, nsRTTINoAllocator)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("Start", m_StartValue),
-    WD_MEMBER_PROPERTY("End", m_EndValue),
+    NS_MEMBER_PROPERTY("Start", m_StartValue),
+    NS_MEMBER_PROPERTY("End", m_EndValue),
   }
-  WD_END_PROPERTIES;
+  NS_END_PROPERTIES;
 }
-WD_END_STATIC_REFLECTED_TYPE;
+NS_END_STATIC_REFLECTED_TYPE;
 
 // **********************************************************************
 // ***** Various RTTI infos that can't be put next to their classes *****
 
-WD_BEGIN_STATIC_REFLECTED_BITFLAGS(wdTypeFlags, 1)
-WD_BITFLAGS_CONSTANTS(wdTypeFlags::StandardType, wdTypeFlags::IsEnum, wdTypeFlags::Bitflags, wdTypeFlags::Class, wdTypeFlags::Abstract, wdTypeFlags::Phantom, wdTypeFlags::Minimal)
-WD_END_STATIC_REFLECTED_BITFLAGS;
+NS_BEGIN_STATIC_REFLECTED_BITFLAGS(nsTypeFlags, 1)
+NS_BITFLAGS_CONSTANTS(nsTypeFlags::StandardType, nsTypeFlags::IsEnum, nsTypeFlags::Bitflags, nsTypeFlags::Class, nsTypeFlags::Abstract, nsTypeFlags::Phantom, nsTypeFlags::Minimal)
+NS_END_STATIC_REFLECTED_BITFLAGS;
 
-WD_BEGIN_STATIC_REFLECTED_BITFLAGS(wdPropertyFlags, 1)
-WD_BITFLAGS_CONSTANTS(wdPropertyFlags::StandardType, wdPropertyFlags::IsEnum, wdPropertyFlags::Bitflags, wdPropertyFlags::Class)
-WD_BITFLAGS_CONSTANTS(wdPropertyFlags::Const, wdPropertyFlags::Reference, wdPropertyFlags::Pointer)
-WD_BITFLAGS_CONSTANTS(wdPropertyFlags::PointerOwner, wdPropertyFlags::ReadOnly, wdPropertyFlags::Hidden, wdPropertyFlags::Phantom)
-WD_END_STATIC_REFLECTED_BITFLAGS;
+NS_BEGIN_STATIC_REFLECTED_BITFLAGS(nsPropertyFlags, 1)
+NS_BITFLAGS_CONSTANTS(nsPropertyFlags::StandardType, nsPropertyFlags::IsEnum, nsPropertyFlags::Bitflags, nsPropertyFlags::Class)
+NS_BITFLAGS_CONSTANTS(nsPropertyFlags::Const, nsPropertyFlags::Reference, nsPropertyFlags::Pointer)
+NS_BITFLAGS_CONSTANTS(nsPropertyFlags::PointerOwner, nsPropertyFlags::ReadOnly, nsPropertyFlags::Hidden, nsPropertyFlags::Phantom)
+NS_END_STATIC_REFLECTED_BITFLAGS;
 
-WD_BEGIN_STATIC_REFLECTED_ENUM(wdFunctionType, 1)
-WD_BITFLAGS_CONSTANTS(wdFunctionType::Member, wdFunctionType::StaticMember, wdFunctionType::Constructor)
-WD_END_STATIC_REFLECTED_ENUM;
+NS_BEGIN_STATIC_REFLECTED_ENUM(nsFunctionType, 1)
+NS_ENUM_CONSTANTS(nsFunctionType::Member, nsFunctionType::StaticMember, nsFunctionType::Constructor)
+NS_END_STATIC_REFLECTED_ENUM;
 
-WD_BEGIN_STATIC_REFLECTED_ENUM(wdVariantType, 1)
-WD_BITFLAGS_CONSTANTS(wdVariantType::Invalid, wdVariantType::Bool, wdVariantType::Int8, wdVariantType::UInt8, wdVariantType::Int16, wdVariantType::UInt16)
-WD_BITFLAGS_CONSTANTS(wdVariantType::Int32, wdVariantType::UInt32, wdVariantType::Int64, wdVariantType::UInt64, wdVariantType::Float, wdVariantType::Double)
-WD_BITFLAGS_CONSTANTS(wdVariantType::Color, wdVariantType::Vector2, wdVariantType::Vector3, wdVariantType::Vector4)
-WD_BITFLAGS_CONSTANTS(wdVariantType::Vector2I, wdVariantType::Vector3I, wdVariantType::Vector4I, wdVariantType::Vector2U, wdVariantType::Vector3U, wdVariantType::Vector4U)
-WD_BITFLAGS_CONSTANTS(wdVariantType::Quaternion, wdVariantType::Matrix3, wdVariantType::Matrix4, wdVariantType::Transform)
-WD_BITFLAGS_CONSTANTS(wdVariantType::String, wdVariantType::StringView, wdVariantType::DataBuffer, wdVariantType::Time, wdVariantType::Uuid, wdVariantType::Angle, wdVariantType::ColorGamma)
-WD_BITFLAGS_CONSTANTS(wdVariantType::VariantArray, wdVariantType::VariantDictionary, wdVariantType::TypedPointer, wdVariantType::TypedObject)
-WD_END_STATIC_REFLECTED_ENUM;
+NS_BEGIN_STATIC_REFLECTED_ENUM(nsVariantType, 1)
+NS_ENUM_CONSTANTS(nsVariantType::Invalid, nsVariantType::Bool, nsVariantType::Int8, nsVariantType::UInt8, nsVariantType::Int16, nsVariantType::UInt16)
+NS_ENUM_CONSTANTS(nsVariantType::Int32, nsVariantType::UInt32, nsVariantType::Int64, nsVariantType::UInt64, nsVariantType::Float, nsVariantType::Double)
+NS_ENUM_CONSTANTS(nsVariantType::Color, nsVariantType::Vector2, nsVariantType::Vector3, nsVariantType::Vector4)
+NS_ENUM_CONSTANTS(nsVariantType::Vector2I, nsVariantType::Vector3I, nsVariantType::Vector4I, nsVariantType::Vector2U, nsVariantType::Vector3U, nsVariantType::Vector4U)
+NS_ENUM_CONSTANTS(nsVariantType::Quaternion, nsVariantType::Matrix3, nsVariantType::Matrix4, nsVariantType::Transform)
+NS_ENUM_CONSTANTS(nsVariantType::String, nsVariantType::StringView, nsVariantType::DataBuffer, nsVariantType::Time, nsVariantType::Uuid, nsVariantType::Angle, nsVariantType::ColorGamma)
+NS_ENUM_CONSTANTS(nsVariantType::HashedString, nsVariantType::TempHashedString)
+NS_ENUM_CONSTANTS(nsVariantType::VariantArray, nsVariantType::VariantDictionary, nsVariantType::TypedPointer, nsVariantType::TypedObject)
+NS_END_STATIC_REFLECTED_ENUM;
 
-WD_BEGIN_STATIC_REFLECTED_ENUM(wdPropertyCategory, 1)
-WD_BITFLAGS_CONSTANTS(wdPropertyCategory::Constant, wdPropertyCategory::Member, wdPropertyCategory::Function, wdPropertyCategory::Array, wdPropertyCategory::Set, wdPropertyCategory::Map)
-WD_END_STATIC_REFLECTED_ENUM;
+NS_BEGIN_STATIC_REFLECTED_ENUM(nsPropertyCategory, 1)
+NS_ENUM_CONSTANTS(nsPropertyCategory::Constant, nsPropertyCategory::Member, nsPropertyCategory::Function, nsPropertyCategory::Array, nsPropertyCategory::Set, nsPropertyCategory::Map)
+NS_END_STATIC_REFLECTED_ENUM;
 // clang-format on
 
-WD_STATICLINK_FILE(Foundation, Foundation_Reflection_Implementation_StandardTypes);
+NS_STATICLINK_FILE(Foundation, Foundation_Reflection_Implementation_StandardTypes);

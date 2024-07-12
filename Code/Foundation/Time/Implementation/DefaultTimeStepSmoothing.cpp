@@ -2,19 +2,19 @@
 
 #include <Foundation/Time/DefaultTimeStepSmoothing.h>
 
-wdDefaultTimeStepSmoothing::wdDefaultTimeStepSmoothing()
+nsDefaultTimeStepSmoothing::nsDefaultTimeStepSmoothing()
 {
   m_fLerpFactor = 0.2f;
 }
 
-void wdDefaultTimeStepSmoothing::Reset(const wdClock* pClock)
+void nsDefaultTimeStepSmoothing::Reset(const nsClock* pClock)
 {
   m_LastTimeSteps.Clear();
 }
 
-wdTime wdDefaultTimeStepSmoothing::GetSmoothedTimeStep(wdTime rawTimeStep, const wdClock* pClock)
+nsTime nsDefaultTimeStepSmoothing::GetSmoothedTimeStep(nsTime rawTimeStep, const nsClock* pClock)
 {
-  rawTimeStep = wdMath::Clamp(rawTimeStep * pClock->GetSpeed(), pClock->GetMinimumTimeStep(), pClock->GetMaximumTimeStep());
+  rawTimeStep = nsMath::Clamp(rawTimeStep * pClock->GetSpeed(), pClock->GetMinimumTimeStep(), pClock->GetMaximumTimeStep());
 
   if (m_LastTimeSteps.GetCount() < 10)
   {
@@ -28,20 +28,20 @@ wdTime wdDefaultTimeStepSmoothing::GetSmoothedTimeStep(wdTime rawTimeStep, const
 
   m_LastTimeSteps.PushBack(rawTimeStep);
 
-  wdStaticArray<wdTime, 11> Sorted;
+  nsStaticArray<nsTime, 11> Sorted;
   Sorted.SetCountUninitialized(m_LastTimeSteps.GetCount());
 
-  for (wdUInt32 i = 0; i < m_LastTimeSteps.GetCount(); ++i)
+  for (nsUInt32 i = 0; i < m_LastTimeSteps.GetCount(); ++i)
     Sorted[i] = m_LastTimeSteps[i];
 
   Sorted.Sort();
 
-  wdUInt32 uiFirstSample = 2;
-  wdUInt32 uiLastSample = 8;
+  nsUInt32 uiFirstSample = 2;
+  nsUInt32 uiLastSample = 8;
 
-  wdTime tAvg;
+  nsTime tAvg;
 
-  for (wdUInt32 i = uiFirstSample; i <= uiLastSample; ++i)
+  for (nsUInt32 i = uiFirstSample; i <= uiLastSample; ++i)
   {
     tAvg = tAvg + Sorted[i];
   }
@@ -49,11 +49,7 @@ wdTime wdDefaultTimeStepSmoothing::GetSmoothedTimeStep(wdTime rawTimeStep, const
   tAvg = tAvg / (double)((uiLastSample - uiFirstSample) + 1.0);
 
 
-  m_LastTimeStepTaken = wdMath::Lerp(m_LastTimeStepTaken, tAvg, m_fLerpFactor);
+  m_LastTimeStepTaken = nsMath::Lerp(m_LastTimeStepTaken, tAvg, m_fLerpFactor);
 
   return m_LastTimeStepTaken;
 }
-
-
-
-WD_STATICLINK_FILE(Foundation, Foundation_Time_Implementation_DefaultTimeStepSmoothing);

@@ -3,7 +3,7 @@
 #include <Foundation/Reflection/Reflection.h>
 #include <Foundation/Time/Time.h>
 
-struct wdSIUnitOfTime
+struct nsSIUnitOfTime
 {
   enum Enum
   {
@@ -16,10 +16,10 @@ struct wdSIUnitOfTime
 
 /// \brief The timestamp class encapsulates a date in time as microseconds since Unix epoch.
 ///
-/// The value is represented by an wdInt64 and allows storing time stamps from roughly
+/// The value is represented by an nsInt64 and allows storing time stamps from roughly
 /// -291030 BC to 293970 AC.
 /// Use this class to efficiently store a timestamp that is valid across platforms.
-class WD_FOUNDATION_DLL wdTimestamp
+class NS_FOUNDATION_DLL nsTimestamp
 {
 public:
   struct CompareMode
@@ -34,199 +34,208 @@ public:
   /// \brief  Returns the current timestamp. Returned value will always be valid.
   ///
   /// Depending on the platform the precision varies between seconds and nanoseconds.
-  static const wdTimestamp CurrentTimestamp(); // [tested]
+  static const nsTimestamp CurrentTimestamp(); // [tested]
 
-  WD_DECLARE_POD_TYPE();
+  NS_DECLARE_POD_TYPE();
 
   // *** Constructors ***
 public:
   /// \brief Creates an invalidated timestamp.
-  wdTimestamp(); // [tested]
+  nsTimestamp(); // [tested]
 
-  /// \brief Creates an new timestamp with the given time in the given unit of time since Unix epoch.
-  wdTimestamp(wdInt64 iTimeValue, wdSIUnitOfTime::Enum unitOfTime); // [tested]
+  /// \brief Returns an invalid timestamp
+  [[nodiscard]] static nsTimestamp MakeInvalid() { return nsTimestamp(); }
+
+  /// \brief Returns a timestamp initialized from 'iTimeValue' in 'unitOfTime' since Unix epoch.
+  [[nodiscard]] static nsTimestamp MakeFromInt(nsInt64 iTimeValue, nsSIUnitOfTime::Enum unitOfTime);
 
   // *** Public Functions ***
 public:
-  /// \brief Invalidates the timestamp.
-  void Invalidate(); // [tested]
-
   /// \brief Returns whether the timestamp is valid.
   bool IsValid() const; // [tested]
 
   /// \brief Returns the number of 'unitOfTime' since Unix epoch.
-  wdInt64 GetInt64(wdSIUnitOfTime::Enum unitOfTime) const; // [tested]
-
-  /// \brief Sets the timestamp as 'iTimeValue' in 'unitOfTime' since Unix epoch.
-  void SetInt64(wdInt64 iTimeValue, wdSIUnitOfTime::Enum unitOfTime); // [tested]
+  nsInt64 GetInt64(nsSIUnitOfTime::Enum unitOfTime) const; // [tested]
 
   /// \brief Returns whether this timestamp is considered equal to 'rhs' in the given mode.
   ///
   /// Use CompareMode::FileTime when working with file time stamps across platforms.
   /// It will use the lowest resolution supported by all platforms to make sure the
   /// timestamp of a file is considered equal regardless on which platform it was retrieved.
-  bool Compare(const wdTimestamp& rhs, CompareMode::Enum mode) const; // [tested]
+  bool Compare(const nsTimestamp& rhs, CompareMode::Enum mode) const; // [tested]
 
   // *** Operators ***
 public:
   /// \brief Adds the time value of "timeSpan" to this data value.
-  void operator+=(const wdTime& timeSpan); // [tested]
+  void operator+=(const nsTime& timeSpan); // [tested]
 
   /// \brief Subtracts the time value of "timeSpan" from this date value.
-  void operator-=(const wdTime& timeSpan); // [tested]
+  void operator-=(const nsTime& timeSpan); // [tested]
 
   /// \brief Returns the time span between this timestamp and "other".
-  const wdTime operator-(const wdTimestamp& other) const; // [tested]
+  const nsTime operator-(const nsTimestamp& other) const; // [tested]
 
   /// \brief Returns a timestamp that is "timeSpan" further into the future from this timestamp.
-  const wdTimestamp operator+(const wdTime& timeSpan) const; // [tested]
+  const nsTimestamp operator+(const nsTime& timeSpan) const; // [tested]
 
   /// \brief Returns a timestamp that is "timeSpan" further into the past from this timestamp.
-  const wdTimestamp operator-(const wdTime& timeSpan) const; // [tested]
+  const nsTimestamp operator-(const nsTime& timeSpan) const; // [tested]
 
 
 private:
-  WD_ALLOW_PRIVATE_PROPERTIES(wdTimestamp);
+  static constexpr const nsInt64 NS_INVALID_TIME_STAMP = nsMath::MinValue<nsInt64>();
+
+  NS_ALLOW_PRIVATE_PROPERTIES(nsTimestamp);
   /// \brief The date is stored as microseconds since Unix epoch.
-  wdInt64 m_iTimestamp;
+  nsInt64 m_iTimestamp = NS_INVALID_TIME_STAMP;
 };
 
 /// \brief Returns a timestamp that is "timeSpan" further into the future from "timestamp".
-const wdTimestamp operator+(wdTime& ref_timeSpan, const wdTimestamp& timestamp);
+const nsTimestamp operator+(nsTime& ref_timeSpan, const nsTimestamp& timestamp);
 
-WD_DECLARE_REFLECTABLE_TYPE(WD_FOUNDATION_DLL, wdTimestamp);
+NS_DECLARE_REFLECTABLE_TYPE(NS_FOUNDATION_DLL, nsTimestamp);
 
-/// \brief The wdDateTime class can be used to convert wdTimestamp into a human readable form.
+/// \brief The nsDateTime class can be used to convert nsTimestamp into a human readable form.
 ///
-/// Note: As wdTimestamp is microseconds since Unix epoch, the values in this class will always be
+/// Note: As nsTimestamp is microseconds since Unix epoch, the values in this class will always be
 /// in UTC.
-class WD_FOUNDATION_DLL wdDateTime
+class NS_FOUNDATION_DLL nsDateTime
 {
 public:
   /// \brief Creates an empty date time instance with an invalid date.
   ///
   /// Day, Month and Year will be invalid and must be set.
-  wdDateTime(); // [tested]
+  nsDateTime(); // [tested]
+  ~nsDateTime();
 
-  /// \brief Creates a date time instance from the given timestamp.
-  wdDateTime(wdTimestamp timestamp); // [tested]
+  /// \brief Checks whether all values are within valid ranges.
+  bool IsValid() const;
 
-  /// \brief Converts this instance' values into a wdTimestamp.
+  /// \brief Returns a date time that is all zero.
+  [[nodiscard]] static nsDateTime MakeZero() { return nsDateTime(); }
+
+  /// \brief Sets this instance to the given timestamp.
+  ///
+  /// This calls SetFromTimestamp() internally and asserts that the conversion succeeded.
+  /// Use SetFromTimestamp() directly, if you need to be able to react to invalid data.
+  [[nodiscard]] static nsDateTime MakeFromTimestamp(nsTimestamp timestamp);
+
+  /// \brief Converts this instance' values into a nsTimestamp.
   ///
   /// The conversion is done via the OS and can fail for values that are outside the supported range.
   /// In this case, the returned value will be invalid. Anything after 1970 and before the
   /// not so distant future should be safe.
-  const wdTimestamp GetTimestamp() const; // [tested]
+  [[nodiscard]] const nsTimestamp GetTimestamp() const; // [tested]
 
   /// \brief Sets this instance to the given timestamp.
   ///
   /// The conversion is done via the OS and will fail for invalid dates and values outside the supported range,
-  /// in which case false will be returned.
+  /// in which case NS_FAILURE will be returned.
   /// Anything after 1970 and before the not so distant future should be safe.
-  bool SetTimestamp(wdTimestamp timestamp); // [tested]
+  nsResult SetFromTimestamp(nsTimestamp timestamp);
 
   // *** Accessors ***
 public:
   /// \brief Returns the currently set year.
-  wdUInt32 GetYear() const; // [tested]
+  nsUInt32 GetYear() const; // [tested]
 
   /// \brief Sets the year to the given value.
-  void SetYear(wdInt16 iYear); // [tested]
+  void SetYear(nsInt16 iYear); // [tested]
 
   /// \brief Returns the currently set month.
-  wdUInt8 GetMonth() const; // [tested]
+  nsUInt8 GetMonth() const; // [tested]
 
-  /// \brief Sets the month to the given value, will be clamped to valid range [1, 12].
-  void SetMonth(wdUInt8 uiMonth); // [tested]
+  /// \brief Sets the month to the given value. Asserts that the value is in the valid range [1, 12].
+  void SetMonth(nsUInt8 uiMonth); // [tested]
 
   /// \brief Returns the currently set day.
-  wdUInt8 GetDay() const; // [tested]
+  nsUInt8 GetDay() const; // [tested]
 
-  /// \brief Sets the day to the given value, will be clamped to valid range [1, 31].
-  void SetDay(wdUInt8 uiDay); // [tested]
+  /// \brief Sets the day to the given value. Asserts that the value is in the valid range [1, 31].
+  void SetDay(nsUInt8 uiDay); // [tested]
 
   /// \brief Returns the currently set day of week.
-  wdUInt8 GetDayOfWeek() const;
+  nsUInt8 GetDayOfWeek() const;
 
-  /// \brief Sets the day of week to the given value, will be clamped to valid range [0, 6].
-  void SetDayOfWeek(wdUInt8 uiDayOfWeek);
+  /// \brief Sets the day of week to the given value. Asserts that the value is in the valid range [0, 6].
+  void SetDayOfWeek(nsUInt8 uiDayOfWeek);
 
   /// \brief Returns the currently set hour.
-  wdUInt8 GetHour() const; // [tested]
+  nsUInt8 GetHour() const; // [tested]
 
-  /// \brief Sets the hour to the given value, will be clamped to valid range [0, 23].
-  void SetHour(wdUInt8 uiHour); // [tested]
+  /// \brief Sets the hour to the given value. Asserts that the value is in the valid range [0, 23].
+  void SetHour(nsUInt8 uiHour); // [tested]
 
   /// \brief Returns the currently set minute.
-  wdUInt8 GetMinute() const; // [tested]
+  nsUInt8 GetMinute() const; // [tested]
 
-  /// \brief Sets the minute to the given value, will be clamped to valid range [0, 59].
-  void SetMinute(wdUInt8 uiMinute); // [tested]
+  /// \brief Sets the minute to the given value. Asserts that the value is in the valid range [0, 59].
+  void SetMinute(nsUInt8 uiMinute); // [tested]
 
   /// \brief Returns the currently set second.
-  wdUInt8 GetSecond() const; // [tested]
+  nsUInt8 GetSecond() const; // [tested]
 
-  /// \brief Sets the second to the given value, will be clamped to valid range [0, 59].
-  void SetSecond(wdUInt8 uiSecond); // [tested]
+  /// \brief Sets the second to the given value. Asserts that the value is in the valid range [0, 59].
+  void SetSecond(nsUInt8 uiSecond); // [tested]
 
   /// \brief Returns the currently set microseconds.
-  wdUInt32 GetMicroseconds() const; // [tested]
+  nsUInt32 GetMicroseconds() const; // [tested]
 
-  /// \brief Sets the microseconds to the given value, will be clamped to valid range [0, 999999].
-  void SetMicroseconds(wdUInt32 uiMicroSeconds); // [tested]
+  /// \brief Sets the microseconds to the given value. Asserts that the value is in the valid range [0, 999999].
+  void SetMicroseconds(nsUInt32 uiMicroSeconds); // [tested]
 
 private:
   /// \brief The fraction of a second in microseconds of this date [0, 999999].
-  wdUInt32 m_uiMicroseconds;
+  nsUInt32 m_uiMicroseconds = 0;
   /// \brief The year of this date [-32k, +32k].
-  wdInt16 m_iYear;
+  nsInt16 m_iYear = 0;
   /// \brief The month of this date [1, 12].
-  wdUInt8 m_uiMonth;
+  nsUInt8 m_uiMonth = 0;
   /// \brief The day of this date [1, 31].
-  wdUInt8 m_uiDay;
+  nsUInt8 m_uiDay = 0;
   /// \brief The day of week of this date [0, 6].
-  wdUInt8 m_uiDayOfWeek;
+  nsUInt8 m_uiDayOfWeek = 0;
   /// \brief The hour of this date [0, 23].
-  wdUInt8 m_uiHour;
+  nsUInt8 m_uiHour = 0;
   /// \brief The number of minutes of this date [0, 59].
-  wdUInt8 m_uiMinute;
+  nsUInt8 m_uiMinute = 0;
   /// \brief The number of seconds of this date [0, 59].
-  wdUInt8 m_uiSecond;
+  nsUInt8 m_uiSecond = 0;
 };
 
-WD_FOUNDATION_DLL wdStringView BuildString(char* szTmp, wdUInt32 uiLength, const wdDateTime& arg);
+NS_FOUNDATION_DLL nsStringView BuildString(char* szTmp, nsUInt32 uiLength, const nsDateTime& arg);
 
-struct wdArgDateTime
+struct nsArgDateTime
 {
   enum FormattingFlags
   {
-    ShowDate = WD_BIT(0),
-    TextualDate = ShowDate | WD_BIT(1),
-    ShowWeekday = WD_BIT(2),
-    ShowTime = WD_BIT(3),
-    ShowSeconds = ShowTime | WD_BIT(4),
-    ShowMilliseconds = ShowSeconds | WD_BIT(5),
-    ShowTimeZone = WD_BIT(6),
+    ShowDate = NS_BIT(0),
+    TextualDate = ShowDate | NS_BIT(1),
+    ShowWeekday = NS_BIT(2),
+    ShowTime = NS_BIT(3),
+    ShowSeconds = ShowTime | NS_BIT(4),
+    ShowMilliseconds = ShowSeconds | NS_BIT(5),
+    ShowTimeZone = NS_BIT(6),
 
     Default = ShowDate | ShowSeconds,
     DefaultTextual = TextualDate | ShowSeconds,
   };
 
-  /// \brief Initialized a formatting object for an wdDateTime instance.
-  /// \param dateTime The wdDateTime instance to format.
+  /// \brief Initialized a formatting object for an nsDateTime instance.
+  /// \param dateTime The nsDateTime instance to format.
   /// \param bUseNames Indicates whether to use names for days of week and months (true)
   ///        or a purely numerical representation (false).
-  /// \param bShowTimeZoneIndicator Whether to indicate the timwdone of the wdDateTime object.
-  inline explicit wdArgDateTime(const wdDateTime& dateTime, wdUInt32 uiFormattingFlags = Default)
+  /// \param bShowTimeZoneIndicator Whether to indicate the timnsone of the nsDateTime object.
+  inline explicit nsArgDateTime(const nsDateTime& dateTime, nsUInt32 uiFormattingFlags = Default)
     : m_Value(dateTime)
     , m_uiFormattingFlags(uiFormattingFlags)
   {
   }
 
-  wdDateTime m_Value;
-  wdUInt32 m_uiFormattingFlags;
+  nsDateTime m_Value;
+  nsUInt32 m_uiFormattingFlags;
 };
 
-WD_FOUNDATION_DLL wdStringView BuildString(char* szTmp, wdUInt32 uiLength, const wdArgDateTime& arg);
+NS_FOUNDATION_DLL nsStringView BuildString(char* szTmp, nsUInt32 uiLength, const nsArgDateTime& arg);
 
 #include <Foundation/Time/Implementation/Timestamp_inl.h>

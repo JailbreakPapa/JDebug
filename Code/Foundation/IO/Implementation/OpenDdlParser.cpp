@@ -4,41 +4,40 @@
 #include <Foundation/Logging/Log.h>
 #include <Foundation/Utilities/ConversionUtils.h>
 
-wdOpenDdlParser::wdOpenDdlParser()
+nsOpenDdlParser::nsOpenDdlParser()
 {
   m_pLogInterface = nullptr;
   m_bHadFatalParsingError = false;
 }
 
-void wdOpenDdlParser::SetCacheSize(wdUInt32 uiSizeInKB)
+void nsOpenDdlParser::SetCacheSize(nsUInt32 uiSizeInKB)
 {
-  m_Cache.SetCountUninitialized(wdMath::Max<wdUInt32>(1, uiSizeInKB) * 1024);
-  m_TempString.SetCountUninitialized(wdMath::Max<wdUInt32>(1, uiSizeInKB) * 1024);
+  m_Cache.SetCountUninitialized(nsMath::Max<nsUInt32>(1, uiSizeInKB) * 1024);
+  m_TempString.SetCountUninitialized(nsMath::Max<nsUInt32>(1, uiSizeInKB) * 1024);
 
   m_pBoolCache = reinterpret_cast<bool*>(m_Cache.GetData());
-  m_pInt8Cache = reinterpret_cast<wdInt8*>(m_Cache.GetData());
-  m_pInt16Cache = reinterpret_cast<wdInt16*>(m_Cache.GetData());
-  m_pInt32Cache = reinterpret_cast<wdInt32*>(m_Cache.GetData());
-  m_pInt64Cache = reinterpret_cast<wdInt64*>(m_Cache.GetData());
-  m_pUInt8Cache = reinterpret_cast<wdUInt8*>(m_Cache.GetData());
-  m_pUInt16Cache = reinterpret_cast<wdUInt16*>(m_Cache.GetData());
-  m_pUInt32Cache = reinterpret_cast<wdUInt32*>(m_Cache.GetData());
-  m_pUInt64Cache = reinterpret_cast<wdUInt64*>(m_Cache.GetData());
+  m_pInt8Cache = reinterpret_cast<nsInt8*>(m_Cache.GetData());
+  m_pInt16Cache = reinterpret_cast<nsInt16*>(m_Cache.GetData());
+  m_pInt32Cache = reinterpret_cast<nsInt32*>(m_Cache.GetData());
+  m_pInt64Cache = reinterpret_cast<nsInt64*>(m_Cache.GetData());
+  m_pUInt8Cache = reinterpret_cast<nsUInt8*>(m_Cache.GetData());
+  m_pUInt16Cache = reinterpret_cast<nsUInt16*>(m_Cache.GetData());
+  m_pUInt32Cache = reinterpret_cast<nsUInt32*>(m_Cache.GetData());
+  m_pUInt64Cache = reinterpret_cast<nsUInt64*>(m_Cache.GetData());
   m_pFloatCache = reinterpret_cast<float*>(m_Cache.GetData());
   m_pDoubleCache = reinterpret_cast<double*>(m_Cache.GetData());
 }
 
 
 // Extension to default OpenDDL: We allow ':' and '.' to appear in identifier names
-bool IsDdlIdentifierCharacter(wdUInt8 uiByte)
+bool IsDdlIdentifierCharacter(nsUInt32 uiByte)
 {
-  return (
-    (uiByte >= 'a' && uiByte <= 'z') || (uiByte >= 'A' && uiByte <= 'Z') || (uiByte == '_') || (uiByte >= '0' && uiByte <= '9') || (uiByte == ':') || (uiByte == '.'));
+  return ((uiByte >= 'a' && uiByte <= 'z') || (uiByte >= 'A' && uiByte <= 'Z') || (uiByte == '_') || (uiByte >= '0' && uiByte <= '9') || (uiByte == ':') || (uiByte == '.'));
 }
 
-void wdOpenDdlParser::SetInputStream(wdStreamReader& stream, wdUInt32 uiFirstLineOffset /*= 0*/)
+void nsOpenDdlParser::SetInputStream(nsStreamReader& stream, nsUInt32 uiFirstLineOffset /*= 0*/)
 {
-  WD_ASSERT_DEV(m_StateStack.IsEmpty(), "OpenDDL Parser cannot be restarted");
+  NS_ASSERT_DEV(m_StateStack.IsEmpty(), "OpenDDL Parser cannot be restarted");
 
   m_pInput = &stream;
 
@@ -74,7 +73,7 @@ void wdOpenDdlParser::SetInputStream(wdStreamReader& stream, wdUInt32 uiFirstLin
   }
 }
 
-bool wdOpenDdlParser::ContinueParsing()
+bool nsOpenDdlParser::ContinueParsing()
 {
   if (m_uiCurByte == '\0')
   {
@@ -130,27 +129,27 @@ bool wdOpenDdlParser::ContinueParsing()
       return true;
 
     default:
-      WD_REPORT_FAILURE("Unknown State in OpenDDL parser state machine.");
+      NS_REPORT_FAILURE("Unknown State in OpenDDL parser state machine.");
       return false;
   }
 }
 
-wdResult wdOpenDdlParser::ParseAll()
+nsResult nsOpenDdlParser::ParseAll()
 {
   while (ContinueParsing())
   {
   }
 
-  return m_bHadFatalParsingError ? WD_FAILURE : WD_SUCCESS;
+  return m_bHadFatalParsingError ? NS_FAILURE : NS_SUCCESS;
 }
 
-void wdOpenDdlParser::SkipRestOfObject()
+void nsOpenDdlParser::SkipRestOfObject()
 {
-  WD_ASSERT_DEBUG(!m_bSkippingMode, "Skipping mode is in an invalid state.");
+  NS_ASSERT_DEBUG(!m_bSkippingMode, "Skipping mode is in an invalid state.");
 
   m_bSkippingMode = true;
 
-  const wdUInt32 iSkipToStackHeight = m_StateStack.GetCount() - 1;
+  const nsUInt32 iSkipToStackHeight = m_StateStack.GetCount() - 1;
 
   while (m_StateStack.GetCount() > iSkipToStackHeight)
     ContinueParsing();
@@ -159,20 +158,20 @@ void wdOpenDdlParser::SkipRestOfObject()
 }
 
 
-void wdOpenDdlParser::StopParsing()
+void nsOpenDdlParser::StopParsing()
 {
   m_uiCurByte = '\0';
   m_StateStack.Clear();
 }
 
-void wdOpenDdlParser::ParsingError(const char* szMessage, bool bFatal)
+void nsOpenDdlParser::ParsingError(nsStringView sMessage, bool bFatal)
 {
   if (bFatal)
-    wdLog::Error(m_pLogInterface, "Line {0} ({1}): {2}", m_uiCurLine, m_uiCurColumn, szMessage);
+    nsLog::Error(m_pLogInterface, "Line {0} ({1}): {2}", m_uiCurLine, m_uiCurColumn, sMessage);
   else
-    wdLog::Warning(m_pLogInterface, szMessage);
+    nsLog::Warning(m_pLogInterface, sMessage);
 
-  OnParsingError(szMessage, bFatal, m_uiCurLine, m_uiCurColumn);
+  OnParsingError(sMessage, bFatal, m_uiCurLine, m_uiCurColumn);
 
   if (bFatal)
   {
@@ -183,9 +182,9 @@ void wdOpenDdlParser::ParsingError(const char* szMessage, bool bFatal)
 }
 
 
-void wdOpenDdlParser::ReadNextByte()
+void nsOpenDdlParser::ReadNextByte()
 {
-  m_pInput->ReadBytes(&m_uiNextByte, sizeof(wdUInt8));
+  m_pInput->ReadBytes(&m_uiNextByte, sizeof(nsUInt8));
 
   if (m_uiNextByte == '\n')
   {
@@ -196,7 +195,7 @@ void wdOpenDdlParser::ReadNextByte()
     ++m_uiCurColumn;
 }
 
-bool wdOpenDdlParser::ReadCharacter()
+bool nsOpenDdlParser::ReadCharacter()
 {
   m_uiCurByte = m_uiNextByte;
 
@@ -206,7 +205,7 @@ bool wdOpenDdlParser::ReadCharacter()
   return m_uiCurByte != '\0';
 }
 
-bool wdOpenDdlParser::ReadCharacterSkipComments()
+bool nsOpenDdlParser::ReadCharacterSkipComments()
 {
   m_uiCurByte = m_uiNextByte;
 
@@ -251,7 +250,7 @@ bool wdOpenDdlParser::ReadCharacterSkipComments()
   return m_uiCurByte != '\0';
 }
 
-void wdOpenDdlParser::SkipWhitespace()
+void nsOpenDdlParser::SkipWhitespace()
 {
   do
   {
@@ -259,11 +258,11 @@ void wdOpenDdlParser::SkipWhitespace()
 
     if (!ReadCharacterSkipComments())
       return; // stop when end of stream is encountered
-  } while (wdStringUtils::IsWhiteSpace(m_uiCurByte));
+  } while (nsStringUtils::IsWhiteSpace(m_uiCurByte));
 }
 
 
-void wdOpenDdlParser::ContinueIdle()
+void nsOpenDdlParser::ContinueIdle()
 {
   switch (m_uiCurByte)
   {
@@ -280,7 +279,7 @@ void wdOpenDdlParser::ContinueIdle()
 
     default:
     {
-      wdUInt32 uiIdTypeLen = 0;
+      nsUInt32 uiIdTypeLen = 0;
       ReadIdentifier(m_szIdentifierType, uiIdTypeLen);
 
       if (uiIdTypeLen == 0)
@@ -299,7 +298,7 @@ void wdOpenDdlParser::ContinueIdle()
         if (!ReadCharacterSkipComments())
           return;
 
-        wdUInt32 uiIdNameLen = 0;
+        nsUInt32 uiIdNameLen = 0;
         ReadIdentifier(m_szIdentifierName, uiIdNameLen);
 
         if (uiIdNameLen == 0)
@@ -323,54 +322,54 @@ void wdOpenDdlParser::ContinueIdle()
         // support for 'uint' is an extension to OpenDDL
         // support for u1, u2, u3, u4 for  8 Bit, 16 Bit, 32 Bit, 64 Bit is an extension to OpenDDL
 
-        if (wdStringUtils::IsEqual((const char*)m_szIdentifierType, "u1") ||
-            wdStringUtils::IsEqual((const char*)m_szIdentifierType, "unsigned_int8") ||
-            wdStringUtils::IsEqual((const char*)m_szIdentifierType, "uint8"))
+        if (nsStringUtils::IsEqual((const char*)m_szIdentifierType, "u1") ||
+            nsStringUtils::IsEqual((const char*)m_szIdentifierType, "unsigned_int8") ||
+            nsStringUtils::IsEqual((const char*)m_szIdentifierType, "uint8"))
         {
           m_StateStack.PushBack(State::ReadingUInt8);
 
           if (!m_bSkippingMode)
           {
-            OnBeginPrimitiveList(wdOpenDdlPrimitiveType::UInt8, (const char*)m_szIdentifierName, bGlobalName);
+            OnBeginPrimitiveList(nsOpenDdlPrimitiveType::UInt8, (const char*)m_szIdentifierName, bGlobalName);
           }
           return;
         }
 
-        if (wdStringUtils::IsEqual((const char*)m_szIdentifierType, "u3") ||
-            wdStringUtils::IsEqual((const char*)m_szIdentifierType, "unsigned_int32") ||
-            wdStringUtils::IsEqual((const char*)m_szIdentifierType, "uint32"))
+        if (nsStringUtils::IsEqual((const char*)m_szIdentifierType, "u3") ||
+            nsStringUtils::IsEqual((const char*)m_szIdentifierType, "unsigned_int32") ||
+            nsStringUtils::IsEqual((const char*)m_szIdentifierType, "uint32"))
         {
           m_StateStack.PushBack(State::ReadingUInt32);
 
           if (!m_bSkippingMode)
           {
-            OnBeginPrimitiveList(wdOpenDdlPrimitiveType::UInt32, (const char*)m_szIdentifierName, bGlobalName);
+            OnBeginPrimitiveList(nsOpenDdlPrimitiveType::UInt32, (const char*)m_szIdentifierName, bGlobalName);
           }
           return;
         }
 
-        if (wdStringUtils::IsEqual((const char*)m_szIdentifierType, "u2") ||
-            wdStringUtils::IsEqual((const char*)m_szIdentifierType, "unsigned_int16") ||
-            wdStringUtils::IsEqual((const char*)m_szIdentifierType, "uint16"))
+        if (nsStringUtils::IsEqual((const char*)m_szIdentifierType, "u2") ||
+            nsStringUtils::IsEqual((const char*)m_szIdentifierType, "unsigned_int16") ||
+            nsStringUtils::IsEqual((const char*)m_szIdentifierType, "uint16"))
         {
           m_StateStack.PushBack(State::ReadingUInt16);
 
           if (!m_bSkippingMode)
           {
-            OnBeginPrimitiveList(wdOpenDdlPrimitiveType::UInt16, (const char*)m_szIdentifierName, bGlobalName);
+            OnBeginPrimitiveList(nsOpenDdlPrimitiveType::UInt16, (const char*)m_szIdentifierName, bGlobalName);
           }
           return;
         }
 
-        if (wdStringUtils::IsEqual((const char*)m_szIdentifierType, "u4") ||
-            wdStringUtils::IsEqual((const char*)m_szIdentifierType, "unsigned_int64") ||
-            wdStringUtils::IsEqual((const char*)m_szIdentifierType, "uint64"))
+        if (nsStringUtils::IsEqual((const char*)m_szIdentifierType, "u4") ||
+            nsStringUtils::IsEqual((const char*)m_szIdentifierType, "unsigned_int64") ||
+            nsStringUtils::IsEqual((const char*)m_szIdentifierType, "uint64"))
         {
           m_StateStack.PushBack(State::ReadingUInt64);
 
           if (!m_bSkippingMode)
           {
-            OnBeginPrimitiveList(wdOpenDdlPrimitiveType::UInt64, (const char*)m_szIdentifierName, bGlobalName);
+            OnBeginPrimitiveList(nsOpenDdlPrimitiveType::UInt64, (const char*)m_szIdentifierName, bGlobalName);
           }
           return;
         }
@@ -379,46 +378,46 @@ void wdOpenDdlParser::ContinueIdle()
       {
         // support for i1, i2, i3, i4 for  8 Bit, 16 Bit, 32 Bit, 64 Bit is an extension to OpenDDL
 
-        if (wdStringUtils::IsEqual((const char*)m_szIdentifierType, "i3") || wdStringUtils::IsEqual((const char*)m_szIdentifierType, "int32"))
+        if (nsStringUtils::IsEqual((const char*)m_szIdentifierType, "i3") || nsStringUtils::IsEqual((const char*)m_szIdentifierType, "int32"))
         {
           m_StateStack.PushBack(State::ReadingInt32);
 
           if (!m_bSkippingMode)
           {
-            OnBeginPrimitiveList(wdOpenDdlPrimitiveType::Int32, (const char*)m_szIdentifierName, bGlobalName);
+            OnBeginPrimitiveList(nsOpenDdlPrimitiveType::Int32, (const char*)m_szIdentifierName, bGlobalName);
           }
           return;
         }
 
-        if (wdStringUtils::IsEqual((const char*)m_szIdentifierType, "i1") || wdStringUtils::IsEqual((const char*)m_szIdentifierType, "int8"))
+        if (nsStringUtils::IsEqual((const char*)m_szIdentifierType, "i1") || nsStringUtils::IsEqual((const char*)m_szIdentifierType, "int8"))
         {
           m_StateStack.PushBack(State::ReadingInt8);
 
           if (!m_bSkippingMode)
           {
-            OnBeginPrimitiveList(wdOpenDdlPrimitiveType::Int8, (const char*)m_szIdentifierName, bGlobalName);
+            OnBeginPrimitiveList(nsOpenDdlPrimitiveType::Int8, (const char*)m_szIdentifierName, bGlobalName);
           }
           return;
         }
 
-        if (wdStringUtils::IsEqual((const char*)m_szIdentifierType, "i2") || wdStringUtils::IsEqual((const char*)m_szIdentifierType, "int16"))
+        if (nsStringUtils::IsEqual((const char*)m_szIdentifierType, "i2") || nsStringUtils::IsEqual((const char*)m_szIdentifierType, "int16"))
         {
           m_StateStack.PushBack(State::ReadingInt16);
 
           if (!m_bSkippingMode)
           {
-            OnBeginPrimitiveList(wdOpenDdlPrimitiveType::Int16, (const char*)m_szIdentifierName, bGlobalName);
+            OnBeginPrimitiveList(nsOpenDdlPrimitiveType::Int16, (const char*)m_szIdentifierName, bGlobalName);
           }
           return;
         }
 
-        if (wdStringUtils::IsEqual((const char*)m_szIdentifierType, "i4") || wdStringUtils::IsEqual((const char*)m_szIdentifierType, "int64"))
+        if (nsStringUtils::IsEqual((const char*)m_szIdentifierType, "i4") || nsStringUtils::IsEqual((const char*)m_szIdentifierType, "int64"))
         {
           m_StateStack.PushBack(State::ReadingInt64);
 
           if (!m_bSkippingMode)
           {
-            OnBeginPrimitiveList(wdOpenDdlPrimitiveType::Int64, (const char*)m_szIdentifierName, bGlobalName);
+            OnBeginPrimitiveList(nsOpenDdlPrimitiveType::Int64, (const char*)m_szIdentifierName, bGlobalName);
           }
           return;
         }
@@ -427,46 +426,46 @@ void wdOpenDdlParser::ContinueIdle()
       {
         // support for f, d, s, b for  float, double, string, boo is an extension to OpenDDL
 
-        if (wdStringUtils::IsEqual((const char*)m_szIdentifierType, "f") || wdStringUtils::IsEqual((const char*)m_szIdentifierType, "float"))
+        if (nsStringUtils::IsEqual((const char*)m_szIdentifierType, "f") || nsStringUtils::IsEqual((const char*)m_szIdentifierType, "float"))
         {
           m_StateStack.PushBack(State::ReadingFloat);
 
           if (!m_bSkippingMode)
           {
-            OnBeginPrimitiveList(wdOpenDdlPrimitiveType::Float, (const char*)m_szIdentifierName, bGlobalName);
+            OnBeginPrimitiveList(nsOpenDdlPrimitiveType::Float, (const char*)m_szIdentifierName, bGlobalName);
           }
           return;
         }
 
-        if (wdStringUtils::IsEqual((const char*)m_szIdentifierType, "s") || wdStringUtils::IsEqual((const char*)m_szIdentifierType, "string"))
+        if (nsStringUtils::IsEqual((const char*)m_szIdentifierType, "s") || nsStringUtils::IsEqual((const char*)m_szIdentifierType, "string"))
         {
           m_StateStack.PushBack(State::ReadingString);
 
           if (!m_bSkippingMode)
           {
-            OnBeginPrimitiveList(wdOpenDdlPrimitiveType::String, (const char*)m_szIdentifierName, bGlobalName);
+            OnBeginPrimitiveList(nsOpenDdlPrimitiveType::String, (const char*)m_szIdentifierName, bGlobalName);
           }
           return;
         }
 
-        if (wdStringUtils::IsEqual((const char*)m_szIdentifierType, "b") || wdStringUtils::IsEqual((const char*)m_szIdentifierType, "bool"))
+        if (nsStringUtils::IsEqual((const char*)m_szIdentifierType, "b") || nsStringUtils::IsEqual((const char*)m_szIdentifierType, "bool"))
         {
           m_StateStack.PushBack(State::ReadingBool);
 
           if (!m_bSkippingMode)
           {
-            OnBeginPrimitiveList(wdOpenDdlPrimitiveType::Bool, (const char*)m_szIdentifierName, bGlobalName);
+            OnBeginPrimitiveList(nsOpenDdlPrimitiveType::Bool, (const char*)m_szIdentifierName, bGlobalName);
           }
           return;
         }
 
-        if (wdStringUtils::IsEqual((const char*)m_szIdentifierType, "d") || wdStringUtils::IsEqual((const char*)m_szIdentifierType, "double"))
+        if (nsStringUtils::IsEqual((const char*)m_szIdentifierType, "d") || nsStringUtils::IsEqual((const char*)m_szIdentifierType, "double"))
         {
           m_StateStack.PushBack(State::ReadingDouble);
 
           if (!m_bSkippingMode)
           {
-            OnBeginPrimitiveList(wdOpenDdlPrimitiveType::Double, (const char*)m_szIdentifierName, bGlobalName);
+            OnBeginPrimitiveList(nsOpenDdlPrimitiveType::Double, (const char*)m_szIdentifierName, bGlobalName);
           }
           return;
         }
@@ -486,7 +485,7 @@ void wdOpenDdlParser::ContinueIdle()
   }
 }
 
-void wdOpenDdlParser::ReadIdentifier(wdUInt8* szString, wdUInt32& count)
+void nsOpenDdlParser::ReadIdentifier(nsUInt8* szString, nsUInt32& count)
 {
   count = 0;
 
@@ -589,7 +588,7 @@ void wdOpenDdlParser::ReadIdentifier(wdUInt8* szString, wdUInt32& count)
   SkipWhitespace();
 }
 
-void wdOpenDdlParser::ReadString()
+void nsOpenDdlParser::ReadString()
 {
   m_uiTempStringLength = 0;
 
@@ -652,8 +651,8 @@ void wdOpenDdlParser::ReadString()
           break;
         default:
         {
-          wdStringBuilder s;
-          s.Format("Unknown escape-sequence '\\{0}'", wdArgC(m_uiCurByte));
+          nsStringBuilder s;
+          s.SetFormat("Unknown escape-sequence '\\{0}'", nsArgC(m_uiCurByte));
           ParsingError(s, false);
         }
         break;
@@ -676,7 +675,7 @@ void wdOpenDdlParser::ReadString()
   m_TempString[m_uiTempStringLength] = '\0';
 }
 
-void wdOpenDdlParser::ReadWord()
+void nsOpenDdlParser::ReadWord()
 {
   m_uiTempStringLength = 0;
 
@@ -689,15 +688,15 @@ void wdOpenDdlParser::ReadWord()
 
     if (!ReadCharacterSkipComments())
       break; // stop when end of stream is encountered
-  } while (!wdStringUtils::IsIdentifierDelimiter_C_Code(m_uiCurByte));
+  } while (!nsStringUtils::IsIdentifierDelimiter_C_Code(m_uiCurByte));
 
   m_TempString[m_uiTempStringLength] = '\0';
 
-  if (wdStringUtils::IsWhiteSpace(m_uiCurByte))
+  if (nsStringUtils::IsWhiteSpace(m_uiCurByte))
     SkipWhitespace();
 }
 
-void wdOpenDdlParser::PurgeCachedPrimitives(bool bThisIsAll)
+void nsOpenDdlParser::PurgeCachedPrimitives(bool bThisIsAll)
 {
   if (!m_bSkippingMode && m_uiNumCachedPrimitives > 0)
   {
@@ -748,7 +747,7 @@ void wdOpenDdlParser::PurgeCachedPrimitives(bool bThisIsAll)
         break;
 
       default:
-        WD_ASSERT_NOT_IMPLEMENTED;
+        NS_ASSERT_NOT_IMPLEMENTED;
         break;
     }
   }
@@ -756,7 +755,7 @@ void wdOpenDdlParser::PurgeCachedPrimitives(bool bThisIsAll)
   m_uiNumCachedPrimitives = 0;
 }
 
-bool wdOpenDdlParser::ContinuePrimitiveList()
+bool nsOpenDdlParser::ContinuePrimitiveList()
 {
   switch (m_uiCurByte)
   {
@@ -788,7 +787,7 @@ bool wdOpenDdlParser::ContinuePrimitiveList()
   return true;
 }
 
-void wdOpenDdlParser::ContinueString()
+void nsOpenDdlParser::ContinueString()
 {
   if (!ContinuePrimitiveList())
     return;
@@ -810,7 +809,7 @@ void wdOpenDdlParser::ContinueString()
 
       if (!m_bSkippingMode)
       {
-        wdStringView view((const char*)&m_TempString[0], (const char*)&m_TempString[m_uiTempStringLength]);
+        nsStringView view((const char*)&m_TempString[0], (const char*)&m_TempString[m_uiTempStringLength]);
 
         OnPrimitiveString(1, &view, false);
       }
@@ -827,7 +826,7 @@ void wdOpenDdlParser::ContinueString()
   }
 }
 
-void wdOpenDdlParser::SkipString()
+void nsOpenDdlParser::SkipString()
 {
   bool bEscapeSequence = false;
 
@@ -846,7 +845,7 @@ void wdOpenDdlParser::SkipString()
   } while (bEscapeSequence || m_uiCurByte != '\"');
 }
 
-void wdOpenDdlParser::ContinueBool()
+void nsOpenDdlParser::ContinueBool()
 {
   if (!ContinuePrimitiveList())
     return;
@@ -860,14 +859,14 @@ void wdOpenDdlParser::ContinueBool()
     {
       ReadWord();
 
-      // Extension to OpenDDL: We allow everything that wdConversionUtils::StringToBool knows as a bool value
+      // Extension to OpenDDL: We allow everything that nsConversionUtils::StringToBool knows as a bool value
       // We actually use '1' and '0' in compact mode
 
       bool bRes = false;
-      if (wdConversionUtils::StringToBool((const char*)&m_TempString[0], bRes) == WD_FAILURE)
+      if (nsConversionUtils::StringToBool((const char*)&m_TempString[0], bRes) == NS_FAILURE)
       {
-        wdStringBuilder s;
-        s.Format("Parsing value: Expected 'true' or 'false', Got '{0}' instead.", (const char*)&m_TempString[0]);
+        nsStringBuilder s;
+        s.SetFormat("Parsing value: Expected 'true' or 'false', Got '{0}' instead.", (const char*)&m_TempString[0]);
         ParsingError(s.GetData(), false);
       }
 
@@ -886,12 +885,12 @@ void wdOpenDdlParser::ContinueBool()
   ParsingError("Invalid bool value", true);
 }
 
-void wdOpenDdlParser::ContinueInt()
+void nsOpenDdlParser::ContinueInt()
 {
   if (!ContinuePrimitiveList())
     return;
 
-  wdInt8 sign = 1;
+  nsInt8 sign = 1;
 
   // allow exactly one sign
   if (m_uiCurByte == '-')
@@ -902,14 +901,14 @@ void wdOpenDdlParser::ContinueInt()
     // no whitespace is allowed here
     ReadCharacterSkipComments();
 
-    if (wdStringUtils::IsWhiteSpace(m_uiCurByte))
+    if (nsStringUtils::IsWhiteSpace(m_uiCurByte))
     {
       ParsingError("Whitespace is not allowed between integer sign and value", false);
       SkipWhitespace();
     }
   }
 
-  wdUInt64 value = 0;
+  nsUInt64 value = 0;
 
   if (m_uiCurByte == '0' && (m_uiNextByte == 'x' || m_uiNextByte == 'X'))
   {
@@ -959,9 +958,9 @@ void wdOpenDdlParser::ContinueInt()
   {
     case ReadingInt8:
     {
-      m_pInt8Cache[m_uiNumCachedPrimitives++] = sign * (wdInt8)value; // if user data is out of range, we don't care
+      m_pInt8Cache[m_uiNumCachedPrimitives++] = sign * (nsInt8)value; // if user data is out of range, we don't care
 
-      if (m_uiNumCachedPrimitives >= m_Cache.GetCount() / sizeof(wdInt8))
+      if (m_uiNumCachedPrimitives >= m_Cache.GetCount() / sizeof(nsInt8))
         PurgeCachedPrimitives(false);
 
       break;
@@ -969,9 +968,9 @@ void wdOpenDdlParser::ContinueInt()
 
     case ReadingInt16:
     {
-      m_pInt16Cache[m_uiNumCachedPrimitives++] = sign * (wdInt16)value; // if user data is out of range, we don't care
+      m_pInt16Cache[m_uiNumCachedPrimitives++] = sign * (nsInt16)value; // if user data is out of range, we don't care
 
-      if (m_uiNumCachedPrimitives >= m_Cache.GetCount() / sizeof(wdInt16))
+      if (m_uiNumCachedPrimitives >= m_Cache.GetCount() / sizeof(nsInt16))
         PurgeCachedPrimitives(false);
 
       break;
@@ -979,9 +978,9 @@ void wdOpenDdlParser::ContinueInt()
 
     case ReadingInt32:
     {
-      m_pInt32Cache[m_uiNumCachedPrimitives++] = sign * (wdInt32)value; // if user data is out of range, we don't care
+      m_pInt32Cache[m_uiNumCachedPrimitives++] = sign * (nsInt32)value; // if user data is out of range, we don't care
 
-      if (m_uiNumCachedPrimitives >= m_Cache.GetCount() / sizeof(wdInt32))
+      if (m_uiNumCachedPrimitives >= m_Cache.GetCount() / sizeof(nsInt32))
         PurgeCachedPrimitives(false);
 
       break;
@@ -989,9 +988,9 @@ void wdOpenDdlParser::ContinueInt()
 
     case ReadingInt64:
     {
-      m_pInt64Cache[m_uiNumCachedPrimitives++] = sign * (wdInt64)value; // if user data is out of range, we don't care
+      m_pInt64Cache[m_uiNumCachedPrimitives++] = sign * (nsInt64)value; // if user data is out of range, we don't care
 
-      if (m_uiNumCachedPrimitives >= m_Cache.GetCount() / sizeof(wdInt64))
+      if (m_uiNumCachedPrimitives >= m_Cache.GetCount() / sizeof(nsInt64))
         PurgeCachedPrimitives(false);
 
       break;
@@ -1000,9 +999,9 @@ void wdOpenDdlParser::ContinueInt()
 
     case ReadingUInt8:
     {
-      m_pUInt8Cache[m_uiNumCachedPrimitives++] = (wdUInt8)value; // if user data is out of range, we don't care
+      m_pUInt8Cache[m_uiNumCachedPrimitives++] = (nsUInt8)value; // if user data is out of range, we don't care
 
-      if (m_uiNumCachedPrimitives >= m_Cache.GetCount() / sizeof(wdUInt8))
+      if (m_uiNumCachedPrimitives >= m_Cache.GetCount() / sizeof(nsUInt8))
         PurgeCachedPrimitives(false);
 
       break;
@@ -1010,9 +1009,9 @@ void wdOpenDdlParser::ContinueInt()
 
     case ReadingUInt16:
     {
-      m_pUInt16Cache[m_uiNumCachedPrimitives++] = (wdUInt16)value; // if user data is out of range, we don't care
+      m_pUInt16Cache[m_uiNumCachedPrimitives++] = (nsUInt16)value; // if user data is out of range, we don't care
 
-      if (m_uiNumCachedPrimitives >= m_Cache.GetCount() / sizeof(wdUInt16))
+      if (m_uiNumCachedPrimitives >= m_Cache.GetCount() / sizeof(nsUInt16))
         PurgeCachedPrimitives(false);
 
       break;
@@ -1020,9 +1019,9 @@ void wdOpenDdlParser::ContinueInt()
 
     case ReadingUInt32:
     {
-      m_pUInt32Cache[m_uiNumCachedPrimitives++] = (wdUInt32)value; // if user data is out of range, we don't care
+      m_pUInt32Cache[m_uiNumCachedPrimitives++] = (nsUInt32)value; // if user data is out of range, we don't care
 
-      if (m_uiNumCachedPrimitives >= m_Cache.GetCount() / sizeof(wdUInt32))
+      if (m_uiNumCachedPrimitives >= m_Cache.GetCount() / sizeof(nsUInt32))
         PurgeCachedPrimitives(false);
 
       break;
@@ -1030,22 +1029,22 @@ void wdOpenDdlParser::ContinueInt()
 
     case ReadingUInt64:
     {
-      m_pUInt64Cache[m_uiNumCachedPrimitives++] = (wdUInt64)value;
+      m_pUInt64Cache[m_uiNumCachedPrimitives++] = (nsUInt64)value;
 
-      if (m_uiNumCachedPrimitives >= m_Cache.GetCount() / sizeof(wdUInt64))
+      if (m_uiNumCachedPrimitives >= m_Cache.GetCount() / sizeof(nsUInt64))
         PurgeCachedPrimitives(false);
 
       break;
     }
 
     default:
-      WD_ASSERT_NOT_IMPLEMENTED;
+      NS_ASSERT_NOT_IMPLEMENTED;
       break;
   }
 }
 
 
-void wdOpenDdlParser::ContinueFloat()
+void nsOpenDdlParser::ContinueFloat()
 {
   if (!ContinuePrimitiveList())
     return;
@@ -1064,7 +1063,7 @@ void wdOpenDdlParser::ContinueFloat()
       // no whitespace is allowed here
       ReadCharacterSkipComments();
 
-      if (wdStringUtils::IsWhiteSpace(m_uiCurByte))
+      if (nsStringUtils::IsWhiteSpace(m_uiCurByte))
       {
         ParsingError("Whitespace is not allowed between float sign and value", false);
         SkipWhitespace();
@@ -1085,9 +1084,9 @@ void wdOpenDdlParser::ContinueFloat()
     ReadHexString();
 
     if (curState == ReadingFloat)
-      wdConversionUtils::ConvertHexToBinary((const char*)m_TempString.GetData(), (wdUInt8*)&fValue, 4);
+      nsConversionUtils::ConvertHexToBinary((const char*)m_TempString.GetData(), (nsUInt8*)&fValue, 4);
     else
-      wdConversionUtils::ConvertHexToBinary((const char*)m_TempString.GetData(), (wdUInt8*)&dValue, 8);
+      nsConversionUtils::ConvertHexToBinary((const char*)m_TempString.GetData(), (nsUInt8*)&dValue, 8);
   }
   else if (m_uiCurByte == '0' && (m_uiNextByte == 'o' || m_uiNextByte == 'O'))
   {
@@ -1106,10 +1105,10 @@ void wdOpenDdlParser::ContinueFloat()
     // Decimal literal
     ReadDecimalFloat();
 
-    if (wdConversionUtils::StringToFloat((const char*)&m_TempString[0], dValue) == WD_FAILURE)
+    if (nsConversionUtils::StringToFloat((const char*)&m_TempString[0], dValue) == NS_FAILURE)
     {
-      wdStringBuilder s;
-      s.Format("Reading number failed: Could not convert '{0}' to a floating point value.", (const char*)&m_TempString[0]);
+      nsStringBuilder s;
+      s.SetFormat("Reading number failed: Could not convert '{0}' to a floating point value.", (const char*)&m_TempString[0]);
       ParsingError(s.GetData(), true);
     }
 
@@ -1144,12 +1143,12 @@ void wdOpenDdlParser::ContinueFloat()
     }
 
     default:
-      WD_ASSERT_NOT_IMPLEMENTED;
+      NS_ASSERT_NOT_IMPLEMENTED;
       break;
   }
 }
 
-void wdOpenDdlParser::ReadDecimalFloat()
+void nsOpenDdlParser::ReadDecimalFloat()
 {
   m_uiTempStringLength = 0;
 
@@ -1167,12 +1166,12 @@ void wdOpenDdlParser::ReadDecimalFloat()
 
   m_TempString[m_uiTempStringLength] = '\0';
 
-  if (wdStringUtils::IsWhiteSpace(m_uiCurByte))
+  if (nsStringUtils::IsWhiteSpace(m_uiCurByte))
     SkipWhitespace();
 }
 
 
-void wdOpenDdlParser::ReadHexString()
+void nsOpenDdlParser::ReadHexString()
 {
   m_uiTempStringLength = 0;
 
@@ -1189,13 +1188,13 @@ void wdOpenDdlParser::ReadHexString()
 
   m_TempString[m_uiTempStringLength] = '\0';
 
-  if (wdStringUtils::IsWhiteSpace(m_uiCurByte))
+  if (nsStringUtils::IsWhiteSpace(m_uiCurByte))
     SkipWhitespace();
 }
 
-wdUInt64 wdOpenDdlParser::ReadDecimalLiteral()
+nsUInt64 nsOpenDdlParser::ReadDecimalLiteral()
 {
-  wdUInt64 value = 0;
+  nsUInt64 value = 0;
 
   while ((m_uiCurByte >= '0' && m_uiCurByte <= '9') || m_uiCurByte == '_')
   {
@@ -1212,7 +1211,7 @@ wdUInt64 wdOpenDdlParser::ReadDecimalLiteral()
     ReadCharacterSkipComments();
   }
 
-  if (wdStringUtils::IsWhiteSpace(m_uiCurByte))
+  if (nsStringUtils::IsWhiteSpace(m_uiCurByte))
   {
     // move to next valid character
     SkipWhitespace();
@@ -1220,7 +1219,3 @@ wdUInt64 wdOpenDdlParser::ReadDecimalLiteral()
 
   return value;
 }
-
-
-
-WD_STATICLINK_FILE(Foundation, Foundation_IO_Implementation_OpenDdlParser);

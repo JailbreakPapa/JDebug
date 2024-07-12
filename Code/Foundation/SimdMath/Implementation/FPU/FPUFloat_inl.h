@@ -1,181 +1,187 @@
 #pragma once
 
-WD_ALWAYS_INLINE wdSimdFloat::wdSimdFloat() {}
+NS_ALWAYS_INLINE nsSimdFloat::nsSimdFloat() {}
 
-WD_ALWAYS_INLINE wdSimdFloat::wdSimdFloat(float f)
+NS_ALWAYS_INLINE nsSimdFloat::nsSimdFloat(float f)
 {
   m_v.Set(f);
 }
 
-WD_ALWAYS_INLINE wdSimdFloat::wdSimdFloat(wdInt32 i)
+NS_ALWAYS_INLINE nsSimdFloat::nsSimdFloat(nsInt32 i)
 {
   m_v.Set((float)i);
 }
 
-WD_ALWAYS_INLINE wdSimdFloat::wdSimdFloat(wdUInt32 i)
+NS_ALWAYS_INLINE nsSimdFloat::nsSimdFloat(nsUInt32 i)
 {
   m_v.Set((float)i);
 }
 
-WD_ALWAYS_INLINE wdSimdFloat::wdSimdFloat(wdAngle a)
+NS_ALWAYS_INLINE nsSimdFloat::nsSimdFloat(nsAngle a)
 {
   m_v.Set(a.GetRadian());
 }
 
-WD_ALWAYS_INLINE wdSimdFloat::wdSimdFloat(wdInternal::QuadFloat v)
+NS_ALWAYS_INLINE nsSimdFloat::nsSimdFloat(nsInternal::QuadFloat v)
 {
   m_v = v;
 }
 
-WD_ALWAYS_INLINE wdSimdFloat::operator float() const
+NS_ALWAYS_INLINE nsSimdFloat::operator float() const
 {
   return m_v.x;
 }
 
 // static
-WD_ALWAYS_INLINE wdSimdFloat wdSimdFloat::Zero()
+NS_ALWAYS_INLINE nsSimdFloat nsSimdFloat::MakeZero()
 {
-  return wdSimdFloat(0.0f);
+  return nsSimdFloat(0.0f);
 }
 
-WD_ALWAYS_INLINE wdSimdFloat wdSimdFloat::operator+(const wdSimdFloat& f) const
+// static
+NS_ALWAYS_INLINE nsSimdFloat nsSimdFloat::MakeNaN()
+{
+  return nsSimdFloat(nsMath::NaN<float>());
+}
+
+NS_ALWAYS_INLINE nsSimdFloat nsSimdFloat::operator+(const nsSimdFloat& f) const
 {
   return m_v + f.m_v;
 }
 
-WD_ALWAYS_INLINE wdSimdFloat wdSimdFloat::operator-(const wdSimdFloat& f) const
+NS_ALWAYS_INLINE nsSimdFloat nsSimdFloat::operator-(const nsSimdFloat& f) const
 {
   return m_v - f.m_v;
 }
 
-WD_ALWAYS_INLINE wdSimdFloat wdSimdFloat::operator*(const wdSimdFloat& f) const
+NS_ALWAYS_INLINE nsSimdFloat nsSimdFloat::operator*(const nsSimdFloat& f) const
 {
   return m_v.CompMul(f.m_v);
 }
 
-WD_ALWAYS_INLINE wdSimdFloat wdSimdFloat::operator/(const wdSimdFloat& f) const
+NS_ALWAYS_INLINE nsSimdFloat nsSimdFloat::operator/(const nsSimdFloat& f) const
 {
   return m_v.CompDiv(f.m_v);
 }
 
-WD_ALWAYS_INLINE wdSimdFloat& wdSimdFloat::operator+=(const wdSimdFloat& f)
+NS_ALWAYS_INLINE nsSimdFloat& nsSimdFloat::operator+=(const nsSimdFloat& f)
 {
   m_v += f.m_v;
   return *this;
 }
 
-WD_ALWAYS_INLINE wdSimdFloat& wdSimdFloat::operator-=(const wdSimdFloat& f)
+NS_ALWAYS_INLINE nsSimdFloat& nsSimdFloat::operator-=(const nsSimdFloat& f)
 {
   m_v -= f.m_v;
   return *this;
 }
 
-WD_ALWAYS_INLINE wdSimdFloat& wdSimdFloat::operator*=(const wdSimdFloat& f)
+NS_ALWAYS_INLINE nsSimdFloat& nsSimdFloat::operator*=(const nsSimdFloat& f)
 {
   m_v = m_v.CompMul(f.m_v);
   return *this;
 }
 
-WD_ALWAYS_INLINE wdSimdFloat& wdSimdFloat::operator/=(const wdSimdFloat& f)
+NS_ALWAYS_INLINE nsSimdFloat& nsSimdFloat::operator/=(const nsSimdFloat& f)
 {
   m_v = m_v.CompDiv(f.m_v);
   return *this;
 }
 
-WD_ALWAYS_INLINE bool wdSimdFloat::IsEqual(const wdSimdFloat& rhs, const wdSimdFloat& fEpsilon) const
+NS_ALWAYS_INLINE bool nsSimdFloat::IsEqual(const nsSimdFloat& rhs, const nsSimdFloat& fEpsilon) const
 {
   return m_v.IsEqual(rhs.m_v, fEpsilon);
 }
 
-WD_ALWAYS_INLINE bool wdSimdFloat::operator==(const wdSimdFloat& f) const
+NS_ALWAYS_INLINE bool nsSimdFloat::operator==(const nsSimdFloat& f) const
 {
   return m_v.x == f.m_v.x;
 }
 
-WD_ALWAYS_INLINE bool wdSimdFloat::operator!=(const wdSimdFloat& f) const
+NS_ALWAYS_INLINE bool nsSimdFloat::operator!=(const nsSimdFloat& f) const
 {
   return m_v.x != f.m_v.x;
 }
 
-WD_ALWAYS_INLINE bool wdSimdFloat::operator>=(const wdSimdFloat& f) const
+NS_ALWAYS_INLINE bool nsSimdFloat::operator>=(const nsSimdFloat& f) const
 {
   return m_v.x >= f.m_v.x;
 }
 
-WD_ALWAYS_INLINE bool wdSimdFloat::operator>(const wdSimdFloat& f) const
+NS_ALWAYS_INLINE bool nsSimdFloat::operator>(const nsSimdFloat& f) const
 {
   return m_v.x > f.m_v.x;
 }
 
-WD_ALWAYS_INLINE bool wdSimdFloat::operator<=(const wdSimdFloat& f) const
+NS_ALWAYS_INLINE bool nsSimdFloat::operator<=(const nsSimdFloat& f) const
 {
   return m_v.x <= f.m_v.x;
 }
 
-WD_ALWAYS_INLINE bool wdSimdFloat::operator<(const wdSimdFloat& f) const
+NS_ALWAYS_INLINE bool nsSimdFloat::operator<(const nsSimdFloat& f) const
 {
   return m_v.x < f.m_v.x;
 }
 
-WD_ALWAYS_INLINE bool wdSimdFloat::operator==(float f) const
+NS_ALWAYS_INLINE bool nsSimdFloat::operator==(float f) const
 {
   return m_v.x == f;
 }
 
-WD_ALWAYS_INLINE bool wdSimdFloat::operator!=(float f) const
+NS_ALWAYS_INLINE bool nsSimdFloat::operator!=(float f) const
 {
   return m_v.x != f;
 }
 
-WD_ALWAYS_INLINE bool wdSimdFloat::operator>(float f) const
+NS_ALWAYS_INLINE bool nsSimdFloat::operator>(float f) const
 {
   return m_v.x > f;
 }
 
-WD_ALWAYS_INLINE bool wdSimdFloat::operator>=(float f) const
+NS_ALWAYS_INLINE bool nsSimdFloat::operator>=(float f) const
 {
   return m_v.x >= f;
 }
 
-WD_ALWAYS_INLINE bool wdSimdFloat::operator<(float f) const
+NS_ALWAYS_INLINE bool nsSimdFloat::operator<(float f) const
 {
   return m_v.x < f;
 }
 
-WD_ALWAYS_INLINE bool wdSimdFloat::operator<=(float f) const
+NS_ALWAYS_INLINE bool nsSimdFloat::operator<=(float f) const
 {
   return m_v.x <= f;
 }
 
-template <wdMathAcc::Enum acc>
-WD_ALWAYS_INLINE wdSimdFloat wdSimdFloat::GetReciprocal() const
+template <nsMathAcc::Enum acc>
+NS_ALWAYS_INLINE nsSimdFloat nsSimdFloat::GetReciprocal() const
 {
-  return wdSimdFloat(1.0f / m_v.x);
+  return nsSimdFloat(1.0f / m_v.x);
 }
 
-template <wdMathAcc::Enum acc>
-WD_ALWAYS_INLINE wdSimdFloat wdSimdFloat::GetSqrt() const
+template <nsMathAcc::Enum acc>
+NS_ALWAYS_INLINE nsSimdFloat nsSimdFloat::GetSqrt() const
 {
-  return wdSimdFloat(wdMath::Sqrt(m_v.x));
+  return nsSimdFloat(nsMath::Sqrt(m_v.x));
 }
 
-template <wdMathAcc::Enum acc>
-WD_ALWAYS_INLINE wdSimdFloat wdSimdFloat::GetInvSqrt() const
+template <nsMathAcc::Enum acc>
+NS_ALWAYS_INLINE nsSimdFloat nsSimdFloat::GetInvSqrt() const
 {
-  return wdSimdFloat(1.0f / wdMath::Sqrt(m_v.x));
+  return nsSimdFloat(1.0f / nsMath::Sqrt(m_v.x));
 }
 
-WD_ALWAYS_INLINE wdSimdFloat wdSimdFloat::Max(const wdSimdFloat& f) const
+NS_ALWAYS_INLINE nsSimdFloat nsSimdFloat::Max(const nsSimdFloat& f) const
 {
   return m_v.CompMax(f.m_v);
 }
 
-WD_ALWAYS_INLINE wdSimdFloat wdSimdFloat::Min(const wdSimdFloat& f) const
+NS_ALWAYS_INLINE nsSimdFloat nsSimdFloat::Min(const nsSimdFloat& f) const
 {
   return m_v.CompMin(f.m_v);
 }
 
-WD_ALWAYS_INLINE wdSimdFloat wdSimdFloat::Abs() const
+NS_ALWAYS_INLINE nsSimdFloat nsSimdFloat::Abs() const
 {
-  return wdSimdFloat(wdMath::Abs(m_v.x));
+  return nsSimdFloat(nsMath::Abs(m_v.x));
 }

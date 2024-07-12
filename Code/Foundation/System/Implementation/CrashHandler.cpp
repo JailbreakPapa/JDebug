@@ -7,18 +7,13 @@
 #include <Foundation/System/Process.h>
 #include <Foundation/Time/Timestamp.h>
 
-static void PrintHelper(const char* szString)
-{
-  wdLog::Printf("%s", szString);
-}
-
 //////////////////////////////////////////////////////////////////////////
 
-wdCrashHandler* wdCrashHandler::s_pActiveHandler = nullptr;
+nsCrashHandler* nsCrashHandler::s_pActiveHandler = nullptr;
 
-wdCrashHandler::wdCrashHandler() = default;
+nsCrashHandler::nsCrashHandler() = default;
 
-wdCrashHandler::~wdCrashHandler()
+nsCrashHandler::~nsCrashHandler()
 {
   if (s_pActiveHandler == this)
   {
@@ -26,25 +21,25 @@ wdCrashHandler::~wdCrashHandler()
   }
 }
 
-wdCrashHandler* wdCrashHandler::GetCrashHandler()
+nsCrashHandler* nsCrashHandler::GetCrashHandler()
 {
   return s_pActiveHandler;
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-wdCrashHandler_WriteMiniDump wdCrashHandler_WriteMiniDump::g_Instance;
+nsCrashHandler_WriteMiniDump nsCrashHandler_WriteMiniDump::g_Instance;
 
-wdCrashHandler_WriteMiniDump::wdCrashHandler_WriteMiniDump() = default;
+nsCrashHandler_WriteMiniDump::nsCrashHandler_WriteMiniDump() = default;
 
-void wdCrashHandler_WriteMiniDump::SetFullDumpFilePath(wdStringView sFullAbsDumpFilePath)
+void nsCrashHandler_WriteMiniDump::SetFullDumpFilePath(nsStringView sFullAbsDumpFilePath)
 {
   m_sDumpFilePath = sFullAbsDumpFilePath;
 }
 
-void wdCrashHandler_WriteMiniDump::SetDumpFilePath(wdStringView sAbsDirectoryPath, wdStringView sAppName, wdBitflags<PathFlags> flags)
+void nsCrashHandler_WriteMiniDump::SetDumpFilePath(nsStringView sAbsDirectoryPath, nsStringView sAppName, nsBitflags<PathFlags> flags)
 {
-  wdStringBuilder sOutputPath = sAbsDirectoryPath;
+  nsStringBuilder sOutputPath = sAbsDirectoryPath;
 
   if (flags.IsSet(PathFlags::AppendSubFolder))
   {
@@ -55,14 +50,14 @@ void wdCrashHandler_WriteMiniDump::SetDumpFilePath(wdStringView sAbsDirectoryPat
 
   if (flags.IsSet(PathFlags::AppendDate))
   {
-    const wdDateTime date = wdTimestamp::CurrentTimestamp();
+    const nsDateTime date = nsDateTime::MakeFromTimestamp(nsTimestamp::CurrentTimestamp());
     sOutputPath.AppendFormat("_{}", date);
   }
 
-#if WD_ENABLED(WD_SUPPORTS_PROCESSES)
+#if NS_ENABLED(NS_SUPPORTS_PROCESSES)
   if (flags.IsSet(PathFlags::AppendPID))
   {
-    const wdUInt32 pid = wdProcess::GetCurrentProcessID();
+    const nsUInt32 pid = nsProcess::GetCurrentProcessID();
     sOutputPath.AppendFormat("_{}", pid);
   }
 #endif
@@ -72,20 +67,20 @@ void wdCrashHandler_WriteMiniDump::SetDumpFilePath(wdStringView sAbsDirectoryPat
   SetFullDumpFilePath(sOutputPath);
 }
 
-void wdCrashHandler_WriteMiniDump::SetDumpFilePath(wdStringView sAppName, wdBitflags<PathFlags> flags)
+void nsCrashHandler_WriteMiniDump::SetDumpFilePath(nsStringView sAppName, nsBitflags<PathFlags> flags)
 {
-  SetDumpFilePath(wdOSFile::GetApplicationDirectory(), sAppName, flags);
+  SetDumpFilePath(nsOSFile::GetApplicationDirectory(), sAppName, flags);
 }
 
-void wdCrashHandler_WriteMiniDump::HandleCrash(void* pOsSpecificData)
+void nsCrashHandler_WriteMiniDump::HandleCrash(void* pOsSpecificData)
 {
   bool crashDumpWritten = false;
   if (!m_sDumpFilePath.IsEmpty())
   {
-#if WD_ENABLED(WD_SUPPORTS_CRASH_DUMPS)
-    if (wdMiniDumpUtils::LaunchMiniDumpTool(m_sDumpFilePath).Failed())
+#if NS_ENABLED(NS_SUPPORTS_CRASH_DUMPS)
+    if (nsMiniDumpUtils::LaunchMiniDumpTool(m_sDumpFilePath).Failed())
     {
-      wdLog::Print("Could not launch MiniDumpTool, trying to write crash-dump from crashed process directly.\n");
+      nsLog::Print("Could not launch MiniDumpTool, trying to write crash-dump from crashed process directly.\n");
 
       crashDumpWritten = WriteOwnProcessMiniDump(pOsSpecificData);
     }
@@ -99,26 +94,13 @@ void wdCrashHandler_WriteMiniDump::HandleCrash(void* pOsSpecificData)
   }
   else
   {
-    wdLog::Print("wdCrashHandler_WriteMiniDump: No dump-file location specified.\n");
+    nsLog::Print("nsCrashHandler_WriteMiniDump: No dump-file location specified.\n");
   }
 
   PrintStackTrace(pOsSpecificData);
 
   if (crashDumpWritten)
   {
-    wdLog::Printf("Application crashed. Crash-dump written to '%s'\n.", m_sDumpFilePath.GetData());
+    nsLog::Printf("Application crashed. Crash-dump written to '%s'\n.", m_sDumpFilePath.GetData());
   }
 }
-
-//////////////////////////////////////////////////////////////////////////
-
-#if WD_ENABLED(WD_PLATFORM_WINDOWS)
-#  include <Foundation/System/Implementation/Win/CrashHandler_win.h>
-#elif WD_ENABLED(WD_PLATFORM_OSX) || WD_ENABLED(WD_PLATFORM_LINUX) || WD_ENABLED(WD_PLATFORM_ANDROID)
-#  include <Foundation/System/Implementation/Posix/CrashHandler_posix.h>
-#else
-#  error "wdCrashHandler is not implemented on current platform"
-#endif
-
-
-WD_STATICLINK_FILE(Foundation, Foundation_System_Implementation_CrashHandler);

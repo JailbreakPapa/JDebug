@@ -1,60 +1,60 @@
 #pragma once
 
-WD_ALWAYS_INLINE wdSimdVec4u::wdSimdVec4u()
+NS_ALWAYS_INLINE nsSimdVec4u::nsSimdVec4u()
 {
-  WD_CHECK_SIMD_ALIGNMENT(this);
+  NS_CHECK_SIMD_ALIGNMENT(this);
 
-#if WD_ENABLED(WD_COMPILE_FOR_DEBUG)
+#if NS_ENABLED(NS_MATH_CHECK_FOR_NAN)
   m_v = _mm_set1_epi32(0xCDCDCDCD);
 #endif
 }
 
-WD_ALWAYS_INLINE wdSimdVec4u::wdSimdVec4u(wdUInt32 uiXyzw)
+NS_ALWAYS_INLINE nsSimdVec4u::nsSimdVec4u(nsUInt32 uiXyzw)
 {
-  WD_CHECK_SIMD_ALIGNMENT(this);
+  NS_CHECK_SIMD_ALIGNMENT(this);
 
   m_v = _mm_set1_epi32(uiXyzw);
 }
 
-WD_ALWAYS_INLINE wdSimdVec4u::wdSimdVec4u(wdUInt32 x, wdUInt32 y, wdUInt32 z, wdUInt32 w)
+NS_ALWAYS_INLINE nsSimdVec4u::nsSimdVec4u(nsUInt32 x, nsUInt32 y, nsUInt32 z, nsUInt32 w)
 {
-  WD_CHECK_SIMD_ALIGNMENT(this);
+  NS_CHECK_SIMD_ALIGNMENT(this);
 
   m_v = _mm_setr_epi32(x, y, z, w);
 }
 
-WD_ALWAYS_INLINE wdSimdVec4u::wdSimdVec4u(wdInternal::QuadInt v)
+NS_ALWAYS_INLINE nsSimdVec4u::nsSimdVec4u(nsInternal::QuadInt v)
 {
   m_v = v;
 }
 
-WD_ALWAYS_INLINE void wdSimdVec4u::Set(wdUInt32 uiXyzw)
+NS_ALWAYS_INLINE void nsSimdVec4u::Set(nsUInt32 uiXyzw)
 {
   m_v = _mm_set1_epi32(uiXyzw);
 }
 
-WD_ALWAYS_INLINE void wdSimdVec4u::Set(wdUInt32 x, wdUInt32 y, wdUInt32 z, wdUInt32 w)
+NS_ALWAYS_INLINE void nsSimdVec4u::Set(nsUInt32 x, nsUInt32 y, nsUInt32 z, nsUInt32 w)
 {
   m_v = _mm_setr_epi32(x, y, z, w);
 }
 
-WD_ALWAYS_INLINE void wdSimdVec4u::SetZero()
+NS_ALWAYS_INLINE void nsSimdVec4u::SetZero()
 {
   m_v = _mm_setzero_si128();
 }
 
 // needs to be implemented here because of include dependencies
-WD_ALWAYS_INLINE wdSimdVec4i::wdSimdVec4i(const wdSimdVec4u& u)
+NS_ALWAYS_INLINE nsSimdVec4i::nsSimdVec4i(const nsSimdVec4u& u)
   : m_v(u.m_v)
 {
 }
 
-WD_ALWAYS_INLINE wdSimdVec4u::wdSimdVec4u(const wdSimdVec4i& i)
+NS_ALWAYS_INLINE nsSimdVec4u::nsSimdVec4u(const nsSimdVec4i& i)
   : m_v(i.m_v)
 {
 }
 
-WD_ALWAYS_INLINE wdSimdVec4f wdSimdVec4u::ToFloat() const
+NS_ALWAYS_INLINE nsSimdVec4f nsSimdVec4u::ToFloat() const
 {
   __m128 two16 = _mm_set1_ps((float)0x10000); // 2^16
   __m128i high = _mm_srli_epi32(m_v, 16);
@@ -66,7 +66,7 @@ WD_ALWAYS_INLINE wdSimdVec4f wdSimdVec4u::ToFloat() const
 }
 
 // static
-WD_ALWAYS_INLINE wdSimdVec4u wdSimdVec4u::Truncate(const wdSimdVec4f& f)
+NS_ALWAYS_INLINE nsSimdVec4u nsSimdVec4u::Truncate(const nsSimdVec4f& f)
 {
   alignas(16) const float fmax[4] = {2.14748364e+009f, 2.14748364e+009f, 2.14748364e+009f, 2.14748364e+009f};
   alignas(16) const float fmax_unsigned[4] = {4.29496729e+009f, 4.29496729e+009f, 4.29496729e+009f, 4.29496729e+009f};
@@ -85,139 +85,139 @@ WD_ALWAYS_INLINE wdSimdVec4u wdSimdVec4u::Truncate(const wdSimdVec4f& f)
 }
 
 template <int N>
-WD_ALWAYS_INLINE wdUInt32 wdSimdVec4u::GetComponent() const
+NS_ALWAYS_INLINE nsUInt32 nsSimdVec4u::GetComponent() const
 {
-#if WD_SSE_LEVEL >= WD_SSE_41
+#if NS_SSE_LEVEL >= NS_SSE_41
   return _mm_extract_epi32(m_v, N);
 #else
   return m_v.m128i_i32[N];
 #endif
 }
 
-WD_ALWAYS_INLINE wdUInt32 wdSimdVec4u::x() const
+NS_ALWAYS_INLINE nsUInt32 nsSimdVec4u::x() const
 {
   return GetComponent<0>();
 }
 
-WD_ALWAYS_INLINE wdUInt32 wdSimdVec4u::y() const
+NS_ALWAYS_INLINE nsUInt32 nsSimdVec4u::y() const
 {
   return GetComponent<1>();
 }
 
-WD_ALWAYS_INLINE wdUInt32 wdSimdVec4u::z() const
+NS_ALWAYS_INLINE nsUInt32 nsSimdVec4u::z() const
 {
   return GetComponent<2>();
 }
 
-WD_ALWAYS_INLINE wdUInt32 wdSimdVec4u::w() const
+NS_ALWAYS_INLINE nsUInt32 nsSimdVec4u::w() const
 {
   return GetComponent<3>();
 }
 
-template <wdSwizzle::Enum s>
-WD_ALWAYS_INLINE wdSimdVec4u wdSimdVec4u::Get() const
+template <nsSwizzle::Enum s>
+NS_ALWAYS_INLINE nsSimdVec4u nsSimdVec4u::Get() const
 {
-  return _mm_shuffle_epi32(m_v, WD_TO_SHUFFLE(s));
+  return _mm_shuffle_epi32(m_v, NS_TO_SHUFFLE(s));
 }
 
-WD_ALWAYS_INLINE wdSimdVec4u wdSimdVec4u::operator+(const wdSimdVec4u& v) const
+NS_ALWAYS_INLINE nsSimdVec4u nsSimdVec4u::operator+(const nsSimdVec4u& v) const
 {
   return _mm_add_epi32(m_v, v.m_v);
 }
 
-WD_ALWAYS_INLINE wdSimdVec4u wdSimdVec4u::operator-(const wdSimdVec4u& v) const
+NS_ALWAYS_INLINE nsSimdVec4u nsSimdVec4u::operator-(const nsSimdVec4u& v) const
 {
   return _mm_sub_epi32(m_v, v.m_v);
 }
 
-WD_ALWAYS_INLINE wdSimdVec4u wdSimdVec4u::CompMul(const wdSimdVec4u& v) const
+NS_ALWAYS_INLINE nsSimdVec4u nsSimdVec4u::CompMul(const nsSimdVec4u& v) const
 {
-#if WD_SSE_LEVEL >= WD_SSE_41
+#if NS_SSE_LEVEL >= NS_SSE_41
   return _mm_mullo_epi32(m_v, v.m_v);
 #else
-  WD_ASSERT_NOT_IMPLEMENTED; // not sure whether this code works so better assert
+  NS_ASSERT_NOT_IMPLEMENTED; // not sure whether this code works so better assert
   __m128i tmp1 = _mm_mul_epu32(m_v, v.m_v);
   __m128i tmp2 = _mm_mul_epu32(_mm_srli_si128(m_v, 4), _mm_srli_si128(v.m_v, 4));
-  return _mm_unpacklo_epi32(_mm_shuffle_epi32(tmp1, WD_SHUFFLE(0, 2, 0, 0)), _mm_shuffle_epi32(tmp2, WD_SHUFFLE(0, 2, 0, 0)));
+  return _mm_unpacklo_epi32(_mm_shuffle_epi32(tmp1, NS_SHUFFLE(0, 2, 0, 0)), _mm_shuffle_epi32(tmp2, NS_SHUFFLE(0, 2, 0, 0)));
 #endif
 }
 
-WD_ALWAYS_INLINE wdSimdVec4u wdSimdVec4u::operator|(const wdSimdVec4u& v) const
+NS_ALWAYS_INLINE nsSimdVec4u nsSimdVec4u::operator|(const nsSimdVec4u& v) const
 {
   return _mm_or_si128(m_v, v.m_v);
 }
 
-WD_ALWAYS_INLINE wdSimdVec4u wdSimdVec4u::operator&(const wdSimdVec4u& v) const
+NS_ALWAYS_INLINE nsSimdVec4u nsSimdVec4u::operator&(const nsSimdVec4u& v) const
 {
   return _mm_and_si128(m_v, v.m_v);
 }
 
-WD_ALWAYS_INLINE wdSimdVec4u wdSimdVec4u::operator^(const wdSimdVec4u& v) const
+NS_ALWAYS_INLINE nsSimdVec4u nsSimdVec4u::operator^(const nsSimdVec4u& v) const
 {
   return _mm_xor_si128(m_v, v.m_v);
 }
 
-WD_ALWAYS_INLINE wdSimdVec4u wdSimdVec4u::operator~() const
+NS_ALWAYS_INLINE nsSimdVec4u nsSimdVec4u::operator~() const
 {
   __m128i ones = _mm_cmpeq_epi8(_mm_setzero_si128(), _mm_setzero_si128());
   return _mm_xor_si128(ones, m_v);
 }
 
-WD_ALWAYS_INLINE wdSimdVec4u wdSimdVec4u::operator<<(wdUInt32 uiShift) const
+NS_ALWAYS_INLINE nsSimdVec4u nsSimdVec4u::operator<<(nsUInt32 uiShift) const
 {
   return _mm_slli_epi32(m_v, uiShift);
 }
 
-WD_ALWAYS_INLINE wdSimdVec4u wdSimdVec4u::operator>>(wdUInt32 uiShift) const
+NS_ALWAYS_INLINE nsSimdVec4u nsSimdVec4u::operator>>(nsUInt32 uiShift) const
 {
   return _mm_srli_epi32(m_v, uiShift);
 }
 
-WD_ALWAYS_INLINE wdSimdVec4u& wdSimdVec4u::operator+=(const wdSimdVec4u& v)
+NS_ALWAYS_INLINE nsSimdVec4u& nsSimdVec4u::operator+=(const nsSimdVec4u& v)
 {
   m_v = _mm_add_epi32(m_v, v.m_v);
   return *this;
 }
 
-WD_ALWAYS_INLINE wdSimdVec4u& wdSimdVec4u::operator-=(const wdSimdVec4u& v)
+NS_ALWAYS_INLINE nsSimdVec4u& nsSimdVec4u::operator-=(const nsSimdVec4u& v)
 {
   m_v = _mm_sub_epi32(m_v, v.m_v);
   return *this;
 }
 
-WD_ALWAYS_INLINE wdSimdVec4u& wdSimdVec4u::operator|=(const wdSimdVec4u& v)
+NS_ALWAYS_INLINE nsSimdVec4u& nsSimdVec4u::operator|=(const nsSimdVec4u& v)
 {
   m_v = _mm_or_si128(m_v, v.m_v);
   return *this;
 }
 
-WD_ALWAYS_INLINE wdSimdVec4u& wdSimdVec4u::operator&=(const wdSimdVec4u& v)
+NS_ALWAYS_INLINE nsSimdVec4u& nsSimdVec4u::operator&=(const nsSimdVec4u& v)
 {
   m_v = _mm_and_si128(m_v, v.m_v);
   return *this;
 }
 
-WD_ALWAYS_INLINE wdSimdVec4u& wdSimdVec4u::operator^=(const wdSimdVec4u& v)
+NS_ALWAYS_INLINE nsSimdVec4u& nsSimdVec4u::operator^=(const nsSimdVec4u& v)
 {
   m_v = _mm_xor_si128(m_v, v.m_v);
   return *this;
 }
 
-WD_ALWAYS_INLINE wdSimdVec4u& wdSimdVec4u::operator<<=(wdUInt32 uiShift)
+NS_ALWAYS_INLINE nsSimdVec4u& nsSimdVec4u::operator<<=(nsUInt32 uiShift)
 {
   m_v = _mm_slli_epi32(m_v, uiShift);
   return *this;
 }
 
-WD_ALWAYS_INLINE wdSimdVec4u& wdSimdVec4u::operator>>=(wdUInt32 uiShift)
+NS_ALWAYS_INLINE nsSimdVec4u& nsSimdVec4u::operator>>=(nsUInt32 uiShift)
 {
   m_v = _mm_srli_epi32(m_v, uiShift);
   return *this;
 }
 
-WD_ALWAYS_INLINE wdSimdVec4u wdSimdVec4u::CompMin(const wdSimdVec4u& v) const
+NS_ALWAYS_INLINE nsSimdVec4u nsSimdVec4u::CompMin(const nsSimdVec4u& v) const
 {
-#if WD_SSE_LEVEL >= WD_SSE_41
+#if NS_SSE_LEVEL >= NS_SSE_41
   return _mm_min_epu32(m_v, v.m_v);
 #else
   __m128i mask = _mm_cmplt_epi32(m_v, v.m_v);
@@ -225,9 +225,9 @@ WD_ALWAYS_INLINE wdSimdVec4u wdSimdVec4u::CompMin(const wdSimdVec4u& v) const
 #endif
 }
 
-WD_ALWAYS_INLINE wdSimdVec4u wdSimdVec4u::CompMax(const wdSimdVec4u& v) const
+NS_ALWAYS_INLINE nsSimdVec4u nsSimdVec4u::CompMax(const nsSimdVec4u& v) const
 {
-#if WD_SSE_LEVEL >= WD_SSE_41
+#if NS_SSE_LEVEL >= NS_SSE_41
   return _mm_max_epu32(m_v, v.m_v);
 #else
   __m128i mask = _mm_cmpgt_epi32(m_v, v.m_v);
@@ -235,19 +235,19 @@ WD_ALWAYS_INLINE wdSimdVec4u wdSimdVec4u::CompMax(const wdSimdVec4u& v) const
 #endif
 }
 
-WD_ALWAYS_INLINE wdSimdVec4b wdSimdVec4u::operator==(const wdSimdVec4u& v) const
+NS_ALWAYS_INLINE nsSimdVec4b nsSimdVec4u::operator==(const nsSimdVec4u& v) const
 {
   return _mm_castsi128_ps(_mm_cmpeq_epi32(m_v, v.m_v));
 }
 
-WD_ALWAYS_INLINE wdSimdVec4b wdSimdVec4u::operator!=(const wdSimdVec4u& v) const
+NS_ALWAYS_INLINE nsSimdVec4b nsSimdVec4u::operator!=(const nsSimdVec4u& v) const
 {
   return !(*this == v);
 }
 
-WD_ALWAYS_INLINE wdSimdVec4b wdSimdVec4u::operator<=(const wdSimdVec4u& v) const
+NS_ALWAYS_INLINE nsSimdVec4b nsSimdVec4u::operator<=(const nsSimdVec4u& v) const
 {
-#if WD_SSE_LEVEL >= WD_SSE_41
+#if NS_SSE_LEVEL >= NS_SSE_41
   __m128i minValue = _mm_min_epu32(m_v, v.m_v);
   return _mm_castsi128_ps(_mm_cmpeq_epi32(minValue, m_v));
 #else
@@ -255,7 +255,7 @@ WD_ALWAYS_INLINE wdSimdVec4b wdSimdVec4u::operator<=(const wdSimdVec4u& v) const
 #endif
 }
 
-WD_ALWAYS_INLINE wdSimdVec4b wdSimdVec4u::operator<(const wdSimdVec4u& v) const
+NS_ALWAYS_INLINE nsSimdVec4b nsSimdVec4u::operator<(const nsSimdVec4u& v) const
 {
   __m128i signBit = _mm_set1_epi32(0x80000000);
   __m128i a = _mm_sub_epi32(m_v, signBit);
@@ -263,9 +263,9 @@ WD_ALWAYS_INLINE wdSimdVec4b wdSimdVec4u::operator<(const wdSimdVec4u& v) const
   return _mm_castsi128_ps(_mm_cmplt_epi32(a, b));
 }
 
-WD_ALWAYS_INLINE wdSimdVec4b wdSimdVec4u::operator>=(const wdSimdVec4u& v) const
+NS_ALWAYS_INLINE nsSimdVec4b nsSimdVec4u::operator>=(const nsSimdVec4u& v) const
 {
-#if WD_SSE_LEVEL >= WD_SSE_41
+#if NS_SSE_LEVEL >= NS_SSE_41
   __m128i maxValue = _mm_max_epu32(m_v, v.m_v);
   return _mm_castsi128_ps(_mm_cmpeq_epi32(maxValue, m_v));
 #else
@@ -273,7 +273,7 @@ WD_ALWAYS_INLINE wdSimdVec4b wdSimdVec4u::operator>=(const wdSimdVec4u& v) const
 #endif
 }
 
-WD_ALWAYS_INLINE wdSimdVec4b wdSimdVec4u::operator>(const wdSimdVec4u& v) const
+NS_ALWAYS_INLINE nsSimdVec4b nsSimdVec4u::operator>(const nsSimdVec4u& v) const
 {
   __m128i signBit = _mm_set1_epi32(0x80000000);
   __m128i a = _mm_sub_epi32(m_v, signBit);
@@ -282,14 +282,14 @@ WD_ALWAYS_INLINE wdSimdVec4b wdSimdVec4u::operator>(const wdSimdVec4u& v) const
 }
 
 // static
-WD_ALWAYS_INLINE wdSimdVec4u wdSimdVec4u::ZeroVector()
+NS_ALWAYS_INLINE nsSimdVec4u nsSimdVec4u::MakeZero()
 {
   return _mm_setzero_si128();
 }
 
 // not needed atm
 #if 0
-void wdSimdVec4u::Transpose(wdSimdVec4u& v0, wdSimdVec4u& v1, wdSimdVec4u& v2, wdSimdVec4u& v3)
+void nsSimdVec4u::Transpose(nsSimdVec4u& v0, nsSimdVec4u& v1, nsSimdVec4u& v2, nsSimdVec4u& v3)
 {
   __m128i T0 = _mm_unpacklo_epi32(v0.m_v, v1.m_v);
   __m128i T1 = _mm_unpacklo_epi32(v2.m_v, v3.m_v);

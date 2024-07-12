@@ -4,15 +4,15 @@
 #include <Foundation/Threading/Implementation/TaskGroup.h>
 #include <Foundation/Threading/Lock.h>
 
-wdTaskGroup::wdTaskGroup() = default;
-wdTaskGroup::~wdTaskGroup() = default;
+nsTaskGroup::nsTaskGroup() = default;
+nsTaskGroup::~nsTaskGroup() = default;
 
-void wdTaskGroup::WaitForFinish(wdTaskGroupID group) const
+void nsTaskGroup::WaitForFinish(nsTaskGroupID group) const
 {
   if (m_uiGroupCounter != group.m_uiGroupCounter)
     return;
 
-  WD_LOCK(m_CondVarGroupFinished);
+  NS_LOCK(m_CondVarGroupFinished);
 
   while (m_uiGroupCounter == group.m_uiGroupCounter)
   {
@@ -20,7 +20,7 @@ void wdTaskGroup::WaitForFinish(wdTaskGroupID group) const
   }
 }
 
-void wdTaskGroup::Reuse(wdTaskPriority::Enum priority, wdOnTaskGroupFinishedCallback callback)
+void nsTaskGroup::Reuse(nsTaskPriority::Enum priority, nsOnTaskGroupFinishedCallback callback)
 {
   m_bInUse = true;
   m_bStartedByUser = false;
@@ -32,19 +32,16 @@ void wdTaskGroup::Reuse(wdTaskPriority::Enum priority, wdOnTaskGroupFinishedCall
   m_OnFinishedCallback = callback;
 }
 
-#if WD_ENABLED(WD_COMPILE_FOR_DEBUG)
-void wdTaskGroup::DebugCheckTaskGroup(wdTaskGroupID groupID, wdMutex& mutex)
+#if NS_ENABLED(NS_COMPILE_FOR_DEBUG)
+void nsTaskGroup::DebugCheckTaskGroup(nsTaskGroupID groupID, nsMutex& mutex)
 {
-  WD_LOCK(mutex);
+  NS_LOCK(mutex);
 
-  const wdTaskGroup* pGroup = groupID.m_pTaskGroup;
+  const nsTaskGroup* pGroup = groupID.m_pTaskGroup;
 
-  WD_ASSERT_DEV(pGroup != nullptr, "TaskGroupID is invalid.");
-  WD_ASSERT_DEV(pGroup->m_uiGroupCounter == groupID.m_uiGroupCounter, "The given TaskGroupID is not valid anymore.");
-  WD_ASSERT_DEV(!pGroup->m_bStartedByUser, "The given TaskGroupID is already started, you cannot modify it anymore.");
-  WD_ASSERT_DEV(pGroup->m_iNumActiveDependencies == 0, "Invalid active dependenices");
+  NS_ASSERT_DEV(pGroup != nullptr, "TaskGroupID is invalid.");
+  NS_ASSERT_DEV(pGroup->m_uiGroupCounter == groupID.m_uiGroupCounter, "The given TaskGroupID is not valid anymore.");
+  NS_ASSERT_DEV(!pGroup->m_bStartedByUser, "The given TaskGroupID is already started, you cannot modify it anymore.");
+  NS_ASSERT_DEV(pGroup->m_iNumActiveDependencies == 0, "Invalid active dependenices");
 }
 #endif
-
-
-WD_STATICLINK_FILE(Foundation, Foundation_Threading_Implementation_TaskGroup);

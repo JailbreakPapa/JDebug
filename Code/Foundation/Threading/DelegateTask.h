@@ -4,16 +4,16 @@
 
 /// \brief A simple task implementation that calls a delegate function.
 template <typename T>
-class wdDelegateTask final : public wdTask
+class nsDelegateTask final : public nsTask
 {
 public:
-  typedef wdDelegate<void(const T&)> FunctionType;
+  using FunctionType = nsDelegate<void(const T&)>;
 
-  wdDelegateTask(const char* szTaskName, FunctionType func, const T& param)
+  nsDelegateTask(const char* szTaskName, nsTaskNesting taskNesting, FunctionType func, const T& param)
   {
     m_Func = func;
     m_param = param;
-    ConfigureTask(szTaskName, wdTaskNesting::Never);
+    ConfigureTask(szTaskName, taskNesting);
   }
 
 private:
@@ -24,15 +24,15 @@ private:
 };
 
 template <>
-class wdDelegateTask<void> final : public wdTask
+class nsDelegateTask<void> final : public nsTask
 {
 public:
-  typedef wdDelegate<void()> FunctionType;
+  using FunctionType = nsDelegate<void()>;
 
-  wdDelegateTask(const char* szTaskName, FunctionType func)
+  nsDelegateTask(const char* szTaskName, nsTaskNesting taskNesting, FunctionType func)
   {
     m_Func = func;
-    ConfigureTask(szTaskName, wdTaskNesting::Never);
+    ConfigureTask(szTaskName, taskNesting);
   }
 
 private:

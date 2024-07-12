@@ -1,6 +1,7 @@
 #include <Foundation/FoundationPCH.h>
 
 #include <Foundation/Strings/StringUtils.h>
+#include <stdarg.h>
 
 // This is an implementation of the sprintf function, with an additional buffer size
 // On some systems this is implemented under the name 'snprintf'
@@ -24,19 +25,19 @@
 //  Small values (bytes / shorts) don't get any larger by this, I don't see anything that could be done
 //  differently knowing these values are supposed to be bytes or shorts.
 
-//#define USE_STRICT_SPECIFICATION
+// #define USE_STRICT_SPECIFICATION
 
 struct sprintfFlags
 {
   enum Enum
   {
     None,
-    LeftJustify = WD_BIT(0),   // -
-    ForceSign = WD_BIT(1),     // +
-    BlankSign = WD_BIT(2),     // (space)
-    Hash = WD_BIT(3),          // #
-    PadZeros = WD_BIT(4),      // 0
-    ForceZeroSign = WD_BIT(5), // [internal] Prints a '+' even for zero
+    LeftJustify = NS_BIT(0),   // -
+    ForceSign = NS_BIT(1),     // +
+    BlankSign = NS_BIT(2),     // (space)
+    Hash = NS_BIT(3),          // #
+    PadZeros = NS_BIT(4),      // 0
+    ForceZeroSign = NS_BIT(5), // [internal] Prints a '+' even for zero
   };
 };
 
@@ -319,7 +320,7 @@ static void OutputReverseString(char* szOutputBuffer, unsigned int uiBufferSize,
   {
     --iStringLength;
 
-    OutputChar(szOutputBuffer, uiBufferSize, ref_uiWritePos, szString[iStringLength]);
+    OutputChar(szOutputBuffer, uiBufferSize, ref_uiWritePos, szString[iStringLength]); // NOLINT: False positive from clang-tidy
   }
 }
 
@@ -868,12 +869,12 @@ static void OutputFloat_Short(char* szOutputBuffer, unsigned int uiBufferSize, u
     OutputFloat(szOutputBuffer, uiBufferSize, ref_uiWritePos, value, iWidth, iPrecF, uiFlags, bUpperCase, bScientific, iPrecision < 0);
 }
 
-int wdStringUtils::vsnprintf(char* szOutputBuffer, unsigned int uiBufferSize, const char* szFormat, va_list szArgs0)
+int nsStringUtils::vsnprintf(char* szOutputBuffer, unsigned int uiBufferSize, const char* szFormat, va_list szArgs0)
 {
   va_list args;
   va_copy(args, szArgs0);
 
-  WD_ASSERT_DEV(wdUnicodeUtils::IsValidUtf8(szFormat), "The sprintf format string must be valid Utf8.");
+  NS_ASSERT_DEBUG(nsUnicodeUtils::IsValidUtf8(szFormat), "The sprintf format string must be valid Utf8.");
 
   // make sure the last character is a \0
   if ((szOutputBuffer) && (uiBufferSize > 0))
@@ -1057,7 +1058,7 @@ int wdStringUtils::vsnprintf(char* szOutputBuffer, unsigned int uiBufferSize, co
   return uiWritePos - 1;
 }
 
-int wdStringUtils::snprintf(char* szOutputBuffer, unsigned int uiBufferSize, const char* szFormat, ...)
+int nsStringUtils::snprintf(char* szOutputBuffer, unsigned int uiBufferSize, const char* szFormat, ...)
 {
   va_list args;
   va_start(args, szFormat);
@@ -1070,24 +1071,21 @@ int wdStringUtils::snprintf(char* szOutputBuffer, unsigned int uiBufferSize, con
 }
 
 
-void wdStringUtils::OutputFormattedInt(
-  char* szOutputBuffer, wdUInt32 uiBufferSize, wdUInt32& ref_uiWritePos, wdInt64 value, wdUInt8 uiWidth, bool bPadZeros, wdUInt8 uiBase)
+void nsStringUtils::OutputFormattedInt(
+  char* szOutputBuffer, nsUInt32 uiBufferSize, nsUInt32& ref_uiWritePos, nsInt64 value, nsUInt8 uiWidth, bool bPadZeros, nsUInt8 uiBase)
 {
   OutputInt(szOutputBuffer, uiBufferSize, ref_uiWritePos, value, uiWidth, -1, bPadZeros ? sprintfFlags::PadZeros : 0, uiBase);
 }
 
-void wdStringUtils::OutputFormattedUInt(
-  char* szOutputBuffer, wdUInt32 uiBufferSize, wdUInt32& ref_uiWritePos, wdUInt64 value, wdUInt8 uiWidth, bool bPadZeros, wdUInt8 uiBase, bool bUpperCase)
+void nsStringUtils::OutputFormattedUInt(
+  char* szOutputBuffer, nsUInt32 uiBufferSize, nsUInt32& ref_uiWritePos, nsUInt64 value, nsUInt8 uiWidth, bool bPadZeros, nsUInt8 uiBase, bool bUpperCase)
 {
   OutputUInt(szOutputBuffer, uiBufferSize, ref_uiWritePos, value, uiWidth, -1, bPadZeros ? sprintfFlags::PadZeros : 0, uiBase, bUpperCase);
 }
 
-void wdStringUtils::OutputFormattedFloat(char* szOutputBuffer, wdUInt32 uiBufferSize, wdUInt32& ref_uiWritePos, double value, wdUInt8 uiWidth,
-  bool bPadZeros, wdInt8 iPrecision, bool bScientific, bool bRemoveTrailingZeroes)
+void nsStringUtils::OutputFormattedFloat(char* szOutputBuffer, nsUInt32 uiBufferSize, nsUInt32& ref_uiWritePos, double value, nsUInt8 uiWidth,
+  bool bPadZeros, nsInt8 iPrecision, bool bScientific, bool bRemoveTrailingZeroes)
 {
-  OutputFloat(szOutputBuffer, uiBufferSize, ref_uiWritePos, value, uiWidth, wdMath::Max<int>(-1, iPrecision), bPadZeros ? sprintfFlags::PadZeros : 0,
+  OutputFloat(szOutputBuffer, uiBufferSize, ref_uiWritePos, value, uiWidth, nsMath::Max<int>(-1, iPrecision), bPadZeros ? sprintfFlags::PadZeros : 0,
     false, bScientific, bRemoveTrailingZeroes);
 }
-
-
-WD_STATICLINK_FILE(Foundation, Foundation_Strings_Implementation_snprintf);

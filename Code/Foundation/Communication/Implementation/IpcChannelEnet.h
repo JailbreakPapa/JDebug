@@ -5,14 +5,14 @@
 
 #ifdef BUILDSYSTEM_ENABLE_ENET_SUPPORT
 
-class wdRemoteInterface;
-class wdRemoteMessage;
+class nsRemoteInterface;
+class nsRemoteMessage;
 
-class WD_FOUNDATION_DLL wdIpcChannelEnet : public wdIpcChannel
+class NS_FOUNDATION_DLL nsIpcChannelEnet : public nsIpcChannel
 {
 public:
-  wdIpcChannelEnet(const char* szAddress, Mode::Enum mode);
-  ~wdIpcChannelEnet();
+  nsIpcChannelEnet(nsStringView sAddress, Mode::Enum mode);
+  ~nsIpcChannelEnet();
 
 protected:
   virtual void InternalConnect() override;
@@ -21,13 +21,13 @@ protected:
   virtual bool NeedWakeup() const override;
   virtual bool RequiresRegularTick() override { return true; }
   virtual void Tick() override;
-  void NetworkMessageHandler(wdRemoteMessage& msg);
-  void EnetEventHandler(const wdRemoteEvent& e);
+  void NetworkMessageHandler(nsRemoteMessage& msg);
+  void EnetEventHandler(const nsRemoteEvent& e);
 
-  wdString m_sAddress;
-  wdString m_sLastAddress;
-  wdTime m_LastConnectAttempt;
-  wdUniquePtr<wdRemoteInterface> m_pNetwork;
+  nsString m_sAddress;
+  nsString m_sLastAddress;
+  nsTime m_LastConnectAttempt;
+  nsUniquePtr<nsRemoteInterface> m_pNetwork;
 };
 
 #endif

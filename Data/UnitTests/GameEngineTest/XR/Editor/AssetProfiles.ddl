@@ -7,7 +7,7 @@ AssetProfiles
 			o
 			{
 				Uuid %id{uint64{8085892115830203315,3737221074888337082}}
-				string %t{"wdPlatformProfile"}
+				string %t{"nsPlatformProfile"}
 				uint32 %v{1}
 				string %n{"root"}
 				p
@@ -19,13 +19,13 @@ AssetProfiles
 						Uuid{uint64{10688866045028468411,17021851764261564183}}
 					}
 					string %Name{"PC"}
-					string %Platform{"wdProfileTargetPlatform::PC"}
+					string %Platform{"nsProfileTargetPlatform::PC"}
 				}
 			}
 			o
 			{
 				Uuid %id{uint64{11754538365307859884,8572204067211736280}}
-				string %t{"wdRenderPipelineProfileConfig"}
+				string %t{"nsRenderPipelineProfileConfig"}
 				uint32 %v{1}
 				p
 				{
@@ -36,7 +36,7 @@ AssetProfiles
 			o
 			{
 				Uuid %id{uint64{18165925277888737543,17003377905246685588}}
-				string %t{"wdTextureAssetProfileConfig"}
+				string %t{"nsTextureAssetProfileConfig"}
 				uint32 %v{1}
 				p
 				{
@@ -46,7 +46,7 @@ AssetProfiles
 			o
 			{
 				Uuid %id{uint64{10688866045028468411,17021851764261564183}}
-				string %t{"wdXRConfig"}
+				string %t{"nsXRConfig"}
 				uint32 %v{2}
 				p
 				{

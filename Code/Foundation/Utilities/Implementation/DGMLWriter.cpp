@@ -4,22 +4,22 @@
 #include <Foundation/Strings/FormatString.h>
 #include <Foundation/Utilities/DGMLWriter.h>
 
-wdDGMLGraph::wdDGMLGraph(wdDGMLGraph::Direction graphDirection /*= LeftToRight*/, wdDGMLGraph::Layout graphLayout /*= Tree*/)
+nsDGMLGraph::nsDGMLGraph(nsDGMLGraph::Direction graphDirection /*= LeftToRight*/, nsDGMLGraph::Layout graphLayout /*= Tree*/)
   : m_Direction(graphDirection)
   , m_Layout(graphLayout)
 {
 }
 
-wdDGMLGraph::NodeId wdDGMLGraph::AddNode(const char* szTitle, const NodeDesc* pDesc)
+nsDGMLGraph::NodeId nsDGMLGraph::AddNode(nsStringView sTitle, const NodeDesc* pDesc)
 {
-  return AddGroup(szTitle, GroupType::None, pDesc);
+  return AddGroup(sTitle, GroupType::None, pDesc);
 }
 
-wdDGMLGraph::NodeId wdDGMLGraph::AddGroup(const char* szTitle, GroupType type, const NodeDesc* pDesc /*= nullptr*/)
+nsDGMLGraph::NodeId nsDGMLGraph::AddGroup(nsStringView sTitle, GroupType type, const NodeDesc* pDesc /*= nullptr*/)
 {
-  wdDGMLGraph::Node& Node = m_Nodes.ExpandAndGetRef();
+  nsDGMLGraph::Node& Node = m_Nodes.ExpandAndGetRef();
 
-  Node.m_Title = szTitle;
+  Node.m_Title = sTitle;
   Node.m_GroupType = type;
 
   if (pDesc)
@@ -30,93 +30,93 @@ wdDGMLGraph::NodeId wdDGMLGraph::AddGroup(const char* szTitle, GroupType type, c
   return m_Nodes.GetCount() - 1;
 }
 
-void wdDGMLGraph::AddNodeToGroup(NodeId node, NodeId group)
+void nsDGMLGraph::AddNodeToGroup(NodeId node, NodeId group)
 {
-  WD_ASSERT_DEBUG(m_Nodes[group].m_GroupType != GroupType::None, "The given group node has not been created as a group node");
+  NS_ASSERT_DEBUG(m_Nodes[group].m_GroupType != GroupType::None, "The given group node has not been created as a group node");
 
   m_Nodes[node].m_ParentGroup = group;
 }
 
-wdDGMLGraph::ConnectionId wdDGMLGraph::AddConnection(wdDGMLGraph::NodeId source, wdDGMLGraph::NodeId target, const char* szLabel)
+nsDGMLGraph::ConnectionId nsDGMLGraph::AddConnection(nsDGMLGraph::NodeId source, nsDGMLGraph::NodeId target, nsStringView sLabel)
 {
-  wdDGMLGraph::Connection& connection = m_Connections.ExpandAndGetRef();
+  nsDGMLGraph::Connection& connection = m_Connections.ExpandAndGetRef();
 
   connection.m_Source = source;
   connection.m_Target = target;
-  connection.m_sLabel = szLabel;
+  connection.m_sLabel = sLabel;
 
   return m_Connections.GetCount() - 1;
 }
 
-wdDGMLGraph::PropertyId wdDGMLGraph::AddPropertyType(const char* szName)
+nsDGMLGraph::PropertyId nsDGMLGraph::AddPropertyType(nsStringView sName)
 {
   auto& prop = m_PropertyTypes.ExpandAndGetRef();
-  prop.m_Name = szName;
+  prop.m_Name = sName;
   return m_PropertyTypes.GetCount() - 1;
 }
 
-void wdDGMLGraph::AddNodeProperty(NodeId node, PropertyId property, const wdFormatString& fmt)
+void nsDGMLGraph::AddNodeProperty(NodeId node, PropertyId property, const nsFormatString& fmt)
 {
-  wdStringBuilder tmp;
+  nsStringBuilder tmp;
 
   auto& prop = m_Nodes[node].m_Properties.ExpandAndGetRef();
   prop.m_PropertyId = property;
   prop.m_sValue = fmt.GetText(tmp);
 }
 
-wdResult wdDGMLGraphWriter::WriteGraphToFile(wdStringView sFileName, const wdDGMLGraph& graph)
+nsResult nsDGMLGraphWriter::WriteGraphToFile(nsStringView sFileName, const nsDGMLGraph& graph)
 {
-  wdStringBuilder sGraph;
+  nsStringBuilder sGraph;
 
   // Write to memory object and then to file
   if (WriteGraphToString(sGraph, graph).Succeeded())
   {
-    wdStringBuilder sTemp;
+    nsStringBuilder sTemp;
 
-    wdFileWriter fileWriter;
+    nsFileWriter fileWriter;
     if (!fileWriter.Open(sFileName.GetData(sTemp)).Succeeded())
-      return WD_FAILURE;
+      return NS_FAILURE;
 
     fileWriter.WriteBytes(sGraph.GetData(), sGraph.GetElementCount()).IgnoreResult();
 
     fileWriter.Close();
 
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
-wdResult wdDGMLGraphWriter::WriteGraphToString(wdStringBuilder& ref_sStringBuilder, const wdDGMLGraph& graph)
+nsResult nsDGMLGraphWriter::WriteGraphToString(nsStringBuilder& ref_sStringBuilder, const nsDGMLGraph& graph)
 {
   const char* szDirection = nullptr;
   const char* szLayout = nullptr;
 
   switch (graph.m_Direction)
   {
-    case wdDGMLGraph::Direction::TopToBottom:
+    case nsDGMLGraph::Direction::TopToBottom:
       szDirection = "TopToBottom";
       break;
-    case wdDGMLGraph::Direction::BottomToTop:
+    case nsDGMLGraph::Direction::BottomToTop:
       szDirection = "BottomToTop";
       break;
-    case wdDGMLGraph::Direction::LeftToRight:
+    case nsDGMLGraph::Direction::LeftToRight:
       szDirection = "LeftToRight";
       break;
-    case wdDGMLGraph::Direction::RightToLeft:
+    case nsDGMLGraph::Direction::RightToLeft:
       szDirection = "RightToLeft";
       break;
   }
 
   switch (graph.m_Layout)
   {
-    case wdDGMLGraph::Layout::Free:
+    case nsDGMLGraph::Layout::Free:
       szLayout = "None";
       break;
-    case wdDGMLGraph::Layout::Tree:
+    case nsDGMLGraph::Layout::Tree:
       szLayout = "Sugiyama";
       break;
-    case wdDGMLGraph::Layout::DependencyMatrix:
+    case nsDGMLGraph::Layout::DependencyMatrix:
       szLayout = "DependencyMatrix";
       break;
   }
@@ -128,7 +128,7 @@ wdResult wdDGMLGraphWriter::WriteGraphToString(wdStringBuilder& ref_sStringBuild
   {
     ref_sStringBuilder.Append("\t<Properties>\n");
 
-    for (wdUInt32 i = 0; i < graph.m_PropertyTypes.GetCount(); ++i)
+    for (nsUInt32 i = 0; i < graph.m_PropertyTypes.GetCount(); ++i)
     {
       const auto& prop = graph.m_PropertyTypes[i];
 
@@ -141,15 +141,15 @@ wdResult wdDGMLGraphWriter::WriteGraphToString(wdStringBuilder& ref_sStringBuild
   // Write out all the nodes
   if (!graph.m_Nodes.IsEmpty())
   {
-    wdStringBuilder ColorValue;
-    wdStringBuilder PropertiesString;
-    wdStringBuilder SanitizedName;
+    nsStringBuilder ColorValue;
+    nsStringBuilder PropertiesString;
+    nsStringBuilder SanitizedName;
     const char* szGroupString;
 
     ref_sStringBuilder.Append("\t<Nodes>\n");
-    for (wdUInt32 i = 0; i < graph.m_Nodes.GetCount(); ++i)
+    for (nsUInt32 i = 0; i < graph.m_Nodes.GetCount(); ++i)
     {
-      const wdDGMLGraph::Node& node = graph.m_Nodes[i];
+      const nsDGMLGraph::Node& node = graph.m_Nodes[i];
 
       SanitizedName = node.m_Title;
       SanitizedName.ReplaceAll("&", "&#038;");
@@ -160,22 +160,22 @@ wdResult wdDGMLGraphWriter::WriteGraphToString(wdStringBuilder& ref_sStringBuild
       SanitizedName.ReplaceAll("\n", "&#xA;");
 
       ColorValue = "#FF";
-      wdColorGammaUB RGBA(node.m_Desc.m_Color);
-      ColorValue.AppendFormat("{0}{1}{2}", wdArgU(RGBA.r, 2, true, 16, true), wdArgU(RGBA.g, 2, true, 16, true), wdArgU(RGBA.b, 2, true, 16, true));
+      nsColorGammaUB RGBA(node.m_Desc.m_Color);
+      ColorValue.AppendFormat("{0}{1}{2}", nsArgU(RGBA.r, 2, true, 16, true), nsArgU(RGBA.g, 2, true, 16, true), nsArgU(RGBA.b, 2, true, 16, true));
 
-      wdStringBuilder StyleString;
+      nsStringBuilder StyleString;
       switch (node.m_Desc.m_Shape)
       {
-        case wdDGMLGraph::NodeShape::None:
+        case nsDGMLGraph::NodeShape::None:
           StyleString = "Shape=\"None\"";
           break;
-        case wdDGMLGraph::NodeShape::Rectangle:
+        case nsDGMLGraph::NodeShape::Rectangle:
           StyleString = "NodeRadius=\"0\"";
           break;
-        case wdDGMLGraph::NodeShape::RoundedRectangle:
+        case nsDGMLGraph::NodeShape::RoundedRectangle:
           StyleString = "NodeRadius=\"4\"";
           break;
-        case wdDGMLGraph::NodeShape::Button:
+        case nsDGMLGraph::NodeShape::Button:
           StyleString = "";
           break;
       }
@@ -183,15 +183,15 @@ wdResult wdDGMLGraphWriter::WriteGraphToString(wdStringBuilder& ref_sStringBuild
       switch (node.m_GroupType)
       {
 
-        case wdDGMLGraph::GroupType::Expanded:
+        case nsDGMLGraph::GroupType::Expanded:
           szGroupString = " Group=\"Expanded\"";
           break;
 
-        case wdDGMLGraph::GroupType::Collapsed:
+        case nsDGMLGraph::GroupType::Collapsed:
           szGroupString = " Group=\"Collapsed\"";
           break;
 
-        case wdDGMLGraph::GroupType::None:
+        case nsDGMLGraph::GroupType::None:
         default:
           szGroupString = nullptr;
           break;
@@ -213,14 +213,14 @@ wdResult wdDGMLGraphWriter::WriteGraphToString(wdStringBuilder& ref_sStringBuild
   {
     ref_sStringBuilder.Append("\t<Links>\n");
     {
-      for (wdUInt32 i = 0; i < graph.m_Connections.GetCount(); ++i)
+      for (nsUInt32 i = 0; i < graph.m_Connections.GetCount(); ++i)
       {
         ref_sStringBuilder.AppendFormat("\t\t<Link Source=\"N_{0}\" Target=\"N_{1}\" Label=\"{2}\" />\n", graph.m_Connections[i].m_Source, graph.m_Connections[i].m_Target, graph.m_Connections[i].m_sLabel);
       }
 
-      for (wdUInt32 i = 0; i < graph.m_Nodes.GetCount(); ++i)
+      for (nsUInt32 i = 0; i < graph.m_Nodes.GetCount(); ++i)
       {
-        const wdDGMLGraph::Node& node = graph.m_Nodes[i];
+        const nsDGMLGraph::Node& node = graph.m_Nodes[i];
 
         if (node.m_ParentGroup != 0xFFFFFFFF)
         {
@@ -233,7 +233,5 @@ wdResult wdDGMLGraphWriter::WriteGraphToString(wdStringBuilder& ref_sStringBuild
 
   ref_sStringBuilder.Append("</DirectedGraph>\n");
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
-
-WD_STATICLINK_FILE(Foundation, Foundation_Utilities_Implementation_DGMLWriter);

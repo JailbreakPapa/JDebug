@@ -5,15 +5,15 @@
 #include <Foundation/Serialization/RttiConverter.h>
 #include <Foundation/Types/VariantTypeRegistry.h>
 
-wdRttiConverterReader::wdRttiConverterReader(const wdAbstractObjectGraph* pGraph, wdRttiConverterContext* pContext)
+nsRttiConverterReader::nsRttiConverterReader(const nsAbstractObjectGraph* pGraph, nsRttiConverterContext* pContext)
 {
   m_pGraph = pGraph;
   m_pContext = pContext;
 }
 
-wdInternal::NewInstance<void> wdRttiConverterReader::CreateObjectFromNode(const wdAbstractObjectNode* pNode)
+nsInternal::NewInstance<void> nsRttiConverterReader::CreateObjectFromNode(const nsAbstractObjectNode* pNode)
 {
-  const wdRTTI* pRtti = wdRTTI::FindTypeByName(pNode->GetType());
+  const nsRTTI* pRtti = m_pContext->FindTypeByName(pNode->GetType());
   if (pRtti == nullptr)
   {
     m_pContext->OnUnknownTypeError(pNode->GetType());
@@ -30,9 +30,9 @@ wdInternal::NewInstance<void> wdRttiConverterReader::CreateObjectFromNode(const 
   return pObject;
 }
 
-void wdRttiConverterReader::ApplyPropertiesToObject(const wdAbstractObjectNode* pNode, const wdRTTI* pRtti, void* pObject)
+void nsRttiConverterReader::ApplyPropertiesToObject(const nsAbstractObjectNode* pNode, const nsRTTI* pRtti, void* pObject)
 {
-  WD_ASSERT_DEBUG(pNode != nullptr, "Invalid node");
+  NS_ASSERT_DEBUG(pNode != nullptr, "Invalid node");
 
   if (pRtti->GetParentType() != nullptr)
     ApplyPropertiesToObject(pNode, pRtti->GetParentType(), pObject);
@@ -47,39 +47,39 @@ void wdRttiConverterReader::ApplyPropertiesToObject(const wdAbstractObjectNode* 
   }
 }
 
-void wdRttiConverterReader::ApplyProperty(void* pObject, wdAbstractProperty* pProp, const wdAbstractObjectNode::Property* pSource)
+void nsRttiConverterReader::ApplyProperty(void* pObject, const nsAbstractProperty* pProp, const nsAbstractObjectNode::Property* pSource)
 {
-  const wdRTTI* pPropType = pProp->GetSpecificType();
+  const nsRTTI* pPropType = pProp->GetSpecificType();
 
-  if (pProp->GetFlags().IsSet(wdPropertyFlags::ReadOnly))
+  if (pProp->GetFlags().IsSet(nsPropertyFlags::ReadOnly))
     return;
 
-  const bool bIsValueType = wdReflectionUtils::IsValueType(pProp);
+  const bool bIsValueType = nsReflectionUtils::IsValueType(pProp);
 
   switch (pProp->GetCategory())
   {
-    case wdPropertyCategory::Member:
+    case nsPropertyCategory::Member:
     {
-      wdAbstractMemberProperty* pSpecific = static_cast<wdAbstractMemberProperty*>(pProp);
+      auto pSpecific = static_cast<const nsAbstractMemberProperty*>(pProp);
 
-      if (pProp->GetFlags().IsSet(wdPropertyFlags::Pointer))
+      if (pProp->GetFlags().IsSet(nsPropertyFlags::Pointer))
       {
-        if (!pSource->m_Value.IsA<wdUuid>())
+        if (!pSource->m_Value.IsA<nsUuid>())
           return;
 
-        wdUuid guid = pSource->m_Value.Get<wdUuid>();
+        nsUuid guid = pSource->m_Value.Get<nsUuid>();
         void* pRefrencedObject = nullptr;
 
         if (guid.IsValid())
         {
-          if (pProp->GetFlags().IsSet(wdPropertyFlags::PointerOwner))
+          if (pProp->GetFlags().IsSet(nsPropertyFlags::PointerOwner))
           {
             auto* pNode = m_pGraph->GetNode(guid);
-            WD_ASSERT_DEV(pNode != nullptr, "node must exist");
+            NS_ASSERT_DEV(pNode != nullptr, "node must exist");
             pRefrencedObject = CreateObjectFromNode(pNode);
             if (pRefrencedObject == nullptr)
             {
-              // wdLog::Error("Failed to set property '{0}', type could not be created!", pProp->GetPropertyName());
+              // nsLog::Error("Failed to set property '{0}', type could not be created!", pProp->GetPropertyName());
               return;
             }
           }
@@ -92,23 +92,23 @@ void wdRttiConverterReader::ApplyProperty(void* pObject, wdAbstractProperty* pPr
         void* pOldObject = nullptr;
         pSpecific->GetValuePtr(pObject, &pOldObject);
         pSpecific->SetValuePtr(pObject, &pRefrencedObject);
-        if (pProp->GetFlags().IsSet(wdPropertyFlags::PointerOwner))
-          wdReflectionUtils::DeleteObject(pOldObject, pProp);
+        if (pProp->GetFlags().IsSet(nsPropertyFlags::PointerOwner))
+          nsReflectionUtils::DeleteObject(pOldObject, pProp);
       }
       else
       {
-        if (bIsValueType || pProp->GetFlags().IsAnySet(wdPropertyFlags::IsEnum | wdPropertyFlags::Bitflags))
+        if (bIsValueType || pProp->GetFlags().IsAnySet(nsPropertyFlags::IsEnum | nsPropertyFlags::Bitflags))
         {
-          wdReflectionUtils::SetMemberPropertyValue(pSpecific, pObject, pSource->m_Value);
+          nsReflectionUtils::SetMemberPropertyValue(pSpecific, pObject, pSource->m_Value);
         }
-        else if (pProp->GetFlags().IsSet(wdPropertyFlags::Class))
+        else if (pProp->GetFlags().IsSet(nsPropertyFlags::Class))
         {
-          if (!pSource->m_Value.IsA<wdUuid>())
+          if (!pSource->m_Value.IsA<nsUuid>())
             return;
 
           void* pDirectPtr = pSpecific->GetPropertyPointer(pObject);
           bool bDelete = false;
-          const wdUuid sourceGuid = pSource->m_Value.Get<wdUuid>();
+          const nsUuid sourceGuid = pSource->m_Value.Get<nsUuid>();
 
           if (pDirectPtr == nullptr)
           {
@@ -117,7 +117,7 @@ void wdRttiConverterReader::ApplyProperty(void* pObject, wdAbstractProperty* pPr
           }
 
           auto* pNode = m_pGraph->GetNode(sourceGuid);
-          WD_ASSERT_DEV(pNode != nullptr, "node must exist");
+          NS_ASSERT_DEV(pNode != nullptr, "node must exist");
 
           ApplyPropertiesToObject(pNode, pPropType, pDirectPtr);
 
@@ -130,45 +130,45 @@ void wdRttiConverterReader::ApplyProperty(void* pObject, wdAbstractProperty* pPr
       }
     }
     break;
-    case wdPropertyCategory::Array:
+    case nsPropertyCategory::Array:
     {
-      wdAbstractArrayProperty* pSpecific = static_cast<wdAbstractArrayProperty*>(pProp);
-      if (!pSource->m_Value.IsA<wdVariantArray>())
+      auto pSpecific = static_cast<const nsAbstractArrayProperty*>(pProp);
+      if (!pSource->m_Value.IsA<nsVariantArray>())
         return;
-      const wdVariantArray& array = pSource->m_Value.Get<wdVariantArray>();
+      const nsVariantArray& array = pSource->m_Value.Get<nsVariantArray>();
       // Delete old values
-      if (pProp->GetFlags().AreAllSet(wdPropertyFlags::Pointer | wdPropertyFlags::PointerOwner))
+      if (pProp->GetFlags().AreAllSet(nsPropertyFlags::Pointer | nsPropertyFlags::PointerOwner))
       {
-        const wdInt32 uiOldCount = (wdInt32)pSpecific->GetCount(pObject);
-        for (wdInt32 i = uiOldCount - 1; i >= 0; --i)
+        const nsInt32 uiOldCount = (nsInt32)pSpecific->GetCount(pObject);
+        for (nsInt32 i = uiOldCount - 1; i >= 0; --i)
         {
           void* pOldObject = nullptr;
           pSpecific->GetValue(pObject, i, &pOldObject);
           pSpecific->Remove(pObject, i);
           if (pOldObject)
-            wdReflectionUtils::DeleteObject(pOldObject, pProp);
+            nsReflectionUtils::DeleteObject(pOldObject, pProp);
         }
       }
 
       pSpecific->SetCount(pObject, array.GetCount());
-      if (pProp->GetFlags().IsAnySet(wdPropertyFlags::Pointer))
+      if (pProp->GetFlags().IsAnySet(nsPropertyFlags::Pointer))
       {
-        for (wdUInt32 i = 0; i < array.GetCount(); ++i)
+        for (nsUInt32 i = 0; i < array.GetCount(); ++i)
         {
-          if (!array[i].IsA<wdUuid>())
+          if (!array[i].IsA<nsUuid>())
             continue;
-          wdUuid guid = array[i].Get<wdUuid>();
+          nsUuid guid = array[i].Get<nsUuid>();
           void* pRefrencedObject = nullptr;
-          if (pProp->GetFlags().IsSet(wdPropertyFlags::PointerOwner))
+          if (pProp->GetFlags().IsSet(nsPropertyFlags::PointerOwner))
           {
             if (guid.IsValid())
             {
               auto* pNode = m_pGraph->GetNode(guid);
-              WD_ASSERT_DEV(pNode != nullptr, "node must exist");
+              NS_ASSERT_DEV(pNode != nullptr, "node must exist");
               pRefrencedObject = CreateObjectFromNode(pNode);
               if (pRefrencedObject == nullptr)
               {
-                wdLog::Error("Failed to set array property '{0}' element, type could not be created!", pProp->GetPropertyName());
+                nsLog::Error("Failed to set array property '{0}' element, type could not be created!", pProp->GetPropertyName());
                 continue;
               }
             }
@@ -184,25 +184,25 @@ void wdRttiConverterReader::ApplyProperty(void* pObject, wdAbstractProperty* pPr
       {
         if (bIsValueType)
         {
-          for (wdUInt32 i = 0; i < array.GetCount(); ++i)
+          for (nsUInt32 i = 0; i < array.GetCount(); ++i)
           {
-            wdReflectionUtils::SetArrayPropertyValue(pSpecific, pObject, i, array[i]);
+            nsReflectionUtils::SetArrayPropertyValue(pSpecific, pObject, i, array[i]);
           }
         }
-        else if (pProp->GetFlags().IsAnySet(wdPropertyFlags::Class))
+        else if (pProp->GetFlags().IsAnySet(nsPropertyFlags::Class))
         {
-          wdUuid temp;
-          temp.CreateNewUuid();
+          const nsUuid temp = nsUuid::MakeUuid();
+
           void* pValuePtr = m_pContext->CreateObject(temp, pPropType);
 
-          for (wdUInt32 i = 0; i < array.GetCount(); ++i)
+          for (nsUInt32 i = 0; i < array.GetCount(); ++i)
           {
-            if (!array[i].IsA<wdUuid>())
+            if (!array[i].IsA<nsUuid>())
               continue;
 
-            const wdUuid sourceGuid = array[i].Get<wdUuid>();
+            const nsUuid sourceGuid = array[i].Get<nsUuid>();
             auto* pNode = m_pGraph->GetNode(sourceGuid);
-            WD_ASSERT_DEV(pNode != nullptr, "node must exist");
+            NS_ASSERT_DEV(pNode != nullptr, "node must exist");
 
             ApplyPropertiesToObject(pNode, pPropType, pValuePtr);
             pSpecific->SetValue(pObject, i, pValuePtr);
@@ -213,47 +213,47 @@ void wdRttiConverterReader::ApplyProperty(void* pObject, wdAbstractProperty* pPr
       }
     }
     break;
-    case wdPropertyCategory::Set:
+    case nsPropertyCategory::Set:
     {
-      wdAbstractSetProperty* pSpecific = static_cast<wdAbstractSetProperty*>(pProp);
-      if (!pSource->m_Value.IsA<wdVariantArray>())
+      auto pSpecific = static_cast<const nsAbstractSetProperty*>(pProp);
+      if (!pSource->m_Value.IsA<nsVariantArray>())
         return;
 
-      const wdVariantArray& array = pSource->m_Value.Get<wdVariantArray>();
+      const nsVariantArray& array = pSource->m_Value.Get<nsVariantArray>();
 
       // Delete old values
-      if (pProp->GetFlags().AreAllSet(wdPropertyFlags::Pointer | wdPropertyFlags::PointerOwner))
+      if (pProp->GetFlags().AreAllSet(nsPropertyFlags::Pointer | nsPropertyFlags::PointerOwner))
       {
-        wdHybridArray<wdVariant, 16> keys;
+        nsHybridArray<nsVariant, 16> keys;
         pSpecific->GetValues(pObject, keys);
         pSpecific->Clear(pObject);
-        for (wdVariant& value : keys)
+        for (nsVariant& value : keys)
         {
           void* pOldObject = value.ConvertTo<void*>();
           if (pOldObject)
-            wdReflectionUtils::DeleteObject(pOldObject, pProp);
+            nsReflectionUtils::DeleteObject(pOldObject, pProp);
         }
       }
 
       pSpecific->Clear(pObject);
 
-      if (pProp->GetFlags().IsAnySet(wdPropertyFlags::Pointer))
+      if (pProp->GetFlags().IsAnySet(nsPropertyFlags::Pointer))
       {
-        for (wdUInt32 i = 0; i < array.GetCount(); ++i)
+        for (nsUInt32 i = 0; i < array.GetCount(); ++i)
         {
-          if (!array[i].IsA<wdUuid>())
+          if (!array[i].IsA<nsUuid>())
             continue;
 
-          wdUuid guid = array[i].Get<wdUuid>();
+          nsUuid guid = array[i].Get<nsUuid>();
           void* pRefrencedObject = nullptr;
-          if (pProp->GetFlags().IsSet(wdPropertyFlags::PointerOwner))
+          if (pProp->GetFlags().IsSet(nsPropertyFlags::PointerOwner))
           {
             auto* pNode = m_pGraph->GetNode(guid);
-            WD_ASSERT_DEV(pNode != nullptr, "node must exist");
+            NS_ASSERT_DEV(pNode != nullptr, "node must exist");
             pRefrencedObject = CreateObjectFromNode(pNode);
             if (pRefrencedObject == nullptr)
             {
-              wdLog::Error("Failed to insert set element into property '{0}', type could not be created!", pProp->GetPropertyName());
+              nsLog::Error("Failed to insert set element into property '{0}', type could not be created!", pProp->GetPropertyName());
               continue;
             }
           }
@@ -268,25 +268,25 @@ void wdRttiConverterReader::ApplyProperty(void* pObject, wdAbstractProperty* pPr
       {
         if (bIsValueType)
         {
-          for (wdUInt32 i = 0; i < array.GetCount(); ++i)
+          for (nsUInt32 i = 0; i < array.GetCount(); ++i)
           {
-            wdReflectionUtils::InsertSetPropertyValue(pSpecific, pObject, array[i]);
+            nsReflectionUtils::InsertSetPropertyValue(pSpecific, pObject, array[i]);
           }
         }
-        else if (pProp->GetFlags().IsAnySet(wdPropertyFlags::Class))
+        else if (pProp->GetFlags().IsAnySet(nsPropertyFlags::Class))
         {
-          wdUuid temp;
-          temp.CreateNewUuid();
+          const nsUuid temp = nsUuid::MakeUuid();
+
           void* pValuePtr = m_pContext->CreateObject(temp, pPropType);
 
-          for (wdUInt32 i = 0; i < array.GetCount(); ++i)
+          for (nsUInt32 i = 0; i < array.GetCount(); ++i)
           {
-            if (!array[i].IsA<wdUuid>())
+            if (!array[i].IsA<nsUuid>())
               continue;
 
-            const wdUuid sourceGuid = array[i].Get<wdUuid>();
+            const nsUuid sourceGuid = array[i].Get<nsUuid>();
             auto* pNode = m_pGraph->GetNode(sourceGuid);
-            WD_ASSERT_DEV(pNode != nullptr, "node must exist");
+            NS_ASSERT_DEV(pNode != nullptr, "node must exist");
 
             ApplyPropertiesToObject(pNode, pPropType, pValuePtr);
             pSpecific->Insert(pObject, pValuePtr);
@@ -297,50 +297,50 @@ void wdRttiConverterReader::ApplyProperty(void* pObject, wdAbstractProperty* pPr
       }
     }
     break;
-    case wdPropertyCategory::Map:
+    case nsPropertyCategory::Map:
     {
-      wdAbstractMapProperty* pSpecific = static_cast<wdAbstractMapProperty*>(pProp);
-      if (!pSource->m_Value.IsA<wdVariantDictionary>())
+      auto pSpecific = static_cast<const nsAbstractMapProperty*>(pProp);
+      if (!pSource->m_Value.IsA<nsVariantDictionary>())
         return;
 
-      const wdVariantDictionary& dict = pSource->m_Value.Get<wdVariantDictionary>();
+      const nsVariantDictionary& dict = pSource->m_Value.Get<nsVariantDictionary>();
 
       // Delete old values
-      if (pProp->GetFlags().AreAllSet(wdPropertyFlags::Pointer | wdPropertyFlags::PointerOwner))
+      if (pProp->GetFlags().AreAllSet(nsPropertyFlags::Pointer | nsPropertyFlags::PointerOwner))
       {
-        wdHybridArray<wdString, 16> keys;
+        nsHybridArray<nsString, 16> keys;
         pSpecific->GetKeys(pObject, keys);
-        for (const wdString& sKey : keys)
+        for (const nsString& sKey : keys)
         {
-          wdVariant value = wdReflectionUtils::GetMapPropertyValue(pSpecific, pObject, sKey);
+          nsVariant value = nsReflectionUtils::GetMapPropertyValue(pSpecific, pObject, sKey);
           void* pOldClone = value.ConvertTo<void*>();
           pSpecific->Remove(pObject, sKey);
           if (pOldClone)
-            wdReflectionUtils::DeleteObject(pOldClone, pProp);
+            nsReflectionUtils::DeleteObject(pOldClone, pProp);
         }
       }
 
       pSpecific->Clear(pObject);
 
-      if (pProp->GetFlags().IsAnySet(wdPropertyFlags::Pointer))
+      if (pProp->GetFlags().IsAnySet(nsPropertyFlags::Pointer))
       {
         for (auto it = dict.GetIterator(); it.IsValid(); ++it)
         {
-          if (!it.Value().IsA<wdUuid>())
+          if (!it.Value().IsA<nsUuid>())
             continue;
 
-          wdUuid guid = it.Value().Get<wdUuid>();
+          nsUuid guid = it.Value().Get<nsUuid>();
           void* pRefrencedObject = nullptr;
-          if (pProp->GetFlags().IsSet(wdPropertyFlags::PointerOwner))
+          if (pProp->GetFlags().IsSet(nsPropertyFlags::PointerOwner))
           {
             if (guid.IsValid())
             {
               auto* pNode = m_pGraph->GetNode(guid);
-              WD_ASSERT_DEV(pNode != nullptr, "node must exist");
+              NS_ASSERT_DEV(pNode != nullptr, "node must exist");
               pRefrencedObject = CreateObjectFromNode(pNode);
               if (pRefrencedObject == nullptr)
               {
-                wdLog::Error("Failed to insert set element into property '{0}', type could not be created!", pProp->GetPropertyName());
+                nsLog::Error("Failed to insert set element into property '{0}', type could not be created!", pProp->GetPropertyName());
                 continue;
               }
             }
@@ -358,23 +358,23 @@ void wdRttiConverterReader::ApplyProperty(void* pObject, wdAbstractProperty* pPr
         {
           for (auto it = dict.GetIterator(); it.IsValid(); ++it)
           {
-            wdReflectionUtils::SetMapPropertyValue(pSpecific, pObject, it.Key(), it.Value());
+            nsReflectionUtils::SetMapPropertyValue(pSpecific, pObject, it.Key(), it.Value());
           }
         }
-        else if (pProp->GetFlags().IsAnySet(wdPropertyFlags::Class))
+        else if (pProp->GetFlags().IsAnySet(nsPropertyFlags::Class))
         {
-          wdUuid temp;
-          temp.CreateNewUuid();
+          const nsUuid temp = nsUuid::MakeUuid();
+
           void* pValuePtr = m_pContext->CreateObject(temp, pPropType);
 
           for (auto it = dict.GetIterator(); it.IsValid(); ++it)
           {
-            if (!it.Value().IsA<wdUuid>())
+            if (!it.Value().IsA<nsUuid>())
               continue;
 
-            const wdUuid sourceGuid = it.Value().Get<wdUuid>();
+            const nsUuid sourceGuid = it.Value().Get<nsUuid>();
             auto* pNode = m_pGraph->GetNode(sourceGuid);
-            WD_ASSERT_DEV(pNode != nullptr, "node must exist");
+            NS_ASSERT_DEV(pNode != nullptr, "node must exist");
 
             ApplyPropertiesToObject(pNode, pPropType, pValuePtr);
             pSpecific->Insert(pObject, it.Key(), pValuePtr);
@@ -387,25 +387,23 @@ void wdRttiConverterReader::ApplyProperty(void* pObject, wdAbstractProperty* pPr
     break;
 
     default:
-      WD_ASSERT_NOT_IMPLEMENTED;
+      NS_ASSERT_NOT_IMPLEMENTED;
       break;
   }
 }
 
-void wdRttiConverterReader::CallOnObjectCreated(const wdAbstractObjectNode* pNode, const wdRTTI* pRtti, void* pObject)
+void nsRttiConverterReader::CallOnObjectCreated(const nsAbstractObjectNode* pNode, const nsRTTI* pRtti, void* pObject)
 {
-  wdArrayPtr<wdAbstractFunctionProperty*> functions = pRtti->GetFunctions();
-  for (wdAbstractFunctionProperty* pFunc : functions)
+  auto functions = pRtti->GetFunctions();
+  for (auto pFunc : functions)
   {
     // TODO: Make this compare faster
-    if (wdStringUtils::IsEqual(pFunc->GetPropertyName(), "OnObjectCreated"))
+    if (nsStringUtils::IsEqual(pFunc->GetPropertyName(), "OnObjectCreated"))
     {
-      wdHybridArray<wdVariant, 1> params;
-      params.PushBack(wdVariant(pNode));
-      wdVariant ret;
+      nsHybridArray<nsVariant, 1> params;
+      params.PushBack(nsVariant(pNode));
+      nsVariant ret;
       pFunc->Execute(pObject, params, ret);
     }
   }
 }
-
-WD_STATICLINK_FILE(Foundation, Foundation_Serialization_Implementation_RttiConverterReader);

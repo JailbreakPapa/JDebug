@@ -4,6 +4,133 @@
 #include <Foundation/Math/Math.h>
 #include <Foundation/Memory/AllocatorWrapper.h>
 
+template <typename KeyType, typename ValueType, typename Hasher>
+class nsHashTableBase;
+
+/// \brief Const iterator.
+template <typename KeyType, typename ValueType, typename Hasher>
+struct nsHashTableBaseConstIterator
+{
+  using iterator_category = std::forward_iterator_tag;
+  using value_type = nsHashTableBaseConstIterator;
+  using difference_type = std::ptrdiff_t;
+  using pointer = nsHashTableBaseConstIterator*;
+  using reference = nsHashTableBaseConstIterator&;
+
+  NS_DECLARE_POD_TYPE();
+
+  /// \brief Checks whether this iterator points to a valid element.
+  bool IsValid() const; // [tested]
+
+  /// \brief Checks whether the two iterators point to the same element.
+  bool operator==(const nsHashTableBaseConstIterator& rhs) const;
+  NS_ADD_DEFAULT_OPERATOR_NOTEQUAL(const nsHashTableBaseConstIterator&);
+
+  /// \brief Returns the 'key' of the element that this iterator points to.
+  const KeyType& Key() const; // [tested]
+
+  /// \brief Returns the 'value' of the element that this iterator points to.
+  const ValueType& Value() const; // [tested]
+
+  /// \brief Advances the iterator to the next element in the map. The iterator will not be valid anymore, if the end is reached.
+  void Next(); // [tested]
+
+  /// \brief Shorthand for 'Next'
+  void operator++(); // [tested]
+
+  /// \brief Returns '*this' to enable foreach
+  NS_ALWAYS_INLINE nsHashTableBaseConstIterator& operator*() { return *this; } // [tested]
+
+protected:
+  friend class nsHashTableBase<KeyType, ValueType, Hasher>;
+
+  explicit nsHashTableBaseConstIterator(const nsHashTableBase<KeyType, ValueType, Hasher>& hashTable);
+  void SetToBegin();
+  void SetToEnd();
+
+  const nsHashTableBase<KeyType, ValueType, Hasher>* m_pHashTable = nullptr;
+  nsUInt32 m_uiCurrentIndex = 0; // current element index that this iterator points to.
+  nsUInt32 m_uiCurrentCount = 0; // current number of valid elements that this iterator has found so far.
+
+#if NS_ENABLED(NS_USE_CPP20_OPERATORS)
+public:
+  struct Pointer
+  {
+    std::pair<const KeyType&, const ValueType&> value;
+    const std::pair<const KeyType&, const ValueType&>* operator->() const { return &value; }
+  };
+
+  NS_ALWAYS_INLINE Pointer operator->() const
+  {
+    return Pointer{.value = {Key(), Value()}};
+  }
+
+  // These function is used to return the values for structured bindings.
+  // The number and type of type of each slot are defined in the inl file.
+  template <std::size_t Index>
+  std::tuple_element_t<Index, nsHashTableBaseConstIterator>& get() const
+  {
+    if constexpr (Index == 0)
+      return Key();
+    if constexpr (Index == 1)
+      return Value();
+  }
+#endif
+};
+
+/// \brief Iterator with write access.
+template <typename KeyType, typename ValueType, typename Hasher>
+struct nsHashTableBaseIterator : public nsHashTableBaseConstIterator<KeyType, ValueType, Hasher>
+{
+  NS_DECLARE_POD_TYPE();
+
+  /// \brief Creates a new iterator from another.
+  NS_ALWAYS_INLINE nsHashTableBaseIterator(const nsHashTableBaseIterator& rhs); // [tested]
+
+  /// \brief Assigns one iterator no another.
+  NS_ALWAYS_INLINE void operator=(const nsHashTableBaseIterator& rhs); // [tested]
+
+  // this is required to pull in the const version of this function
+  using nsHashTableBaseConstIterator<KeyType, ValueType, Hasher>::Value;
+
+  /// \brief Returns the 'value' of the element that this iterator points to.
+  NS_FORCE_INLINE ValueType& Value(); // [tested]
+
+  /// \brief Returns the 'value' of the element that this iterator points to.
+  NS_FORCE_INLINE ValueType& Value() const;
+
+  /// \brief Returns '*this' to enable foreach
+  NS_ALWAYS_INLINE nsHashTableBaseIterator& operator*() { return *this; } // [tested]
+
+private:
+  friend class nsHashTableBase<KeyType, ValueType, Hasher>;
+
+  explicit nsHashTableBaseIterator(const nsHashTableBase<KeyType, ValueType, Hasher>& hashTable);
+
+#if NS_ENABLED(NS_USE_CPP20_OPERATORS)
+public:
+  // These functions are used to return the values for structured bindings.
+  // The number and type of type of each slot are defined in the inl file.
+  template <std::size_t Index>
+  std::tuple_element_t<Index, nsHashTableBaseIterator>& get()
+  {
+    if constexpr (Index == 0)
+      return nsHashTableBaseConstIterator<KeyType, ValueType, Hasher>::Key();
+    if constexpr (Index == 1)
+      return Value();
+  }
+
+  template <std::size_t Index>
+  std::tuple_element_t<Index, nsHashTableBaseIterator>& get() const
+  {
+    if constexpr (Index == 0)
+      return nsHashTableBaseConstIterator<KeyType, ValueType, Hasher>::Key();
+    if constexpr (Index == 1)
+      return Value();
+  }
+#endif
+};
+
 /// \brief Implementation of a hashtable which stores key/value pairs.
 ///
 /// The hashtable maps keys to values by using the hash of the key as an index into the table.
@@ -11,115 +138,43 @@
 /// in a linear array.
 /// All insertion/erasure/lookup functions take O(1) time if the table does not need to be expanded,
 /// which happens when the load gets greater than 60%.
-/// The hash function can be customized by providing a Hasher helper class like wdHashHelper.
+/// The hash function can be customized by providing a Hasher helper class like nsHashHelper.
 
-/// \see wdHashHelper
+/// \see nsHashHelper
 template <typename KeyType, typename ValueType, typename Hasher>
-class wdHashTableBase
+class nsHashTableBase
 {
 public:
-  /// \brief Const iterator.
-  struct ConstIterator
-  {
-    typedef std::forward_iterator_tag iterator_category;
-    using value_type = ConstIterator;
-    using difference_type = ptrdiff_t;
-    using pointer = ConstIterator*;
-    using reference = ConstIterator&;
-
-    WD_DECLARE_POD_TYPE();
-
-    /// \brief Checks whether this iterator points to a valid element.
-    bool IsValid() const; // [tested]
-
-    /// \brief Checks whether the two iterators point to the same element.
-    bool operator==(const typename wdHashTableBase<KeyType, ValueType, Hasher>::ConstIterator& rhs) const;
-
-    /// \brief Checks whether the two iterators point to the same element.
-    bool operator!=(const typename wdHashTableBase<KeyType, ValueType, Hasher>::ConstIterator& rhs) const;
-
-    /// \brief Returns the 'key' of the element that this iterator points to.
-    const KeyType& Key() const; // [tested]
-
-    /// \brief Returns the 'value' of the element that this iterator points to.
-    const ValueType& Value() const; // [tested]
-
-    /// \brief Advances the iterator to the next element in the map. The iterator will not be valid anymore, if the end is reached.
-    void Next(); // [tested]
-
-    /// \brief Shorthand for 'Next'
-    void operator++(); // [tested]
-
-    /// \brief Returns '*this' to enable foreach
-    WD_ALWAYS_INLINE ConstIterator& operator*() { return *this; } // [tested]
-
-  protected:
-    friend class wdHashTableBase<KeyType, ValueType, Hasher>;
-
-    explicit ConstIterator(const wdHashTableBase<KeyType, ValueType, Hasher>& hashTable);
-    void SetToBegin();
-    void SetToEnd();
-
-    const wdHashTableBase<KeyType, ValueType, Hasher>* m_pHashTable = nullptr;
-    wdUInt32 m_uiCurrentIndex = 0; // current element index that this iterator points to.
-    wdUInt32 m_uiCurrentCount = 0; // current number of valid elements that this iterator has found so far.
-  };
-
-  /// \brief Iterator with write access.
-  struct Iterator : public ConstIterator
-  {
-    WD_DECLARE_POD_TYPE();
-
-    /// \brief Creates a new iterator from another.
-    WD_ALWAYS_INLINE Iterator(const Iterator& rhs); // [tested]
-
-    /// \brief Assigns one iterator no another.
-    WD_ALWAYS_INLINE void operator=(const Iterator& rhs); // [tested]
-
-    // this is required to pull in the const version of this function
-    using ConstIterator::Value;
-
-    /// \brief Returns the 'value' of the element that this iterator points to.
-    WD_FORCE_INLINE ValueType& Value(); // [tested]
-
-    /// \brief Returns '*this' to enable foreach
-    WD_ALWAYS_INLINE Iterator& operator*() { return *this; } // [tested]
-
-  private:
-    friend class wdHashTableBase<KeyType, ValueType, Hasher>;
-
-    explicit Iterator(const wdHashTableBase<KeyType, ValueType, Hasher>& hashTable);
-  };
+  using Iterator = nsHashTableBaseIterator<KeyType, ValueType, Hasher>;
+  using ConstIterator = nsHashTableBaseConstIterator<KeyType, ValueType, Hasher>;
 
 protected:
   /// \brief Creates an empty hashtable. Does not allocate any data yet.
-  explicit wdHashTableBase(wdAllocatorBase* pAllocator); // [tested]
+  explicit nsHashTableBase(nsAllocator* pAllocator); // [tested]
 
   /// \brief Creates a copy of the given hashtable.
-  wdHashTableBase(const wdHashTableBase<KeyType, ValueType, Hasher>& rhs, wdAllocatorBase* pAllocator); // [tested]
+  nsHashTableBase(const nsHashTableBase<KeyType, ValueType, Hasher>& rhs, nsAllocator* pAllocator); // [tested]
 
   /// \brief Moves data from an existing hashtable into this one.
-  wdHashTableBase(wdHashTableBase<KeyType, ValueType, Hasher>&& rhs, wdAllocatorBase* pAllocator); // [tested]
+  nsHashTableBase(nsHashTableBase<KeyType, ValueType, Hasher>&& rhs, nsAllocator* pAllocator); // [tested]
 
   /// \brief Destructor.
-  ~wdHashTableBase(); // [tested]
+  ~nsHashTableBase(); // [tested]
 
   /// \brief Copies the data from another hashtable into this one.
-  void operator=(const wdHashTableBase<KeyType, ValueType, Hasher>& rhs); // [tested]
+  void operator=(const nsHashTableBase<KeyType, ValueType, Hasher>& rhs); // [tested]
 
   /// \brief Moves data from an existing hashtable into this one.
-  void operator=(wdHashTableBase<KeyType, ValueType, Hasher>&& rhs); // [tested]
+  void operator=(nsHashTableBase<KeyType, ValueType, Hasher>&& rhs); // [tested]
 
 public:
   /// \brief Compares this table to another table.
-  bool operator==(const wdHashTableBase<KeyType, ValueType, Hasher>& rhs) const; // [tested]
-
-  /// \brief Compares this table to another table.
-  bool operator!=(const wdHashTableBase<KeyType, ValueType, Hasher>& rhs) const; // [tested]
+  bool operator==(const nsHashTableBase<KeyType, ValueType, Hasher>& rhs) const; // [tested]
+  NS_ADD_DEFAULT_OPERATOR_NOTEQUAL(const nsHashTableBase<KeyType, ValueType, Hasher>&);
 
   /// \brief Expands the hashtable by over-allocating the internal storage so that the load factor is lower or equal to 60% when inserting the given
   /// number of entries.
-  void Reserve(wdUInt32 uiCapacity); // [tested]
+  void Reserve(nsUInt32 uiCapacity); // [tested]
 
   /// \brief Tries to compact the hashtable to avoid wasting memory.
   ///
@@ -128,7 +183,7 @@ public:
   void Compact(); // [tested]
 
   /// \brief Returns the number of active entries in the table.
-  wdUInt32 GetCount() const; // [tested]
+  nsUInt32 GetCount() const; // [tested]
 
   /// \brief Returns true, if the hashtable does not contain any elements.
   bool IsEmpty() const; // [tested]
@@ -149,7 +204,7 @@ public:
   /// \brief Erases the key/value pair at the given Iterator. Returns an iterator to the element after the given iterator.
   Iterator Remove(const Iterator& pos); // [tested]
 
-  /// \brief Cannot remove an element with just a ConstIterator
+  /// \brief Cannot remove an element with just a nsHashTableBaseConstIterator
   void Remove(const ConstIterator& pos) = delete;
 
   /// \brief Returns whether an entry with the given key was found and if found writes out the corresponding value to out_value.
@@ -164,7 +219,7 @@ public:
   template <typename CompatibleKeyType>
   bool TryGetValue(const CompatibleKeyType& key, ValueType*& out_pValue) const; // [tested]
 
-  /// \brief Searches for key, returns a ConstIterator to it or an invalid iterator, if no such key is found. O(1) operation.
+  /// \brief Searches for key, returns a nsHashTableBaseConstIterator to it or an invalid iterator, if no such key is found. O(1) operation.
   template <typename CompatibleKeyType>
   ConstIterator Find(const CompatibleKeyType& key) const;
 
@@ -199,33 +254,35 @@ public:
   /// \brief Returns a constant Iterator to the very first element.
   ConstIterator GetIterator() const; // [tested]
 
-  /// \brief Returns a ConstIterator to the first element that is not part of the hash-table. Needed to support range based for loops.
+  /// \brief Returns a nsHashTableBaseConstIterator to the first element that is not part of the hash-table. Needed to support range based for loops.
   ConstIterator GetEndIterator() const; // [tested]
 
   /// \brief Returns the allocator that is used by this instance.
-  wdAllocatorBase* GetAllocator() const;
+  nsAllocator* GetAllocator() const;
 
   /// \brief Returns the amount of bytes that are currently allocated on the heap.
-  wdUInt64 GetHeapMemoryUsage() const; // [tested]
+  nsUInt64 GetHeapMemoryUsage() const; // [tested]
 
   /// \brief Swaps this map with the other one.
-  void Swap(wdHashTableBase<KeyType, ValueType, Hasher>& other); // [tested]
-
+  void Swap(nsHashTableBase<KeyType, ValueType, Hasher>& other); // [tested]
 
 private:
+  friend struct nsHashTableBaseConstIterator<KeyType, ValueType, Hasher>;
+  friend struct nsHashTableBaseIterator<KeyType, ValueType, Hasher>;
+
   struct Entry
   {
     KeyType key;
     ValueType value;
   };
 
-  Entry* m_pEntries;
-  wdUInt32* m_pEntryFlags;
+  Entry* m_pEntries = nullptr;
+  nsUInt32* m_pEntryFlags = nullptr;
 
-  wdUInt32 m_uiCount;
-  wdUInt32 m_uiCapacity;
+  nsUInt32 m_uiCount = 0;
+  nsUInt32 m_uiCapacity = 0;
 
-  wdAllocatorBase* m_pAllocator;
+  nsAllocator* m_pAllocator = nullptr;
 
   enum
   {
@@ -236,86 +293,86 @@ private:
     CAPACITY_ALIGNMENT = 32
   };
 
-  void SetCapacity(wdUInt32 uiCapacity);
+  void SetCapacity(nsUInt32 uiCapacity);
 
-  void RemoveInternal(wdUInt32 uiIndex);
-
-  template <typename CompatibleKeyType>
-  wdUInt32 FindEntry(const CompatibleKeyType& key) const;
+  void RemoveInternal(nsUInt32 uiIndex);
 
   template <typename CompatibleKeyType>
-  wdUInt32 FindEntry(wdUInt32 uiHash, const CompatibleKeyType& key) const;
+  nsUInt32 FindEntry(const CompatibleKeyType& key) const;
 
-  wdUInt32 GetFlagsCapacity() const;
-  wdUInt32 GetFlags(wdUInt32* pFlags, wdUInt32 uiEntryIndex) const;
-  void SetFlags(wdUInt32 uiEntryIndex, wdUInt32 uiFlags);
+  template <typename CompatibleKeyType>
+  nsUInt32 FindEntry(nsUInt32 uiHash, const CompatibleKeyType& key) const;
 
-  bool IsFreeEntry(wdUInt32 uiEntryIndex) const;
-  bool IsValidEntry(wdUInt32 uiEntryIndex) const;
-  bool IsDeletedEntry(wdUInt32 uiEntryIndex) const;
+  nsUInt32 GetFlagsCapacity() const;
+  nsUInt32 GetFlags(nsUInt32* pFlags, nsUInt32 uiEntryIndex) const;
+  void SetFlags(nsUInt32 uiEntryIndex, nsUInt32 uiFlags);
 
-  void MarkEntryAsFree(wdUInt32 uiEntryIndex);
-  void MarkEntryAsValid(wdUInt32 uiEntryIndex);
-  void MarkEntryAsDeleted(wdUInt32 uiEntryIndex);
+  bool IsFreeEntry(nsUInt32 uiEntryIndex) const;
+  bool IsValidEntry(nsUInt32 uiEntryIndex) const;
+  bool IsDeletedEntry(nsUInt32 uiEntryIndex) const;
+
+  void MarkEntryAsFree(nsUInt32 uiEntryIndex);
+  void MarkEntryAsValid(nsUInt32 uiEntryIndex);
+  void MarkEntryAsDeleted(nsUInt32 uiEntryIndex);
 };
 
-/// \brief \see wdHashTableBase
-template <typename KeyType, typename ValueType, typename Hasher = wdHashHelper<KeyType>, typename AllocatorWrapper = wdDefaultAllocatorWrapper>
-class wdHashTable : public wdHashTableBase<KeyType, ValueType, Hasher>
+/// \brief \see nsHashTableBase
+template <typename KeyType, typename ValueType, typename Hasher = nsHashHelper<KeyType>, typename AllocatorWrapper = nsDefaultAllocatorWrapper>
+class nsHashTable : public nsHashTableBase<KeyType, ValueType, Hasher>
 {
 public:
-  wdHashTable();
-  explicit wdHashTable(wdAllocatorBase* pAllocator);
+  nsHashTable();
+  explicit nsHashTable(nsAllocator* pAllocator);
 
-  wdHashTable(const wdHashTable<KeyType, ValueType, Hasher, AllocatorWrapper>& other);
-  wdHashTable(const wdHashTableBase<KeyType, ValueType, Hasher>& other);
+  nsHashTable(const nsHashTable<KeyType, ValueType, Hasher, AllocatorWrapper>& other);
+  nsHashTable(const nsHashTableBase<KeyType, ValueType, Hasher>& other);
 
-  wdHashTable(wdHashTable<KeyType, ValueType, Hasher, AllocatorWrapper>&& other);
-  wdHashTable(wdHashTableBase<KeyType, ValueType, Hasher>&& other);
+  nsHashTable(nsHashTable<KeyType, ValueType, Hasher, AllocatorWrapper>&& other);
+  nsHashTable(nsHashTableBase<KeyType, ValueType, Hasher>&& other);
 
 
-  void operator=(const wdHashTable<KeyType, ValueType, Hasher, AllocatorWrapper>& rhs);
-  void operator=(const wdHashTableBase<KeyType, ValueType, Hasher>& rhs);
+  void operator=(const nsHashTable<KeyType, ValueType, Hasher, AllocatorWrapper>& rhs);
+  void operator=(const nsHashTableBase<KeyType, ValueType, Hasher>& rhs);
 
-  void operator=(wdHashTable<KeyType, ValueType, Hasher, AllocatorWrapper>&& rhs);
-  void operator=(wdHashTableBase<KeyType, ValueType, Hasher>&& rhs);
+  void operator=(nsHashTable<KeyType, ValueType, Hasher, AllocatorWrapper>&& rhs);
+  void operator=(nsHashTableBase<KeyType, ValueType, Hasher>&& rhs);
 };
 
 //////////////////////////////////////////////////////////////////////////
 // begin() /end() for range-based for-loop support
 
 template <typename KeyType, typename ValueType, typename Hasher>
-typename wdHashTableBase<KeyType, ValueType, Hasher>::Iterator begin(wdHashTableBase<KeyType, ValueType, Hasher>& ref_container)
+typename nsHashTableBase<KeyType, ValueType, Hasher>::Iterator begin(nsHashTableBase<KeyType, ValueType, Hasher>& ref_container)
 {
   return ref_container.GetIterator();
 }
 
 template <typename KeyType, typename ValueType, typename Hasher>
-typename wdHashTableBase<KeyType, ValueType, Hasher>::ConstIterator begin(const wdHashTableBase<KeyType, ValueType, Hasher>& container)
+typename nsHashTableBase<KeyType, ValueType, Hasher>::ConstIterator begin(const nsHashTableBase<KeyType, ValueType, Hasher>& container)
 {
   return container.GetIterator();
 }
 
 template <typename KeyType, typename ValueType, typename Hasher>
-typename wdHashTableBase<KeyType, ValueType, Hasher>::ConstIterator cbegin(const wdHashTableBase<KeyType, ValueType, Hasher>& container)
+typename nsHashTableBase<KeyType, ValueType, Hasher>::ConstIterator cbegin(const nsHashTableBase<KeyType, ValueType, Hasher>& container)
 {
   return container.GetIterator();
 }
 
 template <typename KeyType, typename ValueType, typename Hasher>
-typename wdHashTableBase<KeyType, ValueType, Hasher>::Iterator end(wdHashTableBase<KeyType, ValueType, Hasher>& ref_container)
+typename nsHashTableBase<KeyType, ValueType, Hasher>::Iterator end(nsHashTableBase<KeyType, ValueType, Hasher>& ref_container)
 {
   return ref_container.GetEndIterator();
 }
 
 template <typename KeyType, typename ValueType, typename Hasher>
-typename wdHashTableBase<KeyType, ValueType, Hasher>::ConstIterator end(const wdHashTableBase<KeyType, ValueType, Hasher>& container)
+typename nsHashTableBase<KeyType, ValueType, Hasher>::ConstIterator end(const nsHashTableBase<KeyType, ValueType, Hasher>& container)
 {
   return container.GetEndIterator();
 }
 
 template <typename KeyType, typename ValueType, typename Hasher>
-typename wdHashTableBase<KeyType, ValueType, Hasher>::ConstIterator cend(const wdHashTableBase<KeyType, ValueType, Hasher>& container)
+typename nsHashTableBase<KeyType, ValueType, Hasher>::ConstIterator cend(const nsHashTableBase<KeyType, ValueType, Hasher>& container)
 {
   return container.GetEndIterator();
 }

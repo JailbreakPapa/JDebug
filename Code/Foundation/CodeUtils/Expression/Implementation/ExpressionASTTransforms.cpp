@@ -7,8 +7,8 @@ namespace
 {
   struct OperandChainIndices
   {
-    wdUInt8 m_uiLeftOperand;
-    wdUInt8 m_uiRightOperand;
+    nsUInt8 m_uiLeftOperand;
+    nsUInt8 m_uiRightOperand;
   };
 
   struct MultiplicationChain
@@ -36,33 +36,33 @@ namespace
     {OperandChainIndices{0, 0}, {1, 1}, {2, 2}, {3, 3}},         // 16
   };
 
-  static wdExpression::StreamDesc CreateScalarizedStreamDesc(const wdExpression::StreamDesc& desc, wdEnum<wdExpressionAST::VectorComponent> component)
+  static nsExpression::StreamDesc CreateScalarizedStreamDesc(const nsExpression::StreamDesc& desc, nsEnum<nsExpressionAST::VectorComponent> component)
   {
-    wdStringBuilder sNewName = desc.m_sName.GetView();
-    sNewName.Append(".", wdExpressionAST::VectorComponent::GetName(component));
+    nsStringBuilder sNewName = desc.m_sName.GetView();
+    sNewName.Append(".", nsExpressionAST::VectorComponent::GetName(component));
 
-    wdExpression::StreamDesc newDesc;
+    nsExpression::StreamDesc newDesc;
     newDesc.m_sName.Assign(sNewName);
-    newDesc.m_DataType = static_cast<wdProcessingStream::DataType>((wdUInt32)desc.m_DataType & ~3u);
+    newDesc.m_DataType = static_cast<nsProcessingStream::DataType>((nsUInt32)desc.m_DataType & ~3u);
 
     return newDesc;
   }
 
 } // namespace
 
-wdExpressionAST::Node* wdExpressionAST::TypeDeductionAndConversion(Node* pNode)
+nsExpressionAST::Node* nsExpressionAST::TypeDeductionAndConversion(Node* pNode)
 {
   const NodeType::Enum nodeType = pNode->m_Type;
   const DataType::Enum returnType = pNode->m_ReturnType;
 
   if (returnType == DataType::Unknown)
   {
-    wdLog::Error("No matching overload found for '{}'", NodeType::GetName(nodeType));
+    nsLog::Error("No matching overload found for '{}'", NodeType::GetName(nodeType));
     return nullptr;
   }
 
   auto children = GetChildren(pNode);
-  for (wdUInt32 i = 0; i < children.GetCount(); ++i)
+  for (nsUInt32 i = 0; i < children.GetCount(); ++i)
   {
     auto& pChildNode = children[i];
     if (pChildNode == nullptr)
@@ -75,9 +75,9 @@ wdExpressionAST::Node* wdExpressionAST::TypeDeductionAndConversion(Node* pNode)
     if (expectedChildDataType != DataType::Unknown && pChildNode->m_ReturnType != expectedChildDataType)
     {
       const auto childRegisterType = DataType::GetRegisterType(pChildNode->m_ReturnType);
-      const wdUInt32 childElementCount = DataType::GetElementCount(pChildNode->m_ReturnType);
+      const nsUInt32 childElementCount = DataType::GetElementCount(pChildNode->m_ReturnType);
       const auto expectedRegisterType = DataType::GetRegisterType(expectedChildDataType);
-      const wdUInt32 expectedElementCount = DataType::GetElementCount(expectedChildDataType);
+      const nsUInt32 expectedElementCount = DataType::GetElementCount(expectedChildDataType);
 
       if (childRegisterType != expectedRegisterType)
       {
@@ -86,11 +86,11 @@ wdExpressionAST::Node* wdExpressionAST::TypeDeductionAndConversion(Node* pNode)
 
       if (childElementCount == 1 && expectedElementCount > 1)
       {
-        pChildNode = CreateConstructorCall(expectedChildDataType, wdMakeArrayPtr(&pChildNode, 1));
+        pChildNode = CreateConstructorCall(expectedChildDataType, nsMakeArrayPtr(&pChildNode, 1));
       }
       else if (childElementCount < expectedElementCount)
       {
-        wdLog::Error("Cannot implicitly convert '{}' to '{}'", DataType::GetName(pChildNode->m_ReturnType), DataType::GetName(expectedChildDataType));
+        nsLog::Error("Cannot implicitly convert '{}' to '{}'", DataType::GetName(pChildNode->m_ReturnType), DataType::GetName(expectedChildDataType));
         return nullptr;
       }
     }
@@ -99,11 +99,11 @@ wdExpressionAST::Node* wdExpressionAST::TypeDeductionAndConversion(Node* pNode)
   return pNode;
 }
 
-wdExpressionAST::Node* wdExpressionAST::ReplaceVectorInstructions(Node* pNode)
+nsExpressionAST::Node* nsExpressionAST::ReplaceVectorInstructions(Node* pNode)
 {
   const NodeType::Enum nodeType = pNode->m_Type;
   const DataType::Enum returnType = pNode->m_ReturnType;
-  const wdUInt32 uiNumInputElements = pNode->m_uiNumInputElements;
+  const nsUInt32 uiNumInputElements = pNode->m_uiNumInputElements;
 
   if (nodeType == NodeType::Length)
   {
@@ -115,7 +115,7 @@ wdExpressionAST::Node* wdExpressionAST::ReplaceVectorInstructions(Node* pNode)
   {
     auto pUnaryNode = static_cast<const UnaryOperator*>(pNode);
     auto pLength = ReplaceVectorInstructions(CreateUnaryOperator(NodeType::Length, pUnaryNode->m_pOperand));
-    return CreateBinaryOperator(NodeType::Divide, pUnaryNode->m_pOperand, CreateConstructorCall(returnType, wdMakeArrayPtr(&pLength, 1)));
+    return CreateBinaryOperator(NodeType::Divide, pUnaryNode->m_pOperand, CreateConstructorCall(returnType, nsMakeArrayPtr(&pLength, 1)));
   }
   else if (nodeType == NodeType::All || nodeType == NodeType::Any)
   {
@@ -126,7 +126,7 @@ wdExpressionAST::Node* wdExpressionAST::ReplaceVectorInstructions(Node* pNode)
     auto pX = CreateSwizzle(VectorComponent::X, pUnaryNode->m_pOperand);
     Node* pResult = pX;
 
-    for (wdUInt32 i = 1; i < uiNumInputElements; ++i)
+    for (nsUInt32 i = 1; i < uiNumInputElements; ++i)
     {
       auto pI = CreateSwizzle(static_cast<VectorComponent::Enum>(i), pUnaryNode->m_pOperand);
       pResult = CreateBinaryOperator(nodeType == NodeType::All ? NodeType::LogicalAnd : NodeType::LogicalOr, pResult, pI);
@@ -141,7 +141,7 @@ wdExpressionAST::Node* wdExpressionAST::ReplaceVectorInstructions(Node* pNode)
     auto pBx = CreateSwizzle(VectorComponent::X, pBinaryNode->m_pRightOperand);
     auto pResult = CreateBinaryOperator(NodeType::Multiply, pAx, pBx);
 
-    for (wdUInt32 i = 1; i < uiNumInputElements; ++i)
+    for (nsUInt32 i = 1; i < uiNumInputElements; ++i)
     {
       auto pAi = CreateSwizzle(static_cast<VectorComponent::Enum>(i), pBinaryNode->m_pLeftOperand);
       auto pBi = CreateSwizzle(static_cast<VectorComponent::Enum>(i), pBinaryNode->m_pRightOperand);
@@ -154,7 +154,7 @@ wdExpressionAST::Node* wdExpressionAST::ReplaceVectorInstructions(Node* pNode)
   {
     if (uiNumInputElements != 3)
     {
-      wdLog::Error("Cross product is only defined for vec3");
+      nsLog::Error("Cross product is only defined for vec3");
       return nullptr;
     }
 
@@ -163,10 +163,10 @@ wdExpressionAST::Node* wdExpressionAST::ReplaceVectorInstructions(Node* pNode)
     auto pB = pBinaryNode->m_pRightOperand;
 
     // a.yzx * b.zxy - a.zxy * b.yzx
-    wdEnum<VectorComponent> yzx[] = {VectorComponent::Y, VectorComponent::Z, VectorComponent::X};
-    wdEnum<VectorComponent> zxy[] = {VectorComponent::Z, VectorComponent::X, VectorComponent::Y};
-    auto pMul0 = CreateBinaryOperator(NodeType::Multiply, CreateSwizzle(wdMakeArrayPtr(yzx), pA), CreateSwizzle(wdMakeArrayPtr(zxy), pB));
-    auto pMul1 = CreateBinaryOperator(NodeType::Multiply, CreateSwizzle(wdMakeArrayPtr(zxy), pA), CreateSwizzle(wdMakeArrayPtr(yzx), pB));
+    nsEnum<VectorComponent> yzx[] = {VectorComponent::Y, VectorComponent::Z, VectorComponent::X};
+    nsEnum<VectorComponent> zxy[] = {VectorComponent::Z, VectorComponent::X, VectorComponent::Y};
+    auto pMul0 = CreateBinaryOperator(NodeType::Multiply, CreateSwizzle(nsMakeArrayPtr(yzx), pA), CreateSwizzle(nsMakeArrayPtr(zxy), pB));
+    auto pMul1 = CreateBinaryOperator(NodeType::Multiply, CreateSwizzle(nsMakeArrayPtr(zxy), pA), CreateSwizzle(nsMakeArrayPtr(yzx), pB));
     return CreateBinaryOperator(NodeType::Subtract, pMul0, pMul1);
   }
   else if (nodeType == NodeType::Reflect)
@@ -179,14 +179,14 @@ wdExpressionAST::Node* wdExpressionAST::ReplaceVectorInstructions(Node* pNode)
     auto pDot = ReplaceVectorInstructions(CreateBinaryOperator(NodeType::Dot, pA, pN));
     auto pTwo = CreateConstant(2, DataType::FromRegisterType(DataType::GetRegisterType(returnType)));
     Node* pMul = CreateBinaryOperator(NodeType::Multiply, pDot, pTwo);
-    pMul = CreateBinaryOperator(NodeType::Multiply, pN, CreateConstructorCall(returnType, wdMakeArrayPtr(&pMul, 1)));
+    pMul = CreateBinaryOperator(NodeType::Multiply, pN, CreateConstructorCall(returnType, nsMakeArrayPtr(&pMul, 1)));
     return CreateBinaryOperator(NodeType::Subtract, pA, pMul);
   }
 
   return pNode;
 }
 
-wdExpressionAST::Node* wdExpressionAST::ScalarizeVectorInstructions(Node* pNode)
+nsExpressionAST::Node* nsExpressionAST::ScalarizeVectorInstructions(Node* pNode)
 {
   const NodeType::Enum nodeType = pNode->m_Type;
 
@@ -195,7 +195,7 @@ wdExpressionAST::Node* wdExpressionAST::ScalarizeVectorInstructions(Node* pNode)
     auto pSwizzleNode = static_cast<Swizzle*>(pNode);
     if (pSwizzleNode->m_NumComponents == 1)
     {
-      wdEnum<VectorComponent> component = pSwizzleNode->m_Components[0];
+      nsEnum<VectorComponent> component = pSwizzleNode->m_Components[0];
       Node* pChildNode = pSwizzleNode->m_pExpression;
       NodeType::Enum childNodeType = pChildNode->m_Type;
       DataType::Enum childReturnTypeSingleElement = DataType::FromRegisterType(DataType::GetRegisterType(pChildNode->m_ReturnType));
@@ -203,22 +203,22 @@ wdExpressionAST::Node* wdExpressionAST::ScalarizeVectorInstructions(Node* pNode)
       if (NodeType::IsConstant(childNodeType))
       {
         auto pConstantNode = static_cast<const Constant*>(pChildNode);
-        const wdUInt32 uiNumConstantElements = DataType::GetElementCount(pConstantNode->m_ReturnType);
-        if (static_cast<wdUInt32>(component) >= uiNumConstantElements)
+        const nsUInt32 uiNumConstantElements = DataType::GetElementCount(pConstantNode->m_ReturnType);
+        if (static_cast<nsUInt32>(component) >= uiNumConstantElements)
         {
-          wdLog::Error("Invalid subscript .{} for constant of type '{}'", VectorComponent::GetName(component), DataType::GetName(pConstantNode->m_ReturnType));
+          nsLog::Error("Invalid subscript .{} for constant of type '{}'", VectorComponent::GetName(component), DataType::GetName(pConstantNode->m_ReturnType));
           return nullptr;
         }
 
-        wdVariant newValue = pConstantNode->m_Value[component];
+        nsVariant newValue = pConstantNode->m_Value[component];
         return CreateConstant(newValue, childReturnTypeSingleElement);
       }
       else if (NodeType::IsSwizzle(childNodeType))
       {
         auto pChildSwizzleNode = static_cast<Swizzle*>(pChildNode);
-        if (static_cast<wdUInt32>(component) >= pChildSwizzleNode->m_NumComponents)
+        if (static_cast<nsUInt32>(component) >= pChildSwizzleNode->m_NumComponents)
         {
-          wdLog::Error("Invalid Swizzle");
+          nsLog::Error("Invalid Swizzle");
           return nullptr;
         }
         return ScalarizeVectorInstructions(CreateSwizzle(pChildSwizzleNode->m_Components[component], pChildSwizzleNode->m_pExpression));
@@ -226,10 +226,10 @@ wdExpressionAST::Node* wdExpressionAST::ScalarizeVectorInstructions(Node* pNode)
       else if (NodeType::IsInput(childNodeType))
       {
         auto pInput = static_cast<const Input*>(pChildNode);
-        const wdUInt32 uiNumInputElements = DataType::GetElementCount(pInput->m_ReturnType);
-        if (static_cast<wdUInt32>(component) >= uiNumInputElements)
+        const nsUInt32 uiNumInputElements = DataType::GetElementCount(pInput->m_ReturnType);
+        if (static_cast<nsUInt32>(component) >= uiNumInputElements)
         {
-          wdLog::Error("Invalid subscript .{} for input '{}' of type '{}'", VectorComponent::GetName(component), pInput->m_Desc.m_sName, DataType::GetName(pInput->m_ReturnType));
+          nsLog::Error("Invalid subscript .{} for input '{}' of type '{}'", VectorComponent::GetName(component), pInput->m_Desc.m_sName, DataType::GetName(pInput->m_ReturnType));
           return nullptr;
         }
         return CreateInput(CreateScalarizedStreamDesc(pInput->m_Desc, component));
@@ -242,7 +242,7 @@ wdExpressionAST::Node* wdExpressionAST::ScalarizeVectorInstructions(Node* pNode)
       }
 
       auto innerChildren = GetChildren(pChildNode);
-      wdSmallArray<Node*, 8> newSwizzleNodes;
+      nsSmallArray<Node*, 8> newSwizzleNodes;
       for (auto pInnerChildNode : innerChildren)
       {
         newSwizzleNodes.PushBack(CreateSwizzle(component, pInnerChildNode));
@@ -266,11 +266,11 @@ wdExpressionAST::Node* wdExpressionAST::ScalarizeVectorInstructions(Node* pNode)
         return CreateFunctionCall(*pFunctionCall->m_Descs[pFunctionCall->m_uiOverloadIndex], std::move(newSwizzleNodes));
       }
 
-      WD_ASSERT_NOT_IMPLEMENTED;
+      NS_ASSERT_NOT_IMPLEMENTED;
     }
     else
     {
-      wdLog::Error("Failed to scalarize AST");
+      nsLog::Error("Failed to scalarize AST");
       return nullptr;
     }
   }
@@ -278,7 +278,7 @@ wdExpressionAST::Node* wdExpressionAST::ScalarizeVectorInstructions(Node* pNode)
   return pNode;
 }
 
-wdExpressionAST::Node* wdExpressionAST::ReplaceUnsupportedInstructions(Node* pNode)
+nsExpressionAST::Node* nsExpressionAST::ReplaceUnsupportedInstructions(Node* pNode)
 {
   const NodeType::Enum nodeType = pNode->m_Type;
   const DataType::Enum returnType = pNode->m_ReturnType;
@@ -312,14 +312,14 @@ wdExpressionAST::Node* wdExpressionAST::ReplaceUnsupportedInstructions(Node* pNo
   {
     auto pUnaryNode = static_cast<const UnaryOperator*>(pNode);
     auto pValue = pUnaryNode->m_pOperand;
-    auto pMultiplier = CreateConstant(wdAngle::RadToDegMultiplier<float>(), returnType);
+    auto pMultiplier = CreateConstant(nsAngle::RadToDegMultiplier<float>(), returnType);
     return CreateBinaryOperator(NodeType::Multiply, pValue, pMultiplier);
   }
   else if (nodeType == NodeType::DegToRad)
   {
     auto pUnaryNode = static_cast<const UnaryOperator*>(pNode);
     auto pValue = pUnaryNode->m_pOperand;
-    auto pMultiplier = CreateConstant(wdAngle::DegToRadMultiplier<float>(), returnType);
+    auto pMultiplier = CreateConstant(nsAngle::DegToRadMultiplier<float>(), returnType);
     return CreateBinaryOperator(NodeType::Multiply, pValue, pMultiplier);
   }
   else if (nodeType == NodeType::Frac)
@@ -356,7 +356,7 @@ wdExpressionAST::Node* wdExpressionAST::ReplaceUnsupportedInstructions(Node* pNo
       }
       else
       {
-        auto pFactor = CreateConstant(1.0f / wdMath::Log2(fBaseValue));
+        auto pFactor = CreateConstant(1.0f / nsMath::Log2(fBaseValue));
         return CreateBinaryOperator(NodeType::Multiply, pLog2Value, pFactor);
       }
     }
@@ -390,14 +390,14 @@ wdExpressionAST::Node* wdExpressionAST::ReplaceUnsupportedInstructions(Node* pNo
         return pBase;
       }
 
-      const bool isWholeNumber = fExpValue == wdMath::Trunc(fExpValue);
-      if (isWholeNumber && fExpValue > 1 && fExpValue < WD_ARRAY_SIZE(s_MultiplicationChains))
+      const bool isWholeNumber = fExpValue == nsMath::Trunc(fExpValue);
+      if (isWholeNumber && fExpValue > 1 && fExpValue < NS_ARRAY_SIZE(s_MultiplicationChains))
       {
-        wdHybridArray<Node*, 8> multiplierStack;
+        nsHybridArray<Node*, 8> multiplierStack;
         multiplierStack.PushBack(pBase);
 
-        const auto& chain = s_MultiplicationChains[(wdUInt32)fExpValue].m_Chain;
-        wdUInt32 uiIndex = 0;
+        const auto& chain = s_MultiplicationChains[(nsUInt32)fExpValue].m_Chain;
+        nsUInt32 uiIndex = 0;
         do
         {
           auto& operandIndices = chain[uiIndex];
@@ -449,6 +449,35 @@ wdExpressionAST::Node* wdExpressionAST::ReplaceUnsupportedInstructions(Node* pNo
     auto pBMinusA = CreateBinaryOperator(NodeType::Subtract, pBValue, pAValue);
     return CreateBinaryOperator(NodeType::Add, pAValue, CreateBinaryOperator(NodeType::Multiply, pSValue, pBMinusA));
   }
+  else if (nodeType == NodeType::SmoothStep || nodeType == NodeType::SmootherStep)
+  {
+    auto pTernaryNode = static_cast<const TernaryOperator*>(pNode);
+    auto pXValue = pTernaryNode->m_pFirstOperand;
+    auto pEdge1Value = pTernaryNode->m_pSecondOperand;
+    auto pEdge2Value = pTernaryNode->m_pThirdOperand;
+
+    auto pXMinusEdge1 = CreateBinaryOperator(NodeType::Subtract, pXValue, pEdge1Value);
+    auto pDivider = CreateBinaryOperator(NodeType::Subtract, pEdge2Value, pEdge1Value);
+    auto pNormalizedX = CreateBinaryOperator(NodeType::Divide, pXMinusEdge1, pDivider);
+    auto pX = ReplaceUnsupportedInstructions(CreateUnaryOperator(NodeType::Saturate, pNormalizedX));
+    auto pXX = CreateBinaryOperator(NodeType::Multiply, pX, pX);
+
+    if (nodeType == NodeType::SmoothStep)
+    {
+      auto p2X = CreateBinaryOperator(NodeType::Multiply, pX, CreateConstant(2));
+      auto p3Minus2X = CreateBinaryOperator(NodeType::Subtract, CreateConstant(3), p2X);
+      return CreateBinaryOperator(NodeType::Multiply, pXX, p3Minus2X);
+    }
+    else
+    {
+      auto pXXX = CreateBinaryOperator(NodeType::Multiply, pXX, pX);
+      auto p6X = CreateBinaryOperator(NodeType::Multiply, pX, CreateConstant(6));
+      auto p6XMinus15 = CreateBinaryOperator(NodeType::Subtract, p6X, CreateConstant(15));
+      auto pTimesX = CreateBinaryOperator(NodeType::Multiply, p6XMinus15, pX);
+      auto pAdd10 = CreateBinaryOperator(NodeType::Add, pTimesX, CreateConstant(10));
+      return CreateBinaryOperator(NodeType::Multiply, pXXX, pAdd10);
+    }
+  }
   else if (nodeType == NodeType::TypeConversion)
   {
     auto pUnaryNode = static_cast<const UnaryOperator*>(pNode);
@@ -470,7 +499,7 @@ wdExpressionAST::Node* wdExpressionAST::ReplaceUnsupportedInstructions(Node* pNo
     auto pConstructorCallNode = static_cast<const ConstructorCall*>(pNode);
     if (pConstructorCallNode->m_Arguments.GetCount() > 1)
     {
-      wdLog::Error("Constructor of type '{}' has too many arguments", DataType::GetName(returnType));
+      nsLog::Error("Constructor of type '{}' has too many arguments", DataType::GetName(returnType));
       return nullptr;
     }
 
@@ -480,7 +509,7 @@ wdExpressionAST::Node* wdExpressionAST::ReplaceUnsupportedInstructions(Node* pNo
   return pNode;
 }
 
-wdExpressionAST::Node* wdExpressionAST::FoldConstants(Node* pNode)
+nsExpressionAST::Node* nsExpressionAST::FoldConstants(Node* pNode)
 {
   const NodeType::Enum nodeType = pNode->m_Type;
   const DataType::Enum returnType = pNode->m_ReturnType;
@@ -505,7 +534,7 @@ wdExpressionAST::Node* wdExpressionAST::FoldConstants(Node* pNode)
           case NodeType::LogicalNot:
             return CreateConstant(!bValue, returnType);
           default:
-            WD_ASSERT_NOT_IMPLEMENTED;
+            NS_ASSERT_NOT_IMPLEMENTED;
             return pNode;
         }
       }
@@ -518,17 +547,17 @@ wdExpressionAST::Node* wdExpressionAST::FoldConstants(Node* pNode)
           case NodeType::Negate:
             return CreateConstant(-iValue, returnType);
           case NodeType::Absolute:
-            return CreateConstant(wdMath::Abs(iValue), returnType);
+            return CreateConstant(nsMath::Abs(iValue), returnType);
           case NodeType::Saturate:
-            return CreateConstant(wdMath::Saturate(iValue), returnType);
+            return CreateConstant(nsMath::Saturate(iValue), returnType);
           case NodeType::Log2:
-            return CreateConstant(wdMath::Log2i(iValue), returnType);
+            return CreateConstant(nsMath::Log2i(iValue), returnType);
           case NodeType::Pow2:
-            return CreateConstant(wdMath::Pow2(iValue), returnType);
+            return CreateConstant(nsMath::Pow2(iValue), returnType);
           case NodeType::BitwiseNot:
             return CreateConstant(~iValue, returnType);
           default:
-            WD_ASSERT_NOT_IMPLEMENTED;
+            NS_ASSERT_NOT_IMPLEMENTED;
             return pNode;
         }
       }
@@ -541,49 +570,49 @@ wdExpressionAST::Node* wdExpressionAST::FoldConstants(Node* pNode)
           case NodeType::Negate:
             return CreateConstant(-fValue);
           case NodeType::Absolute:
-            return CreateConstant(wdMath::Abs(fValue));
+            return CreateConstant(nsMath::Abs(fValue));
           case NodeType::Saturate:
-            return CreateConstant(wdMath::Saturate(fValue));
+            return CreateConstant(nsMath::Saturate(fValue));
           case NodeType::Sqrt:
-            return CreateConstant(wdMath::Sqrt(fValue));
+            return CreateConstant(nsMath::Sqrt(fValue));
           case NodeType::Exp:
-            return CreateConstant(wdMath::Exp(fValue));
+            return CreateConstant(nsMath::Exp(fValue));
           case NodeType::Ln:
-            return CreateConstant(wdMath::Ln(fValue));
+            return CreateConstant(nsMath::Ln(fValue));
           case NodeType::Log2:
-            return CreateConstant(wdMath::Log2(fValue));
+            return CreateConstant(nsMath::Log2(fValue));
           case NodeType::Log10:
-            return CreateConstant(wdMath::Log10(fValue));
+            return CreateConstant(nsMath::Log10(fValue));
           case NodeType::Pow2:
-            return CreateConstant(wdMath::Pow2(fValue));
+            return CreateConstant(nsMath::Pow2(fValue));
           case NodeType::Sin:
-            return CreateConstant(wdMath::Sin(wdAngle::Radian(fValue)));
+            return CreateConstant(nsMath::Sin(nsAngle::MakeFromRadian(fValue)));
           case NodeType::Cos:
-            return CreateConstant(wdMath::Cos(wdAngle::Radian(fValue)));
+            return CreateConstant(nsMath::Cos(nsAngle::MakeFromRadian(fValue)));
           case NodeType::Tan:
-            return CreateConstant(wdMath::Tan(wdAngle::Radian(fValue)));
+            return CreateConstant(nsMath::Tan(nsAngle::MakeFromRadian(fValue)));
           case NodeType::ASin:
-            return CreateConstant(wdMath::ASin(fValue).GetRadian());
+            return CreateConstant(nsMath::ASin(fValue).GetRadian());
           case NodeType::ACos:
-            return CreateConstant(wdMath::ACos(fValue).GetRadian());
+            return CreateConstant(nsMath::ACos(fValue).GetRadian());
           case NodeType::ATan:
-            return CreateConstant(wdMath::ATan(fValue).GetRadian());
+            return CreateConstant(nsMath::ATan(fValue).GetRadian());
           case NodeType::RadToDeg:
-            return CreateConstant(wdAngle::RadToDeg(fValue));
+            return CreateConstant(nsAngle::RadToDeg(fValue));
           case NodeType::DegToRad:
-            return CreateConstant(wdAngle::DegToRad(fValue));
+            return CreateConstant(nsAngle::DegToRad(fValue));
           case NodeType::Round:
-            return CreateConstant(wdMath::Round(fValue));
+            return CreateConstant(nsMath::Round(fValue));
           case NodeType::Floor:
-            return CreateConstant(wdMath::Floor(fValue));
+            return CreateConstant(nsMath::Floor(fValue));
           case NodeType::Ceil:
-            return CreateConstant(wdMath::Ceil(fValue));
+            return CreateConstant(nsMath::Ceil(fValue));
           case NodeType::Trunc:
-            return CreateConstant(wdMath::Trunc(fValue));
+            return CreateConstant(nsMath::Trunc(fValue));
           case NodeType::Frac:
-            return CreateConstant(wdMath::Fraction(fValue));
+            return CreateConstant(nsMath::Fraction(fValue));
           default:
-            WD_ASSERT_NOT_IMPLEMENTED;
+            NS_ASSERT_NOT_IMPLEMENTED;
             return pNode;
         }
       }
@@ -616,7 +645,7 @@ wdExpressionAST::Node* wdExpressionAST::FoldConstants(Node* pNode)
           case NodeType::LogicalOr:
             return CreateConstant(bLeftValue || bRightValue, returnType);
           default:
-            WD_ASSERT_NOT_IMPLEMENTED;
+            NS_ASSERT_NOT_IMPLEMENTED;
             return pNode;
         }
       }
@@ -638,11 +667,11 @@ wdExpressionAST::Node* wdExpressionAST::FoldConstants(Node* pNode)
           case NodeType::Modulo:
             return CreateConstant(iLeftValue % iRightValue, returnType);
           case NodeType::Pow:
-            return CreateConstant(wdMath::Pow(iLeftValue, iRightValue), returnType);
+            return CreateConstant(nsMath::Pow(iLeftValue, iRightValue), returnType);
           case NodeType::Min:
-            return CreateConstant(wdMath::Min(iLeftValue, iRightValue), returnType);
+            return CreateConstant(nsMath::Min(iLeftValue, iRightValue), returnType);
           case NodeType::Max:
-            return CreateConstant(wdMath::Max(iLeftValue, iRightValue), returnType);
+            return CreateConstant(nsMath::Max(iLeftValue, iRightValue), returnType);
           case NodeType::BitshiftLeft:
             return CreateConstant(iLeftValue << iRightValue, returnType);
           case NodeType::BitshiftRight:
@@ -666,7 +695,7 @@ wdExpressionAST::Node* wdExpressionAST::FoldConstants(Node* pNode)
           case NodeType::GreaterEqual:
             return CreateConstant(iLeftValue >= iRightValue, returnType);
           default:
-            WD_ASSERT_NOT_IMPLEMENTED;
+            NS_ASSERT_NOT_IMPLEMENTED;
             return pNode;
         }
       }
@@ -686,15 +715,15 @@ wdExpressionAST::Node* wdExpressionAST::FoldConstants(Node* pNode)
           case NodeType::Divide:
             return CreateConstant(fLeftValue / fRightValue, returnType);
           case NodeType::Modulo:
-            return CreateConstant(wdMath::Mod(fLeftValue, fRightValue), returnType);
+            return CreateConstant(nsMath::Mod(fLeftValue, fRightValue), returnType);
           case NodeType::Log:
-            return CreateConstant(wdMath::Log(fLeftValue, fRightValue), returnType);
+            return CreateConstant(nsMath::Log(fLeftValue, fRightValue), returnType);
           case NodeType::Pow:
-            return CreateConstant(wdMath::Pow(fLeftValue, fRightValue), returnType);
+            return CreateConstant(nsMath::Pow(fLeftValue, fRightValue), returnType);
           case NodeType::Min:
-            return CreateConstant(wdMath::Min(fLeftValue, fRightValue), returnType);
+            return CreateConstant(nsMath::Min(fLeftValue, fRightValue), returnType);
           case NodeType::Max:
-            return CreateConstant(wdMath::Max(fLeftValue, fRightValue), returnType);
+            return CreateConstant(nsMath::Max(fLeftValue, fRightValue), returnType);
           case NodeType::Equal:
             return CreateConstant(fLeftValue == fRightValue, returnType);
           case NodeType::NotEqual:
@@ -708,7 +737,7 @@ wdExpressionAST::Node* wdExpressionAST::FoldConstants(Node* pNode)
           case NodeType::GreaterEqual:
             return CreateConstant(fLeftValue >= fRightValue, returnType);
           default:
-            WD_ASSERT_NOT_IMPLEMENTED;
+            NS_ASSERT_NOT_IMPLEMENTED;
             return pNode;
         }
       }
@@ -742,7 +771,7 @@ wdExpressionAST::Node* wdExpressionAST::FoldConstants(Node* pNode)
             }
             return CreateBinaryOperator(NodeType::LogicalOr, pOperand, pConstant);
           default:
-            WD_ASSERT_NOT_IMPLEMENTED;
+            NS_ASSERT_NOT_IMPLEMENTED;
             return pNode;
         }
       }
@@ -801,7 +830,7 @@ wdExpressionAST::Node* wdExpressionAST::FoldConstants(Node* pNode)
           case NodeType::GreaterEqual:
             return CreateBinaryOperator(NodeType::LessEqual, pOperand, pConstant);
           default:
-            WD_ASSERT_NOT_IMPLEMENTED;
+            NS_ASSERT_NOT_IMPLEMENTED;
             return pNode;
         }
       }
@@ -841,9 +870,9 @@ wdExpressionAST::Node* wdExpressionAST::FoldConstants(Node* pNode)
         {
           return pOperand;
         }
-        else if (nodeType == NodeType::Divide && wdMath::IsPowerOf2(iRightValue))
+        else if (nodeType == NodeType::Divide && nsMath::IsPowerOf2(iRightValue))
         {
-          auto pShiftValue = CreateConstant(wdMath::Log2i(iRightValue), returnType);
+          auto pShiftValue = CreateConstant(nsMath::Log2i(iRightValue), returnType);
           auto pDivision = CreateBinaryOperator(NodeType::BitshiftRight, CreateUnaryOperator(NodeType::Absolute, pOperand), pShiftValue);
           auto pZero = CreateConstant(0, returnType);
           auto pGreaterZero = CreateBinaryOperator(NodeType::Greater, pOperand, pZero);
@@ -889,8 +918,10 @@ wdExpressionAST::Node* wdExpressionAST::FoldConstants(Node* pNode)
   else if (NodeType::IsTernary(nodeType))
   {
     auto pTernaryNode = static_cast<const TernaryOperator*>(pNode);
-    if (nodeType == NodeType::Clamp || nodeType == NodeType::Lerp)
+    if (nodeType == NodeType::Clamp || nodeType == NodeType::Lerp ||
+        nodeType == NodeType::SmoothStep || nodeType == NodeType::SmootherStep)
     {
+      // Nothing to do here since these nodes will be replaced at a later step anyways
       return pNode;
     }
     else if (nodeType == NodeType::Select)
@@ -905,14 +936,14 @@ wdExpressionAST::Node* wdExpressionAST::FoldConstants(Node* pNode)
       return pNode;
     }
 
-    WD_ASSERT_NOT_IMPLEMENTED;
+    NS_ASSERT_NOT_IMPLEMENTED;
     return pNode;
   }
 
   return pNode;
 }
 
-wdExpressionAST::Node* wdExpressionAST::CommonSubexpressionElimination(Node* pNode)
+nsExpressionAST::Node* nsExpressionAST::CommonSubexpressionElimination(Node* pNode)
 {
   UpdateHash(pNode);
 
@@ -930,13 +961,13 @@ wdExpressionAST::Node* wdExpressionAST::CommonSubexpressionElimination(Node* pNo
   return pNode;
 }
 
-wdExpressionAST::Node* wdExpressionAST::Validate(Node* pNode)
+nsExpressionAST::Node* nsExpressionAST::Validate(Node* pNode)
 {
   const NodeType::Enum nodeType = pNode->m_Type;
 
   if (pNode->m_ReturnType == DataType::Unknown)
   {
-    wdLog::Error("Unresolved return type on '{}'", NodeType::GetName(nodeType));
+    nsLog::Error("Unresolved return type on '{}'", NodeType::GetName(nodeType));
     return nullptr;
   }
 
@@ -944,7 +975,7 @@ wdExpressionAST::Node* wdExpressionAST::Validate(Node* pNode)
   {
     if (pNode->m_uiOverloadIndex == 0xFF)
     {
-      wdLog::Error("Unresolved overload on '{}'", NodeType::GetName(nodeType));
+      nsLog::Error("Unresolved overload on '{}'", NodeType::GetName(nodeType));
       return nullptr;
     }
   }
@@ -953,7 +984,7 @@ wdExpressionAST::Node* wdExpressionAST::Validate(Node* pNode)
     auto pConstantNode = static_cast<Constant*>(pNode);
     if (pConstantNode->m_Value.IsValid() == false)
     {
-      wdLog::Error("Invalid constant value");
+      nsLog::Error("Invalid constant value");
       return nullptr;
     }
   }
@@ -961,7 +992,7 @@ wdExpressionAST::Node* wdExpressionAST::Validate(Node* pNode)
   {
     if (pNode->m_uiOverloadIndex == 0xFF)
     {
-      wdLog::Error("Unresolved function overload on");
+      nsLog::Error("Unresolved function overload on");
       return nullptr;
     }
 
@@ -969,20 +1000,20 @@ wdExpressionAST::Node* wdExpressionAST::Validate(Node* pNode)
     auto pDesc = pFunctionCall->m_Descs[pNode->m_uiOverloadIndex];
     if (pFunctionCall->m_Arguments.GetCount() < pDesc->m_uiNumRequiredInputs)
     {
-      wdLog::Error("Not enough arguments for function '{}'", pDesc->m_sName);
+      nsLog::Error("Not enough arguments for function '{}'", pDesc->m_sName);
       return nullptr;
     }
   }
 
   auto children = GetChildren(pNode);
-  for (wdUInt32 i = 0; i < children.GetCount(); ++i)
+  for (nsUInt32 i = 0; i < children.GetCount(); ++i)
   {
     auto& pChildNode = children[i];
     DataType::Enum expectedChildDataType = GetExpectedChildDataType(pNode, i);
 
     if (expectedChildDataType != DataType::Unknown && pChildNode->m_ReturnType != expectedChildDataType)
     {
-      wdLog::Error("Invalid data type for argument {} on '{}'. Expected {} got {}", i, NodeType::GetName(nodeType), DataType::GetName(expectedChildDataType), DataType::GetName(pChildNode->m_ReturnType));
+      nsLog::Error("Invalid data type for argument {} on '{}'. Expected {} got {}", i, NodeType::GetName(nodeType), DataType::GetName(expectedChildDataType), DataType::GetName(pChildNode->m_ReturnType));
       return nullptr;
     }
   }
@@ -990,31 +1021,53 @@ wdExpressionAST::Node* wdExpressionAST::Validate(Node* pNode)
   return pNode;
 }
 
-wdResult wdExpressionAST::ScalarizeOutputs()
+nsResult nsExpressionAST::ScalarizeInputs()
 {
-  for (wdUInt32 uiOutputIndex = 0; uiOutputIndex < m_OutputNodes.GetCount(); ++uiOutputIndex)
+  for (nsUInt32 uiInputIndex = 0; uiInputIndex < m_InputNodes.GetCount(); ++uiInputIndex)
   {
-    const auto pOutput = m_OutputNodes[uiOutputIndex];
-    if (pOutput == nullptr || pOutput->m_pExpression == nullptr)
-      return WD_FAILURE;
+    const auto pInput = m_InputNodes[uiInputIndex];
+    if (pInput == nullptr)
+      return NS_FAILURE;
 
-    const wdUInt32 uiNumElements = pOutput->m_uiNumInputElements;
+    const nsUInt32 uiNumElements = pInput->m_uiNumInputElements;
     if (uiNumElements > 1)
     {
-      m_OutputNodes.RemoveAtAndCopy(uiOutputIndex);
+      m_InputNodes.RemoveAtAndCopy(uiInputIndex);
 
-      for (wdUInt32 i = 0; i < uiNumElements; ++i)
+      for (nsUInt32 i = 0; i < uiNumElements; ++i)
       {
-        wdEnum<VectorComponent> component = static_cast<VectorComponent::Enum>(i);
-        auto pSwizzle = CreateSwizzle(component, pOutput->m_pExpression);
-        auto pNewOutput = CreateOutput(CreateScalarizedStreamDesc(pOutput->m_Desc, component), pSwizzle);
-        m_OutputNodes.Insert(pNewOutput, uiOutputIndex + i);
+        nsEnum<VectorComponent> component = static_cast<VectorComponent::Enum>(i);
+        auto pNewInput = CreateInput(CreateScalarizedStreamDesc(pInput->m_Desc, component));
+        m_InputNodes.InsertAt(uiInputIndex + i, pNewInput);
       }
     }
   }
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
+nsResult nsExpressionAST::ScalarizeOutputs()
+{
+  for (nsUInt32 uiOutputIndex = 0; uiOutputIndex < m_OutputNodes.GetCount(); ++uiOutputIndex)
+  {
+    const auto pOutput = m_OutputNodes[uiOutputIndex];
+    if (pOutput == nullptr || pOutput->m_pExpression == nullptr)
+      return NS_FAILURE;
 
-WD_STATICLINK_FILE(Foundation, Foundation_CodeUtils_Expression_Implementation_ExpressionASTTransforms);
+    const nsUInt32 uiNumElements = pOutput->m_uiNumInputElements;
+    if (uiNumElements > 1)
+    {
+      m_OutputNodes.RemoveAtAndCopy(uiOutputIndex);
+
+      for (nsUInt32 i = 0; i < uiNumElements; ++i)
+      {
+        nsEnum<VectorComponent> component = static_cast<VectorComponent::Enum>(i);
+        auto pSwizzle = CreateSwizzle(component, pOutput->m_pExpression);
+        auto pNewOutput = CreateOutput(CreateScalarizedStreamDesc(pOutput->m_Desc, component), pSwizzle);
+        m_OutputNodes.InsertAt(uiOutputIndex + i, pNewOutput);
+      }
+    }
+  }
+
+  return NS_SUCCESS;
+}

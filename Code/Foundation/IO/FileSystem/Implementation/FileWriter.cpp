@@ -2,23 +2,23 @@
 
 #include <Foundation/IO/FileSystem/FileWriter.h>
 
-wdResult wdFileWriter::Open(wdStringView sFile, wdUInt32 uiCacheSize /*= 1024 * 1024*/, wdFileShareMode::Enum fileShareMode /*= wdFileShareMode::Exclusive*/, bool bAllowFileEvents /*= true*/)
+nsResult nsFileWriter::Open(nsStringView sFile, nsUInt32 uiCacheSize /*= 1024 * 1024*/, nsFileShareMode::Enum fileShareMode /*= nsFileShareMode::Exclusive*/, bool bAllowFileEvents /*= true*/)
 {
-  uiCacheSize = wdMath::Clamp<wdUInt32>(uiCacheSize, 1024, 1024 * 1024 * 32);
+  uiCacheSize = nsMath::Clamp<nsUInt32>(uiCacheSize, 1024, 1024 * 1024 * 32);
 
   m_pDataDirWriter = GetFileWriter(sFile, fileShareMode, bAllowFileEvents);
 
   if (!m_pDataDirWriter)
-    return WD_FAILURE;
+    return NS_FAILURE;
 
   m_Cache.SetCountUninitialized(uiCacheSize);
 
   m_uiCacheWritePosition = 0;
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
-void wdFileWriter::Close()
+void nsFileWriter::Close()
 {
   if (!m_pDataDirWriter)
     return;
@@ -29,17 +29,17 @@ void wdFileWriter::Close()
   m_pDataDirWriter = nullptr;
 }
 
-wdResult wdFileWriter::Flush()
+nsResult nsFileWriter::Flush()
 {
-  const wdResult res = m_pDataDirWriter->Write(&m_Cache[0], m_uiCacheWritePosition);
+  const nsResult res = m_pDataDirWriter->Write(&m_Cache[0], m_uiCacheWritePosition);
   m_uiCacheWritePosition = 0;
 
   return res;
 }
 
-wdResult wdFileWriter::WriteBytes(const void* pWriteBuffer, wdUInt64 uiBytesToWrite)
+nsResult nsFileWriter::WriteBytes(const void* pWriteBuffer, nsUInt64 uiBytesToWrite)
 {
-  WD_ASSERT_DEV(m_pDataDirWriter != nullptr, "The file has not been opened (successfully).");
+  NS_ASSERT_DEV(m_pDataDirWriter != nullptr, "The file has not been opened (successfully).");
 
   if (uiBytesToWrite > m_Cache.GetCount())
   {
@@ -48,27 +48,27 @@ wdResult wdFileWriter::WriteBytes(const void* pWriteBuffer, wdUInt64 uiBytesToWr
 
     if (m_uiCacheWritePosition > 0)
     {
-      WD_SUCCEED_OR_RETURN(Flush());
+      NS_SUCCEED_OR_RETURN(Flush());
     }
 
     return m_pDataDirWriter->Write(pWriteBuffer, uiBytesToWrite);
   }
   else
   {
-    wdUInt8* pBuffer = (wdUInt8*)pWriteBuffer;
+    nsUInt8* pBuffer = (nsUInt8*)pWriteBuffer;
 
     while (uiBytesToWrite > 0)
     {
       // determine chunk size to be written
-      wdUInt64 uiChunkSize = uiBytesToWrite;
+      nsUInt64 uiChunkSize = uiBytesToWrite;
 
-      const wdUInt64 uiRemainingCache = m_Cache.GetCount() - m_uiCacheWritePosition;
+      const nsUInt64 uiRemainingCache = m_Cache.GetCount() - m_uiCacheWritePosition;
 
       if (uiRemainingCache < uiBytesToWrite)
         uiChunkSize = uiRemainingCache;
 
       // copy memory
-      wdMemoryUtils::Copy(&m_Cache[(wdUInt32)m_uiCacheWritePosition], pBuffer, (wdUInt32)uiChunkSize);
+      nsMemoryUtils::Copy(&m_Cache[(nsUInt32)m_uiCacheWritePosition], pBuffer, (nsUInt32)uiChunkSize);
 
       pBuffer += uiChunkSize;
       m_uiCacheWritePosition += uiChunkSize;
@@ -77,15 +77,11 @@ wdResult wdFileWriter::WriteBytes(const void* pWriteBuffer, wdUInt64 uiBytesToWr
       // if the cache is full or nearly full, flush it to disk
       if (m_uiCacheWritePosition + 32 >= m_Cache.GetCount())
       {
-        if (Flush() == WD_FAILURE)
-          return WD_FAILURE;
+        if (Flush() == NS_FAILURE)
+          return NS_FAILURE;
       }
     }
 
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
 }
-
-
-
-WD_STATICLINK_FILE(Foundation, Foundation_IO_FileSystem_Implementation_FileWriter);

@@ -2,18 +2,18 @@
 
 #include <Foundation/IO/JSONWriter.h>
 
-wdStandardJSONWriter::JSONState::JSONState()
+nsStandardJSONWriter::JSONState::JSONState()
 {
   m_State = Invalid;
   m_bRequireComma = false;
   m_bValueWasWritten = false;
 }
 
-wdStandardJSONWriter::CommaWriter::CommaWriter(wdStandardJSONWriter* pWriter)
+nsStandardJSONWriter::CommaWriter::CommaWriter(nsStandardJSONWriter* pWriter)
 {
-  const wdStandardJSONWriter::State state = pWriter->m_StateStack.PeekBack().m_State;
-  WD_IGNORE_UNUSED(state);
-  WD_ASSERT_DEV(state == wdStandardJSONWriter::Array || state == wdStandardJSONWriter::NamedArray || state == wdStandardJSONWriter::Variable,
+  const nsStandardJSONWriter::State state = pWriter->m_StateStack.PeekBack().m_State;
+  NS_IGNORE_UNUSED(state);
+  NS_ASSERT_DEV(state == nsStandardJSONWriter::Array || state == nsStandardJSONWriter::NamedArray || state == nsStandardJSONWriter::Variable,
     "Values can only be written inside BeginVariable() / EndVariable() and BeginArray() / EndArray().");
 
   m_pWriter = pWriter;
@@ -23,19 +23,19 @@ wdStandardJSONWriter::CommaWriter::CommaWriter(wdStandardJSONWriter* pWriter)
     // we are writing the comma now, so it is not required anymore
     m_pWriter->m_StateStack.PeekBack().m_bRequireComma = false;
 
-    if (m_pWriter->m_StateStack.PeekBack().m_State == wdStandardJSONWriter::Array ||
-        m_pWriter->m_StateStack.PeekBack().m_State == wdStandardJSONWriter::NamedArray)
+    if (m_pWriter->m_StateStack.PeekBack().m_State == nsStandardJSONWriter::Array ||
+        m_pWriter->m_StateStack.PeekBack().m_State == nsStandardJSONWriter::NamedArray)
     {
-      if (pWriter->m_WhitespaceMode >= wdJSONWriter::WhitespaceMode::NewlinesOnly)
+      if (pWriter->m_WhitespaceMode >= nsJSONWriter::WhitespaceMode::NewlinesOnly)
       {
-        if (pWriter->m_ArrayMode == wdJSONWriter::ArrayMode::InOneLine)
+        if (pWriter->m_ArrayMode == nsJSONWriter::ArrayMode::InOneLine)
           m_pWriter->OutputString(",");
         else
           m_pWriter->OutputString(",\n");
       }
       else
       {
-        if (pWriter->m_ArrayMode == wdJSONWriter::ArrayMode::InOneLine)
+        if (pWriter->m_ArrayMode == nsJSONWriter::ArrayMode::InOneLine)
           m_pWriter->OutputString(", ");
         else
         {
@@ -46,7 +46,7 @@ wdStandardJSONWriter::CommaWriter::CommaWriter(wdStandardJSONWriter* pWriter)
     }
     else
     {
-      if (pWriter->m_WhitespaceMode >= wdJSONWriter::WhitespaceMode::None)
+      if (pWriter->m_WhitespaceMode >= nsJSONWriter::WhitespaceMode::None)
         m_pWriter->OutputString(",");
       else
         m_pWriter->OutputString(",\n");
@@ -56,37 +56,37 @@ wdStandardJSONWriter::CommaWriter::CommaWriter(wdStandardJSONWriter* pWriter)
   }
 }
 
-wdStandardJSONWriter::CommaWriter::~CommaWriter()
+nsStandardJSONWriter::CommaWriter::~CommaWriter()
 {
   m_pWriter->m_StateStack.PeekBack().m_bRequireComma = true;
   m_pWriter->m_StateStack.PeekBack().m_bValueWasWritten = true;
 }
 
-wdStandardJSONWriter::wdStandardJSONWriter()
+nsStandardJSONWriter::nsStandardJSONWriter()
 {
   m_iIndentation = 0;
   m_pOutput = nullptr;
   JSONState s;
-  s.m_State = wdStandardJSONWriter::Empty;
+  s.m_State = nsStandardJSONWriter::Empty;
   m_StateStack.PushBack(s);
 }
 
-wdStandardJSONWriter::~wdStandardJSONWriter()
+nsStandardJSONWriter::~nsStandardJSONWriter()
 {
   if (!HadWriteError())
   {
-    WD_ASSERT_DEV(m_StateStack.PeekBack().m_State == wdStandardJSONWriter::Empty, "The JSON stream must be closed properly.");
+    NS_ASSERT_DEV(m_StateStack.PeekBack().m_State == nsStandardJSONWriter::Empty, "The JSON stream must be closed properly.");
   }
 }
 
-void wdStandardJSONWriter::SetOutputStream(wdStreamWriter* pOutput)
+void nsStandardJSONWriter::SetOutputStream(nsStreamWriter* pOutput)
 {
   m_pOutput = pOutput;
 }
 
-void wdStandardJSONWriter::OutputString(wdStringView s)
+void nsStandardJSONWriter::OutputString(nsStringView s)
 {
-  WD_ASSERT_DEBUG(m_pOutput != nullptr, "No output stream has been set yet.");
+  NS_ASSERT_DEBUG(m_pOutput != nullptr, "No output stream has been set yet.");
 
   if (m_pOutput->WriteBytes(s.GetStartPointer(), s.GetElementCount()).Failed())
   {
@@ -94,9 +94,9 @@ void wdStandardJSONWriter::OutputString(wdStringView s)
   }
 }
 
-void wdStandardJSONWriter::OutputEscapedString(wdStringView s)
+void nsStandardJSONWriter::OutputEscapedString(nsStringView s)
 {
-  wdStringBuilder sEscaped = s;
+  nsStringBuilder sEscaped = s;
   sEscaped.ReplaceAll("\\", "\\\\");
   // sEscaped.ReplaceAll("/", "\\/"); // this is not necessary to escape
   sEscaped.ReplaceAll("\"", "\\\"");
@@ -111,23 +111,23 @@ void wdStandardJSONWriter::OutputEscapedString(wdStringView s)
   OutputString("\"");
 }
 
-void wdStandardJSONWriter::OutputIndentation()
+void nsStandardJSONWriter::OutputIndentation()
 {
   if (m_WhitespaceMode >= WhitespaceMode::NoIndentation)
     return;
 
-  wdInt32 iIndentation = m_iIndentation * 2;
+  nsInt32 iIndentation = m_iIndentation * 2;
 
   if (m_WhitespaceMode == WhitespaceMode::LessIndentation)
     iIndentation = m_iIndentation;
 
-  wdStringBuilder s;
-  s.Printf("%*s", iIndentation, "");
+  nsStringBuilder s;
+  s.SetPrintf("%*s", iIndentation, "");
 
   OutputString(s.GetData());
 }
 
-void wdStandardJSONWriter::WriteBool(bool value)
+void nsStandardJSONWriter::WriteBool(bool value)
 {
   CommaWriter cw(this);
 
@@ -137,273 +137,273 @@ void wdStandardJSONWriter::WriteBool(bool value)
     OutputString("false");
 }
 
-void wdStandardJSONWriter::WriteInt32(wdInt32 value)
+void nsStandardJSONWriter::WriteInt32(nsInt32 value)
 {
   CommaWriter cw(this);
 
-  wdStringBuilder s;
-  s.Format("{0}", value);
+  nsStringBuilder s;
+  s.SetFormat("{0}", value);
 
   OutputString(s.GetData());
 }
 
-void wdStandardJSONWriter::WriteUInt32(wdUInt32 value)
+void nsStandardJSONWriter::WriteUInt32(nsUInt32 value)
 {
   CommaWriter cw(this);
 
-  wdStringBuilder s;
-  s.Format("{0}", value);
+  nsStringBuilder s;
+  s.SetFormat("{0}", value);
 
   OutputString(s.GetData());
 }
 
-void wdStandardJSONWriter::WriteInt64(wdInt64 value)
+void nsStandardJSONWriter::WriteInt64(nsInt64 value)
 {
   CommaWriter cw(this);
 
-  wdStringBuilder s;
-  s.Format("{0}", value);
+  nsStringBuilder s;
+  s.SetFormat("{0}", value);
 
   OutputString(s.GetData());
 }
 
-void wdStandardJSONWriter::WriteUInt64(wdUInt64 value)
+void nsStandardJSONWriter::WriteUInt64(nsUInt64 value)
 {
   CommaWriter cw(this);
 
-  wdStringBuilder s;
-  s.Format("{0}", value);
+  nsStringBuilder s;
+  s.SetFormat("{0}", value);
 
   OutputString(s.GetData());
 }
 
-void wdStandardJSONWriter::WriteFloat(float value)
+void nsStandardJSONWriter::WriteFloat(float value)
 {
   CommaWriter cw(this);
 
-  wdStringBuilder s;
-  s.Format("{0}", value);
+  nsStringBuilder s;
+  s.SetFormat("{0}", value);
 
   OutputString(s.GetData());
 }
 
-void wdStandardJSONWriter::WriteDouble(double value)
+void nsStandardJSONWriter::WriteDouble(double value)
 {
   CommaWriter cw(this);
 
-  wdStringBuilder s;
-  s.Format("{0}", value);
+  nsStringBuilder s;
+  s.SetFormat("{0}", value);
 
   OutputString(s.GetData());
 }
 
-void wdStandardJSONWriter::WriteString(wdStringView value)
+void nsStandardJSONWriter::WriteString(nsStringView value)
 {
   CommaWriter cw(this);
 
   OutputEscapedString(value);
 }
 
-void wdStandardJSONWriter::WriteNULL()
+void nsStandardJSONWriter::WriteNULL()
 {
   CommaWriter cw(this);
 
   OutputString("null");
 }
 
-void wdStandardJSONWriter::WriteTime(wdTime value)
+void nsStandardJSONWriter::WriteTime(nsTime value)
 {
   WriteDouble(value.GetSeconds());
 }
 
-void wdStandardJSONWriter::WriteColor(const wdColor& value)
+void nsStandardJSONWriter::WriteColor(const nsColor& value)
 {
-  wdVec4 temp(value.r, value.g, value.b, value.a);
+  nsVec4 temp(value.r, value.g, value.b, value.a);
 
-  wdEndianHelper::NativeToLittleEndian((wdUInt32*)&temp, sizeof(temp) / sizeof(float));
+  nsEndianHelper::NativeToLittleEndian((nsUInt32*)&temp, sizeof(temp) / sizeof(float));
 
-  wdStringBuilder s;
+  nsStringBuilder s;
 
-  if (m_WhitespaceMode >= wdJSONWriter::WhitespaceMode::NewlinesOnly)
-    s.Format("({0},{1},{2},{3})", wdArgF(value.r, 4), wdArgF(value.g, 4), wdArgF(value.b, 4), wdArgF(value.a, 4));
+  if (m_WhitespaceMode >= nsJSONWriter::WhitespaceMode::NewlinesOnly)
+    s.SetFormat("({0},{1},{2},{3})", nsArgF(value.r, 4), nsArgF(value.g, 4), nsArgF(value.b, 4), nsArgF(value.a, 4));
   else
-    s.Format("({0}, {1}, {2}, {3})", wdArgF(value.r, 4), wdArgF(value.g, 4), wdArgF(value.b, 4), wdArgF(value.a, 4));
+    s.SetFormat("({0}, {1}, {2}, {3})", nsArgF(value.r, 4), nsArgF(value.g, 4), nsArgF(value.b, 4), nsArgF(value.a, 4));
 
   WriteBinaryData("color", &temp, sizeof(temp), s.GetData());
 }
 
-void wdStandardJSONWriter::WriteColorGamma(const wdColorGammaUB& value)
+void nsStandardJSONWriter::WriteColorGamma(const nsColorGammaUB& value)
 {
-  wdStringBuilder s;
+  nsStringBuilder s;
 
-  if (m_WhitespaceMode >= wdJSONWriter::WhitespaceMode::NewlinesOnly)
-    s.Format("({0},{1},{2},{3})", value.r, value.g, value.b, value.a);
+  if (m_WhitespaceMode >= nsJSONWriter::WhitespaceMode::NewlinesOnly)
+    s.SetFormat("({0},{1},{2},{3})", value.r, value.g, value.b, value.a);
   else
-    s.Format("({0}, {1}, {2}, {3})", value.r, value.g, value.b, value.a);
+    s.SetFormat("({0}, {1}, {2}, {3})", value.r, value.g, value.b, value.a);
 
-  WriteBinaryData("gamma", value.GetData(), sizeof(wdColorGammaUB), s.GetData());
+  WriteBinaryData("gamma", value.GetData(), sizeof(nsColorGammaUB), s.GetData());
 }
 
-void wdStandardJSONWriter::WriteVec2(const wdVec2& value)
+void nsStandardJSONWriter::WriteVec2(const nsVec2& value)
 {
-  wdVec2 temp = value;
+  nsVec2 temp = value;
 
-  wdEndianHelper::NativeToLittleEndian((wdUInt32*)&temp, sizeof(temp) / sizeof(float));
+  nsEndianHelper::NativeToLittleEndian((nsUInt32*)&temp, sizeof(temp) / sizeof(float));
 
-  wdStringBuilder s;
+  nsStringBuilder s;
 
-  if (m_WhitespaceMode >= wdJSONWriter::WhitespaceMode::NewlinesOnly)
-    s.Format("({0},{1})", wdArgF(value.x, 4), wdArgF(value.y, 4));
+  if (m_WhitespaceMode >= nsJSONWriter::WhitespaceMode::NewlinesOnly)
+    s.SetFormat("({0},{1})", nsArgF(value.x, 4), nsArgF(value.y, 4));
   else
-    s.Format("({0}, {1})", wdArgF(value.x, 4), wdArgF(value.y, 4));
+    s.SetFormat("({0}, {1})", nsArgF(value.x, 4), nsArgF(value.y, 4));
 
   WriteBinaryData("vec2", &temp, sizeof(temp), s.GetData());
 }
 
-void wdStandardJSONWriter::WriteVec3(const wdVec3& value)
+void nsStandardJSONWriter::WriteVec3(const nsVec3& value)
 {
-  wdVec3 temp = value;
+  nsVec3 temp = value;
 
-  wdEndianHelper::NativeToLittleEndian((wdUInt32*)&temp, sizeof(temp) / sizeof(float));
+  nsEndianHelper::NativeToLittleEndian((nsUInt32*)&temp, sizeof(temp) / sizeof(float));
 
-  wdStringBuilder s;
+  nsStringBuilder s;
 
-  if (m_WhitespaceMode >= wdJSONWriter::WhitespaceMode::NewlinesOnly)
-    s.Format("({0},{1},{2})", wdArgF(value.x, 4), wdArgF(value.y, 4), wdArgF(value.z, 4));
+  if (m_WhitespaceMode >= nsJSONWriter::WhitespaceMode::NewlinesOnly)
+    s.SetFormat("({0},{1},{2})", nsArgF(value.x, 4), nsArgF(value.y, 4), nsArgF(value.z, 4));
   else
-    s.Format("({0}, {1}, {2})", wdArgF(value.x, 4), wdArgF(value.y, 4), wdArgF(value.z, 4));
+    s.SetFormat("({0}, {1}, {2})", nsArgF(value.x, 4), nsArgF(value.y, 4), nsArgF(value.z, 4));
 
   WriteBinaryData("vec3", &temp, sizeof(temp), s.GetData());
 }
 
-void wdStandardJSONWriter::WriteVec4(const wdVec4& value)
+void nsStandardJSONWriter::WriteVec4(const nsVec4& value)
 {
-  wdVec4 temp = value;
+  nsVec4 temp = value;
 
-  wdEndianHelper::NativeToLittleEndian((wdUInt32*)&temp, sizeof(temp) / sizeof(float));
+  nsEndianHelper::NativeToLittleEndian((nsUInt32*)&temp, sizeof(temp) / sizeof(float));
 
-  wdStringBuilder s;
+  nsStringBuilder s;
 
-  if (m_WhitespaceMode >= wdJSONWriter::WhitespaceMode::NewlinesOnly)
-    s.Format("({0},{1},{2},{3})", wdArgF(value.x, 4), wdArgF(value.y, 4), wdArgF(value.z, 4), wdArgF(value.w, 4));
+  if (m_WhitespaceMode >= nsJSONWriter::WhitespaceMode::NewlinesOnly)
+    s.SetFormat("({0},{1},{2},{3})", nsArgF(value.x, 4), nsArgF(value.y, 4), nsArgF(value.z, 4), nsArgF(value.w, 4));
   else
-    s.Format("({0}, {1}, {2}, {3})", wdArgF(value.x, 4), wdArgF(value.y, 4), wdArgF(value.z, 4), wdArgF(value.w, 4));
+    s.SetFormat("({0}, {1}, {2}, {3})", nsArgF(value.x, 4), nsArgF(value.y, 4), nsArgF(value.z, 4), nsArgF(value.w, 4));
 
   WriteBinaryData("vec4", &temp, sizeof(temp), s.GetData());
 }
 
-void wdStandardJSONWriter::WriteVec2I32(const wdVec2I32& value)
+void nsStandardJSONWriter::WriteVec2I32(const nsVec2I32& value)
 {
   CommaWriter cw(this);
 
-  wdVec2I32 temp = value;
+  nsVec2I32 temp = value;
 
-  wdEndianHelper::NativeToLittleEndian((wdUInt32*)&temp, sizeof(temp) / sizeof(wdInt32));
+  nsEndianHelper::NativeToLittleEndian((nsUInt32*)&temp, sizeof(temp) / sizeof(nsInt32));
 
-  wdStringBuilder s;
+  nsStringBuilder s;
 
-  if (m_WhitespaceMode >= wdJSONWriter::WhitespaceMode::NewlinesOnly)
-    s.Format("({0},{1})", value.x, value.y);
+  if (m_WhitespaceMode >= nsJSONWriter::WhitespaceMode::NewlinesOnly)
+    s.SetFormat("({0},{1})", value.x, value.y);
   else
-    s.Format("({0}, {1})", value.x, value.y);
+    s.SetFormat("({0}, {1})", value.x, value.y);
 
   WriteBinaryData("vec2i", &temp, sizeof(temp), s.GetData());
 }
 
-void wdStandardJSONWriter::WriteVec3I32(const wdVec3I32& value)
+void nsStandardJSONWriter::WriteVec3I32(const nsVec3I32& value)
 {
   CommaWriter cw(this);
 
-  wdVec3I32 temp = value;
+  nsVec3I32 temp = value;
 
-  wdEndianHelper::NativeToLittleEndian((wdUInt32*)&temp, sizeof(temp) / sizeof(wdInt32));
+  nsEndianHelper::NativeToLittleEndian((nsUInt32*)&temp, sizeof(temp) / sizeof(nsInt32));
 
-  wdStringBuilder s;
+  nsStringBuilder s;
 
-  if (m_WhitespaceMode >= wdJSONWriter::WhitespaceMode::NewlinesOnly)
-    s.Format("({0},{1},{2})", value.x, value.y, value.z);
+  if (m_WhitespaceMode >= nsJSONWriter::WhitespaceMode::NewlinesOnly)
+    s.SetFormat("({0},{1},{2})", value.x, value.y, value.z);
   else
-    s.Format("({0}, {1}, {2})", value.x, value.y, value.z);
+    s.SetFormat("({0}, {1}, {2})", value.x, value.y, value.z);
 
   WriteBinaryData("vec3i", &temp, sizeof(temp), s.GetData());
 }
 
-void wdStandardJSONWriter::WriteVec4I32(const wdVec4I32& value)
+void nsStandardJSONWriter::WriteVec4I32(const nsVec4I32& value)
 {
   CommaWriter cw(this);
 
-  wdVec4I32 temp = value;
+  nsVec4I32 temp = value;
 
-  wdEndianHelper::NativeToLittleEndian((wdUInt32*)&temp, sizeof(temp) / sizeof(wdInt32));
+  nsEndianHelper::NativeToLittleEndian((nsUInt32*)&temp, sizeof(temp) / sizeof(nsInt32));
 
-  wdStringBuilder s;
+  nsStringBuilder s;
 
-  if (m_WhitespaceMode >= wdJSONWriter::WhitespaceMode::NewlinesOnly)
-    s.Format("({0},{1},{2},{3})", value.x, value.y, value.z, value.w);
+  if (m_WhitespaceMode >= nsJSONWriter::WhitespaceMode::NewlinesOnly)
+    s.SetFormat("({0},{1},{2},{3})", value.x, value.y, value.z, value.w);
   else
-    s.Format("({0}, {1}, {2}, {3})", value.x, value.y, value.z, value.w);
+    s.SetFormat("({0}, {1}, {2}, {3})", value.x, value.y, value.z, value.w);
 
   WriteBinaryData("vec4i", &temp, sizeof(temp), s.GetData());
 }
 
-void wdStandardJSONWriter::WriteQuat(const wdQuat& value)
+void nsStandardJSONWriter::WriteQuat(const nsQuat& value)
 {
-  wdQuat temp = value;
+  nsQuat temp = value;
 
-  wdEndianHelper::NativeToLittleEndian((wdUInt32*)&temp, sizeof(temp) / sizeof(float));
+  nsEndianHelper::NativeToLittleEndian((nsUInt32*)&temp, sizeof(temp) / sizeof(float));
 
   WriteBinaryData("quat", &temp, sizeof(temp));
 }
 
-void wdStandardJSONWriter::WriteMat3(const wdMat3& value)
+void nsStandardJSONWriter::WriteMat3(const nsMat3& value)
 {
-  wdMat3 temp = value;
+  nsMat3 temp = value;
 
-  wdEndianHelper::NativeToLittleEndian((wdUInt32*)&temp, sizeof(temp) / sizeof(float));
+  nsEndianHelper::NativeToLittleEndian((nsUInt32*)&temp, sizeof(temp) / sizeof(float));
 
   WriteBinaryData("mat3", &temp, sizeof(temp));
 }
 
-void wdStandardJSONWriter::WriteMat4(const wdMat4& value)
+void nsStandardJSONWriter::WriteMat4(const nsMat4& value)
 {
-  wdMat4 temp = value;
+  nsMat4 temp = value;
 
-  wdEndianHelper::NativeToLittleEndian((wdUInt32*)&temp, sizeof(temp) / sizeof(float));
+  nsEndianHelper::NativeToLittleEndian((nsUInt32*)&temp, sizeof(temp) / sizeof(float));
 
   WriteBinaryData("mat4", &temp, sizeof(temp));
 }
 
-void wdStandardJSONWriter::WriteUuid(const wdUuid& value)
+void nsStandardJSONWriter::WriteUuid(const nsUuid& value)
 {
   CommaWriter cw(this);
 
-  wdUuid temp = value;
+  nsUuid temp = value;
 
-  wdEndianHelper::NativeToLittleEndian((wdUInt64*)&temp, sizeof(temp) / sizeof(wdUInt64));
+  nsEndianHelper::NativeToLittleEndian((nsUInt64*)&temp, sizeof(temp) / sizeof(nsUInt64));
 
   WriteBinaryData("uuid", &temp, sizeof(temp));
 }
 
-void wdStandardJSONWriter::WriteAngle(wdAngle value)
+void nsStandardJSONWriter::WriteAngle(nsAngle value)
 {
   WriteFloat(value.GetDegree());
 }
 
-void wdStandardJSONWriter::WriteDataBuffer(const wdDataBuffer& value)
+void nsStandardJSONWriter::WriteDataBuffer(const nsDataBuffer& value)
 {
   WriteBinaryData("data", value.GetData(), value.GetCount());
 }
 
-void wdStandardJSONWriter::BeginVariable(const char* szName)
+void nsStandardJSONWriter::BeginVariable(nsStringView sName)
 {
-  const wdStandardJSONWriter::State state = m_StateStack.PeekBack().m_State;
-  WD_IGNORE_UNUSED(state);
-  WD_ASSERT_DEV(state == wdStandardJSONWriter::Empty || state == wdStandardJSONWriter::Object || state == wdStandardJSONWriter::NamedObject,
+  const nsStandardJSONWriter::State state = m_StateStack.PeekBack().m_State;
+  NS_IGNORE_UNUSED(state);
+  NS_ASSERT_DEV(state == nsStandardJSONWriter::Empty || state == nsStandardJSONWriter::Object || state == nsStandardJSONWriter::NamedObject,
     "Variables can only be written inside objects.");
 
   if (m_StateStack.PeekBack().m_bRequireComma)
   {
-    if (m_WhitespaceMode >= wdJSONWriter::WhitespaceMode::None)
+    if (m_WhitespaceMode >= nsJSONWriter::WhitespaceMode::None)
       OutputString(",");
     else
       OutputString(",\n");
@@ -411,7 +411,7 @@ void wdStandardJSONWriter::BeginVariable(const char* szName)
     OutputIndentation();
   }
 
-  OutputEscapedString(szName);
+  OutputEscapedString(sName);
 
   if (m_WhitespaceMode >= WhitespaceMode::NewlinesOnly)
     OutputString(":");
@@ -419,32 +419,32 @@ void wdStandardJSONWriter::BeginVariable(const char* szName)
     OutputString(" : ");
 
   JSONState s;
-  s.m_State = wdStandardJSONWriter::Variable;
+  s.m_State = nsStandardJSONWriter::Variable;
   m_StateStack.PushBack(s);
 }
 
-void wdStandardJSONWriter::EndVariable()
+void nsStandardJSONWriter::EndVariable()
 {
-  WD_ASSERT_DEV(m_StateStack.PeekBack().m_State == wdStandardJSONWriter::Variable, "EndVariable() must be called in sync with BeginVariable().");
-  WD_ASSERT_DEV(m_StateStack.PeekBack().m_bValueWasWritten, "EndVariable() cannot be called without writing any value in between.");
+  NS_ASSERT_DEV(m_StateStack.PeekBack().m_State == nsStandardJSONWriter::Variable, "EndVariable() must be called in sync with BeginVariable().");
+  NS_ASSERT_DEV(m_StateStack.PeekBack().m_bValueWasWritten, "EndVariable() cannot be called without writing any value in between.");
 
   End();
 }
 
-void wdStandardJSONWriter::BeginArray(const char* szName)
+void nsStandardJSONWriter::BeginArray(nsStringView sName)
 {
-  const wdStandardJSONWriter::State state = m_StateStack.PeekBack().m_State;
-  WD_IGNORE_UNUSED(state);
-  WD_ASSERT_DEV((state == wdStandardJSONWriter::Empty) ||
-                  ((state == wdStandardJSONWriter::Object || state == wdStandardJSONWriter::NamedObject) && !wdStringUtils::IsNullOrEmpty(szName)) ||
-                  ((state == wdStandardJSONWriter::Array || state == wdStandardJSONWriter::NamedArray) && szName == nullptr) ||
-                  (state == wdStandardJSONWriter::Variable && szName == nullptr),
+  const nsStandardJSONWriter::State state = m_StateStack.PeekBack().m_State;
+  NS_IGNORE_UNUSED(state);
+  NS_ASSERT_DEV((state == nsStandardJSONWriter::Empty) ||
+                  ((state == nsStandardJSONWriter::Object || state == nsStandardJSONWriter::NamedObject) && !sName.IsEmpty()) ||
+                  ((state == nsStandardJSONWriter::Array || state == nsStandardJSONWriter::NamedArray) && sName.IsEmpty()) ||
+                  (state == nsStandardJSONWriter::Variable && sName == nullptr),
     "Inside objects you can only begin arrays when also giving them a (non-empty) name.\n"
     "Inside arrays you can only nest anonymous arrays, so names are forbidden.\n"
     "Inside variables you cannot specify a name again.");
 
-  if (szName != nullptr)
-    BeginVariable(szName);
+  if (sName != nullptr)
+    BeginVariable(sName);
 
   m_StateStack.PeekBack().m_bValueWasWritten = true;
 
@@ -462,47 +462,47 @@ void wdStandardJSONWriter::BeginArray(const char* szName)
     OutputString("[ ");
 
   JSONState s;
-  s.m_State = (szName == nullptr) ? wdStandardJSONWriter::Array : wdStandardJSONWriter::NamedArray;
+  s.m_State = (sName == nullptr) ? nsStandardJSONWriter::Array : nsStandardJSONWriter::NamedArray;
   m_StateStack.PushBack(s);
   ++m_iIndentation;
 }
 
-void wdStandardJSONWriter::EndArray()
+void nsStandardJSONWriter::EndArray()
 {
-  const wdStandardJSONWriter::State state = m_StateStack.PeekBack().m_State;
-  WD_IGNORE_UNUSED(state);
-  WD_ASSERT_DEV(
-    state == wdStandardJSONWriter::Array || state == wdStandardJSONWriter::NamedArray, "EndArray() must be called in sync with BeginArray().");
+  const nsStandardJSONWriter::State state = m_StateStack.PeekBack().m_State;
+  NS_IGNORE_UNUSED(state);
+  NS_ASSERT_DEV(
+    state == nsStandardJSONWriter::Array || state == nsStandardJSONWriter::NamedArray, "EndArray() must be called in sync with BeginArray().");
 
 
   const State CurState = m_StateStack.PeekBack().m_State;
 
   End();
 
-  if (CurState == wdStandardJSONWriter::NamedArray)
+  if (CurState == nsStandardJSONWriter::NamedArray)
     EndVariable();
 }
 
-void wdStandardJSONWriter::BeginObject(const char* szName)
+void nsStandardJSONWriter::BeginObject(nsStringView sName)
 {
-  const wdStandardJSONWriter::State state = m_StateStack.PeekBack().m_State;
-  WD_IGNORE_UNUSED(state);
-  WD_ASSERT_DEV((state == wdStandardJSONWriter::Empty) ||
-                  ((state == wdStandardJSONWriter::Object || state == wdStandardJSONWriter::NamedObject) && !wdStringUtils::IsNullOrEmpty(szName)) ||
-                  ((state == wdStandardJSONWriter::Array || state == wdStandardJSONWriter::NamedArray) && szName == nullptr) ||
-                  (state == wdStandardJSONWriter::Variable && szName == nullptr),
+  const nsStandardJSONWriter::State state = m_StateStack.PeekBack().m_State;
+  NS_IGNORE_UNUSED(state);
+  NS_ASSERT_DEV((state == nsStandardJSONWriter::Empty) ||
+                  ((state == nsStandardJSONWriter::Object || state == nsStandardJSONWriter::NamedObject) && !sName.IsEmpty()) ||
+                  ((state == nsStandardJSONWriter::Array || state == nsStandardJSONWriter::NamedArray) && sName.IsEmpty()) ||
+                  (state == nsStandardJSONWriter::Variable && sName == nullptr),
     "Inside objects you can only begin objects when also giving them a (non-empty) name.\n"
     "Inside arrays you can only nest anonymous objects, so names are forbidden.\n"
     "Inside variables you cannot specify a name again.");
 
-  if (szName != nullptr)
-    BeginVariable(szName);
+  if (sName != nullptr)
+    BeginVariable(sName);
 
   m_StateStack.PeekBack().m_bValueWasWritten = true;
 
   if (m_StateStack.PeekBack().m_bRequireComma)
   {
-    if (m_WhitespaceMode >= wdJSONWriter::WhitespaceMode::None)
+    if (m_WhitespaceMode >= nsJSONWriter::WhitespaceMode::None)
       OutputString(",");
     else
       OutputString(",\n");
@@ -510,39 +510,39 @@ void wdStandardJSONWriter::BeginObject(const char* szName)
     OutputIndentation();
   }
 
-  if (m_WhitespaceMode >= wdJSONWriter::WhitespaceMode::None)
+  if (m_WhitespaceMode >= nsJSONWriter::WhitespaceMode::None)
     OutputString("{");
   else
     OutputString("{\n");
 
   JSONState s;
-  s.m_State = (szName == nullptr) ? wdStandardJSONWriter::Object : wdStandardJSONWriter::NamedObject;
+  s.m_State = (sName == nullptr) ? nsStandardJSONWriter::Object : nsStandardJSONWriter::NamedObject;
   m_StateStack.PushBack(s);
   ++m_iIndentation;
 
   OutputIndentation();
 }
 
-void wdStandardJSONWriter::EndObject()
+void nsStandardJSONWriter::EndObject()
 {
-  const wdStandardJSONWriter::State state = m_StateStack.PeekBack().m_State;
-  WD_IGNORE_UNUSED(state);
-  WD_ASSERT_DEV(
-    state == wdStandardJSONWriter::Object || state == wdStandardJSONWriter::NamedObject, "EndObject() must be called in sync with BeginObject().");
+  const nsStandardJSONWriter::State state = m_StateStack.PeekBack().m_State;
+  NS_IGNORE_UNUSED(state);
+  NS_ASSERT_DEV(
+    state == nsStandardJSONWriter::Object || state == nsStandardJSONWriter::NamedObject, "EndObject() must be called in sync with BeginObject().");
 
   const State CurState = m_StateStack.PeekBack().m_State;
 
   End();
 
-  if (CurState == wdStandardJSONWriter::NamedObject)
+  if (CurState == nsStandardJSONWriter::NamedObject)
     EndVariable();
 }
 
-void wdStandardJSONWriter::End()
+void nsStandardJSONWriter::End()
 {
-  const wdStandardJSONWriter::State state = m_StateStack.PeekBack().m_State;
+  const nsStandardJSONWriter::State state = m_StateStack.PeekBack().m_State;
 
-  if (m_StateStack.PeekBack().m_State == wdStandardJSONWriter::Array || m_StateStack.PeekBack().m_State == wdStandardJSONWriter::NamedArray)
+  if (m_StateStack.PeekBack().m_State == nsStandardJSONWriter::Array || m_StateStack.PeekBack().m_State == nsStandardJSONWriter::NamedArray)
   {
     --m_iIndentation;
 
@@ -556,11 +556,11 @@ void wdStandardJSONWriter::End()
   m_StateStack.PopBack();
   m_StateStack.PeekBack().m_bRequireComma = true;
 
-  if (state == wdStandardJSONWriter::Object || state == wdStandardJSONWriter::NamedObject)
+  if (state == nsStandardJSONWriter::Object || state == nsStandardJSONWriter::NamedObject)
   {
     --m_iIndentation;
 
-    if (m_WhitespaceMode < wdJSONWriter::WhitespaceMode::None)
+    if (m_WhitespaceMode < nsJSONWriter::WhitespaceMode::None)
       OutputString("\n");
 
     OutputIndentation();
@@ -569,7 +569,7 @@ void wdStandardJSONWriter::End()
 }
 
 
-void wdStandardJSONWriter::WriteBinaryData(const char* szDataType, const void* pData, wdUInt32 uiBytes, const char* szValueString)
+void nsStandardJSONWriter::WriteBinaryData(nsStringView sDataType, const void* pData, nsUInt32 uiBytes, nsStringView sValueString)
 {
   CommaWriter cw(this);
 
@@ -578,16 +578,16 @@ void wdStandardJSONWriter::WriteBinaryData(const char* szDataType, const void* p
   else
     OutputString("{ \"$t\" : \"");
 
-  OutputString(szDataType);
+  OutputString(sDataType);
 
-  if (szValueString != nullptr)
+  if (!sValueString.IsEmpty())
   {
     if (m_WhitespaceMode >= WhitespaceMode::NewlinesOnly)
       OutputString("\",\"$v\":\"");
     else
       OutputString("\", \"$v\" : \"");
 
-    OutputString(szValueString);
+    OutputString(sValueString);
   }
 
   if (m_WhitespaceMode >= WhitespaceMode::NewlinesOnly)
@@ -595,13 +595,13 @@ void wdStandardJSONWriter::WriteBinaryData(const char* szDataType, const void* p
   else
     OutputString("\", \"$b\" : \"0x");
 
-  wdStringBuilder s;
+  nsStringBuilder s;
 
-  wdUInt8* pBytes = (wdUInt8*)pData;
+  nsUInt8* pBytes = (nsUInt8*)pData;
 
-  for (wdUInt32 i = 0; i < uiBytes; ++i)
+  for (nsUInt32 i = 0; i < uiBytes; ++i)
   {
-    s.Format("{0}", wdArgU((wdUInt32)*pBytes, 2, true, 16, true));
+    s.SetFormat("{0}", nsArgU((nsUInt32)*pBytes, 2, true, 16, true));
     ++pBytes;
 
     OutputString(s.GetData());
@@ -612,5 +612,3 @@ void wdStandardJSONWriter::WriteBinaryData(const char* szDataType, const void* p
   else
     OutputString("\" }");
 }
-
-WD_STATICLINK_FILE(Foundation, Foundation_IO_Implementation_StandardJSONWriter);

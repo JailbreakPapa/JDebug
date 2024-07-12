@@ -5,29 +5,27 @@
 #include <Foundation/Serialization/GraphVersioning.h>
 #include <Foundation/Serialization/RttiConverter.h>
 
-WD_ENUMERABLE_CLASS_IMPLEMENTATION(wdGraphPatch);
+NS_ENUMERABLE_CLASS_IMPLEMENTATION(nsGraphPatch);
 
-wdGraphPatch::wdGraphPatch(const char* szType, wdUInt32 uiTypeVersion, PatchType type)
+nsGraphPatch::nsGraphPatch(const char* szType, nsUInt32 uiTypeVersion, PatchType type)
   : m_szType(szType)
   , m_uiTypeVersion(uiTypeVersion)
   , m_PatchType(type)
 {
 }
 
-const char* wdGraphPatch::GetType() const
+const char* nsGraphPatch::GetType() const
 {
   return m_szType;
 }
 
-wdUInt32 wdGraphPatch::GetTypeVersion() const
+nsUInt32 nsGraphPatch::GetTypeVersion() const
 {
   return m_uiTypeVersion;
 }
 
 
-wdGraphPatch::PatchType wdGraphPatch::GetPatchType() const
+nsGraphPatch::PatchType nsGraphPatch::GetPatchType() const
 {
   return m_PatchType;
 }
-
-WD_STATICLINK_FILE(Foundation, Foundation_Serialization_Implementation_GraphPatch);

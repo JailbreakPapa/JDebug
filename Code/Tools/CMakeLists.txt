@@ -1,1 +1,1 @@
-wd_add_all_subdirs()
+ns_add_all_subdirs()

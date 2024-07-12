@@ -6,7 +6,7 @@
 #define STBI_MSC_SECURE_CRT
 #endif
 
-//#define STBI_ASSERT(x) WD_ASSERT(x, "stbi_image assertion.")
+//#define STBI_ASSERT(x) NS_ASSERT(x, "stbi_image assertion.")
 
 #define STBI_ONLY_PNG
 #define STBI_ONLY_JPEG

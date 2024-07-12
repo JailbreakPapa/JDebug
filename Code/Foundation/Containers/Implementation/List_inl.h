@@ -5,22 +5,22 @@
 // **** ListElement ****
 
 template <typename T>
-wdListBase<T>::ListElementBase::ListElementBase()
+nsListBase<T>::ListElementBase::ListElementBase()
   : m_pPrev(nullptr)
   , m_pNext(nullptr)
 {
 }
 
 template <typename T>
-wdListBase<T>::ListElement::ListElement(const T& data)
+nsListBase<T>::ListElement::ListElement(const T& data)
   : m_Data(data)
 {
 }
 
-// **** wdListBase ****
+// **** nsListBase ****
 
 template <typename T>
-wdListBase<T>::wdListBase(wdAllocatorBase* pAllocator)
+nsListBase<T>::nsListBase(nsAllocator* pAllocator)
   : m_End(reinterpret_cast<ListElement*>(&m_Last))
   , m_uiCount(0)
   , m_Elements(pAllocator)
@@ -31,7 +31,7 @@ wdListBase<T>::wdListBase(wdAllocatorBase* pAllocator)
 }
 
 template <typename T>
-wdListBase<T>::wdListBase(const wdListBase<T>& cc, wdAllocatorBase* pAllocator)
+nsListBase<T>::nsListBase(const nsListBase<T>& cc, nsAllocator* pAllocator)
   : m_End(reinterpret_cast<ListElement*>(&m_Last))
   , m_uiCount(0)
   , m_Elements(pAllocator)
@@ -44,20 +44,20 @@ wdListBase<T>::wdListBase(const wdListBase<T>& cc, wdAllocatorBase* pAllocator)
 }
 
 template <typename T>
-wdListBase<T>::~wdListBase()
+nsListBase<T>::~nsListBase()
 {
   Clear();
 }
 
 template <typename T>
-void wdListBase<T>::operator=(const wdListBase<T>& cc)
+void nsListBase<T>::operator=(const nsListBase<T>& cc)
 {
   Clear();
   Insert(GetIterator(), cc.GetIterator(), cc.GetEndIterator());
 }
 
 template <typename T>
-typename wdListBase<T>::ListElement* wdListBase<T>::AcquireNode(const T& data)
+typename nsListBase<T>::ListElement* nsListBase<T>::AcquireNode()
 {
   ListElement* pNode;
 
@@ -72,15 +72,14 @@ typename wdListBase<T>::ListElement* wdListBase<T>::AcquireNode(const T& data)
     m_pFreeElementStack = m_pFreeElementStack->m_pNext;
   }
 
-  wdMemoryUtils::Construct<ListElement>(pNode, 1);
-  pNode->m_Data = data;
+  nsMemoryUtils::Construct<SkipTrivialTypes, ListElement>(pNode, 1);
   return pNode;
 }
 
 template <typename T>
-void wdListBase<T>::ReleaseNode(ListElement* pNode)
+void nsListBase<T>::ReleaseNode(ListElement* pNode)
 {
-  wdMemoryUtils::Destruct<ListElement>(pNode, 1);
+  nsMemoryUtils::Destruct<ListElement>(pNode, 1);
 
   if (pNode == &m_Elements.PeekBack())
   {
@@ -101,55 +100,43 @@ void wdListBase<T>::ReleaseNode(ListElement* pNode)
 
 
 template <typename T>
-WD_ALWAYS_INLINE typename wdListBase<T>::Iterator wdListBase<T>::GetIterator()
+NS_ALWAYS_INLINE typename nsListBase<T>::Iterator nsListBase<T>::GetIterator()
 {
   return Iterator(m_First.m_pNext);
 }
 
 template <typename T>
-WD_ALWAYS_INLINE typename wdListBase<T>::Iterator wdListBase<T>::GetLastIterator()
-{
-  return Iterator(m_Last.m_pPrev);
-}
-
-template <typename T>
-WD_ALWAYS_INLINE typename wdListBase<T>::Iterator wdListBase<T>::GetEndIterator()
+NS_ALWAYS_INLINE typename nsListBase<T>::Iterator nsListBase<T>::GetEndIterator()
 {
   return m_End;
 }
 
 template <typename T>
-WD_ALWAYS_INLINE typename wdListBase<T>::ConstIterator wdListBase<T>::GetIterator() const
+NS_ALWAYS_INLINE typename nsListBase<T>::ConstIterator nsListBase<T>::GetIterator() const
 {
   return ConstIterator(m_First.m_pNext);
 }
 
 template <typename T>
-WD_ALWAYS_INLINE typename wdListBase<T>::ConstIterator wdListBase<T>::GetLastIterator() const
-{
-  return ConstIterator(m_Last.m_pPrev);
-}
-
-template <typename T>
-WD_ALWAYS_INLINE typename wdListBase<T>::ConstIterator wdListBase<T>::GetEndIterator() const
+NS_ALWAYS_INLINE typename nsListBase<T>::ConstIterator nsListBase<T>::GetEndIterator() const
 {
   return m_End;
 }
 
 template <typename T>
-WD_ALWAYS_INLINE wdUInt32 wdListBase<T>::GetCount() const
+NS_ALWAYS_INLINE nsUInt32 nsListBase<T>::GetCount() const
 {
   return m_uiCount;
 }
 
 template <typename T>
-WD_ALWAYS_INLINE bool wdListBase<T>::IsEmpty() const
+NS_ALWAYS_INLINE bool nsListBase<T>::IsEmpty() const
 {
   return (m_uiCount == 0);
 }
 
 template <typename T>
-void wdListBase<T>::Clear()
+void nsListBase<T>::Clear()
 {
   if (!IsEmpty())
     Remove(GetIterator(), GetEndIterator());
@@ -159,91 +146,91 @@ void wdListBase<T>::Clear()
 }
 
 template <typename T>
-WD_FORCE_INLINE void wdListBase<T>::Compact()
+NS_FORCE_INLINE void nsListBase<T>::Compact()
 {
   m_Elements.Compact();
 }
 
 template <typename T>
-WD_FORCE_INLINE T& wdListBase<T>::PeekFront()
+NS_FORCE_INLINE T& nsListBase<T>::PeekFront()
 {
-  WD_ASSERT_DEV(!IsEmpty(), "The container is empty.");
+  NS_ASSERT_DEBUG(!IsEmpty(), "The container is empty.");
 
   return m_First.m_pNext->m_Data;
 }
 
 template <typename T>
-WD_FORCE_INLINE T& wdListBase<T>::PeekBack()
+NS_FORCE_INLINE T& nsListBase<T>::PeekBack()
 {
-  WD_ASSERT_DEV(!IsEmpty(), "The container is empty.");
+  NS_ASSERT_DEBUG(!IsEmpty(), "The container is empty.");
 
   return m_Last.m_pPrev->m_Data;
 }
 
 template <typename T>
-WD_FORCE_INLINE const T& wdListBase<T>::PeekFront() const
+NS_FORCE_INLINE const T& nsListBase<T>::PeekFront() const
 {
-  WD_ASSERT_DEV(!IsEmpty(), "The container is empty.");
+  NS_ASSERT_DEBUG(!IsEmpty(), "The container is empty.");
 
   return m_First.m_pNext->m_Data;
 }
 
 template <typename T>
-WD_FORCE_INLINE const T& wdListBase<T>::PeekBack() const
+NS_FORCE_INLINE const T& nsListBase<T>::PeekBack() const
 {
-  WD_ASSERT_DEV(!IsEmpty(), "The container is empty.");
+  NS_ASSERT_DEBUG(!IsEmpty(), "The container is empty.");
 
   return m_Last.m_pPrev->m_Data;
 }
 
 
 template <typename T>
-WD_ALWAYS_INLINE void wdListBase<T>::PushBack()
+NS_ALWAYS_INLINE T& nsListBase<T>::PushBack()
 {
-  PushBack(T());
+  return *Insert(GetEndIterator());
 }
 
 template <typename T>
-WD_ALWAYS_INLINE void wdListBase<T>::PushBack(const T& element)
+NS_ALWAYS_INLINE void nsListBase<T>::PushBack(const T& element)
 {
   Insert(GetEndIterator(), element);
 }
 
 template <typename T>
-WD_ALWAYS_INLINE void wdListBase<T>::PushFront()
+NS_ALWAYS_INLINE T& nsListBase<T>::PushFront()
 {
-  PushFront(T());
+  return *Insert(GetIterator());
 }
 
 template <typename T>
-WD_ALWAYS_INLINE void wdListBase<T>::PushFront(const T& element)
+NS_ALWAYS_INLINE void nsListBase<T>::PushFront(const T& element)
 {
   Insert(GetIterator(), element);
 }
 
 template <typename T>
-WD_FORCE_INLINE void wdListBase<T>::PopBack()
+NS_FORCE_INLINE void nsListBase<T>::PopBack()
 {
-  WD_ASSERT_DEV(!IsEmpty(), "The container is empty.");
+  NS_ASSERT_DEBUG(!IsEmpty(), "The container is empty.");
 
   Remove(Iterator(m_Last.m_pPrev));
 }
 
 template <typename T>
-void wdListBase<T>::PopFront()
+void nsListBase<T>::PopFront()
 {
-  WD_ASSERT_DEV(!IsEmpty(), "The container is empty.");
+  NS_ASSERT_DEBUG(!IsEmpty(), "The container is empty.");
 
   Remove(Iterator(m_First.m_pNext));
 }
 
 template <typename T>
-typename wdListBase<T>::Iterator wdListBase<T>::Insert(const Iterator& pos, const T& data)
+typename nsListBase<T>::Iterator nsListBase<T>::Insert(const Iterator& pos)
 {
-  WD_ASSERT_DEV(pos.m_pElement != nullptr, "The iterator (pos) is invalid.");
+  NS_ASSERT_DEV(pos.m_pElement != nullptr, "The iterator (pos) is invalid.");
 
   ++m_uiCount;
-  ListElement* elem = AcquireNode(data);
+  ListElement* elem = AcquireNode();
 
   elem->m_pNext = pos.m_pElement;
   elem->m_pPrev = pos.m_pElement->m_pPrev;
@@ -255,11 +242,27 @@ typename wdListBase<T>::Iterator wdListBase<T>::Insert(const Iterator& pos, cons
 }
 
 template <typename T>
-void wdListBase<T>::Insert(const Iterator& pos, ConstIterator first, const ConstIterator& last)
+typename nsListBase<T>::Iterator nsListBase<T>::Insert(const Iterator& pos, const T& data)
 {
-  WD_ASSERT_DEV(pos.m_pElement != nullptr, "The iterator (pos) is invalid.");
-  WD_ASSERT_DEV(first.m_pElement != nullptr, "The iterator (first) is invalid.");
-  WD_ASSERT_DEV(last.m_pElement != nullptr, "The iterator (last) is invalid.");
+  NS_ASSERT_DEV(pos.m_pElement != nullptr, "The iterator (pos) is invalid.");
+
+  ++m_uiCount;
+  ListElement* elem = AcquireNode();
+  elem->m_Data = data;
+
+  elem->m_pNext = pos.m_pElement;
+  elem->m_pPrev = pos.m_pElement->m_pPrev;
+
+  pos.m_pElement->m_pPrev->m_pNext = elem;
+  pos.m_pElement->m_pPrev = elem;
+
+  return Iterator(elem);
+}
+
+template <typename T>
+void nsListBase<T>::Insert(const Iterator& pos, ConstIterator first, const ConstIterator& last)
+{
+  NS_ASSERT_DEV(pos.m_pElement != nullptr && first.m_pElement != nullptr && last.m_pElement != nullptr, "One of the iterators is invalid.");
 
   while (first != last)
   {
@@ -269,10 +272,10 @@ void wdListBase<T>::Insert(const Iterator& pos, ConstIterator first, const Const
 }
 
 template <typename T>
-typename wdListBase<T>::Iterator wdListBase<T>::Remove(const Iterator& pos)
+typename nsListBase<T>::Iterator nsListBase<T>::Remove(const Iterator& pos)
 {
-  WD_ASSERT_DEV(!IsEmpty(), "The container is empty.");
-  WD_ASSERT_DEV(pos.m_pElement != nullptr, "The iterator (pos) is invalid.");
+  NS_ASSERT_DEV(!IsEmpty(), "The container is empty.");
+  NS_ASSERT_DEV(pos.m_pElement != nullptr, "The iterator (pos) is invalid.");
 
   ListElement* pPrev = pos.m_pElement->m_pPrev;
   ListElement* pNext = pos.m_pElement->m_pNext;
@@ -286,11 +289,10 @@ typename wdListBase<T>::Iterator wdListBase<T>::Remove(const Iterator& pos)
 }
 
 template <typename T>
-typename wdListBase<T>::Iterator wdListBase<T>::Remove(Iterator first, const Iterator& last)
+typename nsListBase<T>::Iterator nsListBase<T>::Remove(Iterator first, const Iterator& last)
 {
-  WD_ASSERT_DEV(!IsEmpty(), "The container is empty.");
-  WD_ASSERT_DEV(first.m_pElement != nullptr, "The iterator (first) is invalid.");
-  WD_ASSERT_DEV(last.m_pElement != nullptr, "The iterator (last) is invalid.");
+  NS_ASSERT_DEV(!IsEmpty(), "The container is empty.");
+  NS_ASSERT_DEV(first.m_pElement != nullptr && last.m_pElement != nullptr, "An iterator is invalid.");
 
   while (first != last)
     first = Remove(first);
@@ -302,7 +304,7 @@ typename wdListBase<T>::Iterator wdListBase<T>::Remove(Iterator first, const Ite
     If uiNewSize is larger than the size of the list, default-constructed elements are appended to the list, until the desired size is reached.
 */
 template <typename T>
-void wdListBase<T>::SetCount(wdUInt32 uiNewSize)
+void nsListBase<T>::SetCount(nsUInt32 uiNewSize)
 {
   while (m_uiCount > uiNewSize)
     PopBack();
@@ -312,7 +314,7 @@ void wdListBase<T>::SetCount(wdUInt32 uiNewSize)
 }
 
 template <typename T>
-bool wdListBase<T>::operator==(const wdListBase<T>& rhs) const
+bool nsListBase<T>::operator==(const nsListBase<T>& rhs) const
 {
   if (GetCount() != rhs.GetCount())
     return false;
@@ -332,44 +334,38 @@ bool wdListBase<T>::operator==(const wdListBase<T>& rhs) const
   return true;
 }
 
-template <typename T>
-bool wdListBase<T>::operator!=(const wdListBase<T>& rhs) const
-{
-  return !operator==(rhs);
-}
-
 template <typename T, typename A>
-wdList<T, A>::wdList()
-  : wdListBase<T>(A::GetAllocator())
+nsList<T, A>::nsList()
+  : nsListBase<T>(A::GetAllocator())
 {
 }
 
 template <typename T, typename A>
-wdList<T, A>::wdList(wdAllocatorBase* pAllocator)
-  : wdListBase<T>(pAllocator)
+nsList<T, A>::nsList(nsAllocator* pAllocator)
+  : nsListBase<T>(pAllocator)
 {
 }
 
 template <typename T, typename A>
-wdList<T, A>::wdList(const wdList<T, A>& other)
-  : wdListBase<T>(other, A::GetAllocator())
+nsList<T, A>::nsList(const nsList<T, A>& other)
+  : nsListBase<T>(other, A::GetAllocator())
 {
 }
 
 template <typename T, typename A>
-wdList<T, A>::wdList(const wdListBase<T>& other)
-  : wdListBase<T>(other, A::GetAllocator())
+nsList<T, A>::nsList(const nsListBase<T>& other)
+  : nsListBase<T>(other, A::GetAllocator())
 {
 }
 
 template <typename T, typename A>
-void wdList<T, A>::operator=(const wdList<T, A>& rhs)
+void nsList<T, A>::operator=(const nsList<T, A>& rhs)
 {
-  wdListBase<T>::operator=(rhs);
+  nsListBase<T>::operator=(rhs);
 }
 
 template <typename T, typename A>
-void wdList<T, A>::operator=(const wdListBase<T>& rhs)
+void nsList<T, A>::operator=(const nsListBase<T>& rhs)
 {
-  wdListBase<T>::operator=(rhs);
+  nsListBase<T>::operator=(rhs);
 }

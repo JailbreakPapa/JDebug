@@ -7,77 +7,77 @@
 
 /// \brief The base class for enum and bitflags member properties.
 ///
-/// Cast any property whose type derives from wdEnumBase or wdBitflagsBase class to access its value.
-class wdAbstractEnumerationProperty : public wdAbstractMemberProperty
+/// Cast any property whose type derives from nsEnumBase or nsBitflagsBase class to access its value.
+class nsAbstractEnumerationProperty : public nsAbstractMemberProperty
 {
 public:
-  /// \brief Passes the property name through to wdAbstractMemberProperty.
-  wdAbstractEnumerationProperty(const char* szPropertyName)
-    : wdAbstractMemberProperty(szPropertyName)
+  /// \brief Passes the property name through to nsAbstractMemberProperty.
+  nsAbstractEnumerationProperty(const char* szPropertyName)
+    : nsAbstractMemberProperty(szPropertyName)
   {
   }
 
   /// \brief Returns the value of the property. Pass the instance pointer to the surrounding class along.
-  virtual wdInt64 GetValue(const void* pInstance) const = 0;
+  virtual nsInt64 GetValue(const void* pInstance) const = 0;
 
   /// \brief Modifies the value of the property. Pass the instance pointer to the surrounding class along.
   ///
   /// \note Make sure the property is not read-only before calling this, otherwise an assert will fire.
-  virtual void SetValue(void* pInstance, wdInt64 value) = 0;
+  virtual void SetValue(void* pInstance, nsInt64 value) const = 0;
 
   virtual void GetValuePtr(const void* pInstance, void* pObject) const override
   {
-    *static_cast<wdInt64*>(pObject) = GetValue(pInstance);
+    *static_cast<nsInt64*>(pObject) = GetValue(pInstance);
   }
 
-  virtual void SetValuePtr(void* pInstance, const void* pObject) override
+  virtual void SetValuePtr(void* pInstance, const void* pObject) const override
   {
-    SetValue(pInstance, *static_cast<const wdInt64*>(pObject));
+    SetValue(pInstance, *static_cast<const nsInt64*>(pObject));
   }
 };
 
 
 /// \brief [internal] Base class for enum / bitflags properties that already defines the type.
 template <typename EnumType>
-class wdTypedEnumProperty : public wdAbstractEnumerationProperty
+class nsTypedEnumProperty : public nsAbstractEnumerationProperty
 {
 public:
-  /// \brief Passes the property name through to wdAbstractEnumerationProperty.
-  wdTypedEnumProperty(const char* szPropertyName)
-    : wdAbstractEnumerationProperty(szPropertyName)
+  /// \brief Passes the property name through to nsAbstractEnumerationProperty.
+  nsTypedEnumProperty(const char* szPropertyName)
+    : nsAbstractEnumerationProperty(szPropertyName)
   {
   }
 
-  /// \brief Returns the actual type of the property. You can then test whether it derives from wdEnumBase or
-  ///  wdBitflagsBase to determine whether we are dealing with an enum or bitflags property.
-  virtual const wdRTTI* GetSpecificType() const override // [tested]
+  /// \brief Returns the actual type of the property. You can then test whether it derives from nsEnumBase or
+  ///  nsBitflagsBase to determine whether we are dealing with an enum or bitflags property.
+  virtual const nsRTTI* GetSpecificType() const override // [tested]
   {
-    return wdGetStaticRTTI<typename wdTypeTraits<EnumType>::NonConstReferenceType>();
+    return nsGetStaticRTTI<typename nsTypeTraits<EnumType>::NonConstReferenceType>();
   }
 };
 
 
-/// \brief [internal] An implementation of wdTypedEnumProperty that uses custom getter / setter functions to access an enum property.
+/// \brief [internal] An implementation of nsTypedEnumProperty that uses custom getter / setter functions to access an enum property.
 template <typename Class, typename EnumType, typename Type>
-class wdEnumAccessorProperty : public wdTypedEnumProperty<EnumType>
+class nsEnumAccessorProperty : public nsTypedEnumProperty<EnumType>
 {
 public:
-  using RealType = typename wdTypeTraits<Type>::NonConstReferenceType;
+  using RealType = typename nsTypeTraits<Type>::NonConstReferenceType;
   using GetterFunc = Type (Class::*)() const;
   using SetterFunc = void (Class::*)(Type value);
 
   /// \brief Constructor.
-  wdEnumAccessorProperty(const char* szPropertyName, GetterFunc getter, SetterFunc setter)
-    : wdTypedEnumProperty<EnumType>(szPropertyName)
+  nsEnumAccessorProperty(const char* szPropertyName, GetterFunc getter, SetterFunc setter)
+    : nsTypedEnumProperty<EnumType>(szPropertyName)
   {
-    WD_ASSERT_DEBUG(getter != nullptr, "The getter of a property cannot be nullptr.");
-    wdAbstractMemberProperty::m_Flags.Add(wdPropertyFlags::IsEnum);
+    NS_ASSERT_DEBUG(getter != nullptr, "The getter of a property cannot be nullptr.");
+    nsAbstractMemberProperty::m_Flags.Add(nsPropertyFlags::IsEnum);
 
     m_Getter = getter;
     m_Setter = setter;
 
     if (m_Setter == nullptr)
-      wdAbstractMemberProperty::m_Flags.Add(wdPropertyFlags::ReadOnly);
+      nsAbstractMemberProperty::m_Flags.Add(nsPropertyFlags::ReadOnly);
   }
 
   virtual void* GetPropertyPointer(const void* pInstance) const override
@@ -86,15 +86,15 @@ public:
     return nullptr;
   }
 
-  virtual wdInt64 GetValue(const void* pInstance) const override // [tested]
+  virtual nsInt64 GetValue(const void* pInstance) const override // [tested]
   {
-    wdEnum<EnumType> enumTemp = (static_cast<const Class*>(pInstance)->*m_Getter)();
+    nsEnum<EnumType> enumTemp = (static_cast<const Class*>(pInstance)->*m_Getter)();
     return enumTemp.GetValue();
   }
 
-  virtual void SetValue(void* pInstance, wdInt64 value) override // [tested]
+  virtual void SetValue(void* pInstance, nsInt64 value) const override // [tested]
   {
-    WD_ASSERT_DEV(m_Setter != nullptr, "The property '{0}' has no setter function, thus it is read-only.", wdAbstractProperty::GetPropertyName());
+    NS_ASSERT_DEV(m_Setter != nullptr, "The property '{0}' has no setter function, thus it is read-only.", nsAbstractProperty::GetPropertyName());
     if (m_Setter)
       (static_cast<Class*>(pInstance)->*m_Setter)((typename EnumType::Enum)value);
   }
@@ -105,9 +105,9 @@ private:
 };
 
 
-/// \brief [internal] An implementation of wdTypedEnumProperty that accesses the enum property data directly.
+/// \brief [internal] An implementation of nsTypedEnumProperty that accesses the enum property data directly.
 template <typename Class, typename EnumType, typename Type>
-class wdEnumMemberProperty : public wdTypedEnumProperty<EnumType>
+class nsEnumMemberProperty : public nsTypedEnumProperty<EnumType>
 {
 public:
   using GetterFunc = Type (*)(const Class* pInstance);
@@ -115,31 +115,31 @@ public:
   using PointerFunc = void* (*)(const Class* pInstance);
 
   /// \brief Constructor.
-  wdEnumMemberProperty(const char* szPropertyName, GetterFunc getter, SetterFunc setter, PointerFunc pointer)
-    : wdTypedEnumProperty<EnumType>(szPropertyName)
+  nsEnumMemberProperty(const char* szPropertyName, GetterFunc getter, SetterFunc setter, PointerFunc pointer)
+    : nsTypedEnumProperty<EnumType>(szPropertyName)
   {
-    WD_ASSERT_DEBUG(getter != nullptr, "The getter of a property cannot be nullptr.");
-    wdAbstractMemberProperty::m_Flags.Add(wdPropertyFlags::IsEnum);
+    NS_ASSERT_DEBUG(getter != nullptr, "The getter of a property cannot be nullptr.");
+    nsAbstractMemberProperty::m_Flags.Add(nsPropertyFlags::IsEnum);
 
     m_Getter = getter;
     m_Setter = setter;
     m_Pointer = pointer;
 
     if (m_Setter == nullptr)
-      wdAbstractMemberProperty::m_Flags.Add(wdPropertyFlags::ReadOnly);
+      nsAbstractMemberProperty::m_Flags.Add(nsPropertyFlags::ReadOnly);
   }
 
   virtual void* GetPropertyPointer(const void* pInstance) const override { return m_Pointer(static_cast<const Class*>(pInstance)); }
 
-  virtual wdInt64 GetValue(const void* pInstance) const override // [tested]
+  virtual nsInt64 GetValue(const void* pInstance) const override // [tested]
   {
-    wdEnum<EnumType> enumTemp = m_Getter(static_cast<const Class*>(pInstance));
+    nsEnum<EnumType> enumTemp = m_Getter(static_cast<const Class*>(pInstance));
     return enumTemp.GetValue();
   }
 
-  virtual void SetValue(void* pInstance, wdInt64 value) override // [tested]
+  virtual void SetValue(void* pInstance, nsInt64 value) const override // [tested]
   {
-    WD_ASSERT_DEV(m_Setter != nullptr, "The property '{0}' has no setter function, thus it is read-only.", wdAbstractProperty::GetPropertyName());
+    NS_ASSERT_DEV(m_Setter != nullptr, "The property '{0}' has no setter function, thus it is read-only.", nsAbstractProperty::GetPropertyName());
 
     if (m_Setter)
       m_Setter(static_cast<Class*>(pInstance), (typename EnumType::Enum)value);

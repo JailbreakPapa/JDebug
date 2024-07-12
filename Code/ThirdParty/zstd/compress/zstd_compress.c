@@ -2477,7 +2477,7 @@ ZSTD_buildSequencesStatistics(seqStore_t* seqStorePtr, size_t nbSeq,
         stats.LLtype = ZSTD_selectEncodingType(&nextEntropy->litlength_repeatMode,
                                         countWorkspace, max, mostFrequent, nbSeq,
                                         LLFSELog, prevEntropy->litlengthCTable,
-                                        LL_defaultNorm, LL_defaultNormLog,
+                                        LL_defaultNorm, LL_defaultNoapuiog,
                                         ZSTD_defaultAllowed, strategy);
         assert(set_basic < set_compressed && set_rle < set_compressed);
         assert(!(stats.LLtype < set_compressed && nextEntropy->litlength_repeatMode != FSE_repeat_none)); /* We don't copy tables */
@@ -2485,7 +2485,7 @@ ZSTD_buildSequencesStatistics(seqStore_t* seqStorePtr, size_t nbSeq,
                 op, (size_t)(oend - op),
                 CTable_LitLength, LLFSELog, (symbolEncodingType_e)stats.LLtype,
                 countWorkspace, max, llCodeTable, nbSeq,
-                LL_defaultNorm, LL_defaultNormLog, MaxLL,
+                LL_defaultNorm, LL_defaultNoapuiog, MaxLL,
                 prevEntropy->litlengthCTable,
                 sizeof(prevEntropy->litlengthCTable),
                 entropyWorkspace, entropyWkspSize);
@@ -2510,14 +2510,14 @@ ZSTD_buildSequencesStatistics(seqStore_t* seqStorePtr, size_t nbSeq,
         stats.Offtype = ZSTD_selectEncodingType(&nextEntropy->offcode_repeatMode,
                                         countWorkspace, max, mostFrequent, nbSeq,
                                         OffFSELog, prevEntropy->offcodeCTable,
-                                        OF_defaultNorm, OF_defaultNormLog,
+                                        OF_defaultNorm, OF_defaultNoapuiog,
                                         defaultPolicy, strategy);
         assert(!(stats.Offtype < set_compressed && nextEntropy->offcode_repeatMode != FSE_repeat_none)); /* We don't copy tables */
         {   size_t const countSize = ZSTD_buildCTable(
                 op, (size_t)(oend - op),
                 CTable_OffsetBits, OffFSELog, (symbolEncodingType_e)stats.Offtype,
                 countWorkspace, max, ofCodeTable, nbSeq,
-                OF_defaultNorm, OF_defaultNormLog, DefaultMaxOff,
+                OF_defaultNorm, OF_defaultNoapuiog, DefaultMaxOff,
                 prevEntropy->offcodeCTable,
                 sizeof(prevEntropy->offcodeCTable),
                 entropyWorkspace, entropyWkspSize);
@@ -2540,14 +2540,14 @@ ZSTD_buildSequencesStatistics(seqStore_t* seqStorePtr, size_t nbSeq,
         stats.MLtype = ZSTD_selectEncodingType(&nextEntropy->matchlength_repeatMode,
                                         countWorkspace, max, mostFrequent, nbSeq,
                                         MLFSELog, prevEntropy->matchlengthCTable,
-                                        ML_defaultNorm, ML_defaultNormLog,
+                                        ML_defaultNorm, ML_defaultNoapuiog,
                                         ZSTD_defaultAllowed, strategy);
         assert(!(stats.MLtype < set_compressed && nextEntropy->matchlength_repeatMode != FSE_repeat_none)); /* We don't copy tables */
         {   size_t const countSize = ZSTD_buildCTable(
                 op, (size_t)(oend - op),
                 CTable_MatchLength, MLFSELog, (symbolEncodingType_e)stats.MLtype,
                 countWorkspace, max, mlCodeTable, nbSeq,
-                ML_defaultNorm, ML_defaultNormLog, MaxML,
+                ML_defaultNorm, ML_defaultNoapuiog, MaxML,
                 prevEntropy->matchlengthCTable,
                 sizeof(prevEntropy->matchlengthCTable),
                 entropyWorkspace, entropyWkspSize);
@@ -3264,7 +3264,7 @@ static size_t ZSTD_estimateBlockSize_symbolType(symbolEncodingType_e type,
                         const BYTE* codeTable, size_t nbSeq, unsigned maxCode,
                         const FSE_CTable* fseCTable,
                         const U8* additionalBits,
-                        short const* defaultNorm, U32 defaultNormLog, U32 defaultMax,
+                        short const* defaultNorm, U32 defaultNoapuiog, U32 defaultMax,
                         void* workspace, size_t wkspSize)
 {
     unsigned* const countWksp = (unsigned*)workspace;
@@ -3279,7 +3279,7 @@ static size_t ZSTD_estimateBlockSize_symbolType(symbolEncodingType_e type,
         /* We selected this encoding type, so it must be valid. */
         assert(max <= defaultMax);
         (void)defaultMax;
-        cSymbolTypeSizeEstimateInBits = ZSTD_crossEntropyCost(defaultNorm, defaultNormLog, countWksp, max);
+        cSymbolTypeSizeEstimateInBits = ZSTD_crossEntropyCost(defaultNorm, defaultNoapuiog, countWksp, max);
     } else if (type == set_rle) {
         cSymbolTypeSizeEstimateInBits = 0;
     } else if (type == set_compressed || type == set_repeat) {
@@ -3310,15 +3310,15 @@ static size_t ZSTD_estimateBlockSize_sequences(const BYTE* ofCodeTable,
     size_t cSeqSizeEstimate = 0;
     cSeqSizeEstimate += ZSTD_estimateBlockSize_symbolType(fseMetadata->ofType, ofCodeTable, nbSeq, MaxOff,
                                          fseTables->offcodeCTable, NULL,
-                                         OF_defaultNorm, OF_defaultNormLog, DefaultMaxOff,
+                                         OF_defaultNorm, OF_defaultNoapuiog, DefaultMaxOff,
                                          workspace, wkspSize);
     cSeqSizeEstimate += ZSTD_estimateBlockSize_symbolType(fseMetadata->llType, llCodeTable, nbSeq, MaxLL,
                                          fseTables->litlengthCTable, LL_bits,
-                                         LL_defaultNorm, LL_defaultNormLog, MaxLL,
+                                         LL_defaultNorm, LL_defaultNoapuiog, MaxLL,
                                          workspace, wkspSize);
     cSeqSizeEstimate += ZSTD_estimateBlockSize_symbolType(fseMetadata->mlType, mlCodeTable, nbSeq, MaxML,
                                          fseTables->matchlengthCTable, ML_bits,
-                                         ML_defaultNorm, ML_defaultNormLog, MaxML,
+                                         ML_defaultNorm, ML_defaultNoapuiog, MaxML,
                                          workspace, wkspSize);
     if (writeEntropy) cSeqSizeEstimate += fseMetadata->fseTablesSize;
     return cSeqSizeEstimate + sequencesSectionHeaderSize;

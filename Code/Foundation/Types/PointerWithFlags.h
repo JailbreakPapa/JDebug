@@ -7,8 +7,8 @@
 /// When accessing the pointer, the lower N bits are masked off.
 /// Typically one can safely store 3 bits in the lower bits of a pointer as most data is 8 byte aligned,
 /// especially when it was heap allocated.
-template <typename PtrType, uint8_t NumFlagBits = 2>
-class wdPointerWithFlags
+template <typename PtrType, nsUInt8 NumFlagBits = 2>
+class nsPointerWithFlags
 {
 private:
   enum : size_t
@@ -23,18 +23,18 @@ private:
 
 public:
   /// \brief Initializes the pointer and flags with zero
-  wdPointerWithFlags() = default;
+  nsPointerWithFlags() = default;
 
   /// \brief Initializes the pointer and flags
-  explicit wdPointerWithFlags(PtrType* pPtr, uint8_t flags = 0) { SetPtrAndFlags(pPtr, flags); }
+  explicit nsPointerWithFlags(PtrType* pPtr, nsUInt8 uiFlags = 0) { SetPtrAndFlags(pPtr, uiFlags); }
 
   /// \brief Changes the pointer and flags
-  void SetPtrAndFlags(PtrType* pPtr, uint8_t flags)
+  void SetPtrAndFlags(PtrType* pPtr, nsUInt8 uiFlags)
   {
     const std::uintptr_t isrc = *reinterpret_cast<std::uintptr_t*>(&pPtr);
     std::uintptr_t& iptr = *reinterpret_cast<std::uintptr_t*>(&m_pPtr);
 
-    iptr = (isrc & PtrMask) | (flags & FlagsMask);
+    iptr = (isrc & PtrMask) | (uiFlags & FlagsMask);
   }
 
   /// \brief Returns the masked off pointer value
@@ -55,7 +55,7 @@ public:
   void SetPtr(PtrType* pPtr)
   {
     const std::uintptr_t isrc = *reinterpret_cast<std::uintptr_t*>(&pPtr);
-    WD_ASSERT_DEBUG(
+    NS_ASSERT_DEBUG(
       (isrc & FlagsMask) == 0, "The given pointer does not have an {} byte alignment and thus cannot be stored lossless.", 1u << NumFlagBits);
 
     std::uintptr_t& iptr = *reinterpret_cast<std::uintptr_t*>(&m_pPtr);
@@ -63,20 +63,20 @@ public:
     iptr = (isrc & PtrMask) | (iptr & FlagsMask);
   }
   /// \brief Returns the flags value only
-  uint8_t GetFlags() const
+  nsUInt8 GetFlags() const
   {
     const std::uintptr_t& iptr = *reinterpret_cast<const std::uintptr_t*>(&m_pPtr);
-    return static_cast<uint8_t>(iptr & FlagsMask);
+    return static_cast<nsUInt8>(iptr & FlagsMask);
   }
 
   /// \brief Changes only the flags value. The given value must fit into the reserved bits.
-  void SetFlags(uint8_t flags)
+  void SetFlags(nsUInt8 uiFlags)
   {
-    WD_ASSERT_DEBUG(flags <= FlagsMask, "The flag value {} requires more than {} bits", flags, NumFlagBits);
+    NS_ASSERT_DEBUG(uiFlags <= FlagsMask, "The flag value {} requires more than {} bits", uiFlags, NumFlagBits);
 
     std::uintptr_t& iptr = *reinterpret_cast<std::uintptr_t*>(&m_pPtr);
 
-    iptr = (iptr & PtrMask) | (flags & FlagsMask);
+    iptr = (iptr & PtrMask) | (uiFlags & FlagsMask);
   }
 
   /// \brief Returns the masked off pointer value
@@ -89,22 +89,35 @@ public:
   void operator=(PtrType* pPtr) { SetPtr(pPtr); }
 
   /// \brief Compares the pointer part for equality (flags are ignored)
-  bool operator==(const PtrType* pPtr) const { return GetPtr() == pPtr; }
+  template <typename = typename std::enable_if<std::is_const<PtrType>::value == false>>
+  bool operator==(const PtrType* pPtr) const
+  {
+    return GetPtr() == pPtr;
+  }
 
+#if NS_DISABLED(NS_USE_CPP20_OPERATORS)
   /// \brief Compares the pointer part for inequality (flags are ignored)
-  bool operator!=(const PtrType* pPtr) const { return !(*this == pPtr); }
+  template <typename = typename std::enable_if<std::is_const<PtrType>::value == false>>
+  bool operator!=(const PtrType* pPtr) const
+  {
+    return !(*this == pPtr);
+  }
+#endif
+
+  bool operator==(const nsPointerWithFlags<PtrType, NumFlagBits>& rhs) const
+  {
+    return GetPtr() == rhs.GetPtr();
+  }
+
+  NS_ADD_DEFAULT_OPERATOR_NOTEQUAL(const nsPointerWithFlags<PtrType, NumFlagBits>&);
 
   /// \brief Compares the pointer part for equality (flags are ignored)
   bool operator==(PtrType* pPtr) const { return GetPtr() == pPtr; }
-
-  /// \brief Compares the pointer part for inequality (flags are ignored)
-  bool operator!=(PtrType* pPtr) const { return !(*this == pPtr); }
+  NS_ADD_DEFAULT_OPERATOR_NOTEQUAL(PtrType*);
 
   /// \brief Compares the pointer part for equality (flags are ignored)
   bool operator==(std::nullptr_t) const { return GetPtr() == nullptr; }
-
-  /// \brief Compares the pointer part for inequality (flags are ignored)
-  bool operator!=(std::nullptr_t) const { return !(*this == nullptr); }
+  NS_ADD_DEFAULT_OPERATOR_NOTEQUAL(std::nullptr_t);
 
   /// \brief Checks whether the pointer part is not nullptr (flags are ignored)
   explicit operator bool() const { return GetPtr() != nullptr; }

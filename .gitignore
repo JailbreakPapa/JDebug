@@ -347,10 +347,34 @@ healthchecksdb
 # Backup folder for Package Reference Convert tool in Visual Studio 2017
 MigrationBackup/
 
-# ez specific
+# wdstdlib specific
 /Workspace
 /Output
 AssetCache
 /build/
 /buildUWP/
-Code/Engine/ezBuildInfo.h
+Code/Engine/nsBuildInfo.h
+
+# v8_prebuilt
+Code/ThirdParty/v8/*.7z
+# ThirdParty Ignores
+v8_prebuilt/**
+Code/ThirdParty/v8/v8_prebuilt/**
+Code/ThirdParty/V8-LocalBuild/
+Code/ThirdParty/hermes/**
+Code/ThirdParty/hermes_prospero_build/**
+Code/ThirdParty/v8/v8_prebuilt/v8_prebuilt/**
+Code/ThirdParty/v8/v8_prebuiltzip/**
+CPMCache/**
+
+*.dat
+*.x86
+*.7z
+
+!Code/ThirdParty/wdvideo_webm_audio/lib/*.lib
+
+# Allow samples
+
+!Data/Samples/**
+Data/assets/GoogleFonts/**
+Data/assets/Icons/**

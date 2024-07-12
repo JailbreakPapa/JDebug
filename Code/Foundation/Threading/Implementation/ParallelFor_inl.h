@@ -4,10 +4,10 @@
 #include <Foundation/Profiling/Profiling.h>
 
 template <typename ElemType>
-class ArrayPtrTask final : public wdTask
+class ArrayPtrTask final : public nsTask
 {
 public:
-  ArrayPtrTask(wdArrayPtr<ElemType> payload, wdParallelForFunction<ElemType> taskCallback, wdUInt32 uiItemsPerInvocation)
+  ArrayPtrTask(nsArrayPtr<ElemType> payload, nsParallelForFunction<ElemType> taskCallback, nsUInt32 uiItemsPerInvocation)
     : m_Payload(payload)
     , m_uiItemsPerInvocation(uiItemsPerInvocation)
     , m_TaskCallback(std::move(taskCallback))
@@ -20,12 +20,12 @@ public:
     m_TaskCallback(0, m_Payload);
   }
 
-  void ExecuteWithMultiplicity(wdUInt32 uiInvocation) const override
+  void ExecuteWithMultiplicity(nsUInt32 uiInvocation) const override
   {
-    const wdUInt32 uiSliceStartIndex = uiInvocation * m_uiItemsPerInvocation;
+    const nsUInt32 uiSliceStartIndex = uiInvocation * m_uiItemsPerInvocation;
 
-    const wdUInt32 uiRemainingItems = uiSliceStartIndex > m_Payload.GetCount() ? 0 : m_Payload.GetCount() - uiSliceStartIndex;
-    const wdUInt32 uiSliceItemCount = wdMath::Min(m_uiItemsPerInvocation, uiRemainingItems);
+    const nsUInt32 uiRemainingItems = uiSliceStartIndex > m_Payload.GetCount() ? 0 : m_Payload.GetCount() - uiSliceStartIndex;
+    const nsUInt32 uiSliceItemCount = nsMath::Min(m_uiItemsPerInvocation, uiRemainingItems);
 
     if (uiSliceItemCount > 0)
     {
@@ -36,53 +36,55 @@ public:
   }
 
 private:
-  wdArrayPtr<ElemType> m_Payload;
-  wdUInt32 m_uiItemsPerInvocation;
-  wdParallelForFunction<ElemType> m_TaskCallback;
+  nsArrayPtr<ElemType> m_Payload;
+  nsUInt32 m_uiItemsPerInvocation;
+  nsParallelForFunction<ElemType> m_TaskCallback;
 };
 
 template <typename ElemType>
-void wdTaskSystem::ParallelForInternal(wdArrayPtr<ElemType> taskItems, wdParallelForFunction<ElemType> taskCallback, const char* taskName, const wdParallelForParams& params)
+void nsTaskSystem::ParallelForInternal(nsArrayPtr<ElemType> taskItems, nsParallelForFunction<ElemType> taskCallback, const char* taskName, const nsParallelForParams& params)
 {
   if (taskItems.GetCount() <= params.m_uiBinSize)
   {
     ArrayPtrTask<ElemType> arrayPtrTask(taskItems, std::move(taskCallback), taskItems.GetCount());
     arrayPtrTask.ConfigureTask(taskName ? taskName : "Generic ArrayPtr Task", params.m_NestingMode);
 
-    WD_PROFILE_SCOPE(arrayPtrTask.m_sTaskName);
+    NS_PROFILE_SCOPE(arrayPtrTask.m_sTaskName);
     arrayPtrTask.Execute();
   }
   else
   {
-    wdUInt32 uiMultiplicity;
-    wdUInt64 uiItemsPerInvocation;
+    nsUInt32 uiMultiplicity;
+    nsUInt64 uiItemsPerInvocation;
     params.DetermineThreading(taskItems.GetCount(), uiMultiplicity, uiItemsPerInvocation);
 
-    wdAllocatorBase* pAllocator = (params.m_pTaskAllocator != nullptr) ? params.m_pTaskAllocator : wdFoundation::GetDefaultAllocator();
+    nsAllocator* pAllocator = (params.m_pTaskAllocator != nullptr) ? params.m_pTaskAllocator : nsFoundation::GetDefaultAllocator();
 
-    wdSharedPtr<ArrayPtrTask<ElemType>> pArrayPtrTask = WD_NEW(pAllocator, ArrayPtrTask<ElemType>, taskItems, std::move(taskCallback), static_cast<wdUInt32>(uiItemsPerInvocation));
+    nsSharedPtr<ArrayPtrTask<ElemType>> pArrayPtrTask = NS_NEW(pAllocator, ArrayPtrTask<ElemType>, taskItems, std::move(taskCallback), static_cast<nsUInt32>(uiItemsPerInvocation));
     pArrayPtrTask->ConfigureTask(taskName ? taskName : "Generic ArrayPtr Task", params.m_NestingMode);
 
     pArrayPtrTask->SetMultiplicity(uiMultiplicity);
-    wdTaskGroupID taskGroupId = wdTaskSystem::StartSingleTask(pArrayPtrTask, wdTaskPriority::EarlyThisFrame);
-    wdTaskSystem::WaitForGroup(taskGroupId);
+    nsTaskGroupID taskGroupId = nsTaskSystem::StartSingleTask(pArrayPtrTask, nsTaskPriority::EarlyThisFrame);
+    nsTaskSystem::WaitForGroup(taskGroupId);
   }
 }
 
 template <typename ElemType, typename Callback>
-void wdTaskSystem::ParallelFor(wdArrayPtr<ElemType> taskItems, Callback taskCallback, const char* szTaskName, const wdParallelForParams& params)
+void nsTaskSystem::ParallelFor(nsArrayPtr<ElemType> taskItems, Callback taskCallback, const char* szTaskName, const nsParallelForParams& params)
 {
   auto wrappedCallback = [taskCallback = std::move(taskCallback)](
-                           wdUInt32 /*uiBaseIndex*/, wdArrayPtr<ElemType> taskSlice) { taskCallback(taskSlice); };
+                           nsUInt32 /*uiBaseIndex*/, nsArrayPtr<ElemType> taskSlice)
+  { taskCallback(taskSlice); };
 
   ParallelForInternal<ElemType>(
-    taskItems, wdParallelForFunction<ElemType>(std::move(wrappedCallback), wdFrameAllocator::GetCurrentAllocator()), szTaskName, params);
+    taskItems, nsParallelForFunction<ElemType>(std::move(wrappedCallback), nsFrameAllocator::GetCurrentAllocator()), szTaskName, params);
 }
 
 template <typename ElemType, typename Callback>
-void wdTaskSystem::ParallelForSingle(wdArrayPtr<ElemType> taskItems, Callback taskCallback, const char* szTaskName, const wdParallelForParams& params)
+void nsTaskSystem::ParallelForSingle(nsArrayPtr<ElemType> taskItems, Callback taskCallback, const char* szTaskName, const nsParallelForParams& params)
 {
-  auto wrappedCallback = [taskCallback = std::move(taskCallback)](wdUInt32 /*uiBaseIndex*/, wdArrayPtr<ElemType> taskSlice) {
+  auto wrappedCallback = [taskCallback = std::move(taskCallback)](nsUInt32 /*uiBaseIndex*/, nsArrayPtr<ElemType> taskSlice)
+  {
     // Handing in by non-const& allows to use callbacks with (non-)const& as well as value parameters.
     for (ElemType& taskItem : taskSlice)
     {
@@ -91,15 +93,16 @@ void wdTaskSystem::ParallelForSingle(wdArrayPtr<ElemType> taskItems, Callback ta
   };
 
   ParallelForInternal<ElemType>(
-    taskItems, wdParallelForFunction<ElemType>(std::move(wrappedCallback), wdFrameAllocator::GetCurrentAllocator()), szTaskName, params);
+    taskItems, nsParallelForFunction<ElemType>(std::move(wrappedCallback), nsFrameAllocator::GetCurrentAllocator()), szTaskName, params);
 }
 
 template <typename ElemType, typename Callback>
-void wdTaskSystem::ParallelForSingleIndex(
-  wdArrayPtr<ElemType> taskItems, Callback taskCallback, const char* szTaskName, const wdParallelForParams& params)
+void nsTaskSystem::ParallelForSingleIndex(
+  nsArrayPtr<ElemType> taskItems, Callback taskCallback, const char* szTaskName, const nsParallelForParams& params)
 {
-  auto wrappedCallback = [taskCallback = std::move(taskCallback)](wdUInt32 uiBaseIndex, wdArrayPtr<ElemType> taskSlice) {
-    for (wdUInt32 uiIndex = 0; uiIndex < taskSlice.GetCount(); ++uiIndex)
+  auto wrappedCallback = [taskCallback = std::move(taskCallback)](nsUInt32 uiBaseIndex, nsArrayPtr<ElemType> taskSlice)
+  {
+    for (nsUInt32 uiIndex = 0; uiIndex < taskSlice.GetCount(); ++uiIndex)
     {
       // Handing in by dereferenced pointer allows to use callbacks with (non-)const& as well as value parameters.
       taskCallback(uiBaseIndex + uiIndex, *(taskSlice.GetPtr() + uiIndex));
@@ -107,5 +110,5 @@ void wdTaskSystem::ParallelForSingleIndex(
   };
 
   ParallelForInternal<ElemType>(
-    taskItems, wdParallelForFunction<ElemType>(std::move(wrappedCallback), wdFrameAllocator::GetCurrentAllocator()), szTaskName, params);
+    taskItems, nsParallelForFunction<ElemType>(std::move(wrappedCallback), nsFrameAllocator::GetCurrentAllocator()), szTaskName, params);
 }

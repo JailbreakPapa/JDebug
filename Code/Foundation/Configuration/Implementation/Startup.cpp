@@ -6,94 +6,96 @@
 #include <Foundation/Logging/Log.h>
 #include <Foundation/Threading/ThreadUtils.h>
 
-WD_ENUMERABLE_CLASS_IMPLEMENTATION(wdSubSystem);
+NS_ENUMERABLE_CLASS_IMPLEMENTATION(nsSubSystem);
 
-bool wdStartup::s_bPrintAllSubSystems = true;
-wdStartupStage::Enum wdStartup::s_CurrentState = wdStartupStage::None;
-wdDynamicArray<const char*> wdStartup::s_ApplicationTags;
+bool nsStartup::s_bPrintAllSubSystems = true;
+nsStartupStage::Enum nsStartup::s_CurrentState = nsStartupStage::None;
+nsDynamicArray<const char*> nsStartup::s_ApplicationTags;
 
 
-void wdStartup::AddApplicationTag(const char* szTag)
+void nsStartup::AddApplicationTag(const char* szTag)
 {
   s_ApplicationTags.PushBack(szTag);
 }
 
-bool wdStartup::HasApplicationTag(const char* szTag)
+bool nsStartup::HasApplicationTag(const char* szTag)
 {
-  for (wdUInt32 i = 0; i < s_ApplicationTags.GetCount(); ++i)
+  for (nsUInt32 i = 0; i < s_ApplicationTags.GetCount(); ++i)
   {
-    if (wdStringUtils::IsEqual_NoCase(s_ApplicationTags[i], szTag))
+    if (nsStringUtils::IsEqual_NoCase(s_ApplicationTags[i], szTag))
       return true;
   }
 
   return false;
 }
 
-void wdStartup::PrintAllSubsystems()
+void nsStartup::PrintAllSubsystems()
 {
-  WD_LOG_BLOCK("Available Subsystems");
+  NS_LOG_BLOCK("Available Subsystems");
 
-  wdSubSystem* pSub = wdSubSystem::GetFirstInstance();
+  nsSubSystem* pSub = nsSubSystem::GetFirstInstance();
 
   while (pSub)
   {
-    wdLog::Debug("Subsystem: '{0}::{1}'", pSub->GetGroupName(), pSub->GetSubSystemName());
+    nsLog::Debug("Subsystem: '{0}::{1}'", pSub->GetGroupName(), pSub->GetSubSystemName());
 
     if (pSub->GetDependency(0) == nullptr)
-      wdLog::Debug("  <no dependencies>");
+      nsLog::Debug("  <no dependencies>");
     else
     {
-      for (wdInt32 i = 0; pSub->GetDependency(i) != nullptr; ++i)
-        wdLog::Debug("  depends on '{0}'", pSub->GetDependency(i));
+      for (nsInt32 i = 0; pSub->GetDependency(i) != nullptr; ++i)
+        nsLog::Debug("  depends on '{0}'", pSub->GetDependency(i));
     }
 
-    wdLog::Debug("");
+    nsLog::Debug("");
 
     pSub = pSub->GetNextInstance();
   }
 }
 
-void wdStartup::AssignSubSystemPlugin(const char* szPluginName)
+void nsStartup::AssignSubSystemPlugin(nsStringView sPluginName)
 {
   // iterates over all existing subsystems and finds those that have no plugin name yet
   // assigns the given name to them
 
-  wdSubSystem* pSub = wdSubSystem::GetFirstInstance();
+  nsSubSystem* pSub = nsSubSystem::GetFirstInstance();
 
   while (pSub)
   {
-    if (pSub->m_szPluginName == nullptr)
-      pSub->m_szPluginName = szPluginName;
+    if (pSub->m_sPluginName.IsEmpty())
+    {
+      pSub->m_sPluginName = sPluginName;
+    }
 
     pSub = pSub->GetNextInstance();
   }
 }
 
-void wdStartup::PluginEventHandler(const wdPluginEvent& EventData)
+void nsStartup::PluginEventHandler(const nsPluginEvent& EventData)
 {
   switch (EventData.m_EventType)
   {
-    case wdPluginEvent::BeforeLoading:
+    case nsPluginEvent::BeforeLoading:
     {
       AssignSubSystemPlugin("Static");
     }
     break;
 
-    case wdPluginEvent::AfterLoadingBeforeInit:
+    case nsPluginEvent::AfterLoadingBeforeInit:
     {
-      AssignSubSystemPlugin(EventData.m_szPluginBinary);
+      AssignSubSystemPlugin(EventData.m_sPluginBinary);
     }
     break;
 
-    case wdPluginEvent::StartupShutdown:
+    case nsPluginEvent::StartupShutdown:
     {
-      wdStartup::UnloadPluginSubSystems(EventData.m_szPluginBinary);
+      nsStartup::UnloadPluginSubSystems(EventData.m_sPluginBinary);
     }
     break;
 
-    case wdPluginEvent::AfterPluginChanges:
+    case nsPluginEvent::AfterPluginChanges:
     {
-      wdStartup::ReinitToCurrentState();
+      nsStartup::ReinitToCurrentState();
     }
     break;
 
@@ -102,36 +104,36 @@ void wdStartup::PluginEventHandler(const wdPluginEvent& EventData)
   }
 }
 
-static bool IsGroupName(const char* szName)
+static bool IsGroupName(nsStringView sName)
 {
-  wdSubSystem* pSub = wdSubSystem::GetFirstInstance();
+  nsSubSystem* pSub = nsSubSystem::GetFirstInstance();
 
   bool bGroup = false;
   bool bSubSystem = false;
 
   while (pSub)
   {
-    if (wdStringUtils::IsEqual(pSub->GetGroupName(), szName))
+    if (pSub->GetGroupName() == sName)
       bGroup = true;
 
-    if (wdStringUtils::IsEqual(pSub->GetSubSystemName(), szName))
+    if (pSub->GetSubSystemName() == sName)
       bSubSystem = true;
 
     pSub = pSub->GetNextInstance();
   }
 
-  WD_ASSERT_ALWAYS(!bGroup || !bSubSystem, "There cannot be a SubSystem AND a Group called '{0}'.", szName);
+  NS_ASSERT_ALWAYS(!bGroup || !bSubSystem, "There cannot be a SubSystem AND a Group called '{0}'.", sName);
 
   return bGroup;
 }
 
-static const char* GetGroupSubSystems(const char* szGroup, wdInt32 iSubSystem)
+static nsStringView GetGroupSubSystems(nsStringView sGroup, nsInt32 iSubSystem)
 {
-  wdSubSystem* pSub = wdSubSystem::GetFirstInstance();
+  nsSubSystem* pSub = nsSubSystem::GetFirstInstance();
 
   while (pSub)
   {
-    if (wdStringUtils::IsEqual(pSub->GetGroupName(), szGroup))
+    if (pSub->GetGroupName() == sGroup)
     {
       if (iSubSystem == 0)
         return pSub->GetSubSystemName();
@@ -145,10 +147,10 @@ static const char* GetGroupSubSystems(const char* szGroup, wdInt32 iSubSystem)
   return nullptr;
 }
 
-void wdStartup::ComputeOrder(wdDeque<wdSubSystem*>& Order)
+void nsStartup::ComputeOrder(nsDeque<nsSubSystem*>& Order)
 {
   Order.Clear();
-  wdSet<wdString> sSystemsInited;
+  nsSet<nsString> sSystemsInited;
 
   bool bCouldInitAny = true;
 
@@ -156,31 +158,31 @@ void wdStartup::ComputeOrder(wdDeque<wdSubSystem*>& Order)
   {
     bCouldInitAny = false;
 
-    wdSubSystem* pSub = wdSubSystem::GetFirstInstance();
+    nsSubSystem* pSub = nsSubSystem::GetFirstInstance();
 
     while (pSub)
     {
       if (!sSystemsInited.Find(pSub->GetSubSystemName()).IsValid())
       {
         bool bAllDependsFulfilled = true;
-        wdInt32 iDep = 0;
+        nsInt32 iDep = 0;
 
         while (pSub->GetDependency(iDep) != nullptr)
         {
           if (IsGroupName(pSub->GetDependency(iDep)))
           {
-            wdInt32 iSubSystemIndex = 0;
-            const char* szNextSubSystem = GetGroupSubSystems(pSub->GetDependency(iDep), iSubSystemIndex);
-            while (szNextSubSystem)
+            nsInt32 iSubSystemIndex = 0;
+            nsStringView sNextSubSystem = GetGroupSubSystems(pSub->GetDependency(iDep), iSubSystemIndex);
+            while (sNextSubSystem.IsValid())
             {
-              if (!sSystemsInited.Find(szNextSubSystem).IsValid())
+              if (!sSystemsInited.Find(sNextSubSystem).IsValid())
               {
                 bAllDependsFulfilled = false;
                 break;
               }
 
               ++iSubSystemIndex;
-              szNextSubSystem = GetGroupSubSystems(pSub->GetDependency(iDep), iSubSystemIndex);
+              sNextSubSystem = GetGroupSubSystems(pSub->GetDependency(iDep), iSubSystemIndex);
             }
           }
           else
@@ -208,20 +210,20 @@ void wdStartup::ComputeOrder(wdDeque<wdSubSystem*>& Order)
   }
 }
 
-void wdStartup::Startup(wdStartupStage::Enum stage)
+void nsStartup::Startup(nsStartupStage::Enum stage)
 {
-  if (stage == wdStartupStage::BaseSystems)
+  if (stage == nsStartupStage::BaseSystems)
   {
-    wdFoundation::Initialize();
+    nsFoundation::Initialize();
   }
 
   const char* szStartup[] = {"Startup Base", "Startup Core", "Startup Engine"};
 
-  if (stage == wdStartupStage::CoreSystems)
+  if (stage == nsStartupStage::CoreSystems)
   {
-    Startup(wdStartupStage::BaseSystems);
+    Startup(nsStartupStage::BaseSystems);
 
-    wdGlobalEvent::Broadcast(WD_GLOBALEVENT_STARTUP_CORESYSTEMS_BEGIN);
+    nsGlobalEvent::Broadcast(NS_GLOBALEVENT_STARTUP_CORESYSTEMS_BEGIN);
 
     if (s_bPrintAllSubSystems)
     {
@@ -230,19 +232,19 @@ void wdStartup::Startup(wdStartupStage::Enum stage)
     }
   }
 
-  if (stage == wdStartupStage::HighLevelSystems)
+  if (stage == nsStartupStage::HighLevelSystems)
   {
-    Startup(wdStartupStage::CoreSystems);
+    Startup(nsStartupStage::CoreSystems);
 
-    wdGlobalEvent::Broadcast(WD_GLOBALEVENT_STARTUP_HIGHLEVELSYSTEMS_BEGIN);
+    nsGlobalEvent::Broadcast(NS_GLOBALEVENT_STARTUP_HIGHLEVELSYSTEMS_BEGIN);
   }
 
-  WD_LOG_BLOCK(szStartup[stage]);
+  NS_LOG_BLOCK(szStartup[stage]);
 
-  wdDeque<wdSubSystem*> Order;
+  nsDeque<nsSubSystem*> Order;
   ComputeOrder(Order);
 
-  for (wdUInt32 i = 0; i < Order.GetCount(); ++i)
+  for (nsUInt32 i = 0; i < Order.GetCount(); ++i)
   {
     if (!Order[i]->m_bStartupDone[stage])
     {
@@ -250,16 +252,16 @@ void wdStartup::Startup(wdStartupStage::Enum stage)
 
       switch (stage)
       {
-        case wdStartupStage::BaseSystems:
-          wdLog::Debug("Executing 'Base' startup for sub-system '{1}::{0}'", Order[i]->GetSubSystemName(), Order[i]->GetGroupName());
+        case nsStartupStage::BaseSystems:
+          nsLog::Debug("Executing 'Base' startup for sub-system '{1}::{0}'", Order[i]->GetSubSystemName(), Order[i]->GetGroupName());
           Order[i]->OnBaseSystemsStartup();
           break;
-        case wdStartupStage::CoreSystems:
-          wdLog::Debug("Executing 'Core' startup for sub-system '{1}::{0}'", Order[i]->GetSubSystemName(), Order[i]->GetGroupName());
+        case nsStartupStage::CoreSystems:
+          nsLog::Debug("Executing 'Core' startup for sub-system '{1}::{0}'", Order[i]->GetSubSystemName(), Order[i]->GetGroupName());
           Order[i]->OnCoreSystemsStartup();
           break;
-        case wdStartupStage::HighLevelSystems:
-          wdLog::Debug("Executing 'Engine' startup for sub-system '{1}::{0}'", Order[i]->GetSubSystemName(), Order[i]->GetGroupName());
+        case nsStartupStage::HighLevelSystems:
+          nsLog::Debug("Executing 'Engine' startup for sub-system '{1}::{0}'", Order[i]->GetSubSystemName(), Order[i]->GetGroupName());
           Order[i]->OnHighLevelSystemsStartup();
           break;
 
@@ -271,11 +273,11 @@ void wdStartup::Startup(wdStartupStage::Enum stage)
 
   // now everything should be started
   {
-    WD_LOG_BLOCK("Failed SubSystems");
+    NS_LOG_BLOCK("Failed SubSystems");
 
-    wdSet<wdString> sSystemsFound;
+    nsSet<nsString> sSystemsFound;
 
-    wdSubSystem* pSub = wdSubSystem::GetFirstInstance();
+    nsSubSystem* pSub = nsSubSystem::GetFirstInstance();
 
     while (pSub)
     {
@@ -283,24 +285,24 @@ void wdStartup::Startup(wdStartupStage::Enum stage)
       pSub = pSub->GetNextInstance();
     }
 
-    pSub = wdSubSystem::GetFirstInstance();
+    pSub = nsSubSystem::GetFirstInstance();
 
     while (pSub)
     {
       if (!pSub->m_bStartupDone[stage])
       {
-        wdInt32 iDep = 0;
+        nsInt32 iDep = 0;
 
         while (pSub->GetDependency(iDep) != nullptr)
         {
           if (!sSystemsFound.Find(pSub->GetDependency(iDep)).IsValid())
           {
-            wdLog::Error("SubSystem '{0}::{1}' could not be started because dependency '{2}' is unknown.", pSub->GetGroupName(),
+            nsLog::Error("SubSystem '{0}::{1}' could not be started because dependency '{2}' is unknown.", pSub->GetGroupName(),
               pSub->GetSubSystemName(), pSub->GetDependency(iDep));
           }
           else
           {
-            wdLog::Error("SubSystem '{0}::{1}' could not be started because dependency '{2}' has not been initialized.", pSub->GetGroupName(),
+            nsLog::Error("SubSystem '{0}::{1}' could not be started because dependency '{2}' has not been initialized.", pSub->GetGroupName(),
               pSub->GetSubSystemName(), pSub->GetDependency(iDep));
           }
 
@@ -314,71 +316,71 @@ void wdStartup::Startup(wdStartupStage::Enum stage)
 
   switch (stage)
   {
-    case wdStartupStage::BaseSystems:
+    case nsStartupStage::BaseSystems:
       break;
-    case wdStartupStage::CoreSystems:
-      wdGlobalEvent::Broadcast(WD_GLOBALEVENT_STARTUP_CORESYSTEMS_END);
+    case nsStartupStage::CoreSystems:
+      nsGlobalEvent::Broadcast(NS_GLOBALEVENT_STARTUP_CORESYSTEMS_END);
       break;
-    case wdStartupStage::HighLevelSystems:
-      wdGlobalEvent::Broadcast(WD_GLOBALEVENT_STARTUP_HIGHLEVELSYSTEMS_END);
+    case nsStartupStage::HighLevelSystems:
+      nsGlobalEvent::Broadcast(NS_GLOBALEVENT_STARTUP_HIGHLEVELSYSTEMS_END);
       break;
 
     default:
       break;
   }
 
-  if (s_CurrentState == wdStartupStage::None)
+  if (s_CurrentState == nsStartupStage::None)
   {
-    wdPlugin::Events().AddEventHandler(PluginEventHandler);
+    nsPlugin::Events().AddEventHandler(PluginEventHandler);
   }
 
   s_CurrentState = stage;
 }
 
-void wdStartup::Shutdown(wdStartupStage::Enum stage)
+void nsStartup::Shutdown(nsStartupStage::Enum stage)
 {
   // without that we cannot function, so make sure it is up and running
-  wdFoundation::Initialize();
+  nsFoundation::Initialize();
 
   {
     const char* szStartup[] = {"Shutdown Base", "Shutdown Core", "Shutdown Engine"};
 
-    if (stage == wdStartupStage::BaseSystems)
+    if (stage == nsStartupStage::BaseSystems)
     {
-      Shutdown(wdStartupStage::CoreSystems);
+      Shutdown(nsStartupStage::CoreSystems);
     }
 
-    if (stage == wdStartupStage::CoreSystems)
+    if (stage == nsStartupStage::CoreSystems)
     {
-      Shutdown(wdStartupStage::HighLevelSystems);
+      Shutdown(nsStartupStage::HighLevelSystems);
       s_bPrintAllSubSystems = true;
 
-      wdGlobalEvent::Broadcast(WD_GLOBALEVENT_SHUTDOWN_CORESYSTEMS_BEGIN);
+      nsGlobalEvent::Broadcast(NS_GLOBALEVENT_SHUTDOWN_CORESYSTEMS_BEGIN);
     }
 
-    if (stage == wdStartupStage::HighLevelSystems)
+    if (stage == nsStartupStage::HighLevelSystems)
     {
-      wdGlobalEvent::Broadcast(WD_GLOBALEVENT_SHUTDOWN_HIGHLEVELSYSTEMS_BEGIN);
+      nsGlobalEvent::Broadcast(NS_GLOBALEVENT_SHUTDOWN_HIGHLEVELSYSTEMS_BEGIN);
     }
 
-    WD_LOG_BLOCK(szStartup[stage]);
+    NS_LOG_BLOCK(szStartup[stage]);
 
-    wdDeque<wdSubSystem*> Order;
+    nsDeque<nsSubSystem*> Order;
     ComputeOrder(Order);
 
-    for (wdInt32 i = (wdInt32)Order.GetCount() - 1; i >= 0; --i)
+    for (nsInt32 i = (nsInt32)Order.GetCount() - 1; i >= 0; --i)
     {
       if (Order[i]->m_bStartupDone[stage])
       {
         switch (stage)
         {
-          case wdStartupStage::CoreSystems:
-            wdLog::Debug("Executing 'Core' shutdown of sub-system '{0}::{1}'", Order[i]->GetGroupName(), Order[i]->GetSubSystemName());
+          case nsStartupStage::CoreSystems:
+            nsLog::Debug("Executing 'Core' shutdown of sub-system '{0}::{1}'", Order[i]->GetGroupName(), Order[i]->GetSubSystemName());
             Order[i]->OnCoreSystemsShutdown();
             break;
 
-          case wdStartupStage::HighLevelSystems:
-            wdLog::Debug("Executing 'Engine' shutdown of sub-system '{0}::{1}'", Order[i]->GetGroupName(), Order[i]->GetSubSystemName());
+          case nsStartupStage::HighLevelSystems:
+            nsLog::Debug("Executing 'Engine' shutdown of sub-system '{0}::{1}'", Order[i]->GetGroupName(), Order[i]->GetSubSystemName());
             Order[i]->OnHighLevelSystemsShutdown();
             break;
 
@@ -393,42 +395,42 @@ void wdStartup::Shutdown(wdStartupStage::Enum stage)
 
   switch (stage)
   {
-    case wdStartupStage::CoreSystems:
-      wdGlobalEvent::Broadcast(WD_GLOBALEVENT_SHUTDOWN_CORESYSTEMS_END);
+    case nsStartupStage::CoreSystems:
+      nsGlobalEvent::Broadcast(NS_GLOBALEVENT_SHUTDOWN_CORESYSTEMS_END);
       break;
 
-    case wdStartupStage::HighLevelSystems:
-      wdGlobalEvent::Broadcast(WD_GLOBALEVENT_SHUTDOWN_HIGHLEVELSYSTEMS_END);
+    case nsStartupStage::HighLevelSystems:
+      nsGlobalEvent::Broadcast(NS_GLOBALEVENT_SHUTDOWN_HIGHLEVELSYSTEMS_END);
       break;
 
     default:
       break;
   }
 
-  if (s_CurrentState != wdStartupStage::None)
+  if (s_CurrentState != nsStartupStage::None)
   {
-    s_CurrentState = (wdStartupStage::Enum)(((wdInt32)stage) - 1);
+    s_CurrentState = (nsStartupStage::Enum)(((nsInt32)stage) - 1);
 
-    if (s_CurrentState == wdStartupStage::None)
+    if (s_CurrentState == nsStartupStage::None)
     {
-      wdPlugin::Events().RemoveEventHandler(PluginEventHandler);
+      nsPlugin::Events().RemoveEventHandler(PluginEventHandler);
     }
   }
 }
 
-bool wdStartup::HasDependencyOnPlugin(wdSubSystem* pSubSystem, const char* szModule)
+bool nsStartup::HasDependencyOnPlugin(nsSubSystem* pSubSystem, nsStringView sModule)
 {
-  if (wdStringUtils::IsEqual(pSubSystem->m_szPluginName, szModule))
+  if (pSubSystem->m_sPluginName == sModule)
     return true;
 
-  for (wdUInt32 i = 0; pSubSystem->GetDependency(i) != nullptr; ++i)
+  for (nsUInt32 i = 0; pSubSystem->GetDependency(i) != nullptr; ++i)
   {
-    wdSubSystem* pSub = wdSubSystem::GetFirstInstance();
+    nsSubSystem* pSub = nsSubSystem::GetFirstInstance();
     while (pSub)
     {
-      if (wdStringUtils::IsEqual(pSub->GetSubSystemName(), pSubSystem->GetDependency(i)))
+      if (pSub->GetSubSystemName() == pSubSystem->GetDependency(i))
       {
-        if (HasDependencyOnPlugin(pSub, szModule))
+        if (HasDependencyOnPlugin(pSub, sModule))
           return true;
 
         break;
@@ -441,48 +443,42 @@ bool wdStartup::HasDependencyOnPlugin(wdSubSystem* pSubSystem, const char* szMod
   return false;
 }
 
-void wdStartup::UnloadPluginSubSystems(const char* szPluginName)
+void nsStartup::UnloadPluginSubSystems(nsStringView sPluginName)
 {
-  WD_LOG_BLOCK("Unloading Plugin SubSystems", szPluginName);
-  wdLog::Dev("Plugin to unload: '{0}'", szPluginName);
+  NS_LOG_BLOCK("Unloading Plugin SubSystems", sPluginName);
+  nsLog::Dev("Plugin to unload: '{0}'", sPluginName);
 
-  wdGlobalEvent::Broadcast(WD_GLOBALEVENT_UNLOAD_PLUGIN_BEGIN, wdVariant(szPluginName));
+  nsGlobalEvent::Broadcast(NS_GLOBALEVENT_UNLOAD_PLUGIN_BEGIN, nsVariant(sPluginName));
 
-  wdDeque<wdSubSystem*> Order;
+  nsDeque<nsSubSystem*> Order;
   ComputeOrder(Order);
 
-  for (wdInt32 i = (wdInt32)Order.GetCount() - 1; i >= 0; --i)
+  for (nsInt32 i = (nsInt32)Order.GetCount() - 1; i >= 0; --i)
   {
-    if (Order[i]->m_bStartupDone[wdStartupStage::HighLevelSystems] && HasDependencyOnPlugin(Order[i], szPluginName))
+    if (Order[i]->m_bStartupDone[nsStartupStage::HighLevelSystems] && HasDependencyOnPlugin(Order[i], sPluginName))
     {
-      wdLog::Info("Engine shutdown of SubSystem '{0}::{1}', because it depends on Plugin '{2}'.", Order[i]->GetGroupName(),
-        Order[i]->GetSubSystemName(), szPluginName);
+      nsLog::Info("Engine shutdown of SubSystem '{0}::{1}', because it depends on Plugin '{2}'.", Order[i]->GetGroupName(), Order[i]->GetSubSystemName(), sPluginName);
       Order[i]->OnHighLevelSystemsShutdown();
-      Order[i]->m_bStartupDone[wdStartupStage::HighLevelSystems] = false;
+      Order[i]->m_bStartupDone[nsStartupStage::HighLevelSystems] = false;
     }
   }
 
-  for (wdInt32 i = (wdInt32)Order.GetCount() - 1; i >= 0; --i)
+  for (nsInt32 i = (nsInt32)Order.GetCount() - 1; i >= 0; --i)
   {
-    if (Order[i]->m_bStartupDone[wdStartupStage::CoreSystems] && HasDependencyOnPlugin(Order[i], szPluginName))
+    if (Order[i]->m_bStartupDone[nsStartupStage::CoreSystems] && HasDependencyOnPlugin(Order[i], sPluginName))
     {
-      wdLog::Info("Core shutdown of SubSystem '{0}::{1}', because it depends on Plugin '{2}'.", Order[i]->GetGroupName(),
-        Order[i]->GetSubSystemName(), szPluginName);
+      nsLog::Info("Core shutdown of SubSystem '{0}::{1}', because it depends on Plugin '{2}'.", Order[i]->GetGroupName(), Order[i]->GetSubSystemName(), sPluginName);
       Order[i]->OnCoreSystemsShutdown();
-      Order[i]->m_bStartupDone[wdStartupStage::CoreSystems] = false;
+      Order[i]->m_bStartupDone[nsStartupStage::CoreSystems] = false;
     }
   }
 
 
-  wdGlobalEvent::Broadcast(WD_GLOBALEVENT_UNLOAD_PLUGIN_END, wdVariant(szPluginName));
+  nsGlobalEvent::Broadcast(NS_GLOBALEVENT_UNLOAD_PLUGIN_END, nsVariant(sPluginName));
 }
 
-void wdStartup::ReinitToCurrentState()
+void nsStartup::ReinitToCurrentState()
 {
-  if (s_CurrentState != wdStartupStage::None)
+  if (s_CurrentState != nsStartupStage::None)
     Startup(s_CurrentState);
 }
-
-
-
-WD_STATICLINK_FILE(Foundation, Foundation_Configuration_Implementation_Startup);

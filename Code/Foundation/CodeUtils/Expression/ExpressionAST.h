@@ -1,16 +1,16 @@
 #pragma once
 
 #include <Foundation/CodeUtils/Expression/ExpressionDeclarations.h>
-#include <Foundation/Memory/StackAllocator.h>
+#include <Foundation/Memory/LinearAllocator.h>
 
-class wdDGMLGraph;
+class nsDGMLGraph;
 
-class WD_FOUNDATION_DLL wdExpressionAST
+class NS_FOUNDATION_DLL nsExpressionAST
 {
 public:
   struct NodeType
   {
-    using StorageType = wdUInt8;
+    using StorageType = nsUInt8;
 
     enum Enum
     {
@@ -84,6 +84,8 @@ public:
       Clamp,
       Select,
       Lerp,
+      SmoothStep,
+      SmootherStep,
       LastTernary,
 
       Constant,
@@ -115,7 +117,7 @@ public:
 
   struct DataType
   {
-    using StorageType = wdUInt8;
+    using StorageType = nsUInt8;
 
     enum Enum
     {
@@ -144,28 +146,28 @@ public:
       Default = Unknown,
     };
 
-    static wdVariantType::Enum GetVariantType(Enum dataType);
+    static nsVariantType::Enum GetVariantType(Enum dataType);
 
-    static Enum FromStreamType(wdProcessingStream::DataType dataType);
+    static Enum FromStreamType(nsProcessingStream::DataType dataType);
 
-    WD_ALWAYS_INLINE static wdExpression::RegisterType::Enum GetRegisterType(Enum dataType)
+    NS_ALWAYS_INLINE static nsExpression::RegisterType::Enum GetRegisterType(Enum dataType)
     {
-      return static_cast<wdExpression::RegisterType::Enum>(dataType >> 2);
+      return static_cast<nsExpression::RegisterType::Enum>(dataType >> 2);
     }
 
-    WD_ALWAYS_INLINE static Enum FromRegisterType(wdExpression::RegisterType::Enum registerType, wdUInt32 uiElementCount = 1)
+    NS_ALWAYS_INLINE static Enum FromRegisterType(nsExpression::RegisterType::Enum registerType, nsUInt32 uiElementCount = 1)
     {
-      return static_cast<wdExpressionAST::DataType::Enum>((registerType << 2) + uiElementCount - 1);
+      return static_cast<nsExpressionAST::DataType::Enum>((registerType << 2) + uiElementCount - 1);
     }
 
-    WD_ALWAYS_INLINE static wdUInt32 GetElementCount(Enum dataType) { return (dataType & 0x3) + 1; }
+    NS_ALWAYS_INLINE static nsUInt32 GetElementCount(Enum dataType) { return (dataType & 0x3) + 1; }
 
     static const char* GetName(Enum dataType);
   };
 
   struct VectorComponent
   {
-    using StorageType = wdUInt8;
+    using StorageType = nsUInt8;
 
     enum Enum
     {
@@ -186,17 +188,17 @@ public:
 
     static const char* GetName(Enum vectorComponent);
 
-    static Enum FromChar(wdUInt32 uiChar);
+    static Enum FromChar(nsUInt32 uiChar);
   };
 
   struct Node
   {
-    wdEnum<NodeType> m_Type;
-    wdEnum<DataType> m_ReturnType;
-    wdUInt8 m_uiOverloadIndex = 0xFF;
-    wdUInt8 m_uiNumInputElements = 0;
+    nsEnum<NodeType> m_Type;
+    nsEnum<DataType> m_ReturnType;
+    nsUInt8 m_uiOverloadIndex = 0xFF;
+    nsUInt8 m_uiNumInputElements = 0;
 
-    wdUInt32 m_uiHash = 0;
+    nsUInt32 m_uiHash = 0;
   };
 
   struct UnaryOperator : public Node
@@ -219,62 +221,63 @@ public:
 
   struct Constant : public Node
   {
-    wdVariant m_Value;
+    nsVariant m_Value;
   };
 
   struct Swizzle : public Node
   {
-    wdEnum<VectorComponent> m_Components[4];
-    wdUInt32 m_NumComponents = 0;
+    nsEnum<VectorComponent> m_Components[4];
+    nsUInt32 m_NumComponents = 0;
     Node* m_pExpression = nullptr;
   };
 
   struct Input : public Node
   {
-    wdExpression::StreamDesc m_Desc;
+    nsExpression::StreamDesc m_Desc;
   };
 
   struct Output : public Node
   {
-    wdExpression::StreamDesc m_Desc;
+    nsExpression::StreamDesc m_Desc;
     Node* m_pExpression = nullptr;
   };
 
   struct FunctionCall : public Node
   {
-    wdSmallArray<const wdExpression::FunctionDesc*, 1> m_Descs;
-    wdSmallArray<Node*, 8> m_Arguments;
+    nsSmallArray<const nsExpression::FunctionDesc*, 1> m_Descs;
+    nsSmallArray<Node*, 8> m_Arguments;
   };
 
   struct ConstructorCall : public Node
   {
-    wdSmallArray<Node*, 4> m_Arguments;
+    nsSmallArray<Node*, 4> m_Arguments;
   };
 
 public:
-  wdExpressionAST();
-  ~wdExpressionAST();
+  nsExpressionAST();
+  ~nsExpressionAST();
 
   UnaryOperator* CreateUnaryOperator(NodeType::Enum type, Node* pOperand, DataType::Enum returnType = DataType::Unknown);
   BinaryOperator* CreateBinaryOperator(NodeType::Enum type, Node* pLeftOperand, Node* pRightOperand);
   TernaryOperator* CreateTernaryOperator(NodeType::Enum type, Node* pFirstOperand, Node* pSecondOperand, Node* pThirdOperand);
-  Constant* CreateConstant(const wdVariant& value, DataType::Enum dataType = DataType::Float);
-  Swizzle* CreateSwizzle(wdStringView sSwizzle, Node* pExpression);
-  Swizzle* CreateSwizzle(wdEnum<VectorComponent> component, Node* pExpression);
-  Swizzle* CreateSwizzle(wdArrayPtr<wdEnum<VectorComponent>> swizzle, Node* pExpression);
-  Input* CreateInput(const wdExpression::StreamDesc& desc);
-  Output* CreateOutput(const wdExpression::StreamDesc& desc, Node* pExpression);
-  FunctionCall* CreateFunctionCall(const wdExpression::FunctionDesc& desc, wdArrayPtr<Node*> arguments);
-  FunctionCall* CreateFunctionCall(wdArrayPtr<const wdExpression::FunctionDesc> descs, wdArrayPtr<Node*> arguments);
-  ConstructorCall* CreateConstructorCall(DataType::Enum dataType, wdArrayPtr<Node*> arguments);
-  ConstructorCall* CreateConstructorCall(Node* pOldValue, Node* pNewValue, wdStringView sPartialAssignmentMask);
+  Constant* CreateConstant(const nsVariant& value, DataType::Enum dataType = DataType::Float);
+  Swizzle* CreateSwizzle(nsStringView sSwizzle, Node* pExpression);
+  Swizzle* CreateSwizzle(nsEnum<VectorComponent> component, Node* pExpression);
+  Swizzle* CreateSwizzle(nsArrayPtr<nsEnum<VectorComponent>> swizzle, Node* pExpression);
+  Input* CreateInput(const nsExpression::StreamDesc& desc);
+  Output* CreateOutput(const nsExpression::StreamDesc& desc, Node* pExpression);
+  FunctionCall* CreateFunctionCall(const nsExpression::FunctionDesc& desc, nsArrayPtr<Node*> arguments);
+  FunctionCall* CreateFunctionCall(nsArrayPtr<const nsExpression::FunctionDesc> descs, nsArrayPtr<Node*> arguments);
+  ConstructorCall* CreateConstructorCall(DataType::Enum dataType, nsArrayPtr<Node*> arguments);
+  ConstructorCall* CreateConstructorCall(Node* pOldValue, Node* pNewValue, nsStringView sPartialAssignmentMask);
 
-  static wdArrayPtr<Node*> GetChildren(Node* pNode);
-  static wdArrayPtr<const Node*> GetChildren(const Node* pNode);
+  static nsArrayPtr<Node*> GetChildren(Node* pNode);
+  static nsArrayPtr<const Node*> GetChildren(const Node* pNode);
 
-  void PrintGraph(wdDGMLGraph& inout_graph) const;
+  void PrintGraph(nsDGMLGraph& inout_graph) const;
 
-  wdHybridArray<Output*, 8> m_OutputNodes;
+  nsSmallArray<Input*, 8> m_InputNodes;
+  nsSmallArray<Output*, 8> m_OutputNodes;
 
   // Transforms
   Node* TypeDeductionAndConversion(Node* pNode);
@@ -285,19 +288,20 @@ public:
   Node* CommonSubexpressionElimination(Node* pNode);
   Node* Validate(Node* pNode);
 
-  wdResult ScalarizeOutputs();
+  nsResult ScalarizeInputs();
+  nsResult ScalarizeOutputs();
 
 private:
   void ResolveOverloads(Node* pNode);
 
-  static DataType::Enum GetExpectedChildDataType(const Node* pNode, wdUInt32 uiChildIndex);
+  static DataType::Enum GetExpectedChildDataType(const Node* pNode, nsUInt32 uiChildIndex);
 
   static void UpdateHash(Node* pNode);
   static bool IsEqual(const Node* pNodeA, const Node* pNodeB);
 
-  wdStackAllocator<> m_Allocator;
+  nsLinearAllocator<> m_Allocator;
 
-  wdSet<wdExpression::FunctionDesc> m_FunctionDescs;
+  nsSet<nsExpression::FunctionDesc> m_FunctionDescs;
 
-  wdHashTable<wdUInt32, wdSmallArray<Node*, 1>> m_NodeDeduplicationTable;
+  nsHashTable<nsUInt32, nsSmallArray<Node*, 1>> m_NodeDeduplicationTable;
 };

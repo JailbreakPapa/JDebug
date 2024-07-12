@@ -2,10 +2,10 @@
 
 #include <Foundation/Math/Vec4.h>
 
-namespace wdInternal
+namespace nsInternal
 {
-  typedef wdVec4 QuadFloat;
-  typedef wdVec4I32 QuadInt;
-  typedef wdVec4U32 QuadUInt;
-  typedef wdVec4U32 QuadBool;
-} // namespace wdInternal
+  using QuadFloat = nsVec4;
+  using QuadInt = nsVec4I32;
+  using QuadUInt = nsVec4U32;
+  using QuadBool = nsVec4U32;
+} // namespace nsInternal

@@ -4,25 +4,25 @@
 #include <Foundation/Containers/HybridArray.h>
 #include <Foundation/IO/Stream.h>
 
-class wdLogInterface;
+class nsLogInterface;
 
 /// \brief A low level JSON parser that can incrementally parse the structure of a JSON document.
 ///
 /// The document structure is returned through virtual functions that need to be overridden.
-class WD_FOUNDATION_DLL wdJSONParser
+class NS_FOUNDATION_DLL nsJSONParser
 {
 public:
   /// \brief Constructor.
-  wdJSONParser();
+  nsJSONParser();
 
-  virtual ~wdJSONParser() {}
+  virtual ~nsJSONParser() = default;
 
-  /// \brief Allows to specify an wdLogInterface through which errors and warnings are reported.
-  void SetLogInterface(wdLogInterface* pLog) { m_pLogInterface = pLog; }
+  /// \brief Allows to specify an nsLogInterface through which errors and warnings are reported.
+  void SetLogInterface(nsLogInterface* pLog) { m_pLogInterface = pLog; }
 
 protected:
   /// \brief Resets the parser to the start state and configures it to read from the given stream.
-  void SetInputStream(wdStreamReader& stream, wdUInt32 uiFirstLineOffset = 0);
+  void SetInputStream(nsStreamReader& stream, nsUInt32 uiFirstLineOffset = 0);
 
   /// \brief Does one parsing step.
   ///
@@ -44,9 +44,9 @@ protected:
   void SkipArray();
 
   /// \brief Outputs that a parsing error was detected (via OnParsingError) and stops further parsing, if bFatal is set to true.
-  void ParsingError(const char* szMessage, bool bFatal);
+  void ParsingError(nsStringView sMessage, bool bFatal);
 
-  wdLogInterface* m_pLogInterface;
+  nsLogInterface* m_pLogInterface = nullptr;
 
 private:
   /// \brief Called whenever a new variable is encountered. The variable name is passed along.
@@ -54,21 +54,21 @@ private:
   ///
   /// The entire variable (independent of whether it is a simple value, an array or an object) can
   /// be skipped by returning false.
-  virtual bool OnVariable(const char* szVarName) = 0;
+  virtual bool OnVariable(nsStringView sVarName) = 0;
 
   /// \brief Called whenever a new value is read.
   ///
   /// Directly following a call to OnVariable(), this means that the variable is a simple variable.
   /// In between calls to OnBeginArray() and OnEndArray() it is another value in the array.
-  virtual void OnReadValue(const char* szValue) = 0;
+  virtual void OnReadValue(nsStringView sValue) = 0;
 
-  /// \brief \copydoc wdJSONParser::OnReadValue()
+  /// \brief \copydoc nsJSONParser::OnReadValue()
   virtual void OnReadValue(double fValue) = 0;
 
-  /// \brief \copydoc wdJSONParser::OnReadValue()
+  /// \brief \copydoc nsJSONParser::OnReadValue()
   virtual void OnReadValue(bool bValue) = 0;
 
-  /// \brief \copydoc wdJSONParser::OnReadValue()
+  /// \brief \copydoc nsJSONParser::OnReadValue()
   virtual void OnReadValueNULL() = 0;
 
   /// \brief Called when a new object is encountered.
@@ -95,7 +95,7 @@ private:
   /// If bFatal is true, the error has left the parser in an unrecoverable state and thus it not continue parsing.
   /// In that case client code will need to clean up it's open state, as no further OnEndObject() / OnEndArray() will be called.
   /// If bFatal is false, the document does not contain valid JSON, but the parser is able to continue still.
-  virtual void OnParsingError(const char* szMessage, bool bFatal, wdUInt32 uiLine, wdUInt32 uiColumn) {}
+  virtual void OnParsingError(nsStringView sMessage, bool bFatal, nsUInt32 uiLine, nsUInt32 uiColumn) {}
 
 private:
   enum State
@@ -134,14 +134,14 @@ private:
 
   void SkipStack(State s);
 
-  wdUInt8 m_uiCurByte;
-  wdUInt8 m_uiNextByte;
-  wdUInt32 m_uiCurLine;
-  wdUInt32 m_uiCurColumn;
+  nsUInt8 m_uiCurByte;
+  nsUInt8 m_uiNextByte;
+  nsUInt32 m_uiCurLine;
+  nsUInt32 m_uiCurColumn;
 
-  wdStreamReader* m_pInput;
-  wdHybridArray<JSONState, 32> m_StateStack;
-  wdHybridArray<wdUInt8, 4096> m_TempString;
+  nsStreamReader* m_pInput;
+  nsHybridArray<JSONState, 32> m_StateStack;
+  nsHybridArray<nsUInt8, 4096> m_TempString;
 
   bool m_bSkippingMode;
 };

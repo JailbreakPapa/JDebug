@@ -3,7 +3,7 @@ HeaderV2
 o
 {
 	Uuid %id{u4{16242289591921312934,5331298968656744613}}
-	s %t{"wdAssetDocumentInfo"}
+	s %t{"nsAssetDocumentInfo"}
 	u3 %v{2}
 	s %n{"Header"}
 	p
@@ -30,7 +30,7 @@ Objects
 o
 {
 	Uuid %id{u4{440031702117033133,4871387950543216427}}
-	s %t{"wdKrautAssetMaterial"}
+	s %t{"nsKrautAssetMaterial"}
 	u3 %v{1}
 	p
 	{
@@ -41,7 +41,7 @@ o
 o
 {
 	Uuid %id{u4{13221536648321646759,4964413843328666743}}
-	s %t{"wdKrautAssetMaterial"}
+	s %t{"nsKrautAssetMaterial"}
 	u3 %v{1}
 	p
 	{
@@ -52,7 +52,7 @@ o
 o
 {
 	Uuid %id{u4{5101323386866554807,5138982381412055676}}
-	s %t{"wdKrautAssetMaterial"}
+	s %t{"nsKrautAssetMaterial"}
 	u3 %v{1}
 	p
 	{
@@ -63,7 +63,7 @@ o
 o
 {
 	Uuid %id{u4{4391832461624850561,5280164604799923266}}
-	s %t{"wdKrautAssetMaterial"}
+	s %t{"nsKrautAssetMaterial"}
 	u3 %v{1}
 	p
 	{
@@ -74,7 +74,7 @@ o
 o
 {
 	Uuid %id{u4{9980473252024396221,5330160200626627343}}
-	s %t{"wdKrautAssetMaterial"}
+	s %t{"nsKrautAssetMaterial"}
 	u3 %v{1}
 	p
 	{
@@ -85,7 +85,7 @@ o
 o
 {
 	Uuid %id{u4{6509414412785266872,5518905210127120117}}
-	s %t{"wdKrautTreeAssetProperties"}
+	s %t{"nsKrautTreeAssetProperties"}
 	u3 %v{1}
 	p
 	{
@@ -119,7 +119,7 @@ o
 o
 {
 	Uuid %id{u4{18096612296587978288,6449934965513159559}}
-	s %t{"wdDocumentRoot"}
+	s %t{"nsDocumentRoot"}
 	u3 %v{1}
 	s %n{"ObjectTree"}
 	p
@@ -136,17 +136,17 @@ Types
 o
 {
 	Uuid %id{u4{9839103660623915170,1447106120747834331}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
 		s %ParentTypeName{""}
-		s %PluginName{"wdEditorPluginKraut"}
+		s %PluginName{"nsEditorPluginKraut"}
 		VarArray %Properties{}
-		s %TypeName{"wdKrautAssetMaterial"}
+		s %TypeName{"nsKrautAssetMaterial"}
 		u3 %TypeSize{128}
 		u3 %TypeVersion{1}
 	}
@@ -154,17 +154,17 @@ o
 o
 {
 	Uuid %id{u4{6793836540827978476,3094957657128336037}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdReflectedClass"}
-		s %PluginName{"wdEditorPluginKraut"}
+		s %ParentTypeName{"nsReflectedClass"}
+		s %PluginName{"nsEditorPluginKraut"}
 		VarArray %Properties{}
-		s %TypeName{"wdKrautTreeAssetProperties"}
+		s %TypeName{"nsKrautTreeAssetProperties"}
 		u3 %TypeSize{1264}
 		u3 %TypeVersion{1}
 	}
@@ -172,17 +172,17 @@ o
 o
 {
 	Uuid %id{u4{6089094783765586323,8705960867921430659}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdReflectedClass"}
+		s %ParentTypeName{"nsReflectedClass"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdDocumentRoot"}
+		s %TypeName{"nsDocumentRoot"}
 		u3 %TypeSize{72}
 		u3 %TypeVersion{1}
 	}
@@ -190,17 +190,17 @@ o
 o
 {
 	Uuid %id{u4{983387834180907111,17935407260904399048}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
 		s %ParentTypeName{""}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdReflectedClass"}
+		s %TypeName{"nsReflectedClass"}
 		u3 %TypeSize{8}
 		u3 %TypeVersion{1}
 	}

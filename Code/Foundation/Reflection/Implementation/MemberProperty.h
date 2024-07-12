@@ -13,28 +13,28 @@
 /// \brief The base class for all typed member properties. I.e. once the type of a property is determined, it can be cast to the proper
 /// version of this.
 ///
-/// For example, when you have a pointer to an wdAbstractMemberProperty and it returns that the property is of type 'int', you can cast the
-/// pointer to an pointer to wdTypedMemberProperty<int> which then allows you to access its values.
+/// For example, when you have a pointer to an nsAbstractMemberProperty and it returns that the property is of type 'int', you can cast the
+/// pointer to an pointer to nsTypedMemberProperty<int> which then allows you to access its values.
 template <typename Type>
-class wdTypedMemberProperty : public wdAbstractMemberProperty
+class nsTypedMemberProperty : public nsAbstractMemberProperty
 {
 public:
-  /// \brief Passes the property name through to wdAbstractMemberProperty.
-  wdTypedMemberProperty(const char* szPropertyName)
-    : wdAbstractMemberProperty(szPropertyName)
+  /// \brief Passes the property name through to nsAbstractMemberProperty.
+  nsTypedMemberProperty(const char* szPropertyName)
+    : nsAbstractMemberProperty(szPropertyName)
   {
-    m_Flags = wdPropertyFlags::GetParameterFlags<Type>();
-    WD_CHECK_AT_COMPILETIME_MSG(
+    m_Flags = nsPropertyFlags::GetParameterFlags<Type>();
+    NS_CHECK_AT_COMPILETIME_MSG(
       !std::is_pointer<Type>::value ||
-        wdVariant::TypeDeduction<typename wdTypeTraits<Type>::NonConstReferencePointerType>::value == wdVariantType::Invalid,
+        nsVariant::TypeDeduction<typename nsTypeTraits<Type>::NonConstReferencePointerType>::value == nsVariantType::Invalid,
       "Pointer to standard types are not supported.");
   }
 
-  /// \brief Returns the actual type of the property. You can then compare that with known types, eg. compare it to wdGetStaticRTTI<int>()
+  /// \brief Returns the actual type of the property. You can then compare that with known types, eg. compare it to nsGetStaticRTTI<int>()
   /// to see whether this is an int property.
-  virtual const wdRTTI* GetSpecificType() const override // [tested]
+  virtual const nsRTTI* GetSpecificType() const override // [tested]
   {
-    return wdGetStaticRTTI<typename wdTypeTraits<Type>::NonConstReferencePointerType>();
+    return nsGetStaticRTTI<typename nsTypeTraits<Type>::NonConstReferencePointerType>();
   }
 
   /// \brief Returns the value of the property. Pass the instance pointer to the surrounding class along.
@@ -43,62 +43,62 @@ public:
   /// \brief Modifies the value of the property. Pass the instance pointer to the surrounding class along.
   ///
   /// \note Make sure the property is not read-only before calling this, otherwise an assert will fire.
-  virtual void SetValue(void* pInstance, Type value) = 0; // [tested]
+  virtual void SetValue(void* pInstance, Type value) const = 0; // [tested]
 
   virtual void GetValuePtr(const void* pInstance, void* pObject) const override { *static_cast<Type*>(pObject) = GetValue(pInstance); };
-  virtual void SetValuePtr(void* pInstance, const void* pObject) override { SetValue(pInstance, *static_cast<const Type*>(pObject)); };
+  virtual void SetValuePtr(void* pInstance, const void* pObject) const override { SetValue(pInstance, *static_cast<const Type*>(pObject)); };
 };
 
-/// \brief Specialization of wdTypedMemberProperty for const char*.
+/// \brief Specialization of nsTypedMemberProperty for const char*.
 ///
-/// This works because wdTypedMemberProperty< typename wdTypeTraits<Type>::NonConstReferenceType > in wdAccessorProperty
+/// This works because nsTypedMemberProperty< typename nsTypeTraits<Type>::NonConstReferenceType > in nsAccessorProperty
 /// does not actually remove the constness of the type but of the pointer, so const char* is not affected.
 template <>
-class wdTypedMemberProperty<const char*> : public wdAbstractMemberProperty
+class nsTypedMemberProperty<const char*> : public nsAbstractMemberProperty
 {
 public:
-  wdTypedMemberProperty(const char* szPropertyName)
-    : wdAbstractMemberProperty(szPropertyName)
+  nsTypedMemberProperty(const char* szPropertyName)
+    : nsAbstractMemberProperty(szPropertyName)
   {
     // We treat const char* as a basic type and not a pointer.
-    m_Flags = wdPropertyFlags::GetParameterFlags<const char*>();
+    m_Flags = nsPropertyFlags::GetParameterFlags<const char*>();
   }
 
-  virtual const wdRTTI* GetSpecificType() const override // [tested]
+  virtual const nsRTTI* GetSpecificType() const override // [tested]
   {
-    return wdGetStaticRTTI<const char*>();
+    return nsGetStaticRTTI<const char*>();
   }
 
   virtual const char* GetValue(const void* pInstance) const = 0;
-  virtual void SetValue(void* pInstance, const char* value) = 0;
+  virtual void SetValue(void* pInstance, const char* value) const = 0;
   virtual void GetValuePtr(const void* pInstance, void* pObject) const override { *static_cast<const char**>(pObject) = GetValue(pInstance); };
-  virtual void SetValuePtr(void* pInstance, const void* pObject) override { SetValue(pInstance, *static_cast<const char* const*>(pObject)); };
+  virtual void SetValuePtr(void* pInstance, const void* pObject) const override { SetValue(pInstance, *static_cast<const char* const*>(pObject)); };
 };
 
 
 // *******************************************************************
 // ***** Class for properties that use custom accessor functions *****
 
-/// \brief [internal] An implementation of wdTypedMemberProperty that uses custom getter / setter functions to access a property.
+/// \brief [internal] An implementation of nsTypedMemberProperty that uses custom getter / setter functions to access a property.
 template <typename Class, typename Type>
-class wdAccessorProperty : public wdTypedMemberProperty<typename wdTypeTraits<Type>::NonConstReferenceType>
+class nsAccessorProperty : public nsTypedMemberProperty<typename nsTypeTraits<Type>::NonConstReferenceType>
 {
 public:
-  using RealType = typename wdTypeTraits<Type>::NonConstReferenceType;
+  using RealType = typename nsTypeTraits<Type>::NonConstReferenceType;
   using GetterFunc = Type (Class::*)() const;
   using SetterFunc = void (Class::*)(Type value);
 
   /// \brief Constructor.
-  wdAccessorProperty(const char* szPropertyName, GetterFunc getter, SetterFunc setter)
-    : wdTypedMemberProperty<RealType>(szPropertyName)
+  nsAccessorProperty(const char* szPropertyName, GetterFunc getter, SetterFunc setter)
+    : nsTypedMemberProperty<RealType>(szPropertyName)
   {
-    WD_ASSERT_DEBUG(getter != nullptr, "The getter of a property cannot be nullptr.");
+    NS_ASSERT_DEBUG(getter != nullptr, "The getter of a property cannot be nullptr.");
 
     m_Getter = getter;
     m_Setter = setter;
 
     if (m_Setter == nullptr)
-      wdAbstractMemberProperty::m_Flags.Add(wdPropertyFlags::ReadOnly);
+      nsAbstractMemberProperty::m_Flags.Add(nsPropertyFlags::ReadOnly);
   }
 
   /// \brief Always returns nullptr; once a property is modified through accessors, there is no point in giving more direct access to
@@ -118,9 +118,9 @@ public:
   /// \brief Modifies the value of the property. Pass the instance pointer to the surrounding class along.
   ///
   /// \note Make sure the property is not read-only before calling this, otherwise an assert will fire.
-  virtual void SetValue(void* pInstance, RealType value) override // [tested]
+  virtual void SetValue(void* pInstance, RealType value) const override // [tested]
   {
-    WD_ASSERT_DEV(m_Setter != nullptr, "The property '{0}' has no setter function, thus it is read-only.", wdAbstractProperty::GetPropertyName());
+    NS_ASSERT_DEV(m_Setter != nullptr, "The property '{0}' has no setter function, thus it is read-only.", nsAbstractProperty::GetPropertyName());
 
     if (m_Setter)
       (static_cast<Class*>(pInstance)->*m_Setter)(value);
@@ -137,7 +137,7 @@ private:
 
 /// \brief [internal] Helper class to generate accessor functions for (private) members of another class
 template <typename Class, typename Type, Type Class::*Member>
-struct wdPropertyAccessor
+struct nsPropertyAccessor
 {
   static Type GetValue(const Class* pInstance) { return (*pInstance).*Member; }
 
@@ -147,9 +147,9 @@ struct wdPropertyAccessor
 };
 
 
-/// \brief [internal] An implementation of wdTypedMemberProperty that accesses the property data directly.
+/// \brief [internal] An implementation of nsTypedMemberProperty that accesses the property data directly.
 template <typename Class, typename Type>
-class wdMemberProperty : public wdTypedMemberProperty<Type>
+class nsMemberProperty : public nsTypedMemberProperty<Type>
 {
 public:
   using GetterFunc = Type (*)(const Class* pInstance);
@@ -157,17 +157,17 @@ public:
   using PointerFunc = void* (*)(const Class* pInstance);
 
   /// \brief Constructor.
-  wdMemberProperty(const char* szPropertyName, GetterFunc getter, SetterFunc setter, PointerFunc pointer)
-    : wdTypedMemberProperty<Type>(szPropertyName)
+  nsMemberProperty(const char* szPropertyName, GetterFunc getter, SetterFunc setter, PointerFunc pointer)
+    : nsTypedMemberProperty<Type>(szPropertyName)
   {
-    WD_ASSERT_DEBUG(getter != nullptr, "The getter of a property cannot be nullptr.");
+    NS_ASSERT_DEBUG(getter != nullptr, "The getter of a property cannot be nullptr.");
 
     m_Getter = getter;
     m_Setter = setter;
     m_Pointer = pointer;
 
     if (m_Setter == nullptr)
-      wdAbstractMemberProperty::m_Flags.Add(wdPropertyFlags::ReadOnly);
+      nsAbstractMemberProperty::m_Flags.Add(nsPropertyFlags::ReadOnly);
   }
 
   /// \brief Returns a pointer to the member property.
@@ -179,9 +179,9 @@ public:
   /// \brief Modifies the value of the property. Pass the instance pointer to the surrounding class along.
   ///
   /// \note Make sure the property is not read-only before calling this, otherwise an assert will fire.
-  virtual void SetValue(void* pInstance, Type value) override
+  virtual void SetValue(void* pInstance, Type value) const override
   {
-    WD_ASSERT_DEV(m_Setter != nullptr, "The property '{0}' has no setter function, thus it is read-only.", wdAbstractProperty::GetPropertyName());
+    NS_ASSERT_DEV(m_Setter != nullptr, "The property '{0}' has no setter function, thus it is read-only.", nsAbstractProperty::GetPropertyName());
 
     if (m_Setter)
       m_Setter(static_cast<Class*>(pInstance), value);

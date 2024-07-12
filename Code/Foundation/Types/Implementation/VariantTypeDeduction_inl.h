@@ -4,568 +4,470 @@
 /// \cond
 
 template <>
-struct wdVariantTypeDeduction<bool>
+struct nsVariantTypeDeduction<bool>
 {
-  enum
-  {
-    value = wdVariantType::Bool,
-    forceSharing = false,
-    hasReflectedMembers = false,
-    classification = wdVariantClass::DirectCast
-  };
+  static constexpr nsVariantType::Enum value = nsVariantType::Bool;
+  static constexpr bool forceSharing = false;
+  static constexpr bool hasReflectedMembers = false;
+  static constexpr nsVariantClass::Enum classification = nsVariantClass::DirectCast;
 
   using StorageType = bool;
   using ReturnType = bool;
 };
 
 template <>
-struct wdVariantTypeDeduction<wdInt8>
+struct nsVariantTypeDeduction<nsInt8>
 {
-  enum
-  {
-    value = wdVariantType::Int8,
-    forceSharing = false,
-    hasReflectedMembers = false,
-    classification = wdVariantClass::DirectCast
-  };
+  static constexpr nsVariantType::Enum value = nsVariantType::Int8;
+  static constexpr bool forceSharing = false;
+  static constexpr bool hasReflectedMembers = false;
+  static constexpr nsVariantClass::Enum classification = nsVariantClass::DirectCast;
 
-  using StorageType = wdInt8;
+  using StorageType = nsInt8;
 };
 
 template <>
-struct wdVariantTypeDeduction<wdUInt8>
+struct nsVariantTypeDeduction<nsUInt8>
 {
-  enum
-  {
-    value = wdVariantType::UInt8,
-    forceSharing = false,
-    hasReflectedMembers = false,
-    classification = wdVariantClass::DirectCast
-  };
+  static constexpr nsVariantType::Enum value = nsVariantType::UInt8;
+  static constexpr bool forceSharing = false;
+  static constexpr bool hasReflectedMembers = false;
+  static constexpr nsVariantClass::Enum classification = nsVariantClass::DirectCast;
 
-  using StorageType = wdUInt8;
+  using StorageType = nsUInt8;
 };
 
 template <>
-struct wdVariantTypeDeduction<wdInt16>
+struct nsVariantTypeDeduction<nsInt16>
 {
-  enum
-  {
-    value = wdVariantType::Int16,
-    forceSharing = false,
-    hasReflectedMembers = false,
-    classification = wdVariantClass::DirectCast
-  };
+  static constexpr nsVariantType::Enum value = nsVariantType::Int16;
+  static constexpr bool forceSharing = false;
+  static constexpr bool hasReflectedMembers = false;
+  static constexpr nsVariantClass::Enum classification = nsVariantClass::DirectCast;
 
-  using StorageType = wdInt16;
+  using StorageType = nsInt16;
 };
 
 template <>
-struct wdVariantTypeDeduction<wdUInt16>
+struct nsVariantTypeDeduction<nsUInt16>
 {
-  enum
-  {
-    value = wdVariantType::UInt16,
-    forceSharing = false,
-    hasReflectedMembers = false,
-    classification = wdVariantClass::DirectCast
-  };
+  static constexpr nsVariantType::Enum value = nsVariantType::UInt16;
+  static constexpr bool forceSharing = false;
+  static constexpr bool hasReflectedMembers = false;
+  static constexpr nsVariantClass::Enum classification = nsVariantClass::DirectCast;
 
-  using StorageType = wdUInt16;
+  using StorageType = nsUInt16;
 };
 
 template <>
-struct wdVariantTypeDeduction<wdInt32>
+struct nsVariantTypeDeduction<nsInt32>
 {
-  enum
-  {
-    value = wdVariantType::Int32,
-    forceSharing = false,
-    hasReflectedMembers = false,
-    classification = wdVariantClass::DirectCast
-  };
+  static constexpr nsVariantType::Enum value = nsVariantType::Int32;
+  static constexpr bool forceSharing = false;
+  static constexpr bool hasReflectedMembers = false;
+  static constexpr nsVariantClass::Enum classification = nsVariantClass::DirectCast;
 
-  using StorageType = wdInt32;
+  using StorageType = nsInt32;
 };
 
 template <>
-struct wdVariantTypeDeduction<wdUInt32>
+struct nsVariantTypeDeduction<nsUInt32>
 {
-  enum
-  {
-    value = wdVariantType::UInt32,
-    forceSharing = false,
-    hasReflectedMembers = false,
-    classification = wdVariantClass::DirectCast
-  };
+  static constexpr nsVariantType::Enum value = nsVariantType::UInt32;
+  static constexpr bool forceSharing = false;
+  static constexpr bool hasReflectedMembers = false;
+  static constexpr nsVariantClass::Enum classification = nsVariantClass::DirectCast;
 
-  using StorageType = wdUInt32;
+  using StorageType = nsUInt32;
 };
 
 template <>
-struct wdVariantTypeDeduction<wdInt64>
+struct nsVariantTypeDeduction<nsInt64>
 {
-  enum
-  {
-    value = wdVariantType::Int64,
-    forceSharing = false,
-    hasReflectedMembers = false,
-    classification = wdVariantClass::DirectCast
-  };
+  static constexpr nsVariantType::Enum value = nsVariantType::Int64;
+  static constexpr bool forceSharing = false;
+  static constexpr bool hasReflectedMembers = false;
+  static constexpr nsVariantClass::Enum classification = nsVariantClass::DirectCast;
 
-  using StorageType = wdInt64;
+  using StorageType = nsInt64;
 };
 
 template <>
-struct wdVariantTypeDeduction<wdUInt64>
+struct nsVariantTypeDeduction<nsUInt64>
 {
-  enum
-  {
-    value = wdVariantType::UInt64,
-    forceSharing = false,
-    hasReflectedMembers = false,
-    classification = wdVariantClass::DirectCast
-  };
+  static constexpr nsVariantType::Enum value = nsVariantType::UInt64;
+  static constexpr bool forceSharing = false;
+  static constexpr bool hasReflectedMembers = false;
+  static constexpr nsVariantClass::Enum classification = nsVariantClass::DirectCast;
 
-  using StorageType = wdUInt64;
+  using StorageType = nsUInt64;
 };
 
 template <>
-struct wdVariantTypeDeduction<float>
+struct nsVariantTypeDeduction<float>
 {
-  enum
-  {
-    value = wdVariantType::Float,
-    forceSharing = false,
-    hasReflectedMembers = false,
-    classification = wdVariantClass::DirectCast
-  };
+  static constexpr nsVariantType::Enum value = nsVariantType::Float;
+  static constexpr bool forceSharing = false;
+  static constexpr bool hasReflectedMembers = false;
+  static constexpr nsVariantClass::Enum classification = nsVariantClass::DirectCast;
 
   using StorageType = float;
 };
 
 template <>
-struct wdVariantTypeDeduction<double>
+struct nsVariantTypeDeduction<double>
 {
-  enum
-  {
-    value = wdVariantType::Double,
-    forceSharing = false,
-    hasReflectedMembers = false,
-    classification = wdVariantClass::DirectCast
-  };
+  static constexpr nsVariantType::Enum value = nsVariantType::Double;
+  static constexpr bool forceSharing = false;
+  static constexpr bool hasReflectedMembers = false;
+  static constexpr nsVariantClass::Enum classification = nsVariantClass::DirectCast;
 
   using StorageType = double;
 };
 
 template <>
-struct wdVariantTypeDeduction<wdColor>
+struct nsVariantTypeDeduction<nsColor>
 {
-  enum
-  {
-    value = wdVariantType::Color,
-    forceSharing = false,
-    hasReflectedMembers = true,
-    classification = wdVariantClass::DirectCast
-  };
+  static constexpr nsVariantType::Enum value = nsVariantType::Color;
+  static constexpr bool forceSharing = false;
+  static constexpr bool hasReflectedMembers = true;
+  static constexpr nsVariantClass::Enum classification = nsVariantClass::DirectCast;
 
-  using StorageType = wdColor;
+  using StorageType = nsColor;
 };
 
 template <>
-struct wdVariantTypeDeduction<wdColorGammaUB>
+struct nsVariantTypeDeduction<nsColorGammaUB>
 {
-  enum
-  {
-    value = wdVariantType::ColorGamma,
-    forceSharing = false,
-    hasReflectedMembers = true,
-    classification = wdVariantClass::DirectCast
-  };
+  static constexpr nsVariantType::Enum value = nsVariantType::ColorGamma;
+  static constexpr bool forceSharing = false;
+  static constexpr bool hasReflectedMembers = true;
+  static constexpr nsVariantClass::Enum classification = nsVariantClass::DirectCast;
 
-  using StorageType = wdColorGammaUB;
+  using StorageType = nsColorGammaUB;
 };
 
 template <>
-struct wdVariantTypeDeduction<wdVec2>
+struct nsVariantTypeDeduction<nsVec2>
 {
-  enum
-  {
-    value = wdVariantType::Vector2,
-    forceSharing = false,
-    hasReflectedMembers = true,
-    classification = wdVariantClass::DirectCast
-  };
+  static constexpr nsVariantType::Enum value = nsVariantType::Vector2;
+  static constexpr bool forceSharing = false;
+  static constexpr bool hasReflectedMembers = true;
+  static constexpr nsVariantClass::Enum classification = nsVariantClass::DirectCast;
 
-  using StorageType = wdVec2;
+  using StorageType = nsVec2;
 };
 
 template <>
-struct wdVariantTypeDeduction<wdVec3>
+struct nsVariantTypeDeduction<nsVec3>
 {
-  enum
-  {
-    value = wdVariantType::Vector3,
-    forceSharing = false,
-    hasReflectedMembers = true,
-    classification = wdVariantClass::DirectCast
-  };
+  static constexpr nsVariantType::Enum value = nsVariantType::Vector3;
+  static constexpr bool forceSharing = false;
+  static constexpr bool hasReflectedMembers = true;
+  static constexpr nsVariantClass::Enum classification = nsVariantClass::DirectCast;
 
-  using StorageType = wdVec3;
+  using StorageType = nsVec3;
 };
 
 template <>
-struct wdVariantTypeDeduction<wdVec4>
+struct nsVariantTypeDeduction<nsVec4>
 {
-  enum
-  {
-    value = wdVariantType::Vector4,
-    forceSharing = false,
-    hasReflectedMembers = true,
-    classification = wdVariantClass::DirectCast
-  };
+  static constexpr nsVariantType::Enum value = nsVariantType::Vector4;
+  static constexpr bool forceSharing = false;
+  static constexpr bool hasReflectedMembers = true;
+  static constexpr nsVariantClass::Enum classification = nsVariantClass::DirectCast;
 
-  using StorageType = wdVec4;
+  using StorageType = nsVec4;
 };
 
 template <>
-struct wdVariantTypeDeduction<wdVec2I32>
+struct nsVariantTypeDeduction<nsVec2I32>
 {
-  enum
-  {
-    value = wdVariantType::Vector2I,
-    forceSharing = false,
-    hasReflectedMembers = true,
-    classification = wdVariantClass::DirectCast
-  };
+  static constexpr nsVariantType::Enum value = nsVariantType::Vector2I;
+  static constexpr bool forceSharing = false;
+  static constexpr bool hasReflectedMembers = true;
+  static constexpr nsVariantClass::Enum classification = nsVariantClass::DirectCast;
 
-  using StorageType = wdVec2I32;
+  using StorageType = nsVec2I32;
 };
 
 template <>
-struct wdVariantTypeDeduction<wdVec3I32>
+struct nsVariantTypeDeduction<nsVec3I32>
 {
-  enum
-  {
-    value = wdVariantType::Vector3I,
-    forceSharing = false,
-    hasReflectedMembers = true,
-    classification = wdVariantClass::DirectCast
-  };
+  static constexpr nsVariantType::Enum value = nsVariantType::Vector3I;
+  static constexpr bool forceSharing = false;
+  static constexpr bool hasReflectedMembers = true;
+  static constexpr nsVariantClass::Enum classification = nsVariantClass::DirectCast;
 
-  using StorageType = wdVec3I32;
+  using StorageType = nsVec3I32;
 };
 
 template <>
-struct wdVariantTypeDeduction<wdVec4I32>
+struct nsVariantTypeDeduction<nsVec4I32>
 {
-  enum
-  {
-    value = wdVariantType::Vector4I,
-    forceSharing = false,
-    hasReflectedMembers = true,
-    classification = wdVariantClass::DirectCast
-  };
+  static constexpr nsVariantType::Enum value = nsVariantType::Vector4I;
+  static constexpr bool forceSharing = false;
+  static constexpr bool hasReflectedMembers = true;
+  static constexpr nsVariantClass::Enum classification = nsVariantClass::DirectCast;
 
-  using StorageType = wdVec4I32;
+  using StorageType = nsVec4I32;
 };
 
 template <>
-struct wdVariantTypeDeduction<wdVec2U32>
+struct nsVariantTypeDeduction<nsVec2U32>
 {
-  enum
-  {
-    value = wdVariantType::Vector2U,
-    forceSharing = false,
-    hasReflectedMembers = true,
-    classification = wdVariantClass::DirectCast
-  };
+  static constexpr nsVariantType::Enum value = nsVariantType::Vector2U;
+  static constexpr bool forceSharing = false;
+  static constexpr bool hasReflectedMembers = true;
+  static constexpr nsVariantClass::Enum classification = nsVariantClass::DirectCast;
 
-  using StorageType = wdVec2U32;
+  using StorageType = nsVec2U32;
 };
 
 template <>
-struct wdVariantTypeDeduction<wdVec3U32>
+struct nsVariantTypeDeduction<nsVec3U32>
 {
-  enum
-  {
-    value = wdVariantType::Vector3U,
-    forceSharing = false,
-    hasReflectedMembers = true,
-    classification = wdVariantClass::DirectCast
-  };
+  static constexpr nsVariantType::Enum value = nsVariantType::Vector3U;
+  static constexpr bool forceSharing = false;
+  static constexpr bool hasReflectedMembers = true;
+  static constexpr nsVariantClass::Enum classification = nsVariantClass::DirectCast;
 
-  using StorageType = wdVec3U32;
+  using StorageType = nsVec3U32;
 };
 
 template <>
-struct wdVariantTypeDeduction<wdVec4U32>
+struct nsVariantTypeDeduction<nsVec4U32>
 {
-  enum
-  {
-    value = wdVariantType::Vector4U,
-    forceSharing = false,
-    hasReflectedMembers = true,
-    classification = wdVariantClass::DirectCast
-  };
+  static constexpr nsVariantType::Enum value = nsVariantType::Vector4U;
+  static constexpr bool forceSharing = false;
+  static constexpr bool hasReflectedMembers = true;
+  static constexpr nsVariantClass::Enum classification = nsVariantClass::DirectCast;
 
-  using StorageType = wdVec4U32;
+  using StorageType = nsVec4U32;
 };
 
 template <>
-struct wdVariantTypeDeduction<wdQuat>
+struct nsVariantTypeDeduction<nsQuat>
 {
-  enum
-  {
-    value = wdVariantType::Quaternion,
-    forceSharing = false,
-    hasReflectedMembers = true,
-    classification = wdVariantClass::DirectCast
-  };
+  static constexpr nsVariantType::Enum value = nsVariantType::Quaternion;
+  static constexpr bool forceSharing = false;
+  static constexpr bool hasReflectedMembers = true;
+  static constexpr nsVariantClass::Enum classification = nsVariantClass::DirectCast;
 
-  using StorageType = wdQuat;
+  using StorageType = nsQuat;
 };
 
 template <>
-struct wdVariantTypeDeduction<wdMat3>
+struct nsVariantTypeDeduction<nsMat3>
 {
-  enum
-  {
-    value = wdVariantType::Matrix3,
-    forceSharing = false,
-    hasReflectedMembers = false,
-    classification = wdVariantClass::DirectCast
-  };
+  static constexpr nsVariantType::Enum value = nsVariantType::Matrix3;
+  static constexpr bool forceSharing = false;
+  static constexpr bool hasReflectedMembers = false;
+  static constexpr nsVariantClass::Enum classification = nsVariantClass::DirectCast;
 
-  using StorageType = wdMat3;
+  using StorageType = nsMat3;
 };
 
 template <>
-struct wdVariantTypeDeduction<wdMat4>
+struct nsVariantTypeDeduction<nsMat4>
 {
-  enum
-  {
-    value = wdVariantType::Matrix4,
-    forceSharing = false,
-    hasReflectedMembers = false,
-    classification = wdVariantClass::DirectCast
-  };
+  static constexpr nsVariantType::Enum value = nsVariantType::Matrix4;
+  static constexpr bool forceSharing = false;
+  static constexpr bool hasReflectedMembers = false;
+  static constexpr nsVariantClass::Enum classification = nsVariantClass::DirectCast;
 
-  using StorageType = wdMat4;
+  using StorageType = nsMat4;
 };
 
 template <>
-struct wdVariantTypeDeduction<wdTransform>
+struct nsVariantTypeDeduction<nsTransform>
 {
-  enum
-  {
-    value = wdVariantType::Transform,
-    forceSharing = false,
-    hasReflectedMembers = false,
-    classification = wdVariantClass::DirectCast
-  };
+  static constexpr nsVariantType::Enum value = nsVariantType::Transform;
+  static constexpr bool forceSharing = false;
+  static constexpr bool hasReflectedMembers = false;
+  static constexpr nsVariantClass::Enum classification = nsVariantClass::DirectCast;
 
-  using StorageType = wdTransform;
+  using StorageType = nsTransform;
 };
 
 template <>
-struct wdVariantTypeDeduction<wdString>
+struct nsVariantTypeDeduction<nsString>
 {
-  enum
-  {
-    value = wdVariantType::String,
-    forceSharing = true,
-    hasReflectedMembers = false,
-    classification = wdVariantClass::DirectCast
-  };
+  static constexpr nsVariantType::Enum value = nsVariantType::String;
+  static constexpr bool forceSharing = true;
+  static constexpr bool hasReflectedMembers = false;
+  static constexpr nsVariantClass::Enum classification = nsVariantClass::DirectCast;
 
-  using StorageType = wdString;
+  using StorageType = nsString;
 };
 
 template <>
-struct wdVariantTypeDeduction<wdUntrackedString>
+struct nsVariantTypeDeduction<nsUntrackedString>
 {
-  enum
-  {
-    value = wdVariantType::String,
-    forceSharing = true,
-    hasReflectedMembers = false,
-    classification = wdVariantClass::DirectCast
-  };
+  static constexpr nsVariantType::Enum value = nsVariantType::String;
+  static constexpr bool forceSharing = true;
+  static constexpr bool hasReflectedMembers = false;
+  static constexpr nsVariantClass::Enum classification = nsVariantClass::DirectCast;
 
-  using StorageType = wdString;
+  using StorageType = nsString;
 };
 
 template <>
-struct wdVariantTypeDeduction<wdStringView>
+struct nsVariantTypeDeduction<nsStringView>
 {
-  enum
-  {
-    value = wdVariantType::StringView,
-    forceSharing = false,
-    hasReflectedMembers = false,
-    classification = wdVariantClass::DirectCast
-  };
+  static constexpr nsVariantType::Enum value = nsVariantType::StringView;
+  static constexpr bool forceSharing = false;
+  static constexpr bool hasReflectedMembers = false;
+  static constexpr nsVariantClass::Enum classification = nsVariantClass::DirectCast;
 
-  using StorageType = wdStringView;
+  using StorageType = nsStringView;
 };
 
 template <>
-struct wdVariantTypeDeduction<wdDataBuffer>
+struct nsVariantTypeDeduction<nsDataBuffer>
 {
-  enum
-  {
-    value = wdVariantType::DataBuffer,
-    forceSharing = true,
-    hasReflectedMembers = false,
-    classification = wdVariantClass::DirectCast
-  };
+  static constexpr nsVariantType::Enum value = nsVariantType::DataBuffer;
+  static constexpr bool forceSharing = true;
+  static constexpr bool hasReflectedMembers = false;
+  static constexpr nsVariantClass::Enum classification = nsVariantClass::DirectCast;
 
-  using StorageType = wdDataBuffer;
+  using StorageType = nsDataBuffer;
 };
 
 template <>
-struct wdVariantTypeDeduction<char*>
+struct nsVariantTypeDeduction<char*>
 {
-  enum
-  {
-    value = wdVariantType::String,
-    forceSharing = true,
-    hasReflectedMembers = false,
-    classification = wdVariantClass::DirectCast
-  };
+  static constexpr nsVariantType::Enum value = nsVariantType::String;
+  static constexpr bool forceSharing = true;
+  static constexpr bool hasReflectedMembers = false;
+  static constexpr nsVariantClass::Enum classification = nsVariantClass::DirectCast;
 
-  using StorageType = wdString;
+  using StorageType = nsString;
 };
 
 template <>
-struct wdVariantTypeDeduction<const char*>
+struct nsVariantTypeDeduction<const char*>
 {
-  enum
-  {
-    value = wdVariantType::String,
-    forceSharing = true,
-    hasReflectedMembers = false,
-    classification = wdVariantClass::DirectCast
-  };
+  static constexpr nsVariantType::Enum value = nsVariantType::String;
+  static constexpr bool forceSharing = true;
+  static constexpr bool hasReflectedMembers = false;
+  static constexpr nsVariantClass::Enum classification = nsVariantClass::DirectCast;
 
-  using StorageType = wdString;
+  using StorageType = nsString;
 };
 
 template <size_t N>
-struct wdVariantTypeDeduction<char[N]>
+struct nsVariantTypeDeduction<char[N]>
 {
-  enum
-  {
-    value = wdVariantType::String,
-    forceSharing = true,
-    hasReflectedMembers = false,
-    classification = wdVariantClass::DirectCast
-  };
+  static constexpr nsVariantType::Enum value = nsVariantType::String;
+  static constexpr bool forceSharing = true;
+  static constexpr bool hasReflectedMembers = false;
+  static constexpr nsVariantClass::Enum classification = nsVariantClass::DirectCast;
 
-  using StorageType = wdString;
+  using StorageType = nsString;
 };
 
 template <size_t N>
-struct wdVariantTypeDeduction<const char[N]>
+struct nsVariantTypeDeduction<const char[N]>
 {
-  enum
-  {
-    value = wdVariantType::String,
-    forceSharing = true,
-    hasReflectedMembers = false,
-    classification = wdVariantClass::DirectCast
-  };
+  static constexpr nsVariantType::Enum value = nsVariantType::String;
+  static constexpr bool forceSharing = true;
+  static constexpr bool hasReflectedMembers = false;
+  static constexpr nsVariantClass::Enum classification = nsVariantClass::DirectCast;
 
-  using StorageType = wdString;
+  using StorageType = nsString;
 };
 
 template <>
-struct wdVariantTypeDeduction<wdTime>
+struct nsVariantTypeDeduction<nsTime>
 {
-  enum
-  {
-    value = wdVariantType::Time,
-    forceSharing = false,
-    hasReflectedMembers = false,
-    classification = wdVariantClass::DirectCast
-  };
+  static constexpr nsVariantType::Enum value = nsVariantType::Time;
+  static constexpr bool forceSharing = false;
+  static constexpr bool hasReflectedMembers = false;
+  static constexpr nsVariantClass::Enum classification = nsVariantClass::DirectCast;
 
-  using StorageType = wdTime;
+  using StorageType = nsTime;
 };
 
 template <>
-struct wdVariantTypeDeduction<wdUuid>
+struct nsVariantTypeDeduction<nsUuid>
 {
-  enum
-  {
-    value = wdVariantType::Uuid,
-    forceSharing = false,
-    hasReflectedMembers = false,
-    classification = wdVariantClass::DirectCast
-  };
+  static constexpr nsVariantType::Enum value = nsVariantType::Uuid;
+  static constexpr bool forceSharing = false;
+  static constexpr bool hasReflectedMembers = false;
+  static constexpr nsVariantClass::Enum classification = nsVariantClass::DirectCast;
 
-  using StorageType = wdUuid;
+  using StorageType = nsUuid;
 };
 
 template <>
-struct wdVariantTypeDeduction<wdAngle>
+struct nsVariantTypeDeduction<nsAngle>
 {
-  enum
-  {
-    value = wdVariantType::Angle,
-    forceSharing = false,
-    hasReflectedMembers = false,
-    classification = wdVariantClass::DirectCast
-  };
+  static constexpr nsVariantType::Enum value = nsVariantType::Angle;
+  static constexpr bool forceSharing = false;
+  static constexpr bool hasReflectedMembers = false;
+  static constexpr nsVariantClass::Enum classification = nsVariantClass::DirectCast;
 
-  using StorageType = wdAngle;
+  using StorageType = nsAngle;
 };
 
 template <>
-struct wdVariantTypeDeduction<wdVariantArray>
+struct nsVariantTypeDeduction<nsHashedString>
 {
-  enum
-  {
-    value = wdVariantType::VariantArray,
-    forceSharing = true,
-    hasReflectedMembers = false,
-    classification = wdVariantClass::DirectCast
-  };
+  static constexpr nsVariantType::Enum value = nsVariantType::HashedString;
+  static constexpr bool forceSharing = false;
+  static constexpr bool hasReflectedMembers = false;
+  static constexpr nsVariantClass::Enum classification = nsVariantClass::DirectCast;
 
-  using StorageType = wdVariantArray;
+  using StorageType = nsHashedString;
 };
 
 template <>
-struct wdVariantTypeDeduction<wdArrayPtr<wdVariant>>
+struct nsVariantTypeDeduction<nsTempHashedString>
 {
-  enum
-  {
-    value = wdVariantType::VariantArray,
-    forceSharing = true,
-    hasReflectedMembers = false,
-    classification = wdVariantClass::DirectCast
-  };
+  static constexpr nsVariantType::Enum value = nsVariantType::TempHashedString;
+  static constexpr bool forceSharing = false;
+  static constexpr bool hasReflectedMembers = false;
+  static constexpr nsVariantClass::Enum classification = nsVariantClass::DirectCast;
 
-  using StorageType = wdVariantArray;
+  using StorageType = nsTempHashedString;
+};
+
+template <>
+struct nsVariantTypeDeduction<nsVariantArray>
+{
+  static constexpr nsVariantType::Enum value = nsVariantType::VariantArray;
+  static constexpr bool forceSharing = true;
+  static constexpr bool hasReflectedMembers = false;
+  static constexpr nsVariantClass::Enum classification = nsVariantClass::DirectCast;
+
+  using StorageType = nsVariantArray;
+};
+
+template <>
+struct nsVariantTypeDeduction<nsArrayPtr<nsVariant>>
+{
+  static constexpr nsVariantType::Enum value = nsVariantType::VariantArray;
+  static constexpr bool forceSharing = true;
+  static constexpr bool hasReflectedMembers = false;
+  static constexpr nsVariantClass::Enum classification = nsVariantClass::DirectCast;
+
+  using StorageType = nsVariantArray;
 };
 
 
 template <>
-struct wdVariantTypeDeduction<wdVariantDictionary>
+struct nsVariantTypeDeduction<nsVariantDictionary>
 {
-  enum
-  {
-    value = wdVariantType::VariantDictionary,
-    forceSharing = true,
-    hasReflectedMembers = false,
-    classification = wdVariantClass::DirectCast
-  };
+  static constexpr nsVariantType::Enum value = nsVariantType::VariantDictionary;
+  static constexpr bool forceSharing = true;
+  static constexpr bool hasReflectedMembers = false;
+  static constexpr nsVariantClass::Enum classification = nsVariantClass::DirectCast;
 
-  using StorageType = wdVariantDictionary;
+  using StorageType = nsVariantDictionary;
 };
 
-namespace wdInternal
+namespace nsInternal
 {
   template <int v>
   struct PointerDeductionHelper
@@ -581,50 +483,41 @@ namespace wdInternal
   template <>
   struct PointerDeductionHelper<1>
   {
-    using StorageType = wdReflectedClass*;
+    using StorageType = nsReflectedClass*;
   };
-} // namespace wdInternal
+} // namespace nsInternal
 
 template <>
-struct wdVariantTypeDeduction<wdTypedPointer>
+struct nsVariantTypeDeduction<nsTypedPointer>
 {
-  enum
-  {
-    value = wdVariantType::TypedPointer,
-    forceSharing = false,
-    hasReflectedMembers = true,
-    classification = wdVariantClass::DirectCast
-  };
+  static constexpr nsVariantType::Enum value = nsVariantType::TypedPointer;
+  static constexpr bool forceSharing = false;
+  static constexpr bool hasReflectedMembers = true;
+  static constexpr nsVariantClass::Enum classification = nsVariantClass::DirectCast;
 
-  using StorageType = wdTypedPointer;
+  using StorageType = nsTypedPointer;
 };
 
 template <typename T>
-struct wdVariantTypeDeduction<T*>
+struct nsVariantTypeDeduction<T*>
 {
-  enum
-  {
-    value = wdVariantType::TypedPointer,
-    forceSharing = false,
-    hasReflectedMembers = true,
-    classification = wdVariantClass::PointerCast
-  };
+  static constexpr nsVariantType::Enum value = nsVariantType::TypedPointer;
+  static constexpr bool forceSharing = false;
+  static constexpr bool hasReflectedMembers = true;
+  static constexpr nsVariantClass::Enum classification = nsVariantClass::PointerCast;
 
-  using StorageType = wdTypedPointer;
+  using StorageType = nsTypedPointer;
 };
 
 template <>
-struct wdVariantTypeDeduction<wdTypedObject>
+struct nsVariantTypeDeduction<nsTypedObject>
 {
-  enum
-  {
-    value = wdVariantType::TypedObject,
-    forceSharing = false,
-    hasReflectedMembers = true,
-    classification = wdVariantClass::TypedObject
-  };
+  static constexpr nsVariantType::Enum value = nsVariantType::TypedObject;
+  static constexpr bool forceSharing = false;
+  static constexpr bool hasReflectedMembers = true;
+  static constexpr nsVariantClass::Enum classification = nsVariantClass::TypedObject;
 
-  using StorageType = wdTypedObject;
+  using StorageType = nsTypedObject;
 };
 
 /// \endcond

@@ -3,17 +3,17 @@
 #include <Foundation/Communication/RemoteMessage.h>
 
 // clang-format off
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdProcessMessage, 1, wdRTTIDefaultAllocator<wdProcessMessage>)
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsProcessMessage, 1, nsRTTIDefaultAllocator<nsProcessMessage>)
+NS_END_DYNAMIC_REFLECTED_TYPE;
 // clang-format on
 
-wdRemoteMessage::wdRemoteMessage()
+nsRemoteMessage::nsRemoteMessage()
   : m_Reader(&m_Storage)
   , m_Writer(&m_Storage)
 {
 }
 
-wdRemoteMessage::wdRemoteMessage(const wdRemoteMessage& rhs)
+nsRemoteMessage::nsRemoteMessage(const nsRemoteMessage& rhs)
   : m_Storage(rhs.m_Storage)
   , m_Reader(&m_Storage)
   , m_Writer(&m_Storage)
@@ -23,7 +23,7 @@ wdRemoteMessage::wdRemoteMessage(const wdRemoteMessage& rhs)
 }
 
 
-wdRemoteMessage::wdRemoteMessage(wdUInt32 uiSystemID, wdUInt32 uiMessageID)
+nsRemoteMessage::nsRemoteMessage(nsUInt32 uiSystemID, nsUInt32 uiMessageID)
   : m_Reader(&m_Storage)
   , m_Writer(&m_Storage)
 {
@@ -31,7 +31,7 @@ wdRemoteMessage::wdRemoteMessage(wdUInt32 uiSystemID, wdUInt32 uiMessageID)
   m_uiMsgID = uiMessageID;
 }
 
-void wdRemoteMessage::operator=(const wdRemoteMessage& rhs)
+void nsRemoteMessage::operator=(const nsRemoteMessage& rhs)
 {
   m_Storage = rhs.m_Storage;
   m_uiApplicationID = rhs.m_uiApplicationID;
@@ -41,11 +41,11 @@ void wdRemoteMessage::operator=(const wdRemoteMessage& rhs)
   m_Writer.SetStorage(&m_Storage);
 }
 
-wdRemoteMessage::~wdRemoteMessage()
+nsRemoteMessage::~nsRemoteMessage()
 {
   m_Reader.SetStorage(nullptr);
   m_Writer.SetStorage(nullptr);
 }
 
 
-WD_STATICLINK_FILE(Foundation, Foundation_Communication_Implementation_RemoteMessage);
+NS_STATICLINK_FILE(Foundation, Foundation_Communication_Implementation_RemoteMessage);

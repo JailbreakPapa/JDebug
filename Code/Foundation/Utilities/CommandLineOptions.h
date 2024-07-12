@@ -5,21 +5,21 @@
 #include <Foundation/Utilities/CommandLineUtils.h>
 #include <Foundation/Utilities/EnumerableClass.h>
 
-class wdStringBuilder;
-class wdLogInterface;
+class nsStringBuilder;
+class nsLogInterface;
 
-/// \brief wdCommandLineOption (and derived types) are used to define options that the application supports.
+/// \brief nsCommandLineOption (and derived types) are used to define options that the application supports.
 ///
 /// Command line options are created as global variables anywhere throughout the code, wherever they are needed.
-/// The point of using them over going through wdCommandLineUtils directly, is that the options can be listed automatically
+/// The point of using them over going through nsCommandLineUtils directly, is that the options can be listed automatically
 /// and thus an application can print all available options, when the user requests help.
 ///
 /// Consequently, their main purpose is to make options discoverable and to document them in a consistent manner.
 ///
-/// Additionally, classes like wdCommandLineOptionEnum add functionality that makes some options easier to setup.
-class WD_FOUNDATION_DLL wdCommandLineOption : public wdEnumerable<wdCommandLineOption>
+/// Additionally, classes like nsCommandLineOptionEnum add functionality that makes some options easier to setup.
+class NS_FOUNDATION_DLL nsCommandLineOption : public nsEnumerable<nsCommandLineOption>
 {
-  WD_DECLARE_ENUMERABLE_CLASS(wdCommandLineOption);
+  NS_DECLARE_ENUMERABLE_CLASS(nsCommandLineOption);
 
 public:
   enum class LogAvailableModes
@@ -28,7 +28,7 @@ public:
     IfHelpRequested ///< Only logs the modes, if '-h', '-help', '-?' or something similar was specified
   };
 
-  /// \brief Describes whether the value of an option (and whether something went wrong), should be printed to wdLog.
+  /// \brief Describes whether the value of an option (and whether something went wrong), should be printed to nsLog.
   enum class LogMode
   {
     Never,                ///< Don't log anything.
@@ -39,93 +39,93 @@ public:
   };
 
   /// \brief Checks whether a command line was passed that requests help output.
-  static bool IsHelpRequested(const wdCommandLineUtils* pUtils = wdCommandLineUtils::GetGlobalInstance()); // [tested]
+  static bool IsHelpRequested(const nsCommandLineUtils* pUtils = nsCommandLineUtils::GetGlobalInstance()); // [tested]
 
   /// \brief Checks whether all required options are passed to the command line.
   ///
   /// The options are passed as a semicolon-separated list (spare spaces are stripped away), for instance "-opt1; -opt2"
-  static wdResult RequireOptions(const char* szRequiredOptions, wdString* pMissingOption = nullptr, const wdCommandLineUtils* pUtils = wdCommandLineUtils::GetGlobalInstance()); // [tested]
+  static nsResult RequireOptions(nsStringView sRequiredOptions, nsString* pMissingOption = nullptr, const nsCommandLineUtils* pUtils = nsCommandLineUtils::GetGlobalInstance()); // [tested]
 
-  /// \brief Prints all available options to the wdLog.
+  /// \brief Prints all available options to the nsLog.
   ///
   /// \param szGroupFilter
   ///   If this is empty, all options from all 'sorting groups' are logged.
   ///   If non-empty, only options from sorting groups that appear in this string will be logged.
-  static bool LogAvailableOptions(LogAvailableModes mode, const char* szGroupFilter = nullptr, const wdCommandLineUtils* pUtils = wdCommandLineUtils::GetGlobalInstance()); // [tested]
+  static bool LogAvailableOptions(LogAvailableModes mode, nsStringView sGroupFilter = {}, const nsCommandLineUtils* pUtils = nsCommandLineUtils::GetGlobalInstance()); // [tested]
 
-  /// \brief Same as LogAvailableOptions() but captures the output from wdLog and returns it in an wdStringBuilder.
-  static bool LogAvailableOptionsToBuffer(wdStringBuilder& out_sBuffer, LogAvailableModes mode, const char* szGroupFilter = nullptr, const wdCommandLineUtils* pUtils = wdCommandLineUtils::GetGlobalInstance()); // [tested]
+  /// \brief Same as LogAvailableOptions() but captures the output from nsLog and returns it in an nsStringBuilder.
+  static bool LogAvailableOptionsToBuffer(nsStringBuilder& out_sBuffer, LogAvailableModes mode, nsStringView sGroupFilter = {}, const nsCommandLineUtils* pUtils = nsCommandLineUtils::GetGlobalInstance()); // [tested]
 
 public:
   /// \param szSortingGroup
   ///   This string is used to sort options. Application options should start with an underscore, such that they appear first
   ///   in the output.
-  wdCommandLineOption(const char* szSortingGroup) { m_szSortingGroup = szSortingGroup; }
+  nsCommandLineOption(nsStringView sSortingGroup) { m_sSortingGroup = sSortingGroup; }
 
   /// \brief Writes the sorting group name to 'out'.
-  virtual void GetSortingGroup(wdStringBuilder& ref_sOut) const;
+  virtual void GetSortingGroup(nsStringBuilder& ref_sOut) const;
 
   /// \brief Writes all the supported options (e.g. '-arg') to 'out'.
   /// If more than one option is allowed, they should be separated with semicolons or pipes.
-  virtual void GetOptions(wdStringBuilder& ref_sOut) const = 0;
+  virtual void GetOptions(nsStringBuilder& ref_sOut) const = 0;
 
   /// \brief Returns the supported option names (e.g. '-arg') as split strings.
-  void GetSplitOptions(wdStringBuilder& out_sAll, wdDynamicArray<wdStringView>& ref_splitOptions) const;
+  void GetSplitOptions(nsStringBuilder& out_sAll, nsDynamicArray<nsStringView>& ref_splitOptions) const;
 
   /// \brief Returns a very short description of the option (type). For example "<int>" or "<enum>".
-  virtual void GetParamShortDesc(wdStringBuilder& ref_sOut) const = 0;
+  virtual void GetParamShortDesc(nsStringBuilder& ref_sOut) const = 0;
 
   /// \brief Returns a very short string for the options default value. For example "0" or "auto".
-  virtual void GetParamDefaultValueDesc(wdStringBuilder& ref_sOut) const = 0;
+  virtual void GetParamDefaultValueDesc(nsStringBuilder& ref_sOut) const = 0;
 
   /// \brief Returns a proper description of the option.
   ///
   /// The long description is allowed to contain newlines (\n) and the output will be formatted accordingly.
-  virtual void GetLongDesc(wdStringBuilder& ref_sOut) const = 0;
+  virtual void GetLongDesc(nsStringBuilder& ref_sOut) const = 0;
 
   /// \brief Returns a string indicating the exact implementation type.
-  virtual const char* GetType() = 0;
+  virtual nsStringView GetType() = 0;
 
 protected:
-  const char* m_szSortingGroup = nullptr;
+  nsStringView m_sSortingGroup;
 };
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
-/// \brief wdCommandLineOptionDoc can be used to document a command line option whose logic might be more complex than what the other option types provide.
+/// \brief nsCommandLineOptionDoc can be used to document a command line option whose logic might be more complex than what the other option types provide.
 ///
-/// This class is meant to be used for options that are actually queried directly through wdCommandLineUtils,
+/// This class is meant to be used for options that are actually queried directly through nsCommandLineUtils,
 /// but should still show up in the command line option documentation, such that the user can discover them.
 ///
-class WD_FOUNDATION_DLL wdCommandLineOptionDoc : public wdCommandLineOption
+class NS_FOUNDATION_DLL nsCommandLineOptionDoc : public nsCommandLineOption
 {
 public:
-  wdCommandLineOptionDoc(const char* szSortingGroup, const char* szArgument, const char* szParamShortDesc, const char* szLongDesc, const char* szDefaultValue, bool bCaseSensitive = false);
+  nsCommandLineOptionDoc(nsStringView sSortingGroup, nsStringView sArgument, nsStringView sParamShortDesc, nsStringView sLongDesc, nsStringView sDefaultValue, bool bCaseSensitive = false);
 
-  virtual void GetOptions(wdStringBuilder& ref_sOut) const override; // [tested]
+  virtual void GetOptions(nsStringBuilder& ref_sOut) const override;               // [tested]
 
-  virtual void GetParamShortDesc(wdStringBuilder& ref_sOut) const override; // [tested]
+  virtual void GetParamShortDesc(nsStringBuilder& ref_sOut) const override;        // [tested]
 
-  virtual void GetParamDefaultValueDesc(wdStringBuilder& ref_sOut) const override; // [tested]
+  virtual void GetParamDefaultValueDesc(nsStringBuilder& ref_sOut) const override; // [tested]
 
-  virtual void GetLongDesc(wdStringBuilder& ref_sOut) const override; // [tested]
+  virtual void GetLongDesc(nsStringBuilder& ref_sOut) const override;              // [tested]
 
   /// \brief Returns "Doc"
-  virtual const char* GetType() override { return "Doc"; }
+  virtual nsStringView GetType() override { return "Doc"; }
 
   /// \brief Checks whether any of the option variants is set on the command line, and returns which one. For example '-h' or '-help'.
-  bool IsOptionSpecified(wdStringBuilder* out_pWhich = nullptr, const wdCommandLineUtils* pUtils = wdCommandLineUtils::GetGlobalInstance()) const; // [tested]
+  bool IsOptionSpecified(nsStringBuilder* out_pWhich = nullptr, const nsCommandLineUtils* pUtils = nsCommandLineUtils::GetGlobalInstance()) const; // [tested]
 
 protected:
   bool ShouldLog(LogMode mode, bool bWasSpecified) const;
-  void LogOption(const char* szOption, const char* szValue, bool bWasSpecified) const;
+  void LogOption(nsStringView sOption, nsStringView sValue, bool bWasSpecified) const;
 
-  const char* m_szArgument = nullptr;
-  const char* m_szParamShortDesc = nullptr;
-  const char* m_szParamDefaultValue = nullptr;
-  const char* m_szLongDesc = nullptr;
+  nsStringView m_sArgument;
+  nsStringView m_sParamShortDesc;
+  nsStringView m_sParamDefaultValue;
+  nsStringView m_sLongDesc;
   bool m_bCaseSensitive = false;
   mutable bool m_bLoggedOnce = false;
 };
@@ -135,13 +135,13 @@ protected:
 //////////////////////////////////////////////////////////////////////////
 
 /// \brief This command line option exposes simple on/off switches.
-class WD_FOUNDATION_DLL wdCommandLineOptionBool : public wdCommandLineOptionDoc
+class NS_FOUNDATION_DLL nsCommandLineOptionBool : public nsCommandLineOptionDoc
 {
 public:
-  wdCommandLineOptionBool(const char* szSortingGroup, const char* szArgument, const char* szLongDesc, bool bDefaultValue, bool bCaseSensitive = false);
+  nsCommandLineOptionBool(nsStringView sSortingGroup, nsStringView sArgument, nsStringView sLongDesc, bool bDefaultValue, bool bCaseSensitive = false);
 
   /// \brief Returns the value of this option. Either what was specified on the command line, or the default value.
-  bool GetOptionValue(LogMode logMode, const wdCommandLineUtils* pUtils = wdCommandLineUtils::GetGlobalInstance()) const; // [tested]
+  bool GetOptionValue(LogMode logMode, const nsCommandLineUtils* pUtils = nsCommandLineUtils::GetGlobalInstance()) const; // [tested]
 
   /// \brief Modifies the default value
   void SetDefaultValue(bool value)
@@ -153,7 +153,7 @@ public:
   bool GetDefaultValue() const { return m_bDefaultValue; }
 
   /// \brief Returns "Bool"
-  virtual const char* GetType() override { return "Bool"; }
+  virtual nsStringView GetType() override { return "Bool"; }
 
 protected:
   bool m_bDefaultValue = false;
@@ -167,40 +167,40 @@ protected:
 ///
 /// If the user specified a value outside the allowed range, a warning is printed, and the default value is used instead.
 /// It is valid for the default value to be outside the min/max range, which can be used to detect whether the user provided any value at all.
-class WD_FOUNDATION_DLL wdCommandLineOptionInt : public wdCommandLineOptionDoc
+class NS_FOUNDATION_DLL nsCommandLineOptionInt : public nsCommandLineOptionDoc
 {
 public:
-  wdCommandLineOptionInt(const char* szSortingGroup, const char* szArgument, const char* szLongDesc, int iDefaultValue, int iMinValue = wdMath::MinValue<int>(), int iMaxValue = wdMath::MaxValue<int>(), bool bCaseSensitive = false);
+  nsCommandLineOptionInt(nsStringView sSortingGroup, nsStringView sArgument, nsStringView sLongDesc, int iDefaultValue, int iMinValue = nsMath::MinValue<int>(), int iMaxValue = nsMath::MaxValue<int>(), bool bCaseSensitive = false);
 
-  virtual void GetParamDefaultValueDesc(wdStringBuilder& ref_sOut) const override; // [tested]
+  virtual void GetParamDefaultValueDesc(nsStringBuilder& ref_sOut) const override; // [tested]
 
-  virtual void GetParamShortDesc(wdStringBuilder& ref_sOut) const override; // [tested]
+  virtual void GetParamShortDesc(nsStringBuilder& ref_sOut) const override;        // [tested]
 
   /// \brief Returns the value of this option. Either what was specified on the command line, or the default value.
-  int GetOptionValue(LogMode logMode, const wdCommandLineUtils* pUtils = wdCommandLineUtils::GetGlobalInstance()) const; // [tested]
+  int GetOptionValue(LogMode logMode, const nsCommandLineUtils* pUtils = nsCommandLineUtils::GetGlobalInstance()) const; // [tested]
 
   /// \brief Modifies the default value
-  void SetDefaultValue(wdInt32 value)
+  void SetDefaultValue(nsInt32 value)
   {
     m_iDefaultValue = value;
   }
 
   /// \brief Returns "Int"
-  virtual const char* GetType() override { return "Int"; }
+  virtual nsStringView GetType() override { return "Int"; }
 
   /// \brief Returns the minimum value.
-  wdInt32 GetMinValue() const { return m_iMinValue; }
+  nsInt32 GetMinValue() const { return m_iMinValue; }
 
   /// \brief Returns the maximum value.
-  wdInt32 GetMaxValue() const { return m_iMaxValue; }
+  nsInt32 GetMaxValue() const { return m_iMaxValue; }
 
   /// \brief Returns the default value.
-  wdInt32 GetDefaultValue() const { return m_iDefaultValue; }
+  nsInt32 GetDefaultValue() const { return m_iDefaultValue; }
 
 protected:
-  wdInt32 m_iDefaultValue = 0;
-  wdInt32 m_iMinValue = 0;
-  wdInt32 m_iMaxValue = 0;
+  nsInt32 m_iDefaultValue = 0;
+  nsInt32 m_iMinValue = 0;
+  nsInt32 m_iMaxValue = 0;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -211,17 +211,17 @@ protected:
 ///
 /// If the user specified a value outside the allowed range, a warning is printed, and the default value is used instead.
 /// It is valid for the default value to be outside the min/max range, which can be used to detect whether the user provided any value at all.
-class WD_FOUNDATION_DLL wdCommandLineOptionFloat : public wdCommandLineOptionDoc
+class NS_FOUNDATION_DLL nsCommandLineOptionFloat : public nsCommandLineOptionDoc
 {
 public:
-  wdCommandLineOptionFloat(const char* szSortingGroup, const char* szArgument, const char* szLongDesc, float fDefaultValue, float fMinValue = wdMath::MinValue<float>(), float fMaxValue = wdMath::MaxValue<float>(), bool bCaseSensitive = false);
+  nsCommandLineOptionFloat(nsStringView sSortingGroup, nsStringView sArgument, nsStringView sLongDesc, float fDefaultValue, float fMinValue = nsMath::MinValue<float>(), float fMaxValue = nsMath::MaxValue<float>(), bool bCaseSensitive = false);
 
-  virtual void GetParamDefaultValueDesc(wdStringBuilder& ref_sOut) const override; // [tested]
+  virtual void GetParamDefaultValueDesc(nsStringBuilder& ref_sOut) const override; // [tested]
 
-  virtual void GetParamShortDesc(wdStringBuilder& ref_sOut) const override; // [tested]
+  virtual void GetParamShortDesc(nsStringBuilder& ref_sOut) const override;        // [tested]
 
   /// \brief Returns the value of this option. Either what was specified on the command line, or the default value.
-  float GetOptionValue(LogMode logMode, const wdCommandLineUtils* pUtils = wdCommandLineUtils::GetGlobalInstance()) const; // [tested]
+  float GetOptionValue(LogMode logMode, const nsCommandLineUtils* pUtils = nsCommandLineUtils::GetGlobalInstance()) const; // [tested]
 
   /// \brief Modifies the default value
   void SetDefaultValue(float value)
@@ -230,7 +230,7 @@ public:
   }
 
   /// \brief Returns "Float"
-  virtual const char* GetType() override { return "Float"; }
+  virtual nsStringView GetType() override { return "Float"; }
 
   /// \brief Returns the minimum value.
   float GetMinValue() const { return m_fMinValue; }
@@ -252,28 +252,28 @@ protected:
 //////////////////////////////////////////////////////////////////////////
 
 /// \brief This command line option exposes simple string values.
-class WD_FOUNDATION_DLL wdCommandLineOptionString : public wdCommandLineOptionDoc
+class NS_FOUNDATION_DLL nsCommandLineOptionString : public nsCommandLineOptionDoc
 {
 public:
-  wdCommandLineOptionString(const char* szSortingGroup, const char* szArgument, const char* szLongDesc, const char* szDefaultValue, bool bCaseSensitive = false);
+  nsCommandLineOptionString(nsStringView sSortingGroup, nsStringView sArgument, nsStringView sLongDesc, nsStringView sDefaultValue, bool bCaseSensitive = false);
 
   /// \brief Returns the value of this option. Either what was specified on the command line, or the default value.
-  const char* GetOptionValue(LogMode logMode, const wdCommandLineUtils* pUtils = wdCommandLineUtils::GetGlobalInstance()) const; // [tested]
+  nsStringView GetOptionValue(LogMode logMode, const nsCommandLineUtils* pUtils = nsCommandLineUtils::GetGlobalInstance()) const; // [tested]
 
   /// \brief Modifies the default value
-  void SetDefaultValue(const char* value)
+  void SetDefaultValue(nsStringView sValue)
   {
-    m_szDefaultValue = value;
+    m_sDefaultValue = sValue;
   }
 
   /// \brief Returns the default value.
-  const char* GetDefaultValue() const { return m_szDefaultValue; }
+  nsStringView GetDefaultValue() const { return m_sDefaultValue; }
 
   /// \brief Returns "String"
-  virtual const char* GetType() override { return "String"; }
+  virtual nsStringView GetType() override { return "String"; }
 
 protected:
-  const char* m_szDefaultValue = "";
+  nsStringView m_sDefaultValue;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -281,28 +281,28 @@ protected:
 //////////////////////////////////////////////////////////////////////////
 
 /// \brief This command line option exposes absolute paths. If the user provides a relative path, it will be concatenated with the current working directory.
-class WD_FOUNDATION_DLL wdCommandLineOptionPath : public wdCommandLineOptionDoc
+class NS_FOUNDATION_DLL nsCommandLineOptionPath : public nsCommandLineOptionDoc
 {
 public:
-  wdCommandLineOptionPath(const char* szSortingGroup, const char* szArgument, const char* szLongDesc, const char* szDefaultValue, bool bCaseSensitive = false);
+  nsCommandLineOptionPath(nsStringView sSortingGroup, nsStringView sArgument, nsStringView sLongDesc, nsStringView sDefaultValue, bool bCaseSensitive = false);
 
   /// \brief Returns the value of this option. Either what was specified on the command line, or the default value.
-  wdString GetOptionValue(LogMode logMode, const wdCommandLineUtils* pUtils = wdCommandLineUtils::GetGlobalInstance()) const; // [tested]
+  nsString GetOptionValue(LogMode logMode, const nsCommandLineUtils* pUtils = nsCommandLineUtils::GetGlobalInstance()) const; // [tested]
 
   /// \brief Modifies the default value
-  void SetDefaultValue(const char* value)
+  void SetDefaultValue(nsStringView sValue)
   {
-    m_szDefaultValue = value;
+    m_sDefaultValue = sValue;
   }
 
   /// \brief Returns the default value.
-  const char* GetDefaultValue() const { return m_szDefaultValue; }
+  nsStringView GetDefaultValue() const { return m_sDefaultValue; }
 
   /// \brief Returns "Path"
-  virtual const char* GetType() override { return "Path"; }
+  virtual nsStringView GetType() override { return "Path"; }
 
 protected:
-  const char* m_szDefaultValue = "";
+  nsStringView m_sDefaultValue;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -318,40 +318,40 @@ protected:
 /// The allowed values are passed in as a single string, in the form "OptA = 0 | OptB = 1 | ..."
 /// Phrase values ("= 0" etc) are optional, and if not given are automatically assigned starting at zero.
 /// Multiple phrases may share the same value.
-class WD_FOUNDATION_DLL wdCommandLineOptionEnum : public wdCommandLineOptionDoc
+class NS_FOUNDATION_DLL nsCommandLineOptionEnum : public nsCommandLineOptionDoc
 {
 public:
-  wdCommandLineOptionEnum(const char* szSortingGroup, const char* szArgument, const char* szLongDesc, const char* szEnumKeysAndValues, wdInt32 iDefaultValue, bool bCaseSensitive = false);
+  nsCommandLineOptionEnum(nsStringView sSortingGroup, nsStringView sArgument, nsStringView sLongDesc, nsStringView sEnumKeysAndValues, nsInt32 iDefaultValue, bool bCaseSensitive = false);
 
   /// \brief Returns the value of this option. Either what was specified on the command line, or the default value.
-  wdInt32 GetOptionValue(LogMode logMode, const wdCommandLineUtils* pUtils = wdCommandLineUtils::GetGlobalInstance()) const; // [tested]
+  nsInt32 GetOptionValue(LogMode logMode, const nsCommandLineUtils* pUtils = nsCommandLineUtils::GetGlobalInstance()) const; // [tested]
 
-  virtual void GetParamShortDesc(wdStringBuilder& ref_sOut) const override; // [tested]
+  virtual void GetParamShortDesc(nsStringBuilder& ref_sOut) const override;                                                  // [tested]
 
-  virtual void GetParamDefaultValueDesc(wdStringBuilder& ref_sOut) const override; // [tested]
+  virtual void GetParamDefaultValueDesc(nsStringBuilder& ref_sOut) const override;                                           // [tested]
 
   struct EnumKeyValue
   {
-    wdStringView m_Key;
-    wdInt32 m_iValue = 0;
+    nsStringView m_Key;
+    nsInt32 m_iValue = 0;
   };
 
   /// \brief Returns the enum keys (names) and values (integers) extracted from the string that was passed to the constructor.
-  void GetEnumKeysAndValues(wdDynamicArray<EnumKeyValue>& out_keysAndValues) const;
+  void GetEnumKeysAndValues(nsDynamicArray<EnumKeyValue>& out_keysAndValues) const;
 
   /// \brief Modifies the default value
-  void SetDefaultValue(wdInt32 value)
+  void SetDefaultValue(nsInt32 value)
   {
     m_iDefaultValue = value;
   }
 
   /// \brief Returns the default value.
-  wdInt32 GetDefaultValue() const { return m_iDefaultValue; }
+  nsInt32 GetDefaultValue() const { return m_iDefaultValue; }
 
   /// \brief Returns "Enum"
-  virtual const char* GetType() override { return "Enum"; }
+  virtual nsStringView GetType() override { return "Enum"; }
 
 protected:
-  wdInt32 m_iDefaultValue = 0;
-  const char* m_szEnumKeysAndValues = nullptr;
+  nsInt32 m_iDefaultValue = 0;
+  nsStringView m_sEnumKeysAndValues;
 };

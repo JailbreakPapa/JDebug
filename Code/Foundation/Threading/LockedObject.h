@@ -3,23 +3,23 @@
 /// \brief Provides access to an object while managing a lock (e.g. a mutex) that ensures that during its lifetime the access to the object
 /// happens under the lock.
 template <typename T, typename O>
-class wdLockedObject
+class nsLockedObject
 {
 public:
-  WD_ALWAYS_INLINE explicit wdLockedObject(T& ref_lock, O* pObject)
+  NS_ALWAYS_INLINE explicit nsLockedObject(T& ref_lock, O* pObject)
     : m_pLock(&ref_lock)
     , m_pObject(pObject)
   {
     m_pLock->Lock();
   }
 
-  wdLockedObject() = default;
+  nsLockedObject() = default;
 
-  WD_ALWAYS_INLINE wdLockedObject(wdLockedObject<T, O>&& rhs) { *this = std::move(rhs); }
+  NS_ALWAYS_INLINE nsLockedObject(nsLockedObject<T, O>&& rhs) { *this = std::move(rhs); }
 
-  wdLockedObject(const wdLockedObject<T, O>& rhs) = delete;
+  nsLockedObject(const nsLockedObject<T, O>& rhs) = delete;
 
-  void operator=(const wdLockedObject<T, O>&& rhs)
+  void operator=(const nsLockedObject<T, O>&& rhs)
   {
     if (m_pLock)
     {
@@ -32,9 +32,9 @@ public:
     rhs.m_pObject = nullptr;
   }
 
-  void operator=(const wdLockedObject<T, O>& rhs) = delete;
+  void operator=(const nsLockedObject<T, O>& rhs) = delete;
 
-  WD_ALWAYS_INLINE ~wdLockedObject()
+  NS_ALWAYS_INLINE ~nsLockedObject()
   {
     if (m_pLock)
     {
@@ -43,7 +43,11 @@ public:
   }
 
   /// \brief Whether the encapsulated object exists at all or is nullptr
-  WD_ALWAYS_INLINE bool isValid() const { return m_pObject != nullptr; }
+  NS_ALWAYS_INLINE bool isValid() const { return m_pObject != nullptr; }
+
+  O* Borrow() { return m_pObject; }
+
+  const O* Borrow() const { return m_pObject; }
 
   O* operator->() { return m_pObject; }
 

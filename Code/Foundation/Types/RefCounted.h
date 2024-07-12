@@ -3,32 +3,32 @@
 
 #include <Foundation/Threading/AtomicUtils.h>
 
-class WD_FOUNDATION_DLL wdRefCountingImpl
+class NS_FOUNDATION_DLL nsRefCountingImpl
 {
 public:
   /// \brief Constructor
-  wdRefCountingImpl() = default; // [tested]
+  nsRefCountingImpl() = default;                  // [tested]
 
-  wdRefCountingImpl(const wdRefCountingImpl& rhs) // [tested]
+  nsRefCountingImpl(const nsRefCountingImpl& rhs) // [tested]
   {
     // do not copy the ref count
   }
 
-  void operator=(const wdRefCountingImpl& rhs) // [tested]
+  void operator=(const nsRefCountingImpl& rhs) // [tested]
   {
     // do not copy the ref count
   }
 
   /// \brief Increments the reference counter. Returns the new reference count.
-  inline wdInt32 AddRef() const // [tested]
+  inline nsInt32 AddRef() const // [tested]
   {
-    return wdAtomicUtils::Increment(m_iRefCount);
+    return nsAtomicUtils::Increment(m_iRefCount);
   }
 
   /// \brief Decrements the reference counter. Returns the new reference count.
-  inline wdInt32 ReleaseRef() const // [tested]
+  inline nsInt32 ReleaseRef() const // [tested]
   {
-    return wdAtomicUtils::Decrement(m_iRefCount);
+    return nsAtomicUtils::Decrement(m_iRefCount);
   }
 
   /// \brief Returns true if the reference count is greater than 0, false otherwise
@@ -38,21 +38,21 @@ public:
   }
 
   /// \brief Returns the current reference count
-  inline wdInt32 GetRefCount() const // [tested]
+  inline nsInt32 GetRefCount() const // [tested]
   {
     return m_iRefCount;
   }
 
 private:
-  mutable wdInt32 m_iRefCount = 0; ///< Stores the current reference count
+  mutable nsInt32 m_iRefCount = 0; ///< Stores the current reference count
 };
 
 /// \brief Base class for reference counted objects.
-class WD_FOUNDATION_DLL wdRefCounted : public wdRefCountingImpl
+class NS_FOUNDATION_DLL nsRefCounted : public nsRefCountingImpl
 {
 public:
   /// \brief Adds a virtual destructor.
-  virtual ~wdRefCounted() = default;
+  virtual ~nsRefCounted() = default;
 };
 
 /// \brief Stores a pointer to a reference counted object and automatically increases / decreases the reference count.
@@ -61,23 +61,23 @@ public:
 /// counted objects. The actual action which, should happen once an object is no longer referenced, obliges
 /// to the system that is using the objects.
 template <typename T>
-class wdScopedRefPointer
+class nsScopedRefPointer
 {
 public:
   /// \brief Constructor.
-  wdScopedRefPointer()
+  nsScopedRefPointer()
     : m_pReferencedObject(nullptr)
   {
   }
 
   /// \brief Constructor, increases the ref count of the given object.
-  wdScopedRefPointer(T* pReferencedObject)
+  nsScopedRefPointer(T* pReferencedObject)
     : m_pReferencedObject(pReferencedObject)
   {
     AddReferenceIfValid();
   }
 
-  wdScopedRefPointer(const wdScopedRefPointer<T>& other)
+  nsScopedRefPointer(const nsScopedRefPointer<T>& other)
   {
     m_pReferencedObject = other.m_pReferencedObject;
 
@@ -85,7 +85,7 @@ public:
   }
 
   /// \brief Destructor - releases the reference on the ref-counted object (if there is one).
-  ~wdScopedRefPointer() { ReleaseReferenceIfValid(); }
+  ~nsScopedRefPointer() { ReleaseReferenceIfValid(); }
 
   /// \brief Assignment operator, decreases the ref count of the currently referenced object and increases the ref count of the newly
   /// assigned object.
@@ -103,7 +103,7 @@ public:
 
   /// \brief Assignment operator, decreases the ref count of the currently referenced object and increases the ref count of the newly
   /// assigned object.
-  void operator=(const wdScopedRefPointer<T>& other)
+  void operator=(const nsScopedRefPointer<T>& other)
   {
     if (other.m_pReferencedObject == m_pReferencedObject)
       return;
@@ -124,14 +124,14 @@ public:
   /// \brief Returns the referenced object (may be nullptr).
   const T* operator->() const
   {
-    WD_ASSERT_DEV(m_pReferencedObject != nullptr, "Pointer is nullptr.");
+    NS_ASSERT_DEV(m_pReferencedObject != nullptr, "Pointer is nullptr.");
     return m_pReferencedObject;
   }
 
   /// \brief Returns the referenced object (may be nullptr)
   T* operator->()
   {
-    WD_ASSERT_DEV(m_pReferencedObject != nullptr, "Pointer is nullptr.");
+    NS_ASSERT_DEV(m_pReferencedObject != nullptr, "Pointer is nullptr.");
     return m_pReferencedObject;
   }
 
@@ -159,7 +159,7 @@ private:
 
 
 template <typename TYPE>
-class wdRefCountedContainer : public wdRefCounted
+class nsRefCountedContainer : public nsRefCounted
 {
 public:
   TYPE m_Content;

@@ -1,90 +1,90 @@
 Plugin
 {
-	string %Path{"wdEnginePluginAssets"}
+	string %Path{"nsEnginePluginAssets"}
 	bool %LoadCopy{false}
 	string %DependencyOf{"EditorPluginAssets"}
 }
 Plugin
 {
-	string %Path{"wdEnginePluginKraut"}
+	string %Path{"nsEnginePluginKraut"}
 	bool %LoadCopy{false}
 	string %DependencyOf{"EditorPluginKraut"}
 }
 Plugin
 {
-	string %Path{"wdEnginePluginParticle"}
+	string %Path{"nsEnginePluginParticle"}
 	bool %LoadCopy{false}
 	string %DependencyOf{"EditorPluginParticle"}
 }
 Plugin
 {
-	string %Path{"wdEnginePluginPhysX"}
+	string %Path{"nsEnginePluginPhysX"}
 	bool %LoadCopy{false}
 	string %DependencyOf{"EditorPluginPhysX"}
 }
 Plugin
 {
-	string %Path{"wdEnginePluginRecast"}
+	string %Path{"nsEnginePluginRecast"}
 	bool %LoadCopy{false}
 	string %DependencyOf{"EditorPluginRecast"}
 }
 Plugin
 {
-	string %Path{"wdEnginePluginRmlUi"}
+	string %Path{"nsEnginePluginRmlUi"}
 	bool %LoadCopy{false}
 	string %DependencyOf{"EditorPluginRmlUi"}
 }
 Plugin
 {
-	string %Path{"wdEnginePluginScene"}
+	string %Path{"nsEnginePluginScene"}
 	bool %LoadCopy{false}
 	string %DependencyOf{"EditorPluginScene"}
 }
 Plugin
 {
-	string %Path{"wdFmodPlugin"}
+	string %Path{"nsFmodPlugin"}
 	bool %LoadCopy{false}
 	string %DependencyOf{"EditorPluginFmod"}
 }
 Plugin
 {
-	string %Path{"wdKrautPlugin"}
+	string %Path{"nsKrautPlugin"}
 	bool %LoadCopy{false}
 	string %DependencyOf{"EditorPluginKraut"}
 }
 Plugin
 {
-	string %Path{"wdParticlePlugin"}
+	string %Path{"nsParticlePlugin"}
 	bool %LoadCopy{false}
 	string %DependencyOf{"EditorPluginParticle"}
 }
 Plugin
 {
-	string %Path{"wdPhysXPlugin"}
+	string %Path{"nsPhysXPlugin"}
 	bool %LoadCopy{false}
 	string %DependencyOf{"EditorPluginPhysX"}
 }
 Plugin
 {
-	string %Path{"wdProcGenPlugin"}
+	string %Path{"nsProcGenPlugin"}
 	bool %LoadCopy{false}
 	string %DependencyOf{"EditorPluginProcGen"}
 }
 Plugin
 {
-	string %Path{"wdRecastPlugin"}
+	string %Path{"nsRecastPlugin"}
 	bool %LoadCopy{false}
 	string %DependencyOf{"EditorPluginRecast"}
 }
 Plugin
 {
-	string %Path{"wdRmlUiPlugin"}
+	string %Path{"nsRmlUiPlugin"}
 	bool %LoadCopy{false}
 	string %DependencyOf{"EditorPluginRmlUi"}
 }
 Plugin
 {
-	string %Path{"wdTypeScriptPlugin"}
+	string %Path{"nsTypeScriptPlugin"}
 	bool %LoadCopy{false}
 	string %DependencyOf{"EditorPluginTypeScript"}
 }

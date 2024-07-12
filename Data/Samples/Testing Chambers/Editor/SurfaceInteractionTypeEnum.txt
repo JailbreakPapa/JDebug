@@ -1,8 +1,0 @@
-BulletImpact
-Bump_Generic
-Bump_Metal
-Bump_Wood
-Footstep
-Plasma_Impact
-PulseImpact
-Rocket_Impact

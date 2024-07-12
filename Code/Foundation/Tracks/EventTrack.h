@@ -11,11 +11,11 @@
 /// The time line can be sampled to query all events that occurred during a time period.
 /// There is no way to sample an event track at a fixed point in time, because events occur at specific time points and thus
 /// only range queries make sense.
-class WD_FOUNDATION_DLL wdEventTrack
+class NS_FOUNDATION_DLL nsEventTrack
 {
 public:
-  wdEventTrack();
-  ~wdEventTrack();
+  nsEventTrack();
+  ~nsEventTrack();
 
   /// \brief Removes all control points.
   void Clear();
@@ -24,31 +24,31 @@ public:
   bool IsEmpty() const;
 
   /// \brief Adds a named event into the track at the given time.
-  void AddControlPoint(wdTime time, wdStringView sEvent);
+  void AddControlPoint(nsTime time, nsStringView sEvent);
 
   /// \brief Samples the event track from range [start; end) and adds all events that occured in that time period to the array.
   ///
   /// Note that the range is inclusive for the start time, and exclusive for the end time.
   ///
   /// If rangeStart is larger than rangeEnd, the events are returned in reverse order (backwards traversal).
-  void Sample(wdTime rangeStart, wdTime rangeEnd, wdDynamicArray<wdHashedString>& out_events) const;
+  void Sample(nsTime rangeStart, nsTime rangeEnd, nsDynamicArray<nsHashedString>& out_events) const;
 
-  void Save(wdStreamWriter& inout_stream) const;
-  void Load(wdStreamReader& inout_stream);
+  void Save(nsStreamWriter& inout_stream) const;
+  void Load(nsStreamReader& inout_stream);
 
 private:
   struct ControlPoint
   {
-    WD_ALWAYS_INLINE bool operator<(const ControlPoint& rhs) const { return m_Time < rhs.m_Time; }
+    NS_ALWAYS_INLINE bool operator<(const ControlPoint& rhs) const { return m_Time < rhs.m_Time; }
 
-    wdTime m_Time;
-    wdUInt32 m_uiEvent;
+    nsTime m_Time;
+    nsUInt32 m_uiEvent;
   };
 
-  wdUInt32 FindControlPointAfter(wdTime x) const;
-  wdInt32 FindControlPointBefore(wdTime x) const;
+  nsUInt32 FindControlPointAfter(nsTime x) const;
+  nsInt32 FindControlPointBefore(nsTime x) const;
 
   mutable bool m_bSort = false;
-  mutable wdDynamicArray<ControlPoint> m_ControlPoints;
-  wdHybridArray<wdHashedString, 4> m_Events;
+  mutable nsDynamicArray<ControlPoint> m_ControlPoints;
+  nsHybridArray<nsHashedString, 4> m_Events;
 };

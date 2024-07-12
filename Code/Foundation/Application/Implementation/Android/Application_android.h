@@ -1,29 +1,30 @@
 #pragma once
 
 #include <Foundation/FoundationInternal.h>
-WD_FOUNDATION_INTERNAL_HEADER
+NS_FOUNDATION_INTERNAL_HEADER
 
-#if WD_ENABLED(WD_PLATFORM_ANDROID)
+#if NS_ENABLED(NS_PLATFORM_ANDROID)
 
 #  include <Foundation/Basics.h>
 #  include <Foundation/Strings/String.h>
 
-class wdApplication;
+class nsApplication;
 struct AInputEvent;
 
-class wdAndroidApplication
+class nsAndroidApplication
 {
 public:
-  wdAndroidApplication(struct android_app* pApp, wdApplication* pEzApp);
-  ~wdAndroidApplication();
+  nsAndroidApplication(struct android_app* pApp, nsApplication* pNsApp);
+  ~nsAndroidApplication();
   void AndroidRun();
   void HandleCmd(int32_t cmd);
   int32_t HandleInput(AInputEvent* pEvent);
-  void HandleIdent(wdInt32 iIdent);
+  void HandleIdent(nsInt32 iIdent);
 
 private:
   struct android_app* m_pApp;
-  wdApplication* m_pEzApp;
+  nsApplication* m_pNsApp;
+  bool m_bStarted = false;
 };
 
 #endif

@@ -5,16 +5,13 @@
 #define STACK_SIZE 64
 
 // ***** Const Iterator *****
-
 template <typename KeyType, typename Comparer>
-void wdSetBase<KeyType, Comparer>::Iterator::Next()
+template <bool REVERSE>
+void nsSetBase<KeyType, Comparer>::IteratorBase<REVERSE>::Advance(nsInt32 dir0, nsInt32 dir1)
 {
-  const wdInt32 dir0 = 0;
-  const wdInt32 dir1 = 1;
-
   if (m_pElement == nullptr)
   {
-    WD_ASSERT_DEV(m_pElement != nullptr, "The Iterator is invalid (end).");
+    NS_ASSERT_DEBUG(m_pElement != nullptr, "The Iterator is invalid (end).");
     return;
   }
 
@@ -54,73 +51,40 @@ void wdSetBase<KeyType, Comparer>::Iterator::Next()
   }
 
   m_pElement = nullptr;
-  return;
 }
 
 template <typename KeyType, typename Comparer>
-void wdSetBase<KeyType, Comparer>::Iterator::Prev()
+template <bool REVERSE>
+void nsSetBase<KeyType, Comparer>::IteratorBase<REVERSE>::Next()
 {
-  const wdInt32 dir0 = 1;
-  const wdInt32 dir1 = 0;
-
-  if (m_pElement == nullptr)
+  if constexpr (REVERSE)
   {
-    WD_ASSERT_DEV(m_pElement != nullptr, "The Iterator is invalid (end).");
-    return;
+    Advance(1, 0);
   }
-
-  // if this element has a right child, go there and then search for the left most child of that
-  if (m_pElement->m_pLink[dir1] != m_pElement->m_pLink[dir1]->m_pLink[dir1])
+  else
   {
-    m_pElement = m_pElement->m_pLink[dir1];
-
-    while (m_pElement->m_pLink[dir0] != m_pElement->m_pLink[dir0]->m_pLink[dir0])
-      m_pElement = m_pElement->m_pLink[dir0];
-
-    return;
+    Advance(0, 1);
   }
-
-  // if this element has a parent and this element is that parents left child, go directly to the parent
-  if ((m_pElement->m_pParent != m_pElement->m_pParent->m_pParent) && (m_pElement->m_pParent->m_pLink[dir0] == m_pElement))
-  {
-    m_pElement = m_pElement->m_pParent;
-    return;
-  }
-
-  // if this element has a parent and this element is that parents right child, search for the next parent, whose left child this is
-  if ((m_pElement->m_pParent != m_pElement->m_pParent->m_pParent) && (m_pElement->m_pParent->m_pLink[dir1] == m_pElement))
-  {
-    while (m_pElement->m_pParent->m_pLink[dir1] == m_pElement)
-      m_pElement = m_pElement->m_pParent;
-
-    // if we are at the root node..
-    if ((m_pElement->m_pParent == nullptr) || (m_pElement->m_pParent == m_pElement->m_pParent->m_pParent))
-    {
-      m_pElement = nullptr;
-      return;
-    }
-
-    m_pElement = m_pElement->m_pParent;
-    return;
-  }
-
-  m_pElement = nullptr;
-  return;
 }
 
-// ***** wdSetBase *****
-
 template <typename KeyType, typename Comparer>
-WD_ALWAYS_INLINE wdSetBase<KeyType, Comparer>::NilNode::NilNode()
-  : m_uiLevel(0)
-  , m_pParent(nullptr)
+template <bool REVERSE>
+void nsSetBase<KeyType, Comparer>::IteratorBase<REVERSE>::Prev()
 {
-  m_pLink[0] = nullptr;
-  m_pLink[1] = nullptr;
+  if constexpr (REVERSE)
+  {
+    Advance(0, 1);
+  }
+  else
+  {
+    Advance(1, 0);
+  }
 }
 
+// ***** nsSetBase *****
+
 template <typename KeyType, typename Comparer>
-void wdSetBase<KeyType, Comparer>::Constructor()
+void nsSetBase<KeyType, Comparer>::Constructor()
 {
   m_uiCount = 0;
 
@@ -134,7 +98,7 @@ void wdSetBase<KeyType, Comparer>::Constructor()
 }
 
 template <typename KeyType, typename Comparer>
-wdSetBase<KeyType, Comparer>::wdSetBase(const Comparer& comparer, wdAllocatorBase* pAllocator)
+nsSetBase<KeyType, Comparer>::nsSetBase(const Comparer& comparer, nsAllocator* pAllocator)
   : m_Elements(pAllocator)
   , m_Comparer(comparer)
 {
@@ -142,7 +106,7 @@ wdSetBase<KeyType, Comparer>::wdSetBase(const Comparer& comparer, wdAllocatorBas
 }
 
 template <typename KeyType, typename Comparer>
-wdSetBase<KeyType, Comparer>::wdSetBase(const wdSetBase<KeyType, Comparer>& cc, wdAllocatorBase* pAllocator)
+nsSetBase<KeyType, Comparer>::nsSetBase(const nsSetBase<KeyType, Comparer>& cc, nsAllocator* pAllocator)
   : m_Elements(pAllocator)
 {
   Constructor();
@@ -151,13 +115,13 @@ wdSetBase<KeyType, Comparer>::wdSetBase(const wdSetBase<KeyType, Comparer>& cc, 
 }
 
 template <typename KeyType, typename Comparer>
-wdSetBase<KeyType, Comparer>::~wdSetBase()
+nsSetBase<KeyType, Comparer>::~nsSetBase()
 {
   Clear();
 }
 
 template <typename KeyType, typename Comparer>
-void wdSetBase<KeyType, Comparer>::operator=(const wdSetBase<KeyType, Comparer>& rhs)
+void nsSetBase<KeyType, Comparer>::operator=(const nsSetBase<KeyType, Comparer>& rhs)
 {
   Clear();
 
@@ -166,10 +130,10 @@ void wdSetBase<KeyType, Comparer>::operator=(const wdSetBase<KeyType, Comparer>&
 }
 
 template <typename KeyType, typename Comparer>
-void wdSetBase<KeyType, Comparer>::Clear()
+void nsSetBase<KeyType, Comparer>::Clear()
 {
   for (Iterator it = GetIterator(); it.IsValid(); ++it)
-    wdMemoryUtils::Destruct<Node>(it.m_pElement, 1);
+    nsMemoryUtils::Destruct<Node>(it.m_pElement, 1);
 
   m_pFreeElementStack = nullptr;
   m_Elements.Clear();
@@ -185,32 +149,32 @@ void wdSetBase<KeyType, Comparer>::Clear()
 }
 
 template <typename KeyType, typename Comparer>
-WD_ALWAYS_INLINE bool wdSetBase<KeyType, Comparer>::IsEmpty() const
+NS_ALWAYS_INLINE bool nsSetBase<KeyType, Comparer>::IsEmpty() const
 {
   return (m_uiCount == 0);
 }
 
 template <typename KeyType, typename Comparer>
-WD_ALWAYS_INLINE wdUInt32 wdSetBase<KeyType, Comparer>::GetCount() const
+NS_ALWAYS_INLINE nsUInt32 nsSetBase<KeyType, Comparer>::GetCount() const
 {
   return m_uiCount;
 }
 
 
 template <typename KeyType, typename Comparer>
-WD_ALWAYS_INLINE typename wdSetBase<KeyType, Comparer>::Iterator wdSetBase<KeyType, Comparer>::GetIterator() const
+NS_ALWAYS_INLINE typename nsSetBase<KeyType, Comparer>::Iterator nsSetBase<KeyType, Comparer>::GetIterator() const
 {
   return Iterator(GetLeftMost());
 }
 
 template <typename KeyType, typename Comparer>
-WD_ALWAYS_INLINE typename wdSetBase<KeyType, Comparer>::Iterator wdSetBase<KeyType, Comparer>::GetLastIterator() const
+NS_ALWAYS_INLINE typename nsSetBase<KeyType, Comparer>::ReverseIterator nsSetBase<KeyType, Comparer>::GetReverseIterator() const
 {
-  return Iterator(GetRightMost());
+  return ReverseIterator(GetRightMost());
 }
 
 template <typename KeyType, typename Comparer>
-typename wdSetBase<KeyType, Comparer>::Node* wdSetBase<KeyType, Comparer>::GetLeftMost() const
+typename nsSetBase<KeyType, Comparer>::Node* nsSetBase<KeyType, Comparer>::GetLeftMost() const
 {
   if (IsEmpty())
     return nullptr;
@@ -224,7 +188,7 @@ typename wdSetBase<KeyType, Comparer>::Node* wdSetBase<KeyType, Comparer>::GetLe
 }
 
 template <typename KeyType, typename Comparer>
-typename wdSetBase<KeyType, Comparer>::Node* wdSetBase<KeyType, Comparer>::GetRightMost() const
+typename nsSetBase<KeyType, Comparer>::Node* nsSetBase<KeyType, Comparer>::GetRightMost() const
 {
   if (IsEmpty())
     return nullptr;
@@ -239,14 +203,14 @@ typename wdSetBase<KeyType, Comparer>::Node* wdSetBase<KeyType, Comparer>::GetRi
 
 template <typename KeyType, typename Comparer>
 template <typename CompatibleKeyType>
-typename wdSetBase<KeyType, Comparer>::Node* wdSetBase<KeyType, Comparer>::Internal_Find(const CompatibleKeyType& key) const
+typename nsSetBase<KeyType, Comparer>::Node* nsSetBase<KeyType, Comparer>::Internal_Find(const CompatibleKeyType& key) const
 {
   Node* pNode = m_pRoot;
 
   while (pNode != &m_NilNode) // && (pNode->m_Key != key))
   {
-    const wdInt32 dir = (wdInt32)m_Comparer.Less(pNode->m_Key, key);
-    const wdInt32 dir2 = (wdInt32)m_Comparer.Less(key, pNode->m_Key);
+    const nsInt32 dir = (nsInt32)m_Comparer.Less(pNode->m_Key, key);
+    const nsInt32 dir2 = (nsInt32)m_Comparer.Less(key, pNode->m_Key);
 
     if (dir == dir2)
       break;
@@ -262,20 +226,20 @@ typename wdSetBase<KeyType, Comparer>::Node* wdSetBase<KeyType, Comparer>::Inter
 
 template <typename KeyType, typename Comparer>
 template <typename CompatibleKeyType>
-WD_ALWAYS_INLINE typename wdSetBase<KeyType, Comparer>::Iterator wdSetBase<KeyType, Comparer>::Find(const CompatibleKeyType& key) const
+NS_ALWAYS_INLINE typename nsSetBase<KeyType, Comparer>::Iterator nsSetBase<KeyType, Comparer>::Find(const CompatibleKeyType& key) const
 {
   return Iterator(Internal_Find(key));
 }
 
 template <typename KeyType, typename Comparer>
 template <typename CompatibleKeyType>
-WD_ALWAYS_INLINE bool wdSetBase<KeyType, Comparer>::Contains(const CompatibleKeyType& key) const
+NS_ALWAYS_INLINE bool nsSetBase<KeyType, Comparer>::Contains(const CompatibleKeyType& key) const
 {
   return Internal_Find(key) != nullptr;
 }
 
 template <typename KeyType, typename Comparer>
-WD_FORCE_INLINE bool wdSetBase<KeyType, Comparer>::ContainsSet(const wdSetBase<KeyType, Comparer>& operand) const
+NS_FORCE_INLINE bool nsSetBase<KeyType, Comparer>::ContainsSet(const nsSetBase<KeyType, Comparer>& operand) const
 {
   for (const KeyType& key : operand)
   {
@@ -288,15 +252,15 @@ WD_FORCE_INLINE bool wdSetBase<KeyType, Comparer>::ContainsSet(const wdSetBase<K
 
 template <typename KeyType, typename Comparer>
 template <typename CompatibleKeyType>
-typename wdSetBase<KeyType, Comparer>::Node* wdSetBase<KeyType, Comparer>::Internal_LowerBound(const CompatibleKeyType& key) const
+typename nsSetBase<KeyType, Comparer>::Node* nsSetBase<KeyType, Comparer>::Internal_LowerBound(const CompatibleKeyType& key) const
 {
   Node* pNode = m_pRoot;
   Node* pNodeSmaller = nullptr;
 
   while (pNode != &m_NilNode)
   {
-    const wdInt32 dir = (wdInt32)m_Comparer.Less(pNode->m_Key, key);
-    const wdInt32 dir2 = (wdInt32)m_Comparer.Less(key, pNode->m_Key);
+    const nsInt32 dir = (nsInt32)m_Comparer.Less(pNode->m_Key, key);
+    const nsInt32 dir2 = (nsInt32)m_Comparer.Less(key, pNode->m_Key);
 
     if (dir == dir2)
       return pNode;
@@ -312,22 +276,22 @@ typename wdSetBase<KeyType, Comparer>::Node* wdSetBase<KeyType, Comparer>::Inter
 
 template <typename KeyType, typename Comparer>
 template <typename CompatibleKeyType>
-WD_ALWAYS_INLINE typename wdSetBase<KeyType, Comparer>::Iterator wdSetBase<KeyType, Comparer>::LowerBound(const CompatibleKeyType& key) const
+NS_ALWAYS_INLINE typename nsSetBase<KeyType, Comparer>::Iterator nsSetBase<KeyType, Comparer>::LowerBound(const CompatibleKeyType& key) const
 {
   return Iterator(Internal_LowerBound(key));
 }
 
 template <typename KeyType, typename Comparer>
 template <typename CompatibleKeyType>
-typename wdSetBase<KeyType, Comparer>::Node* wdSetBase<KeyType, Comparer>::Internal_UpperBound(const CompatibleKeyType& key) const
+typename nsSetBase<KeyType, Comparer>::Node* nsSetBase<KeyType, Comparer>::Internal_UpperBound(const CompatibleKeyType& key) const
 {
   Node* pNode = m_pRoot;
   Node* pNodeSmaller = nullptr;
 
   while (pNode != &m_NilNode)
   {
-    const wdInt32 dir = (wdInt32)m_Comparer.Less(pNode->m_Key, key);
-    const wdInt32 dir2 = (wdInt32)m_Comparer.Less(key, pNode->m_Key);
+    const nsInt32 dir = (nsInt32)m_Comparer.Less(pNode->m_Key, key);
+    const nsInt32 dir2 = (nsInt32)m_Comparer.Less(key, pNode->m_Key);
 
     if (dir == dir2)
     {
@@ -347,13 +311,13 @@ typename wdSetBase<KeyType, Comparer>::Node* wdSetBase<KeyType, Comparer>::Inter
 
 template <typename KeyType, typename Comparer>
 template <typename CompatibleKeyType>
-WD_ALWAYS_INLINE typename wdSetBase<KeyType, Comparer>::Iterator wdSetBase<KeyType, Comparer>::UpperBound(const CompatibleKeyType& key) const
+NS_ALWAYS_INLINE typename nsSetBase<KeyType, Comparer>::Iterator nsSetBase<KeyType, Comparer>::UpperBound(const CompatibleKeyType& key) const
 {
   return Iterator(Internal_UpperBound(key));
 }
 
 template <typename KeyType, typename Comparer>
-void wdSetBase<KeyType, Comparer>::Union(const wdSetBase<KeyType, Comparer>& operand)
+void nsSetBase<KeyType, Comparer>::Union(const nsSetBase<KeyType, Comparer>& operand)
 {
   for (const auto& key : operand)
   {
@@ -362,7 +326,7 @@ void wdSetBase<KeyType, Comparer>::Union(const wdSetBase<KeyType, Comparer>& ope
 }
 
 template <typename KeyType, typename Comparer>
-void wdSetBase<KeyType, Comparer>::Difference(const wdSetBase<KeyType, Comparer>& operand)
+void nsSetBase<KeyType, Comparer>::Difference(const nsSetBase<KeyType, Comparer>& operand)
 {
   for (const auto& key : operand)
   {
@@ -371,7 +335,7 @@ void wdSetBase<KeyType, Comparer>::Difference(const wdSetBase<KeyType, Comparer>
 }
 
 template <typename KeyType, typename Comparer>
-void wdSetBase<KeyType, Comparer>::Intersection(const wdSetBase<KeyType, Comparer>& operand)
+void nsSetBase<KeyType, Comparer>::Intersection(const nsSetBase<KeyType, Comparer>& operand)
 {
   for (auto it = GetIterator(); it.IsValid();)
   {
@@ -384,7 +348,7 @@ void wdSetBase<KeyType, Comparer>::Intersection(const wdSetBase<KeyType, Compare
 
 template <typename KeyType, typename Comparer>
 template <typename CompatibleKeyType>
-typename wdSetBase<KeyType, Comparer>::Iterator wdSetBase<KeyType, Comparer>::Insert(CompatibleKeyType&& key)
+typename nsSetBase<KeyType, Comparer>::Iterator nsSetBase<KeyType, Comparer>::Insert(CompatibleKeyType&& key)
 {
   Node* pInsertedNode = nullptr;
 
@@ -397,7 +361,7 @@ typename wdSetBase<KeyType, Comparer>::Iterator wdSetBase<KeyType, Comparer>::In
 
 template <typename KeyType, typename Comparer>
 template <typename CompatibleKeyType>
-bool wdSetBase<KeyType, Comparer>::Remove(const CompatibleKeyType& key)
+bool nsSetBase<KeyType, Comparer>::Remove(const CompatibleKeyType& key)
 {
   bool bRemoved = true;
   m_pRoot = Remove(m_pRoot, key, bRemoved);
@@ -409,7 +373,7 @@ bool wdSetBase<KeyType, Comparer>::Remove(const CompatibleKeyType& key)
 
 template <typename KeyType, typename Comparer>
 template <typename CompatibleKeyType>
-typename wdSetBase<KeyType, Comparer>::Node* wdSetBase<KeyType, Comparer>::AcquireNode(CompatibleKeyType&& key, wdUInt16 uiLevel, Node* pParent)
+typename nsSetBase<KeyType, Comparer>::Node* nsSetBase<KeyType, Comparer>::AcquireNode(CompatibleKeyType&& key, nsUInt16 uiLevel, Node* pParent)
 {
   Node* pNode;
 
@@ -424,7 +388,7 @@ typename wdSetBase<KeyType, Comparer>::Node* wdSetBase<KeyType, Comparer>::Acqui
     m_pFreeElementStack = m_pFreeElementStack->m_pParent;
   }
 
-  wdMemoryUtils::Construct<Node>(pNode, 1);
+  nsMemoryUtils::Construct<SkipTrivialTypes, Node>(pNode, 1);
 
   pNode->m_pParent = pParent;
   pNode->m_Key = std::forward<CompatibleKeyType>(key);
@@ -438,11 +402,11 @@ typename wdSetBase<KeyType, Comparer>::Node* wdSetBase<KeyType, Comparer>::Acqui
 }
 
 template <typename KeyType, typename Comparer>
-void wdSetBase<KeyType, Comparer>::ReleaseNode(Node* pNode)
+void nsSetBase<KeyType, Comparer>::ReleaseNode(Node* pNode)
 {
-  WD_ASSERT_DEV(pNode != nullptr, "pNode is invalid.");
+  NS_ASSERT_DEBUG(pNode != nullptr, "pNode is invalid.");
 
-  wdMemoryUtils::Destruct<Node>(pNode, 1);
+  nsMemoryUtils::Destruct<Node>(pNode, 1);
 
   // try to reduce the element array, if possible
   if (pNode == &m_Elements.PeekBack())
@@ -463,7 +427,7 @@ void wdSetBase<KeyType, Comparer>::ReleaseNode(Node* pNode)
 }
 
 template <typename KeyType, typename Comparer>
-typename wdSetBase<KeyType, Comparer>::Node* wdSetBase<KeyType, Comparer>::SkewNode(Node* root)
+typename nsSetBase<KeyType, Comparer>::Node* nsSetBase<KeyType, Comparer>::SkewNode(Node* root)
 {
   if ((root->m_pLink[0]->m_uiLevel == root->m_uiLevel) && (root->m_uiLevel != 0))
   {
@@ -479,7 +443,7 @@ typename wdSetBase<KeyType, Comparer>::Node* wdSetBase<KeyType, Comparer>::SkewN
 }
 
 template <typename KeyType, typename Comparer>
-typename wdSetBase<KeyType, Comparer>::Node* wdSetBase<KeyType, Comparer>::SplitNode(Node* root)
+typename nsSetBase<KeyType, Comparer>::Node* nsSetBase<KeyType, Comparer>::SplitNode(Node* root)
 {
   if ((root->m_pLink[1]->m_pLink[1]->m_uiLevel == root->m_uiLevel) && (root->m_uiLevel != 0))
   {
@@ -497,7 +461,7 @@ typename wdSetBase<KeyType, Comparer>::Node* wdSetBase<KeyType, Comparer>::Split
 
 template <typename KeyType, typename Comparer>
 template <typename CompatibleKeyType>
-typename wdSetBase<KeyType, Comparer>::Node* wdSetBase<KeyType, Comparer>::Insert(Node* root, CompatibleKeyType&& key, Node*& pInsertedNode)
+typename nsSetBase<KeyType, Comparer>::Node* nsSetBase<KeyType, Comparer>::Insert(Node* root, CompatibleKeyType&& key, Node*& pInsertedNode)
 {
   if (root == &m_NilNode)
   {
@@ -509,17 +473,17 @@ typename wdSetBase<KeyType, Comparer>::Node* wdSetBase<KeyType, Comparer>::Inser
     Node* it = root;
     Node* up[STACK_SIZE];
 
-    wdInt32 top = 0;
-    wdInt32 dir = 0;
+    nsInt32 top = 0;
+    nsInt32 dir = 0;
 
     while (true)
     {
-      WD_ASSERT_DEBUG(top < STACK_SIZE, "wdSetBase's internal stack is not large enough to be able to sort {0} elements.", GetCount());
+      NS_ASSERT_DEBUG(top < STACK_SIZE, "nsSetBase's internal stack is not large enough to be able to sort {0} elements.", GetCount());
       up[top++] = it;
       dir = m_Comparer.Less(it->m_Key, key) ? 1 : 0;
 
       // element is identical => do not insert
-      if ((wdInt32)m_Comparer.Less(key, it->m_Key) == dir)
+      if ((nsInt32)m_Comparer.Less(key, it->m_Key) == dir)
       {
         pInsertedNode = it;
         return root;
@@ -557,7 +521,7 @@ typename wdSetBase<KeyType, Comparer>::Node* wdSetBase<KeyType, Comparer>::Inser
 
 template <typename KeyType, typename Comparer>
 template <typename CompatibleKeyType>
-typename wdSetBase<KeyType, Comparer>::Node* wdSetBase<KeyType, Comparer>::Remove(Node* root, const CompatibleKeyType& key, bool& bRemoved)
+typename nsSetBase<KeyType, Comparer>::Node* nsSetBase<KeyType, Comparer>::Remove(Node* root, const CompatibleKeyType& key, bool& bRemoved)
 {
   bRemoved = false;
 
@@ -568,20 +532,20 @@ typename wdSetBase<KeyType, Comparer>::Node* wdSetBase<KeyType, Comparer>::Remov
   {
     Node* it = root;
     Node* up[STACK_SIZE];
-    wdInt32 top = 0;
-    wdInt32 dir = 0;
+    nsInt32 top = 0;
+    nsInt32 dir = 0;
 
     while (true)
     {
-      WD_ASSERT_DEBUG(top >= 0 && top < STACK_SIZE, "Implementation error");
+      NS_ASSERT_DEBUG(top >= 0 && top < STACK_SIZE, "Implementation error");
       up[top++] = it;
 
       if (it == &m_NilNode)
         return root;
 
-      wdInt32 newdir = (wdInt32)(m_Comparer.Less(it->m_Key, key));
+      nsInt32 newdir = (nsInt32)(m_Comparer.Less(it->m_Key, key));
 
-      if (newdir == (wdInt32)(m_Comparer.Less(key, it->m_Key)))
+      if (newdir == (nsInt32)(m_Comparer.Less(key, it->m_Key)))
         break;
 
       dir = newdir;
@@ -593,11 +557,11 @@ typename wdSetBase<KeyType, Comparer>::Node* wdSetBase<KeyType, Comparer>::Remov
 
     if ((it->m_pLink[0] == &m_NilNode) || (it->m_pLink[1] == &m_NilNode))
     {
-      wdInt32 dir2 = it->m_pLink[0] == &m_NilNode;
+      nsInt32 dir2 = it->m_pLink[0] == &m_NilNode;
 
       if (--top != 0)
       {
-        WD_ASSERT_DEBUG(top >= 1 && top < STACK_SIZE, "Implementation error");
+        NS_ASSERT_DEBUG(top >= 1 && top < STACK_SIZE, "Implementation error");
         up[top - 1]->m_pLink[dir] = it->m_pLink[dir2];
         up[top - 1]->m_pLink[dir]->m_pParent = up[top - 1];
       }
@@ -611,7 +575,7 @@ typename wdSetBase<KeyType, Comparer>::Node* wdSetBase<KeyType, Comparer>::Remov
 
       while (heir->m_pLink[0] != &m_NilNode)
       {
-        WD_ASSERT_DEBUG(top >= 0 && top < STACK_SIZE, "Implementation error");
+        NS_ASSERT_DEBUG(top >= 0 && top < STACK_SIZE, "Implementation error");
         up[top++] = prev = heir;
 
         heir = heir->m_pLink[0];
@@ -628,11 +592,11 @@ typename wdSetBase<KeyType, Comparer>::Node* wdSetBase<KeyType, Comparer>::Remov
     {
       if (top != 0)
       {
-        WD_ASSERT_DEBUG(top >= 1 && top < STACK_SIZE, "Implementation error");
+        NS_ASSERT_DEBUG(top >= 1 && top < STACK_SIZE, "Implementation error");
         dir = up[top - 1]->m_pLink[1] == up[top];
       }
 
-      WD_ASSERT_DEBUG(top >= 0 && top < STACK_SIZE, "Implementation error");
+      NS_ASSERT_DEBUG(top >= 0 && top < STACK_SIZE, "Implementation error");
 
       if ((up[top]->m_pLink[0]->m_uiLevel < up[top]->m_uiLevel - 1) || (up[top]->m_pLink[1]->m_uiLevel < up[top]->m_uiLevel - 1))
       {
@@ -651,14 +615,14 @@ typename wdSetBase<KeyType, Comparer>::Node* wdSetBase<KeyType, Comparer>::Remov
 
       if (top != 0)
       {
-        WD_ASSERT_DEBUG(top >= 1 && top < STACK_SIZE, "Implementation error");
+        NS_ASSERT_DEBUG(top >= 1 && top < STACK_SIZE, "Implementation error");
 
         up[top - 1]->m_pLink[dir] = up[top];
         up[top - 1]->m_pLink[dir]->m_pParent = up[top - 1];
       }
       else
       {
-        WD_ASSERT_DEBUG(top >= 0 && top < STACK_SIZE, "Implementation error");
+        NS_ASSERT_DEBUG(top >= 0 && top < STACK_SIZE, "Implementation error");
         root = up[top];
       }
     }
@@ -706,9 +670,9 @@ typename wdSetBase<KeyType, Comparer>::Node* wdSetBase<KeyType, Comparer>::Remov
 }
 
 template <typename KeyType, typename Comparer>
-typename wdSetBase<KeyType, Comparer>::Iterator wdSetBase<KeyType, Comparer>::Remove(const Iterator& pos)
+typename nsSetBase<KeyType, Comparer>::Iterator nsSetBase<KeyType, Comparer>::Remove(const Iterator& pos)
 {
-  WD_ASSERT_DEV(pos.m_pElement != nullptr, "The Iterator(pos) is invalid.");
+  NS_ASSERT_DEBUG(pos.m_pElement != nullptr, "The Iterator(pos) is invalid.");
 
   Iterator temp(pos);
   ++temp;
@@ -717,7 +681,7 @@ typename wdSetBase<KeyType, Comparer>::Iterator wdSetBase<KeyType, Comparer>::Re
 }
 
 template <typename KeyType, typename Comparer>
-bool wdSetBase<KeyType, Comparer>::operator==(const wdSetBase<KeyType, Comparer>& rhs) const
+bool nsSetBase<KeyType, Comparer>::operator==(const nsSetBase<KeyType, Comparer>& rhs) const
 {
   if (GetCount() != rhs.GetCount())
     return false;
@@ -737,68 +701,60 @@ bool wdSetBase<KeyType, Comparer>::operator==(const wdSetBase<KeyType, Comparer>
   return true;
 }
 
-template <typename KeyType, typename Comparer>
-bool wdSetBase<KeyType, Comparer>::operator!=(const wdSetBase<KeyType, Comparer>& rhs) const
-{
-  return !operator==(rhs);
-}
-
 #undef STACK_SIZE
 
-
-
 template <typename KeyType, typename Comparer, typename AllocatorWrapper>
-wdSet<KeyType, Comparer, AllocatorWrapper>::wdSet()
-  : wdSetBase<KeyType, Comparer>(Comparer(), AllocatorWrapper::GetAllocator())
+nsSet<KeyType, Comparer, AllocatorWrapper>::nsSet()
+  : nsSetBase<KeyType, Comparer>(Comparer(), AllocatorWrapper::GetAllocator())
 {
 }
 
 template <typename KeyType, typename Comparer, typename AllocatorWrapper>
-wdSet<KeyType, Comparer, AllocatorWrapper>::wdSet(wdAllocatorBase* pAllocator)
-  : wdSetBase<KeyType, Comparer>(Comparer(), pAllocator)
+nsSet<KeyType, Comparer, AllocatorWrapper>::nsSet(nsAllocator* pAllocator)
+  : nsSetBase<KeyType, Comparer>(Comparer(), pAllocator)
 {
 }
 
 template <typename KeyType, typename Comparer, typename AllocatorWrapper>
-wdSet<KeyType, Comparer, AllocatorWrapper>::wdSet(const Comparer& comparer, wdAllocatorBase* pAllocator)
-  : wdSetBase<KeyType, Comparer>(comparer, pAllocator)
+nsSet<KeyType, Comparer, AllocatorWrapper>::nsSet(const Comparer& comparer, nsAllocator* pAllocator)
+  : nsSetBase<KeyType, Comparer>(comparer, pAllocator)
 {
 }
 
 template <typename KeyType, typename Comparer, typename AllocatorWrapper>
-wdSet<KeyType, Comparer, AllocatorWrapper>::wdSet(const wdSet<KeyType, Comparer, AllocatorWrapper>& other)
-  : wdSetBase<KeyType, Comparer>(other, AllocatorWrapper::GetAllocator())
+nsSet<KeyType, Comparer, AllocatorWrapper>::nsSet(const nsSet<KeyType, Comparer, AllocatorWrapper>& other)
+  : nsSetBase<KeyType, Comparer>(other, AllocatorWrapper::GetAllocator())
 {
 }
 
 template <typename KeyType, typename Comparer, typename AllocatorWrapper>
-wdSet<KeyType, Comparer, AllocatorWrapper>::wdSet(const wdSetBase<KeyType, Comparer>& other)
-  : wdSetBase<KeyType, Comparer>(other, AllocatorWrapper::GetAllocator())
+nsSet<KeyType, Comparer, AllocatorWrapper>::nsSet(const nsSetBase<KeyType, Comparer>& other)
+  : nsSetBase<KeyType, Comparer>(other, AllocatorWrapper::GetAllocator())
 {
 }
 
 template <typename KeyType, typename Comparer, typename AllocatorWrapper>
-void wdSet<KeyType, Comparer, AllocatorWrapper>::operator=(const wdSet<KeyType, Comparer, AllocatorWrapper>& rhs)
+void nsSet<KeyType, Comparer, AllocatorWrapper>::operator=(const nsSet<KeyType, Comparer, AllocatorWrapper>& rhs)
 {
-  wdSetBase<KeyType, Comparer>::operator=(rhs);
+  nsSetBase<KeyType, Comparer>::operator=(rhs);
 }
 
 template <typename KeyType, typename Comparer, typename AllocatorWrapper>
-void wdSet<KeyType, Comparer, AllocatorWrapper>::operator=(const wdSetBase<KeyType, Comparer>& rhs)
+void nsSet<KeyType, Comparer, AllocatorWrapper>::operator=(const nsSetBase<KeyType, Comparer>& rhs)
 {
-  wdSetBase<KeyType, Comparer>::operator=(rhs);
+  nsSetBase<KeyType, Comparer>::operator=(rhs);
 }
 
 template <typename KeyType, typename Comparer>
-void wdSetBase<KeyType, Comparer>::Swap(wdSetBase<KeyType, Comparer>& other)
+void nsSetBase<KeyType, Comparer>::Swap(nsSetBase<KeyType, Comparer>& other)
 {
   SwapNilNode(this->m_pRoot, &this->m_NilNode, &other.m_NilNode);
   SwapNilNode(other.m_pRoot, &other.m_NilNode, &this->m_NilNode);
 
-  wdMath::Swap(this->m_pRoot, other.m_pRoot);
-  wdMath::Swap(this->m_uiCount, other.m_uiCount);
-  wdMath::Swap(this->m_pFreeElementStack, other.m_pFreeElementStack);
-  wdMath::Swap(this->m_Comparer, other.m_Comparer);
+  nsMath::Swap(this->m_pRoot, other.m_pRoot);
+  nsMath::Swap(this->m_uiCount, other.m_uiCount);
+  nsMath::Swap(this->m_pFreeElementStack, other.m_pFreeElementStack);
+  nsMath::Swap(this->m_Comparer, other.m_Comparer);
 
   // after we swapped the root nodes, fix up their parent nodes
   this->m_pRoot->m_pParent = reinterpret_cast<Node*>(&this->m_NilNode);
@@ -809,7 +765,7 @@ void wdSetBase<KeyType, Comparer>::Swap(wdSetBase<KeyType, Comparer>& other)
 }
 
 template <typename KeyType, typename Comparer>
-void wdSetBase<KeyType, Comparer>::SwapNilNode(Node*& pCurNode, NilNode* pOld, NilNode* pNew)
+void nsSetBase<KeyType, Comparer>::SwapNilNode(Node*& pCurNode, NilNode* pOld, NilNode* pNew)
 {
   if (pCurNode == pOld)
   {

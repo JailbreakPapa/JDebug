@@ -8,44 +8,44 @@
 #include <Foundation/Serialization/RttiConverter.h>
 
 // clang-format off
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdTypeVersionInfo, wdNoBase, 1, wdRTTIDefaultAllocator<wdTypeVersionInfo>)
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsTypeVersionInfo, nsNoBase, 1, nsRTTIDefaultAllocator<nsTypeVersionInfo>)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_ACCESSOR_PROPERTY("TypeName", GetTypeName, SetTypeName),
-    WD_ACCESSOR_PROPERTY("ParentTypeName", GetParentTypeName, SetParentTypeName),
-    WD_MEMBER_PROPERTY("TypeVersion", m_uiTypeVersion),
+    NS_ACCESSOR_PROPERTY("TypeName", GetTypeName, SetTypeName),
+    NS_ACCESSOR_PROPERTY("ParentTypeName", GetParentTypeName, SetParentTypeName),
+    NS_MEMBER_PROPERTY("TypeVersion", m_uiTypeVersion),
   }
-  WD_END_PROPERTIES;
+  NS_END_PROPERTIES;
 }
-WD_END_STATIC_REFLECTED_TYPE;
+NS_END_STATIC_REFLECTED_TYPE;
 // clang-format on
 
-const char* wdTypeVersionInfo::GetTypeName() const
+const char* nsTypeVersionInfo::GetTypeName() const
 {
   return m_sTypeName.GetData();
 }
 
-void wdTypeVersionInfo::SetTypeName(const char* szName)
+void nsTypeVersionInfo::SetTypeName(const char* szName)
 {
   m_sTypeName.Assign(szName);
 }
 
-const char* wdTypeVersionInfo::GetParentTypeName() const
+const char* nsTypeVersionInfo::GetParentTypeName() const
 {
   return m_sParentTypeName.GetData();
 }
 
-void wdTypeVersionInfo::SetParentTypeName(const char* szName)
+void nsTypeVersionInfo::SetParentTypeName(const char* szName)
 {
   m_sParentTypeName.Assign(szName);
 }
 
-void wdGraphPatchContext::PatchBaseClass(const char* szType, wdUInt32 uiTypeVersion, bool bForcePatch)
+void nsGraphPatchContext::PatchBaseClass(const char* szType, nsUInt32 uiTypeVersion, bool bForcePatch)
 {
-  wdHashedString sType;
+  nsHashedString sType;
   sType.Assign(szType);
-  for (wdUInt32 uiBaseClassIndex = m_uiBaseClassIndex; uiBaseClassIndex < m_BaseClasses.GetCount(); ++uiBaseClassIndex)
+  for (nsUInt32 uiBaseClassIndex = m_uiBaseClassIndex; uiBaseClassIndex < m_BaseClasses.GetCount(); ++uiBaseClassIndex)
   {
     if (m_BaseClasses[uiBaseClassIndex].m_sType == sType)
     {
@@ -53,29 +53,29 @@ void wdGraphPatchContext::PatchBaseClass(const char* szType, wdUInt32 uiTypeVers
       return;
     }
   }
-  WD_REPORT_FAILURE("Base class of name '{0}' not found in parent types of '{1}'", sType.GetData(), m_pNode->GetType());
+  NS_REPORT_FAILURE("Base class of name '{0}' not found in parent types of '{1}'", sType.GetData(), m_pNode->GetType());
 }
 
-void wdGraphPatchContext::RenameClass(const char* szTypeName)
+void nsGraphPatchContext::RenameClass(const char* szTypeName)
 {
   m_pNode->SetType(m_pGraph->RegisterString(szTypeName));
   m_BaseClasses[m_uiBaseClassIndex].m_sType.Assign(szTypeName);
 }
 
 
-void wdGraphPatchContext::RenameClass(const char* szTypeName, wdUInt32 uiVersion)
+void nsGraphPatchContext::RenameClass(const char* szTypeName, nsUInt32 uiVersion)
 {
   m_pNode->SetType(m_pGraph->RegisterString(szTypeName));
   m_BaseClasses[m_uiBaseClassIndex].m_sType.Assign(szTypeName);
   // After a Patch is applied, the version is always increased. So if we want to change the version we need to reduce it by one so that in the next patch loop the requested version is not skipped.
-  WD_ASSERT_DEV(uiVersion > 0, "Cannot change the version of a class to 0, target version must be at least 1.");
+  NS_ASSERT_DEV(uiVersion > 0, "Cannot change the version of a class to 0, target version must be at least 1.");
   m_BaseClasses[m_uiBaseClassIndex].m_uiTypeVersion = uiVersion - 1;
 }
 
-void wdGraphPatchContext::ChangeBaseClass(wdArrayPtr<wdVersionKey> baseClasses)
+void nsGraphPatchContext::ChangeBaseClass(nsArrayPtr<nsVersionKey> baseClasses)
 {
   m_BaseClasses.SetCount(m_uiBaseClassIndex + 1 + baseClasses.GetCount());
-  for (wdUInt32 i = 0; i < baseClasses.GetCount(); i++)
+  for (nsUInt32 i = 0; i < baseClasses.GetCount(); i++)
   {
     m_BaseClasses[m_uiBaseClassIndex + 1 + i] = baseClasses[i];
   }
@@ -83,36 +83,36 @@ void wdGraphPatchContext::ChangeBaseClass(wdArrayPtr<wdVersionKey> baseClasses)
 
 //////////////////////////////////////////////////////////////////////////
 
-wdGraphPatchContext::wdGraphPatchContext(wdGraphVersioning* pParent, wdAbstractObjectGraph* pGraph, wdAbstractObjectGraph* pTypesGraph)
+nsGraphPatchContext::nsGraphPatchContext(nsGraphVersioning* pParent, nsAbstractObjectGraph* pGraph, nsAbstractObjectGraph* pTypesGraph)
 {
-  WD_PROFILE_SCOPE("wdGraphPatchContext");
+  NS_PROFILE_SCOPE("nsGraphPatchContext");
   m_pParent = pParent;
   m_pGraph = pGraph;
   if (pTypesGraph)
   {
-    wdRttiConverterContext context;
-    wdRttiConverterReader rttiConverter(pTypesGraph, &context);
-    wdString sDescTypeName = "wdReflectedTypeDescriptor";
+    nsRttiConverterContext context;
+    nsRttiConverterReader rttiConverter(pTypesGraph, &context);
+    nsString sDescTypeName = "nsReflectedTypeDescriptor";
     auto& nodes = pTypesGraph->GetAllNodes();
     m_TypeToInfo.Reserve(nodes.GetCount());
     for (auto it = nodes.GetIterator(); it.IsValid(); ++it)
     {
       if (it.Value()->GetType() == sDescTypeName)
       {
-        wdTypeVersionInfo info;
-        rttiConverter.ApplyPropertiesToObject(it.Value(), wdGetStaticRTTI<wdTypeVersionInfo>(), &info);
+        nsTypeVersionInfo info;
+        rttiConverter.ApplyPropertiesToObject(it.Value(), nsGetStaticRTTI<nsTypeVersionInfo>(), &info);
         m_TypeToInfo.Insert(info.m_sTypeName, info);
       }
     }
   }
 }
 
-void wdGraphPatchContext::Patch(wdAbstractObjectNode* pNode)
+void nsGraphPatchContext::Patch(nsAbstractObjectNode* pNode)
 {
   m_pNode = pNode;
   // Build version hierarchy.
   m_BaseClasses.Clear();
-  wdVersionKey key;
+  nsVersionKey key;
   key.m_sType.Assign(m_pNode->GetType());
   key.m_uiTypeVersion = m_pNode->GetTypeVersion();
 
@@ -122,25 +122,25 @@ void wdGraphPatchContext::Patch(wdAbstractObjectNode* pNode)
   // Patch
   for (m_uiBaseClassIndex = 0; m_uiBaseClassIndex < m_BaseClasses.GetCount(); ++m_uiBaseClassIndex)
   {
-    const wdUInt32 uiMaxVersion = m_pParent->GetMaxPatchVersion(m_BaseClasses[m_uiBaseClassIndex].m_sType);
+    const nsUInt32 uiMaxVersion = m_pParent->GetMaxPatchVersion(m_BaseClasses[m_uiBaseClassIndex].m_sType);
     Patch(m_uiBaseClassIndex, uiMaxVersion, false);
   }
   m_pNode->SetTypeVersion(m_BaseClasses[0].m_uiTypeVersion);
 }
 
 
-void wdGraphPatchContext::Patch(wdUInt32 uiBaseClassIndex, wdUInt32 uiTypeVersion, bool bForcePatch)
+void nsGraphPatchContext::Patch(nsUInt32 uiBaseClassIndex, nsUInt32 uiTypeVersion, bool bForcePatch)
 {
   if (bForcePatch)
   {
-    m_BaseClasses[m_uiBaseClassIndex].m_uiTypeVersion = wdMath::Min(m_BaseClasses[m_uiBaseClassIndex].m_uiTypeVersion, uiTypeVersion - 1);
+    m_BaseClasses[m_uiBaseClassIndex].m_uiTypeVersion = nsMath::Min(m_BaseClasses[m_uiBaseClassIndex].m_uiTypeVersion, uiTypeVersion - 1);
   }
   while (m_BaseClasses[m_uiBaseClassIndex].m_uiTypeVersion < uiTypeVersion)
   {
     // Don't move this out of the loop, needed to support renaming a class which will change the key.
-    wdVersionKey key = m_BaseClasses[uiBaseClassIndex];
+    nsVersionKey key = m_BaseClasses[uiBaseClassIndex];
     key.m_uiTypeVersion += 1;
-    const wdGraphPatch* pPatch = nullptr;
+    const nsGraphPatch* pPatch = nullptr;
     if (m_pParent->m_NodePatches.TryGetValue(key, pPatch))
     {
       pPatch->Patch(*this, m_pGraph, m_pNode);
@@ -152,17 +152,17 @@ void wdGraphPatchContext::Patch(wdUInt32 uiBaseClassIndex, wdUInt32 uiTypeVersio
   }
 }
 
-void wdGraphPatchContext::UpdateBaseClasses()
+void nsGraphPatchContext::UpdateBaseClasses()
 {
   for (;;)
   {
-    wdHashedString sParentType;
-    if (wdTypeVersionInfo* pInfo = m_TypeToInfo.GetValue(m_BaseClasses.PeekBack().m_sType))
+    nsHashedString sParentType;
+    if (nsTypeVersionInfo* pInfo = m_TypeToInfo.GetValue(m_BaseClasses.PeekBack().m_sType))
     {
       m_BaseClasses.PeekBack().m_uiTypeVersion = pInfo->m_uiTypeVersion;
       sParentType = pInfo->m_sParentTypeName;
     }
-    else if (const wdRTTI* pType = wdRTTI::FindTypeByName(m_BaseClasses.PeekBack().m_sType.GetData()))
+    else if (const nsRTTI* pType = nsRTTI::FindTypeByName(m_BaseClasses.PeekBack().m_sType.GetData()))
     {
       m_BaseClasses.PeekBack().m_uiTypeVersion = pType->GetTypeVersion();
       if (pType->GetParentType())
@@ -170,19 +170,19 @@ void wdGraphPatchContext::UpdateBaseClasses()
         sParentType.Assign(pType->GetParentType()->GetTypeName());
       }
       else
-        sParentType = wdHashedString();
+        sParentType = nsHashedString();
     }
     else
     {
-      wdLog::Error("Can't patch base class, parent type of '{0}' unknown.", m_BaseClasses.PeekBack().m_sType.GetData());
+      nsLog::Error("Can't patch base class, parent type of '{0}' unknown.", m_BaseClasses.PeekBack().m_sType.GetData());
       break;
     }
 
     if (sParentType.IsEmpty())
       break;
 
-    wdVersionKey key;
-    key.m_sType = sParentType;
+    nsVersionKey key;
+    key.m_sType = std::move(sParentType);
     key.m_uiTypeVersion = 0;
     m_BaseClasses.PushBack(key);
   }
@@ -190,10 +190,10 @@ void wdGraphPatchContext::UpdateBaseClasses()
 
 //////////////////////////////////////////////////////////////////////////
 
-WD_IMPLEMENT_SINGLETON(wdGraphVersioning);
+NS_IMPLEMENT_SINGLETON(nsGraphVersioning);
 
 // clang-format off
-WD_BEGIN_SUBSYSTEM_DECLARATION(Foundation, GraphVersioning)
+NS_BEGIN_SUBSYSTEM_DECLARATION(Foundation, GraphVersioning)
 
   BEGIN_SUBSYSTEM_DEPENDENCIES
   "Reflection"
@@ -201,37 +201,37 @@ WD_BEGIN_SUBSYSTEM_DECLARATION(Foundation, GraphVersioning)
 
   ON_CORESYSTEMS_STARTUP
   {
-    WD_DEFAULT_NEW(wdGraphVersioning);
+    NS_DEFAULT_NEW(nsGraphVersioning);
   }
 
   ON_CORESYSTEMS_SHUTDOWN
   {
-    wdGraphVersioning* pDummy = wdGraphVersioning::GetSingleton();
-    WD_DEFAULT_DELETE(pDummy);
+    nsGraphVersioning* pDummy = nsGraphVersioning::GetSingleton();
+    NS_DEFAULT_DELETE(pDummy);
   }
 
-WD_END_SUBSYSTEM_DECLARATION;
+NS_END_SUBSYSTEM_DECLARATION;
 // clang-format on
 
-wdGraphVersioning::wdGraphVersioning()
+nsGraphVersioning::nsGraphVersioning()
   : m_SingletonRegistrar(this)
 {
-  wdPlugin::Events().AddEventHandler(wdMakeDelegate(&wdGraphVersioning::PluginEventHandler, this));
+  nsPlugin::Events().AddEventHandler(nsMakeDelegate(&nsGraphVersioning::PluginEventHandler, this));
 
   UpdatePatches();
 }
 
-wdGraphVersioning::~wdGraphVersioning()
+nsGraphVersioning::~nsGraphVersioning()
 {
-  wdPlugin::Events().RemoveEventHandler(wdMakeDelegate(&wdGraphVersioning::PluginEventHandler, this));
+  nsPlugin::Events().RemoveEventHandler(nsMakeDelegate(&nsGraphVersioning::PluginEventHandler, this));
 }
 
-void wdGraphVersioning::PatchGraph(wdAbstractObjectGraph* pGraph, wdAbstractObjectGraph* pTypesGraph)
+void nsGraphVersioning::PatchGraph(nsAbstractObjectGraph* pGraph, nsAbstractObjectGraph* pTypesGraph)
 {
-  WD_PROFILE_SCOPE("PatchGraph");
+  NS_PROFILE_SCOPE("PatchGraph");
 
-  wdGraphPatchContext context(this, pGraph, pTypesGraph);
-  for (const wdGraphPatch* pPatch : m_GraphPatches)
+  nsGraphPatchContext context(this, pGraph, pTypesGraph);
+  for (const nsGraphPatch* pPatch : m_GraphPatches)
   {
     pPatch->Patch(context, pGraph, nullptr);
   }
@@ -239,17 +239,17 @@ void wdGraphVersioning::PatchGraph(wdAbstractObjectGraph* pGraph, wdAbstractObje
   auto& nodes = pGraph->GetAllNodes();
   for (auto it = nodes.GetIterator(); it.IsValid(); ++it)
   {
-    wdAbstractObjectNode* pNode = it.Value();
+    nsAbstractObjectNode* pNode = it.Value();
     context.Patch(pNode);
   }
 }
 
-void wdGraphVersioning::PluginEventHandler(const wdPluginEvent& EventData)
+void nsGraphVersioning::PluginEventHandler(const nsPluginEvent& EventData)
 {
   switch (EventData.m_EventType)
   {
-    case wdPluginEvent::AfterLoadingBeforeInit:
-    case wdPluginEvent::AfterUnloading:
+    case nsPluginEvent::AfterLoadingBeforeInit:
+    case nsPluginEvent::AfterUnloading:
       UpdatePatches();
       break;
     default:
@@ -257,28 +257,28 @@ void wdGraphVersioning::PluginEventHandler(const wdPluginEvent& EventData)
   }
 }
 
-void wdGraphVersioning::UpdatePatches()
+void nsGraphVersioning::UpdatePatches()
 {
   m_GraphPatches.Clear();
   m_NodePatches.Clear();
   m_MaxPatchVersion.Clear();
 
-  wdVersionKey key;
-  wdGraphPatch* pInstance = wdGraphPatch::GetFirstInstance();
+  nsVersionKey key;
+  nsGraphPatch* pInstance = nsGraphPatch::GetFirstInstance();
 
   while (pInstance)
   {
     switch (pInstance->GetPatchType())
     {
-      case wdGraphPatch::PatchType::NodePatch:
+      case nsGraphPatch::PatchType::NodePatch:
       {
         key.m_sType.Assign(pInstance->GetType());
         key.m_uiTypeVersion = pInstance->GetTypeVersion();
         m_NodePatches.Insert(key, pInstance);
 
-        if (wdUInt32* pMax = m_MaxPatchVersion.GetValue(key.m_sType))
+        if (nsUInt32* pMax = m_MaxPatchVersion.GetValue(key.m_sType))
         {
-          *pMax = wdMath::Max(*pMax, key.m_uiTypeVersion);
+          *pMax = nsMath::Max(*pMax, key.m_uiTypeVersion);
         }
         else
         {
@@ -286,7 +286,7 @@ void wdGraphVersioning::UpdatePatches()
         }
       }
       break;
-      case wdGraphPatch::PatchType::GraphPatch:
+      case nsGraphPatch::PatchType::GraphPatch:
       {
         m_GraphPatches.PushBack(pInstance);
       }
@@ -295,16 +295,17 @@ void wdGraphVersioning::UpdatePatches()
     pInstance = pInstance->GetNextInstance();
   }
 
-  m_GraphPatches.Sort([](const wdGraphPatch* a, const wdGraphPatch* b) -> bool { return a->GetTypeVersion() < b->GetTypeVersion(); });
+  m_GraphPatches.Sort([](const nsGraphPatch* a, const nsGraphPatch* b) -> bool
+    { return a->GetTypeVersion() < b->GetTypeVersion(); });
 }
 
-wdUInt32 wdGraphVersioning::GetMaxPatchVersion(const wdHashedString& sType) const
+nsUInt32 nsGraphVersioning::GetMaxPatchVersion(const nsHashedString& sType) const
 {
-  if (const wdUInt32* pMax = m_MaxPatchVersion.GetValue(sType))
+  if (const nsUInt32* pMax = m_MaxPatchVersion.GetValue(sType))
   {
     return *pMax;
   }
   return 0;
 }
 
-WD_STATICLINK_FILE(Foundation, Foundation_Serialization_Implementation_GraphVersioning);
+NS_STATICLINK_FILE(Foundation, Foundation_Serialization_Implementation_GraphVersioning);

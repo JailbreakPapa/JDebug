@@ -3,15 +3,15 @@
 #include <Foundation/Algorithm/HashingUtils.h>
 
 // static
-wdUInt32 wdHashingUtils::MurmurHash32(const void* pKey, size_t uiSizeInByte, wdUInt32 uiSeed /*= 0*/)
+nsUInt32 nsHashingUtils::MurmurHash32(const void* pKey, size_t uiSizeInByte, nsUInt32 uiSeed /*= 0*/)
 {
-  const wdUInt32 m = wdInternal::MURMUR_M;
-  const wdUInt32 r = wdInternal::MURMUR_R;
+  const nsUInt32 m = nsInternal::MURMUR_M;
+  const nsUInt32 r = nsInternal::MURMUR_R;
 
   // Initialize the hash to a 'random' value
-  wdUInt32 h = uiSeed ^ (wdUInt32)uiSizeInByte;
+  nsUInt32 h = uiSeed ^ (nsUInt32)uiSizeInByte;
 
-#if WD_ENABLED(WD_PLATFORM_ARCH_ARM)
+#if NS_ENABLED(NS_PLATFORM_ARCH_ARM)
   // ARM has strict alignment requirements for reading. Special version which takes care of unaligned inputs.
   if (reinterpret_cast<size_t>(pKey) % 4 != 0)
   {
@@ -20,9 +20,9 @@ wdUInt32 wdHashingUtils::MurmurHash32(const void* pKey, size_t uiSizeInByte, wdU
     // Mix 4 bytes at a time into the hash
     while (uiSizeInByte >= 4)
     {
-      wdUInt32 k = 0;
+      nsUInt32 k = 0;
       memcpy(&k, pKey, sizeof(k));
-      pKey = wdMemoryUtils::AddByteOffset(pKey, sizeof(k));
+      pKey = nsMemoryUtils::AddByteOffset(pKey, sizeof(k));
 
       k *= m;
       k ^= k >> r;
@@ -37,12 +37,12 @@ wdUInt32 wdHashingUtils::MurmurHash32(const void* pKey, size_t uiSizeInByte, wdU
   else
 #endif
   {
-    const wdUInt32* pData = static_cast<const wdUInt32*>(pKey);
+    const nsUInt32* pData = static_cast<const nsUInt32*>(pKey);
 
     // Mix 4 bytes at a time into the hash
     while (uiSizeInByte >= 4)
     {
-      wdUInt32 k = *pData++;
+      nsUInt32 k = *pData++;
 
       k *= m;
       k ^= k >> r;
@@ -57,7 +57,7 @@ wdUInt32 wdHashingUtils::MurmurHash32(const void* pKey, size_t uiSizeInByte, wdU
     pKey = pData;
   }
 
-  const wdUInt8* pData2 = reinterpret_cast<const wdUInt8*>(pKey);
+  const nsUInt8* pData2 = reinterpret_cast<const nsUInt8*>(pKey);
 
   // Handle the last few bytes of the input array
   switch (uiSizeInByte)
@@ -81,24 +81,24 @@ wdUInt32 wdHashingUtils::MurmurHash32(const void* pKey, size_t uiSizeInByte, wdU
 }
 
 // static
-wdUInt64 wdHashingUtils::MurmurHash64(const void* pKey, size_t uiSizeInByte, wdUInt64 uiSeed /*= 0*/)
+nsUInt64 nsHashingUtils::MurmurHash64(const void* pKey, size_t uiSizeInByte, nsUInt64 uiSeed /*= 0*/)
 {
-  const wdUInt64 m = 0xc6a4a7935bd1e995ULL;
-  const wdUInt64 r = 47;
+  const nsUInt64 m = 0xc6a4a7935bd1e995ULL;
+  const nsUInt64 r = 47;
 
-  wdUInt64 h = uiSeed ^ (uiSizeInByte * m);
+  nsUInt64 h = uiSeed ^ (uiSizeInByte * m);
 
-#if WD_ENABLED(WD_PLATFORM_ARCH_ARM)
+#if NS_ENABLED(NS_PLATFORM_ARCH_ARM)
   if (reinterpret_cast<size_t>(pKey) % 8 != 0)
   {
-    const void* pData = static_cast<const wdUInt8*>(pKey);
-    const void* pEnd = wdMemoryUtils::AddByteOffset(pKey, (uiSizeInByte / 8) * 8);
+    const void* pData = static_cast<const nsUInt8*>(pKey);
+    const void* pEnd = nsMemoryUtils::AddByteOffset(pKey, (uiSizeInByte / 8) * 8);
 
     while (pData != pEnd)
     {
-      wdUInt64 k = 0;
+      nsUInt64 k = 0;
       memcpy(&k, pData, sizeof(k));
-      pData = wdMemoryUtils::AddByteOffset(pData, sizeof(k));
+      pData = nsMemoryUtils::AddByteOffset(pData, sizeof(k));
 
       k *= m;
       k ^= k >> r;
@@ -113,12 +113,12 @@ wdUInt64 wdHashingUtils::MurmurHash64(const void* pKey, size_t uiSizeInByte, wdU
   else
 #endif
   {
-    const wdUInt64* pData = static_cast<const wdUInt64*>(pKey);
-    const wdUInt64* pEnd = pData + (uiSizeInByte / 8);
+    const nsUInt64* pData = static_cast<const nsUInt64*>(pKey);
+    const nsUInt64* pEnd = pData + (uiSizeInByte / 8);
 
     while (pData != pEnd)
     {
-      wdUInt64 k = *pData++;
+      nsUInt64 k = *pData++;
 
       k *= m;
       k ^= k >> r;
@@ -131,24 +131,24 @@ wdUInt64 wdHashingUtils::MurmurHash64(const void* pKey, size_t uiSizeInByte, wdU
     pKey = pEnd;
   }
 
-  const wdUInt8* pData2 = reinterpret_cast<const wdUInt8*>(pKey);
+  const nsUInt8* pData2 = reinterpret_cast<const nsUInt8*>(pKey);
 
   switch (uiSizeInByte & 7)
   {
     case 7:
-      h ^= wdUInt64(pData2[6]) << 48;
+      h ^= nsUInt64(pData2[6]) << 48;
     case 6:
-      h ^= wdUInt64(pData2[5]) << 40;
+      h ^= nsUInt64(pData2[5]) << 40;
     case 5:
-      h ^= wdUInt64(pData2[4]) << 32;
+      h ^= nsUInt64(pData2[4]) << 32;
     case 4:
-      h ^= wdUInt64(pData2[3]) << 24;
+      h ^= nsUInt64(pData2[3]) << 24;
     case 3:
-      h ^= wdUInt64(pData2[2]) << 16;
+      h ^= nsUInt64(pData2[2]) << 16;
     case 2:
-      h ^= wdUInt64(pData2[1]) << 8;
+      h ^= nsUInt64(pData2[1]) << 8;
     case 1:
-      h ^= wdUInt64(pData2[0]);
+      h ^= nsUInt64(pData2[0]);
       h *= m;
   };
 
@@ -160,7 +160,7 @@ wdUInt64 wdHashingUtils::MurmurHash64(const void* pKey, size_t uiSizeInByte, wdU
 }
 
 // CRC32 lookup table (precomputed)
-static const wdUInt32 uiCRC32Table[256] = {0x00000000, 0x77073096, 0xEE0E612C, 0x990951BA, 0x076DC419, 0x706AF48F, 0xE963A535, 0x9E6495A3, 0x0EDB8832,
+static constexpr nsUInt32 uiCRC32Table[256] = {0x00000000, 0x77073096, 0xEE0E612C, 0x990951BA, 0x076DC419, 0x706AF48F, 0xE963A535, 0x9E6495A3, 0x0EDB8832,
   0x79DCB8A4, 0xE0D5E91E, 0x97D2D988, 0x09B64C2B, 0x7EB17CBD, 0xE7B82D07, 0x90BF1D91, 0x1DB71064, 0x6AB020F2, 0xF3B97148, 0x84BE41DE, 0x1ADAD47D,
   0x6DDDE4EB, 0xF4D4B551, 0x83D385C7, 0x136C9856, 0x646BA8C0, 0xFD62F97A, 0x8A65C9EC, 0x14015C4F, 0x63066CD9, 0xFA0F3D63, 0x8D080DF5, 0x3B6E20C8,
   0x4C69105E, 0xD56041E4, 0xA2677172, 0x3C03E4D1, 0x4B04D447, 0xD20D85FD, 0xA50AB56B, 0x35B5A8FA, 0x42B2986C, 0xDBBBC9D6, 0xACBCF940, 0x32D86CE3,
@@ -184,32 +184,35 @@ static const wdUInt32 uiCRC32Table[256] = {0x00000000, 0x77073096, 0xEE0E612C, 0
   0xC4614AB8, 0x5D681B02, 0x2A6F2B94, 0xB40BBE37, 0xC30C8EA1, 0x5A05DF1B, 0x2D02EF8D};
 
 // static
-wdUInt32 wdHashingUtils::CRC32Hash(const void* pKey, size_t uiSizeInBytes)
+nsUInt32 nsHashingUtils::CRC32Hash(const void* pKey, size_t uiSizeInBytes)
 {
   if (pKey == 0 || uiSizeInBytes <= 0)
     return 0;
 
-  wdUInt32 uiCRC32 = 0xFFFFFFFF;
+  nsUInt32 uiCRC32 = 0xFFFFFFFF;
 
   for (size_t i = 0; i < uiSizeInBytes; i++)
-    uiCRC32 = (uiCRC32 >> 8) ^ uiCRC32Table[(uiCRC32 & 0xFF) ^ static_cast<const wdUInt8*>(pKey)[i]];
+    uiCRC32 = (uiCRC32 >> 8) ^ uiCRC32Table[(uiCRC32 & 0xFF) ^ static_cast<const nsUInt8*>(pKey)[i]];
 
-  return static_cast<wdUInt32>(uiCRC32 ^ 0xFFFFFFFF);
+  return static_cast<nsUInt32>(uiCRC32 ^ 0xFFFFFFFF);
 }
+
+NS_WARNING_PUSH()
+NS_WARNING_DISABLE_CLANG("-Wunused-function")
 
 #define XXH_INLINE_ALL
 #include <Foundation/ThirdParty/xxHash/xxhash.h>
 
+NS_WARNING_POP()
+
 // static
-wdUInt32 wdHashingUtils::xxHash32(const void* pKey, size_t uiSizeInByte, wdUInt32 uiSeed /*= 0*/)
+nsUInt32 nsHashingUtils::xxHash32(const void* pKey, size_t uiSizeInByte, nsUInt32 uiSeed /*= 0*/)
 {
   return XXH32(pKey, uiSizeInByte, uiSeed);
 }
 
 // static
-wdUInt64 wdHashingUtils::xxHash64(const void* pKey, size_t uiSizeInByte, wdUInt64 uiSeed /*= 0*/)
+nsUInt64 nsHashingUtils::xxHash64(const void* pKey, size_t uiSizeInByte, nsUInt64 uiSeed /*= 0*/)
 {
   return XXH64(pKey, uiSizeInByte, uiSeed);
 }
-
-WD_STATICLINK_FILE(Foundation, Foundation_Algorithm_Implementation_HashingUtils);

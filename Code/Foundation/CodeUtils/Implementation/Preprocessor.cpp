@@ -2,16 +2,16 @@
 
 #include <Foundation/CodeUtils/Preprocessor.h>
 
-wdString wdPreprocessor::s_ParamNames[32];
+nsString nsPreprocessor::s_ParamNames[32];
 
-using namespace wdTokenParseUtils;
+using namespace nsTokenParseUtils;
 
-wdPreprocessor::wdPreprocessor()
-  : m_ClassAllocator("wdPreprocessor", wdFoundation::GetDefaultAllocator())
+nsPreprocessor::nsPreprocessor()
+  : m_ClassAllocator("nsPreprocessor", nsFoundation::GetDefaultAllocator())
   , m_CurrentFileStack(&m_ClassAllocator)
   , m_CustomDefines(&m_ClassAllocator)
   , m_IfdefActiveStack(&m_ClassAllocator)
-  , m_Macros(wdCompareHelper<wdString256>(), &m_ClassAllocator)
+  , m_Macros(nsCompareHelper<nsString256>(), &m_ClassAllocator)
   , m_MacroParamStack(&m_ClassAllocator)
   , m_MacroParamStackExpanded(&m_ClassAllocator)
   , m_CustomTokens(&m_ClassAllocator)
@@ -25,25 +25,25 @@ wdPreprocessor::wdPreprocessor()
   m_FileLocatorCallback = DefaultFileLocator;
   m_FileOpenCallback = DefaultFileOpen;
 
-  wdStringBuilder s;
-  for (wdUInt32 i = 0; i < 32; ++i)
+  nsStringBuilder s;
+  for (nsUInt32 i = 0; i < 32; ++i)
   {
-    s.Format("__Param{0}__", i);
+    s.SetFormat("__Param{0}__", i);
     s_ParamNames[i] = s;
 
     m_ParameterTokens[i].m_iType = s_iMacroParameter0 + i;
     m_ParameterTokens[i].m_DataView = s_ParamNames[i].GetView();
   }
 
-  wdToken dummy;
-  dummy.m_iType = wdTokenType::NonIdentifier;
+  nsToken dummy;
+  dummy.m_iType = nsTokenType::NonIdentifier;
 
   m_pTokenOpenParenthesis = AddCustomToken(&dummy, "(");
   m_pTokenClosedParenthesis = AddCustomToken(&dummy, ")");
   m_pTokenComma = AddCustomToken(&dummy, ",");
 }
 
-void wdPreprocessor::SetCustomFileCache(wdTokenizedFileCache* pFileCache)
+void nsPreprocessor::SetCustomFileCache(nsTokenizedFileCache* pFileCache)
 {
   m_pUsedFileCache = &m_InternalFileCache;
 
@@ -51,7 +51,7 @@ void wdPreprocessor::SetCustomFileCache(wdTokenizedFileCache* pFileCache)
     m_pUsedFileCache = pFileCache;
 }
 
-wdToken* wdPreprocessor::AddCustomToken(const wdToken* pPrevious, const wdStringView& sNewText)
+nsToken* nsPreprocessor::AddCustomToken(const nsToken* pPrevious, const nsStringView& sNewText)
 {
   CustomToken* pToken = &m_CustomTokens.ExpandAndGetRef();
 
@@ -62,26 +62,26 @@ wdToken* wdPreprocessor::AddCustomToken(const wdToken* pPrevious, const wdString
   return &pToken->m_Token;
 }
 
-wdResult wdPreprocessor::ProcessFile(const char* szFile, TokenStream& TokenOutput)
+nsResult nsPreprocessor::ProcessFile(nsStringView sFile, TokenStream& TokenOutput)
 {
-  const wdTokenizer* pTokenizer = nullptr;
+  const nsTokenizer* pTokenizer = nullptr;
 
-  if (OpenFile(szFile, &pTokenizer).Failed())
-    return WD_FAILURE;
+  if (OpenFile(sFile, &pTokenizer).Failed())
+    return NS_FAILURE;
 
   FileData fd;
-  fd.m_sFileName.Assign(szFile);
+  fd.m_sFileName.Assign(sFile);
   fd.m_sVirtualFileName = fd.m_sFileName;
 
   m_CurrentFileStack.PushBack(fd);
 
-  wdUInt32 uiNextToken = 0;
+  nsUInt32 uiNextToken = 0;
   TokenStream TokensLine(&m_ClassAllocator);
   TokenStream TokensCode(&m_ClassAllocator);
 
   while (pTokenizer->GetNextLine(uiNextToken, TokensLine).Succeeded())
   {
-    wdUInt32 uiCurToken = 0;
+    nsUInt32 uiCurToken = 0;
 
     // if the line starts with a # it is a preprocessor command
     if (Accept(TokensLine, uiCurToken, "#"))
@@ -90,14 +90,14 @@ wdResult wdPreprocessor::ProcessFile(const char* szFile, TokenStream& TokenOutpu
       if (!TokensCode.IsEmpty())
       {
         if (Expand(TokensCode, TokenOutput).Failed())
-          return WD_FAILURE;
+          return NS_FAILURE;
 
         TokensCode.Clear();
       }
 
       // process the command
       if (ProcessCmd(TokensLine, TokenOutput).Failed())
-        return WD_FAILURE;
+        return NS_FAILURE;
     }
     else
     {
@@ -114,26 +114,26 @@ wdResult wdPreprocessor::ProcessFile(const char* szFile, TokenStream& TokenOutpu
   if (!TokensCode.IsEmpty())
   {
     if (Expand(TokensCode, TokenOutput).Failed())
-      return WD_FAILURE;
+      return NS_FAILURE;
 
     TokensCode.Clear();
   }
 
   m_CurrentFileStack.PopBack();
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
-wdResult wdPreprocessor::Process(const char* szMainFile, TokenStream& ref_tokenOutput)
+nsResult nsPreprocessor::Process(nsStringView sMainFile, TokenStream& ref_tokenOutput)
 {
-  WD_ASSERT_DEV(m_FileLocatorCallback.IsValid(), "No file locator callback has been set.");
+  NS_ASSERT_DEV(m_FileLocatorCallback.IsValid(), "No file locator callback has been set.");
 
   ref_tokenOutput.Clear();
 
   // Add a custom define for the __FILE__ macro
   {
-    m_TokenFile.m_DataView = wdStringView("__FILE__");
-    m_TokenFile.m_iType = wdTokenType::Identifier;
+    m_TokenFile.m_DataView = nsStringView("__FILE__");
+    m_TokenFile.m_iType = nsTokenType::Identifier;
 
     MacroDefinition md;
     md.m_MacroIdentifier = &m_TokenFile;
@@ -146,8 +146,8 @@ wdResult wdPreprocessor::Process(const char* szMainFile, TokenStream& ref_tokenO
 
   // Add a custom define for the __LINE__ macro
   {
-    m_TokenLine.m_DataView = wdStringView("__LINE__");
-    m_TokenLine.m_iType = wdTokenType::Identifier;
+    m_TokenLine.m_DataView = nsStringView("__LINE__");
+    m_TokenLine.m_iType = nsTokenType::Identifier;
 
     MacroDefinition md;
     md.m_MacroIdentifier = &m_TokenLine;
@@ -161,67 +161,67 @@ wdResult wdPreprocessor::Process(const char* szMainFile, TokenStream& ref_tokenO
   m_IfdefActiveStack.Clear();
   m_IfdefActiveStack.PushBack(IfDefActivity::IsActive);
 
-  wdStringBuilder sFileToOpen;
-  if (m_FileLocatorCallback("", szMainFile, IncludeType::MainFile, sFileToOpen).Failed())
+  nsStringBuilder sFileToOpen;
+  if (m_FileLocatorCallback("", sMainFile, IncludeType::MainFile, sFileToOpen).Failed())
   {
-    wdLog::Error(m_pLog, "Could not locate file '{0}'", szMainFile);
-    return WD_FAILURE;
+    nsLog::Error(m_pLog, "Could not locate file '{0}'", sMainFile);
+    return NS_FAILURE;
   }
 
   if (ProcessFile(sFileToOpen, ref_tokenOutput).Failed())
-    return WD_FAILURE;
+    return NS_FAILURE;
 
   m_IfdefActiveStack.PopBack();
 
   if (!m_IfdefActiveStack.IsEmpty())
   {
-    wdLog::Error(m_pLog, "Incomplete nesting of #if / #else / #endif");
-    return WD_FAILURE;
+    nsLog::Error(m_pLog, "Incomplete nesting of #if / #else / #endif");
+    return NS_FAILURE;
   }
 
   if (!m_CurrentFileStack.IsEmpty())
   {
-    wdLog::Error(m_pLog, "Internal error, file stack is not empty after processing. {0} elements, top stack item: '{1}'", m_CurrentFileStack.GetCount(), m_CurrentFileStack.PeekBack().m_sFileName);
-    return WD_FAILURE;
+    nsLog::Error(m_pLog, "Internal error, file stack is not empty after processing. {0} elements, top stack item: '{1}'", m_CurrentFileStack.GetCount(), m_CurrentFileStack.PeekBack().m_sFileName);
+    return NS_FAILURE;
   }
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
-wdResult wdPreprocessor::Process(const char* szMainFile, wdStringBuilder& ref_sOutput, bool bKeepComments, bool bRemoveRedundantWhitespace, bool bInsertLine)
+nsResult nsPreprocessor::Process(nsStringView sMainFile, nsStringBuilder& ref_sOutput, bool bKeepComments, bool bRemoveRedundantWhitespace, bool bInsertLine)
 {
   ref_sOutput.Clear();
 
   TokenStream TokenOutput;
-  if (Process(szMainFile, TokenOutput).Failed())
-    return WD_FAILURE;
+  if (Process(sMainFile, TokenOutput).Failed())
+    return NS_FAILURE;
 
   // generate the final text output
   CombineTokensToString(TokenOutput, 0, ref_sOutput, bKeepComments, bRemoveRedundantWhitespace, bInsertLine);
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
-wdResult wdPreprocessor::ProcessCmd(const TokenStream& Tokens, TokenStream& TokenOutput)
+nsResult nsPreprocessor::ProcessCmd(const TokenStream& Tokens, TokenStream& TokenOutput)
 {
-  wdUInt32 uiCurToken = 0;
+  nsUInt32 uiCurToken = 0;
 
-  wdUInt32 uiHashToken = 0;
+  nsUInt32 uiHashToken = 0;
 
   if (Expect(Tokens, uiCurToken, "#", &uiHashToken).Failed())
-    return WD_FAILURE;
+    return NS_FAILURE;
 
   // just a single hash sign is a valid preprocessor line
   if (IsEndOfLine(Tokens, uiCurToken, true))
-    return WD_SUCCESS;
+    return NS_SUCCESS;
 
-  wdUInt32 uiAccepted = uiCurToken;
+  nsUInt32 uiAccepted = uiCurToken;
 
   // if there is a #pragma once anywhere in the file (not only the active part), it will be flagged to not be included again
   // this is actually more efficient than include guards, because the file is never even looked at again, thus macro expansion
   // does not take place each and every time (which is unfortunately necessary with include guards)
   {
-    wdUInt32 uiTempPos = uiCurToken;
+    nsUInt32 uiTempPos = uiCurToken;
     if (Accept(Tokens, uiTempPos, "pragma") && Accept(Tokens, uiTempPos, "once"))
     {
       uiCurToken = uiTempPos;
@@ -259,18 +259,18 @@ wdResult wdPreprocessor::ProcessCmd(const TokenStream& Tokens, TokenStream& Toke
     // check that the following command is valid, even if it is ignored
     if (Accept(Tokens, uiCurToken, "line", &uiAccepted) || Accept(Tokens, uiCurToken, "include", &uiAccepted) || Accept(Tokens, uiCurToken, "define") || Accept(Tokens, uiCurToken, "undef", &uiAccepted) || Accept(Tokens, uiCurToken, "error", &uiAccepted) ||
         Accept(Tokens, uiCurToken, "warning", &uiAccepted) || Accept(Tokens, uiCurToken, "pragma"))
-      return WD_SUCCESS;
+      return NS_SUCCESS;
 
     if (m_PassThroughUnknownCmdCB.IsValid())
     {
-      wdString sCmd = Tokens[uiCurToken]->m_DataView;
+      nsString sCmd = Tokens[uiCurToken]->m_DataView;
 
       if (m_PassThroughUnknownCmdCB(sCmd))
-        return WD_SUCCESS;
+        return NS_SUCCESS;
     }
 
     PP_LOG0(Error, "Expected a preprocessor command", Tokens[0]);
-    return WD_FAILURE;
+    return NS_FAILURE;
   }
 
   if (Accept(Tokens, uiCurToken, "line", &uiAccepted))
@@ -297,25 +297,25 @@ wdResult wdPreprocessor::ProcessCmd(const TokenStream& Tokens, TokenStream& Toke
     if (m_bPassThroughPragma)
       CopyRelevantTokens(Tokens, uiHashToken, TokenOutput, true);
 
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
 
   if (m_PassThroughUnknownCmdCB.IsValid())
   {
-    wdString sCmd = Tokens[uiCurToken]->m_DataView;
+    nsString sCmd = Tokens[uiCurToken]->m_DataView;
 
     if (m_PassThroughUnknownCmdCB(sCmd))
     {
       TokenOutput.PushBackRange(Tokens);
-      return WD_SUCCESS;
+      return NS_SUCCESS;
     }
   }
 
   PP_LOG0(Error, "Expected a preprocessor command", Tokens[0]);
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
-wdResult wdPreprocessor::HandleLine(const TokenStream& Tokens, wdUInt32 uiCurToken, wdUInt32 uiHashToken, TokenStream& TokenOutput)
+nsResult nsPreprocessor::HandleLine(const TokenStream& Tokens, nsUInt32 uiCurToken, nsUInt32 uiHashToken, TokenStream& TokenOutput)
 {
   // #line directives are just passed through, the actual #line detection is already done by the tokenizer
   // however we check them for validity here
@@ -323,30 +323,30 @@ wdResult wdPreprocessor::HandleLine(const TokenStream& Tokens, wdUInt32 uiCurTok
   if (m_bPassThroughLine)
     CopyRelevantTokens(Tokens, uiHashToken, TokenOutput, true);
 
-  wdUInt32 uiNumberToken = 0;
-  if (Expect(Tokens, uiCurToken, wdTokenType::Integer, &uiNumberToken).Failed())
-    return WD_FAILURE;
+  nsUInt32 uiNumberToken = 0;
+  if (Expect(Tokens, uiCurToken, nsTokenType::Integer, &uiNumberToken).Failed())
+    return NS_FAILURE;
 
-  wdInt32 iNextLine = 0;
+  nsInt32 iNextLine = 0;
 
-  const wdString sNumber = Tokens[uiNumberToken]->m_DataView;
-  if (wdConversionUtils::StringToInt(sNumber, iNextLine).Failed())
+  const nsString sNumber = Tokens[uiNumberToken]->m_DataView;
+  if (nsConversionUtils::StringToInt(sNumber, iNextLine).Failed())
   {
     PP_LOG(Error, "Could not parse '{0}' as a line number", Tokens[uiNumberToken], sNumber);
-    return WD_FAILURE;
+    return NS_FAILURE;
   }
 
-  wdUInt32 uiFileNameToken = 0;
-  if (Accept(Tokens, uiCurToken, wdTokenType::String1, &uiFileNameToken))
+  nsUInt32 uiFileNameToken = 0;
+  if (Accept(Tokens, uiCurToken, nsTokenType::String1, &uiFileNameToken))
   {
-    // wdStringBuilder sFileName = Tokens[uiFileNameToken]->m_DataView;
+    // nsStringBuilder sFileName = Tokens[uiFileNameToken]->m_DataView;
     // sFileName.Shrink(1, 1); // remove surrounding "
     // m_CurrentFileStack.PeekBack().m_sVirtualFileName = sFileName;
   }
   else
   {
     if (ExpectEndOfLine(Tokens, uiCurToken).Failed())
-      return WD_FAILURE;
+      return NS_FAILURE;
   }
 
   // there is one case that is not handled here:
@@ -354,20 +354,20 @@ wdResult wdPreprocessor::HandleLine(const TokenStream& Tokens, wdUInt32 uiCurTok
   // and then checked again for the above form
   // since this is probably not in common use, we ignore this case
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
-wdResult wdPreprocessor::HandleIfdef(const TokenStream& Tokens, wdUInt32 uiCurToken, wdUInt32 uiDirectiveToken, bool bIsIfdef)
+nsResult nsPreprocessor::HandleIfdef(const TokenStream& Tokens, nsUInt32 uiCurToken, nsUInt32 uiDirectiveToken, bool bIsIfdef)
 {
   if (m_IfdefActiveStack.PeekBack().m_ActiveState != IfDefActivity::IsActive)
   {
     m_IfdefActiveStack.PushBack(IfDefActivity::IsInactive);
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
 
-  wdUInt32 uiIdentifier = uiCurToken;
-  if (Expect(Tokens, uiCurToken, wdTokenType::Identifier, &uiIdentifier).Failed())
-    return WD_FAILURE;
+  nsUInt32 uiIdentifier = uiCurToken;
+  if (Expect(Tokens, uiCurToken, nsTokenType::Identifier, &uiIdentifier).Failed())
+    return NS_FAILURE;
 
   const bool bDefined = m_Macros.Find(Tokens[uiIdentifier]->m_DataView).IsValid();
 
@@ -376,16 +376,16 @@ wdResult wdPreprocessor::HandleIfdef(const TokenStream& Tokens, wdUInt32 uiCurTo
     ProcessingEvent pe;
     pe.m_pToken = Tokens[uiIdentifier];
     pe.m_Type = bIsIfdef ? ProcessingEvent::CheckIfdef : ProcessingEvent::CheckIfndef;
-    pe.m_szInfo = bDefined ? "defined" : "undefined";
+    pe.m_sInfo = bDefined ? "defined" : "undefined";
     m_ProcessingEvents.Broadcast(pe);
   }
 
   m_IfdefActiveStack.PushBack(bIsIfdef == bDefined ? IfDefActivity::IsActive : IfDefActivity::IsInactive);
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
-wdResult wdPreprocessor::HandleElse(const TokenStream& Tokens, wdUInt32 uiCurToken, wdUInt32 uiDirectiveToken)
+nsResult nsPreprocessor::HandleElse(const TokenStream& Tokens, nsUInt32 uiCurToken, nsUInt32 uiDirectiveToken)
 {
   const IfDefActivity bCur = m_IfdefActiveStack.PeekBack().m_ActiveState;
   m_IfdefActiveStack.PopBack();
@@ -393,13 +393,13 @@ wdResult wdPreprocessor::HandleElse(const TokenStream& Tokens, wdUInt32 uiCurTok
   if (m_IfdefActiveStack.IsEmpty())
   {
     PP_LOG0(Error, "Unexpected '#else'", Tokens[uiDirectiveToken]);
-    return WD_FAILURE;
+    return NS_FAILURE;
   }
 
   if (m_IfdefActiveStack.PeekBack().m_bIsInElseClause)
   {
     PP_LOG0(Error, "Unexpected '#else'", Tokens[uiDirectiveToken]);
-    return WD_FAILURE;
+    return NS_FAILURE;
   }
 
   m_IfdefActiveStack.PeekBack().m_bIsInElseClause = true;
@@ -407,7 +407,7 @@ wdResult wdPreprocessor::HandleElse(const TokenStream& Tokens, wdUInt32 uiCurTok
   if (m_IfdefActiveStack.PeekBack().m_ActiveState != IfDefActivity::IsActive)
   {
     m_IfdefActiveStack.PushBack(IfDefActivity::IsInactive);
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
 
   if (bCur == IfDefActivity::WasActive || bCur == IfDefActivity::IsActive)
@@ -415,27 +415,27 @@ wdResult wdPreprocessor::HandleElse(const TokenStream& Tokens, wdUInt32 uiCurTok
   else
     m_IfdefActiveStack.PushBack(IfDefActivity::IsActive);
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
-wdResult wdPreprocessor::HandleIf(const TokenStream& Tokens, wdUInt32 uiCurToken, wdUInt32 uiDirectiveToken)
+nsResult nsPreprocessor::HandleIf(const TokenStream& Tokens, nsUInt32 uiCurToken, nsUInt32 uiDirectiveToken)
 {
   if (m_IfdefActiveStack.PeekBack().m_ActiveState != IfDefActivity::IsActive)
   {
     m_IfdefActiveStack.PushBack(IfDefActivity::IsInactive);
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
 
-  wdInt64 iResult = 0;
+  nsInt64 iResult = 0;
 
   if (EvaluateCondition(Tokens, uiCurToken, iResult).Failed())
-    return WD_FAILURE;
+    return NS_FAILURE;
 
   m_IfdefActiveStack.PushBack(iResult != 0 ? IfDefActivity::IsActive : IfDefActivity::IsInactive);
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
-wdResult wdPreprocessor::HandleElif(const TokenStream& Tokens, wdUInt32 uiCurToken, wdUInt32 uiDirectiveToken)
+nsResult nsPreprocessor::HandleElif(const TokenStream& Tokens, nsUInt32 uiCurToken, nsUInt32 uiDirectiveToken)
 {
   const IfDefActivity Cur = m_IfdefActiveStack.PeekBack().m_ActiveState;
   m_IfdefActiveStack.PopBack();
@@ -443,81 +443,81 @@ wdResult wdPreprocessor::HandleElif(const TokenStream& Tokens, wdUInt32 uiCurTok
   if (m_IfdefActiveStack.IsEmpty())
   {
     PP_LOG0(Error, "Unexpected '#elif'", Tokens[uiDirectiveToken]);
-    return WD_FAILURE;
+    return NS_FAILURE;
   }
 
   if (m_IfdefActiveStack.PeekBack().m_bIsInElseClause)
   {
     PP_LOG0(Error, "Unexpected '#elif'", Tokens[uiDirectiveToken]);
-    return WD_FAILURE;
+    return NS_FAILURE;
   }
 
   if (m_IfdefActiveStack.PeekBack().m_ActiveState != IfDefActivity::IsActive)
   {
     m_IfdefActiveStack.PushBack(IfDefActivity::IsInactive);
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
 
-  wdInt64 iResult = 0;
+  nsInt64 iResult = 0;
   if (EvaluateCondition(Tokens, uiCurToken, iResult).Failed())
-    return WD_FAILURE;
+    return NS_FAILURE;
 
   if (Cur != IfDefActivity::IsInactive)
   {
     m_IfdefActiveStack.PushBack(IfDefActivity::WasActive);
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
 
   m_IfdefActiveStack.PushBack(iResult != 0 ? IfDefActivity::IsActive : IfDefActivity::IsInactive);
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
-wdResult wdPreprocessor::HandleEndif(const TokenStream& Tokens, wdUInt32 uiCurToken, wdUInt32 uiDirectiveToken)
+nsResult nsPreprocessor::HandleEndif(const TokenStream& Tokens, nsUInt32 uiCurToken, nsUInt32 uiDirectiveToken)
 {
   SkipWhitespace(Tokens, uiCurToken);
 
-  WD_SUCCEED_OR_RETURN(ExpectEndOfLine(Tokens, uiCurToken));
+  NS_SUCCEED_OR_RETURN(ExpectEndOfLine(Tokens, uiCurToken));
 
   m_IfdefActiveStack.PopBack();
 
   if (m_IfdefActiveStack.IsEmpty())
   {
     PP_LOG0(Error, "Unexpected '#endif'", Tokens[uiDirectiveToken]);
-    return WD_FAILURE;
+    return NS_FAILURE;
   }
   else
   {
     m_IfdefActiveStack.PeekBack().m_bIsInElseClause = false;
   }
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
-wdResult wdPreprocessor::HandleUndef(const TokenStream& Tokens, wdUInt32 uiCurToken, wdUInt32 uiDirectiveToken)
+nsResult nsPreprocessor::HandleUndef(const TokenStream& Tokens, nsUInt32 uiCurToken, nsUInt32 uiDirectiveToken)
 {
-  wdUInt32 uiIdentifierToken = uiCurToken;
+  nsUInt32 uiIdentifierToken = uiCurToken;
 
-  if (Expect(Tokens, uiCurToken, wdTokenType::Identifier, &uiIdentifierToken).Failed())
-    return WD_FAILURE;
+  if (Expect(Tokens, uiCurToken, nsTokenType::Identifier, &uiIdentifierToken).Failed())
+    return NS_FAILURE;
 
-  const wdString sUndef = Tokens[uiIdentifierToken]->m_DataView;
+  const nsString sUndef = Tokens[uiIdentifierToken]->m_DataView;
   if (!RemoveDefine(sUndef))
   {
     PP_LOG(Warning, "'#undef' of undefined macro '{0}'", Tokens[uiIdentifierToken], sUndef);
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
 
   // this is an error, but not one that will cause it to fail
   ExpectEndOfLine(Tokens, uiCurToken).IgnoreResult();
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
-wdResult wdPreprocessor::HandleErrorDirective(const TokenStream& Tokens, wdUInt32 uiCurToken, wdUInt32 uiDirectiveToken)
+nsResult nsPreprocessor::HandleErrorDirective(const TokenStream& Tokens, nsUInt32 uiCurToken, nsUInt32 uiDirectiveToken)
 {
   SkipWhitespace(Tokens, uiCurToken);
 
-  wdStringBuilder sTemp;
+  nsStringBuilder sTemp;
   CombineTokensToString(Tokens, uiCurToken, sTemp);
 
   while (sTemp.EndsWith("\n") || sTemp.EndsWith("\r"))
@@ -525,14 +525,14 @@ wdResult wdPreprocessor::HandleErrorDirective(const TokenStream& Tokens, wdUInt3
 
   PP_LOG(Error, "#error '{0}'", Tokens[uiDirectiveToken], sTemp);
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
-wdResult wdPreprocessor::HandleWarningDirective(const TokenStream& Tokens, wdUInt32 uiCurToken, wdUInt32 uiDirectiveToken)
+nsResult nsPreprocessor::HandleWarningDirective(const TokenStream& Tokens, nsUInt32 uiCurToken, nsUInt32 uiDirectiveToken)
 {
   SkipWhitespace(Tokens, uiCurToken);
 
-  wdStringBuilder sTemp;
+  nsStringBuilder sTemp;
   CombineTokensToString(Tokens, uiCurToken, sTemp);
 
   while (sTemp.EndsWith("\n") || sTemp.EndsWith("\r"))
@@ -540,9 +540,5 @@ wdResult wdPreprocessor::HandleWarningDirective(const TokenStream& Tokens, wdUIn
 
   PP_LOG(Warning, "#warning '{0}'", Tokens[uiDirectiveToken], sTemp);
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
-
-
-
-WD_STATICLINK_FILE(Foundation, Foundation_CodeUtils_Implementation_Preprocessor);

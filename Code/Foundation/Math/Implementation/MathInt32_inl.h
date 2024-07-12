@@ -1,49 +1,49 @@
 #pragma once
 
-namespace wdMath
+namespace nsMath
 {
-  constexpr WD_ALWAYS_INLINE wdInt32 RoundUp(wdInt32 value, wdUInt16 uiMultiple)
+  constexpr NS_ALWAYS_INLINE nsInt32 RoundUp(nsInt32 value, nsUInt16 uiMultiple)
   {
     //
     return (value >= 0) ? ((value + uiMultiple - 1) / uiMultiple) * uiMultiple : (value / uiMultiple) * uiMultiple;
   }
 
-  constexpr WD_ALWAYS_INLINE wdInt32 RoundDown(wdInt32 value, wdUInt16 uiMultiple)
+  constexpr NS_ALWAYS_INLINE nsInt32 RoundDown(nsInt32 value, nsUInt16 uiMultiple)
   {
     //
     return (value <= 0) ? ((value - uiMultiple + 1) / uiMultiple) * uiMultiple : (value / uiMultiple) * uiMultiple;
   }
 
-  constexpr WD_ALWAYS_INLINE wdUInt32 RoundUp(wdUInt32 value, wdUInt16 uiMultiple)
+  constexpr NS_ALWAYS_INLINE nsUInt32 RoundUp(nsUInt32 value, nsUInt16 uiMultiple)
   {
     //
     return ((value + uiMultiple - 1) / uiMultiple) * uiMultiple;
   }
 
-  constexpr WD_ALWAYS_INLINE wdUInt32 RoundDown(wdUInt32 value, wdUInt16 uiMultiple)
+  constexpr NS_ALWAYS_INLINE nsUInt32 RoundDown(nsUInt32 value, nsUInt16 uiMultiple)
   {
     //
     return (value / uiMultiple) * uiMultiple;
   }
 
-  constexpr WD_ALWAYS_INLINE bool IsOdd(wdInt32 i)
+  constexpr NS_ALWAYS_INLINE bool IsOdd(nsInt32 i)
   {
     //
     return ((i & 1) != 0);
   }
 
-  constexpr WD_ALWAYS_INLINE bool IsEven(wdInt32 i)
+  constexpr NS_ALWAYS_INLINE bool IsEven(nsInt32 i)
   {
     //
     return ((i & 1) == 0);
   }
 
-  WD_ALWAYS_INLINE wdUInt32 Log2i(wdUInt32 uiVal)
+  NS_ALWAYS_INLINE nsUInt32 Log2i(nsUInt32 uiVal)
   {
     return (uiVal != 0) ? FirstBitHigh(uiVal) : -1;
   }
 
-  constexpr WD_ALWAYS_INLINE int Pow2(int i)
+  constexpr NS_ALWAYS_INLINE int Pow2(int i)
   {
     //
     return (1 << i);
@@ -61,4 +61,4 @@ namespace wdMath
     return res;
   }
 
-} // namespace wdMath
+} // namespace nsMath

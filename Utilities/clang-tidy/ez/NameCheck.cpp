@@ -19,7 +19,7 @@ namespace clang
 {
   namespace tidy
   {
-    namespace wd
+    namespace ns
     {
 
       void StripToBaseName(std::string& name)
@@ -43,8 +43,12 @@ namespace clang
         }
         if (name.size() > 1 && (isUppercase(name[1]) || isDigit(name[1])))
         {
-          result = std::string(name.begin(), name.begin() + 1);
-          name.erase(0, 1);
+          // x, y and z are not considered invalid prefixes and should be kept.
+          if (name[0] != 'x' && name[0] != 'y' && name[0] != 'z')
+          {
+            result = std::string(name.begin(), name.begin() + 1);
+            name.erase(0, 1);
+          }
         }
         else if (name.size() > 2 && (isUppercase(name[2]) || isDigit(name[2])))
         {
@@ -69,54 +73,54 @@ namespace clang
             *prefixAdded = true;
           return newName.insert(0, "h");
         }
-        else if (typeName == "wdSharedPtr" || typeName == "wdUniquePtr" ||
-                 typeName == "wdPointerWithFlags" || typeName == "QPointer" ||
+        else if (typeName == "nsSharedPtr" || typeName == "nsUniquePtr" ||
+                 typeName == "nsPointerWithFlags" || typeName == "QPointer" ||
                  typeName == "shared_ptr" || typeName == "unique_ptr")
         {
           if (prefixAdded)
             *prefixAdded = true;
           return newName.insert(0, "p");
         }
-        else if (typeName == "wdStringView" || typeName == "wdHybridString" ||
-                 typeName == "wdHashedString" || typeName == "wdTempHashedString" ||
-                 typeName == "basic_string" || typeName == "wdStringBuilder" ||
+        else if (typeName == "nsStringView" || typeName == "nsHybridString" ||
+                 typeName == "nsHashedString" || typeName == "nsTempHashedString" ||
+                 typeName == "basic_string" || typeName == "nsStringBuilder" ||
                  typeName == "QString")
         {
           if (prefixAdded)
             *prefixAdded = true;
           return newName.insert(0, "s");
         }
-        else if (typeName == "wdAtomicBool")
+        else if (typeName == "nsAtomicBool")
         {
           if (prefixAdded)
             *prefixAdded = true;
           return newName.insert(0, "b");
         }
-        else if (typeName == "wdAtomicInteger")
+        else if (typeName == "nsAtomicInteger")
         {
           if (prefixAdded)
             *prefixAdded = true;
           return newName.insert(0, "i");
         }
-        else if (typeName.startswith("wdVec") || typeName.startswith("wdSimdVec"))
+        else if (typeName.startswith("nsVec") || typeName.startswith("nsSimdVec"))
         {
           if (prefixAdded)
             *prefixAdded = true;
           return newName.insert(0, "v");
         }
-        else if (typeName.startswith("wdMat") || typeName.startswith("wdSimdMat"))
+        else if (typeName.startswith("nsMat") || typeName.startswith("nsSimdMat"))
         {
           if (prefixAdded)
             *prefixAdded = true;
           return newName.insert(0, "m");
         }
-        else if (typeName.startswith("wdQuat") || typeName == "wdSimdQuat")
+        else if (typeName.startswith("nsQuat") || typeName == "nsSimdQuat")
         {
           if (prefixAdded)
             *prefixAdded = true;
           return newName.insert(0, "q");
         }
-        else if (typeName == "wdSimdFloat")
+        else if (typeName == "nsSimdFloat")
         {
           if (prefixAdded)
             *prefixAdded = true;
@@ -131,6 +135,11 @@ namespace clang
       {
         std::string newName = baseName;
         auto oldPrefix = StripPrefix(newName);
+
+        if (auto elaboratedType = dyn_cast<ElaboratedType>(type); elaboratedType)
+        {
+          type = elaboratedType->desugar().getTypePtr();
+        }
 
         auto templateParamType = dyn_cast<TemplateTypeParmType>(type);
         auto templateParamType2 = dyn_cast<SubstTemplateTypeParmType>(type);
@@ -214,6 +223,14 @@ namespace clang
             {
               return newName;
             }
+            else if (auto declTemplate = dyn_cast<ClassTemplateSpecializationDecl>(recordDecl); declTemplate && recordName == "atomic")
+            {
+              auto& templateArgs = declTemplate->getTemplateArgs();
+              if (templateArgs.size() == 1)
+              {
+                return AddPrefix(baseName, templateArgs.get(0).getAsType().getTypePtr(), prefixAdded);
+              }
+            }
           }
           else
           {
@@ -244,14 +261,14 @@ namespace clang
               if (typedefType)
               {
                 auto typedefName = typedefType->getDecl()->getName();
-                if (typedefName == "wdUInt8" || typedefName == "wdUInt16" ||
-                    typedefName == "wdUInt32" || typedefName == "wdUInt64" ||
+                if (typedefName == "nsUInt8" || typedefName == "nsUInt16" ||
+                    typedefName == "nsUInt32" || typedefName == "nsUInt64" ||
                     typedefName == "size_t" || typedefName == "DWORD")
                 {
                   return newName.insert(0, "ui");
                 }
-                else if (typedefName == "wdInt8" || typedefName == "wdInt16" ||
-                         typedefName == "wdInt32" || typedefName == "wdInt64" ||
+                else if (typedefName == "nsInt8" || typedefName == "nsInt16" ||
+                         typedefName == "nsInt32" || typedefName == "nsInt64" ||
                          typedefName == "ptrdiff_t" || typedefName == "LONG")
                 {
                   return newName.insert(0, "i");
@@ -288,6 +305,7 @@ namespace clang
           newName = oldPrefix + newName;
         }
 
+
         return newName;
       }
 
@@ -308,7 +326,7 @@ namespace clang
           // No rules on public fields
           if (field->getAccess() == AS_public)
           {
-            return llvm::None;
+            return std::nullopt;
           }
           // SubstTemplateTypeParmType
 
@@ -333,7 +351,7 @@ namespace clang
             }
             if (type == nullptr)
             {
-              return llvm::None;
+              return std::nullopt;
             }
           }
           newName = AddPrefix(newName, type);
@@ -352,7 +370,16 @@ namespace clang
 
           if (!owningFunc || (owningFunc->getAccess() != AS_public && owningFunc->getAccess() != AS_none))
           {
-            return llvm::None;
+            return std::nullopt;
+          }
+
+          if (auto cxxMethodDecl = dyn_cast<CXXMethodDecl>(owningFunc); cxxMethodDecl)
+          {
+            if (cxxMethodDecl->getParent()->isLambda())
+            {
+              // Do not check parameter names for lambdas, as they are implementation detail.
+              return std::nullopt;
+            }
           }
 
           std::string newName = param->getNameAsString();
@@ -365,13 +392,13 @@ namespace clang
             {
               return FailureInfo{"param", std::move(newName)};
             }
-            return llvm::None;
+            return std::nullopt;
           }
 
           // Special names
           if (newName == "lhs" || newName == "rhs" || newName == "other" || newName == "value")
           {
-            return llvm::None;
+            return std::nullopt;
           }
 
           // If the var is templated, all types have already been substituted. E.g.
@@ -392,7 +419,7 @@ namespace clang
               if (paramIndex >= templatedFuncDecl->getNumParams())
               {
                 // This is a expanded vararg template (ARGS...), ignore it.
-                return llvm::None;
+                return std::nullopt;
               }
               clang::ParmVarDecl* templatedParamDecl = templatedFuncDecl->getParamDecl(paramIndex);
               type = templatedParamDecl->getType().getTypePtr();
@@ -483,24 +510,24 @@ namespace clang
           // s_ rule only applies to static members of structs or classes
           if (!var->isStaticDataMember())
           {
-            return llvm::None;
+            return std::nullopt;
           }
 
           if (var->getAccess() == AS_public)
           {
-            return llvm::None;
+            return std::nullopt;
           }
 
           // s_ rule does not apply to compile time constants.
           if (var->isConstexpr())
           {
-            return llvm::None;
+            return std::nullopt;
           }
 
           // Check for a static member of a enum definition. s_ rule doesn't apply
           // here.
           //
-          // struct wdClipSpaceYMode {
+          // struct nsClipSpaceYMode {
           //  enum Enum {
           //    Regular,
           //    Flipped
@@ -515,7 +542,7 @@ namespace clang
             auto enumContext = enumType->getDecl()->getDeclContext();
             if (varContext && varContext == enumContext)
             {
-              return llvm::None;
+              return std::nullopt;
             }
           }
 
@@ -537,7 +564,7 @@ namespace clang
             }
             if (type == nullptr)
             {
-              return llvm::None;
+              return std::nullopt;
             }
           }
 
@@ -553,14 +580,14 @@ namespace clang
             return FailureInfo{"field", std::move(newName)};
           }
         }
-        return llvm::None;
+        return std::nullopt;
       }
 
       llvm::Optional<clang::tidy::RenamerClangTidyCheck::FailureInfo>
       NameCheck::getMacroFailureInfo(const Token& MacroNameTok,
         const SourceManager& SM) const
       {
-        return llvm::None;
+        return std::nullopt;
       }
 
       RenamerClangTidyCheck::DiagInfo
@@ -588,13 +615,13 @@ namespace clang
         return {};
       }
 
-    } // namespace wd
+    } // namespace ns
   }   // namespace tidy
 } // namespace clang
 
 // * Do we really want to apply prefixes to arrays? Where to stop? bool
-// m_bIsUsed[3]; wdDynmicArray<bool> m_bVar? what about wdUInt8 m_uiData[128];
+// m_bIsUsed[3]; nsDynmicArray<bool> m_bVar? what about nsUInt8 m_uiData[128];
 // -> On fixed size arrays keep the already existing prefix
-// * static wdWorldModuleTypeId TYPE_ID. This is not a constant. Why all upper
+// * static nsWorldModuleTypeId TYPE_ID. This is not a constant. Why all upper
 // case? Why not the s_ prefix? -> s_TypeId
 // * Open Questions, What do do about quaternions / vectors / matrices?

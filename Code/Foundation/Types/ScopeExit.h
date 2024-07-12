@@ -6,25 +6,25 @@
 /// \file
 
 /// \brief Macro to execute a piece of code when the current scope closes.
-#define WD_SCOPE_EXIT(code) auto WD_CONCAT(scopeExit_, WD_SOURCE_LINE) = wdMakeScopeExit([&]() { code; })
+#define NS_SCOPE_EXIT(code) auto NS_CONCAT(scopeExit_, NS_SOURCE_LINE) = nsMakeScopeExit([&]() { code; })
 
-/// \internal Helper class to implement WD_SCOPE_EXIT
+/// \internal Helper class to implement NS_SCOPE_EXIT
 template <typename T>
-struct wdScopeExit
+struct nsScopeExit
 {
-  WD_ALWAYS_INLINE wdScopeExit(T&& func)
+  NS_ALWAYS_INLINE nsScopeExit(T&& func)
     : m_func(std::forward<T>(func))
   {
   }
 
-  WD_ALWAYS_INLINE ~wdScopeExit() { m_func(); }
+  NS_ALWAYS_INLINE ~nsScopeExit() { m_func(); }
 
   T m_func;
 };
 
-/// \internal Helper function to implement WD_SCOPE_EXIT
+/// \internal Helper function to implement NS_SCOPE_EXIT
 template <typename T>
-WD_ALWAYS_INLINE wdScopeExit<T> wdMakeScopeExit(T&& func)
+NS_ALWAYS_INLINE nsScopeExit<T> nsMakeScopeExit(T&& func)
 {
-  return wdScopeExit<T>(std::forward<T>(func));
+  return nsScopeExit<T>(std::forward<T>(func));
 }

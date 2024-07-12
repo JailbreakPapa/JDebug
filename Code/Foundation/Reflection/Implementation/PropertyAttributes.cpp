@@ -3,54 +3,54 @@
 #include <Foundation/Reflection/Reflection.h>
 
 // clang-format off
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdPropertyAttribute, 1, wdRTTINoAllocator)
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsPropertyAttribute, 1, nsRTTINoAllocator)
+NS_END_DYNAMIC_REFLECTED_TYPE;
 
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdReadOnlyAttribute, 1, wdRTTIDefaultAllocator<wdReadOnlyAttribute>)
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsReadOnlyAttribute, 1, nsRTTIDefaultAllocator<nsReadOnlyAttribute>)
+NS_END_DYNAMIC_REFLECTED_TYPE;
 
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdHiddenAttribute, 1, wdRTTIDefaultAllocator<wdHiddenAttribute>)
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsHiddenAttribute, 1, nsRTTIDefaultAllocator<nsHiddenAttribute>)
+NS_END_DYNAMIC_REFLECTED_TYPE;
 
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdTemporaryAttribute, 1, wdRTTIDefaultAllocator<wdTemporaryAttribute>)
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsTemporaryAttribute, 1, nsRTTIDefaultAllocator<nsTemporaryAttribute>)
+NS_END_DYNAMIC_REFLECTED_TYPE;
 
-WD_BEGIN_STATIC_REFLECTED_BITFLAGS(wdDependencyFlags, 1)
-  WD_BITFLAGS_CONSTANTS(wdDependencyFlags::Package, wdDependencyFlags::Thumbnail, wdDependencyFlags::Transform)
-WD_END_STATIC_REFLECTED_BITFLAGS;
+NS_BEGIN_STATIC_REFLECTED_BITFLAGS(nsDependencyFlags, 1)
+  NS_BITFLAGS_CONSTANTS(nsDependencyFlags::Package, nsDependencyFlags::Thumbnail, nsDependencyFlags::Transform)
+NS_END_STATIC_REFLECTED_BITFLAGS;
 
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdCategoryAttribute, 1, wdRTTIDefaultAllocator<wdCategoryAttribute>)
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsCategoryAttribute, 1, nsRTTIDefaultAllocator<nsCategoryAttribute>)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("Category", m_sCategory),
+    NS_MEMBER_PROPERTY("Category", m_sCategory),
   }
-  WD_END_PROPERTIES;
-  WD_BEGIN_FUNCTIONS
+  NS_END_PROPERTIES;
+  NS_BEGIN_FUNCTIONS
   {
-    WD_CONSTRUCTOR_PROPERTY(const char*),
+    NS_CONSTRUCTOR_PROPERTY(const char*),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_END_DYNAMIC_REFLECTED_TYPE;
 
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdInDevelopmentAttribute, 1, wdRTTIDefaultAllocator<wdInDevelopmentAttribute>)
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsInDevelopmentAttribute, 1, nsRTTIDefaultAllocator<nsInDevelopmentAttribute>)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("Phase", m_Phase),
+    NS_MEMBER_PROPERTY("Phase", m_Phase),
   }
-  WD_END_PROPERTIES;
-  WD_BEGIN_FUNCTIONS
+  NS_END_PROPERTIES;
+  NS_BEGIN_FUNCTIONS
   {
-    WD_CONSTRUCTOR_PROPERTY(wdInt32),
+    NS_CONSTRUCTOR_PROPERTY(nsInt32),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_END_DYNAMIC_REFLECTED_TYPE;
 
 
-const char* wdInDevelopmentAttribute::GetString() const
+const char* nsInDevelopmentAttribute::GetString() const
 {
   switch (m_Phase)
   {
@@ -60,366 +60,402 @@ const char* wdInDevelopmentAttribute::GetString() const
   case Phase::Beta:
     return "BETA";
 
-    WD_DEFAULT_CASE_NOT_IMPLEMENTED;
+    NS_DEFAULT_CASE_NOT_IMPLEMENTED;
   }
 
   return "";
 }
 
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdTitleAttribute, 1, wdRTTIDefaultAllocator<wdTitleAttribute>)
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsTitleAttribute, 1, nsRTTIDefaultAllocator<nsTitleAttribute>)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("Title", m_sTitle),
+    NS_MEMBER_PROPERTY("Title", m_sTitle),
   }
-  WD_END_PROPERTIES;
-  WD_BEGIN_FUNCTIONS
+  NS_END_PROPERTIES;
+  NS_BEGIN_FUNCTIONS
   {
-    WD_CONSTRUCTOR_PROPERTY(const char*),
+    NS_CONSTRUCTOR_PROPERTY(const char*),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_END_DYNAMIC_REFLECTED_TYPE;
 
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdColorAttribute, 1, wdRTTIDefaultAllocator<wdColorAttribute>)
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsColorAttribute, 1, nsRTTIDefaultAllocator<nsColorAttribute>)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("Color", m_Color),
+    NS_MEMBER_PROPERTY("Color", m_Color),
   }
-  WD_END_PROPERTIES;
-  WD_BEGIN_FUNCTIONS
+  NS_END_PROPERTIES;
+  NS_BEGIN_FUNCTIONS
   {
-    WD_CONSTRUCTOR_PROPERTY(wdColor),
+    NS_CONSTRUCTOR_PROPERTY(nsColor),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_END_DYNAMIC_REFLECTED_TYPE;
 
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdExposeColorAlphaAttribute, 1, wdRTTIDefaultAllocator<wdExposeColorAlphaAttribute>)
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsExposeColorAlphaAttribute, 1, nsRTTIDefaultAllocator<nsExposeColorAlphaAttribute>)
+NS_END_DYNAMIC_REFLECTED_TYPE;
 
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdSuffixAttribute, 1, wdRTTIDefaultAllocator<wdSuffixAttribute>)
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsSuffixAttribute, 1, nsRTTIDefaultAllocator<nsSuffixAttribute>)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("Suffix", m_sSuffix),
+    NS_MEMBER_PROPERTY("Suffix", m_sSuffix),
   }
-  WD_END_PROPERTIES;
-  WD_BEGIN_FUNCTIONS
+  NS_END_PROPERTIES;
+  NS_BEGIN_FUNCTIONS
   {
-    WD_CONSTRUCTOR_PROPERTY(const char*),
+    NS_CONSTRUCTOR_PROPERTY(const char*),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_END_DYNAMIC_REFLECTED_TYPE;
 
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdMinValueTextAttribute, 1, wdRTTIDefaultAllocator<wdMinValueTextAttribute>)
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsMinValueTextAttribute, 1, nsRTTIDefaultAllocator<nsMinValueTextAttribute>)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("Text", m_sText),
+    NS_MEMBER_PROPERTY("Text", m_sText),
   }
-  WD_END_PROPERTIES;
-  WD_BEGIN_FUNCTIONS
+  NS_END_PROPERTIES;
+  NS_BEGIN_FUNCTIONS
   {
-    WD_CONSTRUCTOR_PROPERTY(const char*),
+    NS_CONSTRUCTOR_PROPERTY(const char*),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_END_DYNAMIC_REFLECTED_TYPE;
 
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdDefaultValueAttribute, 1, wdRTTIDefaultAllocator<wdDefaultValueAttribute>)
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsDefaultValueAttribute, 1, nsRTTIDefaultAllocator<nsDefaultValueAttribute>)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("Value", m_Value),
+    NS_MEMBER_PROPERTY("Value", m_Value),
   }
-  WD_END_PROPERTIES;
-  WD_BEGIN_FUNCTIONS
+  NS_END_PROPERTIES;
+  NS_BEGIN_FUNCTIONS
   {
-    WD_CONSTRUCTOR_PROPERTY(const wdVariant&),
+    NS_CONSTRUCTOR_PROPERTY(const nsVariant&),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_END_DYNAMIC_REFLECTED_TYPE;
 
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdClampValueAttribute, 1, wdRTTIDefaultAllocator<wdClampValueAttribute>)
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsImageSliderUiAttribute, 1, nsRTTIDefaultAllocator<nsImageSliderUiAttribute>)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("Min", m_MinValue),
-    WD_MEMBER_PROPERTY("Max", m_MaxValue),
+    NS_MEMBER_PROPERTY("ImageGenerator", m_sImageGenerator),
   }
-  WD_END_PROPERTIES;
-  WD_BEGIN_FUNCTIONS
+  NS_END_PROPERTIES;
+  NS_BEGIN_FUNCTIONS
   {
-    WD_CONSTRUCTOR_PROPERTY(const wdVariant&, const wdVariant&),
+    NS_CONSTRUCTOR_PROPERTY(const char*),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_END_DYNAMIC_REFLECTED_TYPE;
 
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdGroupAttribute, 1, wdRTTIDefaultAllocator<wdGroupAttribute>)
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsClampValueAttribute, 1, nsRTTIDefaultAllocator<nsClampValueAttribute>)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("Group", m_sGroup),
+    NS_MEMBER_PROPERTY("Min", m_MinValue),
+    NS_MEMBER_PROPERTY("Max", m_MaxValue),
   }
-  WD_END_PROPERTIES;
-  WD_BEGIN_FUNCTIONS
+  NS_END_PROPERTIES;
+  NS_BEGIN_FUNCTIONS
   {
-    WD_CONSTRUCTOR_PROPERTY(const char*, float),
-    WD_CONSTRUCTOR_PROPERTY(const char*, const char*, float),
+    NS_CONSTRUCTOR_PROPERTY(const nsVariant&, const nsVariant&),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_END_DYNAMIC_REFLECTED_TYPE;
 
-wdGroupAttribute::wdGroupAttribute()
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsGroupAttribute, 1, nsRTTIDefaultAllocator<nsGroupAttribute>)
 {
-
+  NS_BEGIN_PROPERTIES
+  {
+    NS_MEMBER_PROPERTY("Group", m_sGroup),
+  }
+  NS_END_PROPERTIES;
+  NS_BEGIN_FUNCTIONS
+  {
+    NS_CONSTRUCTOR_PROPERTY(const char*, float),
+    NS_CONSTRUCTOR_PROPERTY(const char*, const char*, float),
+  }
+  NS_END_FUNCTIONS;
 }
+NS_END_DYNAMIC_REFLECTED_TYPE;
 
-wdGroupAttribute::wdGroupAttribute(const char* szGroup, float fOrder)
+nsGroupAttribute::nsGroupAttribute()
+= default;
+
+nsGroupAttribute::nsGroupAttribute(const char* szGroup, float fOrder)
+  : m_sGroup(szGroup)
+  , m_fOrder(fOrder)
 {
-  m_sGroup = szGroup;
-  m_fOrder = fOrder;
 }
 
-wdGroupAttribute::wdGroupAttribute(const char* szGroup, const char* szIconName, float fOrder)
+nsGroupAttribute::nsGroupAttribute(const char* szGroup, const char* szIconName, float fOrder)
+  : m_sGroup(szGroup)
+  , m_sIconName(szIconName)
+  , m_fOrder(fOrder)
 {
-  m_sGroup = szGroup;
-  m_sIconName = szIconName;
-  m_fOrder = fOrder;
 }
 
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdTypeWidgetAttribute, 1, wdRTTINoAllocator)
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsTypeWidgetAttribute, 1, nsRTTINoAllocator)
+NS_END_DYNAMIC_REFLECTED_TYPE;
 
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdContainerWidgetAttribute, 1, wdRTTINoAllocator)
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsContainerWidgetAttribute, 1, nsRTTINoAllocator)
+NS_END_DYNAMIC_REFLECTED_TYPE;
 
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdTagSetWidgetAttribute, 1, wdRTTIDefaultAllocator<wdTagSetWidgetAttribute>)
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsTagSetWidgetAttribute, 1, nsRTTIDefaultAllocator<nsTagSetWidgetAttribute>)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("Filter", m_sTagFilter),
+    NS_MEMBER_PROPERTY("Filter", m_sTagFilter),
   }
-  WD_END_PROPERTIES;
-  WD_BEGIN_FUNCTIONS
+  NS_END_PROPERTIES;
+  NS_BEGIN_FUNCTIONS
   {
-    WD_CONSTRUCTOR_PROPERTY(const char*),
+    NS_CONSTRUCTOR_PROPERTY(const char*),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_END_DYNAMIC_REFLECTED_TYPE;
 
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdExposedParametersAttribute, 1, wdRTTIDefaultAllocator<wdExposedParametersAttribute>)
-{
-  WD_BEGIN_PROPERTIES
-  {
-    WD_MEMBER_PROPERTY("ParametersSource", m_sParametersSource),
-  }
-  WD_END_PROPERTIES;
-  WD_BEGIN_FUNCTIONS
-  {
-    WD_CONSTRUCTOR_PROPERTY(const char*),
-  }
-  WD_END_FUNCTIONS;
-}
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsNoTemporaryTransactionsAttribute, 1, nsRTTIDefaultAllocator<nsNoTemporaryTransactionsAttribute>)
+NS_END_DYNAMIC_REFLECTED_TYPE;
 
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdDynamicDefaultValueAttribute, 1, wdRTTIDefaultAllocator<wdDynamicDefaultValueAttribute>)
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsExposedParametersAttribute, 1, nsRTTIDefaultAllocator<nsExposedParametersAttribute>)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("ClassSource", m_sClassSource),
-    WD_MEMBER_PROPERTY("ClassType", m_sClassType),
+    NS_MEMBER_PROPERTY("ParametersSource", m_sParametersSource),
   }
-  WD_END_PROPERTIES;
-  WD_BEGIN_FUNCTIONS
+  NS_END_PROPERTIES;
+  NS_BEGIN_FUNCTIONS
   {
-    WD_CONSTRUCTOR_PROPERTY(const char*, const char*),
+    NS_CONSTRUCTOR_PROPERTY(const char*),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_END_DYNAMIC_REFLECTED_TYPE;
 
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdContainerAttribute, 1, wdRTTIDefaultAllocator<wdContainerAttribute>)
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsDynamicDefaultValueAttribute, 1, nsRTTIDefaultAllocator<nsDynamicDefaultValueAttribute>)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("CanAdd", m_bCanAdd),
-    WD_MEMBER_PROPERTY("CanDelete", m_bCanDelete),
-    WD_MEMBER_PROPERTY("CanMove", m_bCanMove),
+    NS_MEMBER_PROPERTY("ClassSource", m_sClassSource),
+    NS_MEMBER_PROPERTY("ClassType", m_sClassType),
   }
-  WD_END_PROPERTIES;
-  WD_BEGIN_FUNCTIONS
+  NS_END_PROPERTIES;
+  NS_BEGIN_FUNCTIONS
   {
-    WD_CONSTRUCTOR_PROPERTY(bool, bool, bool),
+    NS_CONSTRUCTOR_PROPERTY(const char*, const char*),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_END_DYNAMIC_REFLECTED_TYPE;
 
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdConstrainPointerAttribute, 1, wdRTTIDefaultAllocator<wdConstrainPointerAttribute>)
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsContainerAttribute, 1, nsRTTIDefaultAllocator<nsContainerAttribute>)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("ConstantName", m_sConstantName),
-    WD_MEMBER_PROPERTY("ConstantValue", m_sConstantValueProperty),
+    NS_MEMBER_PROPERTY("CanAdd", m_bCanAdd),
+    NS_MEMBER_PROPERTY("CanDelete", m_bCanDelete),
+    NS_MEMBER_PROPERTY("CanMove", m_bCanMove),
   }
-  WD_END_PROPERTIES;
-  WD_BEGIN_FUNCTIONS
+  NS_END_PROPERTIES;
+  NS_BEGIN_FUNCTIONS
   {
-    WD_CONSTRUCTOR_PROPERTY(const char*, const char*),
+    NS_CONSTRUCTOR_PROPERTY(bool, bool, bool),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_END_DYNAMIC_REFLECTED_TYPE;
 
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdFileBrowserAttribute, 1, wdRTTIDefaultAllocator<wdFileBrowserAttribute>)
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsFileBrowserAttribute, 1, nsRTTIDefaultAllocator<nsFileBrowserAttribute>)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("Title", m_sDialogTitle),
-    WD_MEMBER_PROPERTY("Filter", m_sTypeFilter),
-    WD_MEMBER_PROPERTY("CustomAction", m_sCustomAction),
-    WD_BITFLAGS_MEMBER_PROPERTY("DependencyFlags", wdDependencyFlags, m_DependencyFlags),
+    NS_MEMBER_PROPERTY("Title", m_sDialogTitle),
+    NS_MEMBER_PROPERTY("Filter", m_sTypeFilter),
+    NS_MEMBER_PROPERTY("CustomAction", m_sCustomAction),
+    NS_BITFLAGS_MEMBER_PROPERTY("DependencyFlags", nsDependencyFlags, m_DependencyFlags),
   }
-  WD_END_PROPERTIES;
-  WD_BEGIN_FUNCTIONS
+  NS_END_PROPERTIES;
+  NS_BEGIN_FUNCTIONS
   {
-    WD_CONSTRUCTOR_PROPERTY(const char*, const char*),
+    NS_CONSTRUCTOR_PROPERTY(nsStringView, nsStringView),
+    NS_CONSTRUCTOR_PROPERTY(nsStringView, nsStringView, nsStringView),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_END_DYNAMIC_REFLECTED_TYPE;
 
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdAssetBrowserAttribute, 1, wdRTTIDefaultAllocator<wdAssetBrowserAttribute>)
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsExternalFileBrowserAttribute, 1, nsRTTIDefaultAllocator<nsExternalFileBrowserAttribute>)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("Filter", m_sTypeFilter),
-    WD_BITFLAGS_MEMBER_PROPERTY("DependencyFlags", wdDependencyFlags, m_DependencyFlags),
+    NS_MEMBER_PROPERTY("Title", m_sDialogTitle),
+    NS_MEMBER_PROPERTY("Filter", m_sTypeFilter),
   }
-  WD_END_PROPERTIES;
-  WD_BEGIN_FUNCTIONS
+  NS_END_PROPERTIES;
+  NS_BEGIN_FUNCTIONS
   {
-    WD_CONSTRUCTOR_PROPERTY(const char*),
+    NS_CONSTRUCTOR_PROPERTY(nsStringView, nsStringView),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_END_DYNAMIC_REFLECTED_TYPE;
 
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdDynamicEnumAttribute, 1, wdRTTIDefaultAllocator<wdDynamicEnumAttribute>)
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsAssetBrowserAttribute, 1, nsRTTIDefaultAllocator<nsAssetBrowserAttribute>)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-   WD_MEMBER_PROPERTY("DynamicEnum", m_sDynamicEnumName),
+    NS_MEMBER_PROPERTY("Filter", m_sTypeFilter),
+    NS_MEMBER_PROPERTY("RequiredTag", m_sRequiredTag),
+    NS_BITFLAGS_MEMBER_PROPERTY("DependencyFlags", nsDependencyFlags, m_DependencyFlags),
   }
-  WD_END_PROPERTIES;
-  WD_BEGIN_FUNCTIONS
+  NS_END_PROPERTIES;
+  NS_BEGIN_FUNCTIONS
   {
-   WD_CONSTRUCTOR_PROPERTY(const char*),
+    NS_CONSTRUCTOR_PROPERTY(const char*),
+    NS_CONSTRUCTOR_PROPERTY(const char*, nsBitflags<nsDependencyFlags>),
+    NS_CONSTRUCTOR_PROPERTY(const char*, const char*),
+    NS_CONSTRUCTOR_PROPERTY(const char*, const char*, nsBitflags<nsDependencyFlags>),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_END_DYNAMIC_REFLECTED_TYPE;
 
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdDynamicStringEnumAttribute, 1, wdRTTIDefaultAllocator<wdDynamicStringEnumAttribute>)
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsDynamicEnumAttribute, 1, nsRTTIDefaultAllocator<nsDynamicEnumAttribute>)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("DynamicEnum", m_sDynamicEnumName),
+   NS_MEMBER_PROPERTY("DynamicEnum", m_sDynamicEnumName),
   }
-  WD_END_PROPERTIES;
-  WD_BEGIN_FUNCTIONS
+  NS_END_PROPERTIES;
+  NS_BEGIN_FUNCTIONS
   {
-    WD_CONSTRUCTOR_PROPERTY(const char*),
+   NS_CONSTRUCTOR_PROPERTY(const char*),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_END_DYNAMIC_REFLECTED_TYPE;
+
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsDynamicStringEnumAttribute, 1, nsRTTIDefaultAllocator<nsDynamicStringEnumAttribute>)
+{
+  NS_BEGIN_PROPERTIES
+  {
+    NS_MEMBER_PROPERTY("DynamicEnum", m_sDynamicEnumName),
+  }
+  NS_END_PROPERTIES;
+  NS_BEGIN_FUNCTIONS
+  {
+    NS_CONSTRUCTOR_PROPERTY(const char*),
+  }
+  NS_END_FUNCTIONS;
+}
+NS_END_DYNAMIC_REFLECTED_TYPE;
+
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsDynamicBitflagsAttribute, 1, nsRTTIDefaultAllocator<nsDynamicBitflagsAttribute>)
+{
+  NS_BEGIN_PROPERTIES
+  {
+   NS_MEMBER_PROPERTY("DynamicBitflags", m_sDynamicBitflagsName),
+  }
+  NS_END_PROPERTIES;
+  NS_BEGIN_FUNCTIONS
+  {
+   NS_CONSTRUCTOR_PROPERTY(nsStringView),
+  }
+  NS_END_FUNCTIONS;
+}
+NS_END_DYNAMIC_REFLECTED_TYPE;
 // clang-format on
 
 //////////////////////////////////////////////////////////////////////////
 
 // clang-format off
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdManipulatorAttribute, 1, wdRTTINoAllocator)
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsManipulatorAttribute, 1, nsRTTINoAllocator)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("Property1", m_sProperty1),
-    WD_MEMBER_PROPERTY("Property2", m_sProperty2),
-    WD_MEMBER_PROPERTY("Property3", m_sProperty3),
-    WD_MEMBER_PROPERTY("Property4", m_sProperty4),
-    WD_MEMBER_PROPERTY("Property5", m_sProperty5),
-    WD_MEMBER_PROPERTY("Property6", m_sProperty6),
+    NS_MEMBER_PROPERTY("Property1", m_sProperty1),
+    NS_MEMBER_PROPERTY("Property2", m_sProperty2),
+    NS_MEMBER_PROPERTY("Property3", m_sProperty3),
+    NS_MEMBER_PROPERTY("Property4", m_sProperty4),
+    NS_MEMBER_PROPERTY("Property5", m_sProperty5),
+    NS_MEMBER_PROPERTY("Property6", m_sProperty6),
   }
-  WD_END_PROPERTIES;
+  NS_END_PROPERTIES;
 }
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_END_DYNAMIC_REFLECTED_TYPE;
 // clang-format on
 
-wdManipulatorAttribute::wdManipulatorAttribute(const char* szProperty1, const char* szProperty2 /*= nullptr*/, const char* szProperty3 /*= nullptr*/,
+nsManipulatorAttribute::nsManipulatorAttribute(const char* szProperty1, const char* szProperty2 /*= nullptr*/, const char* szProperty3 /*= nullptr*/,
   const char* szProperty4 /*= nullptr*/, const char* szProperty5 /*= nullptr*/, const char* szProperty6 /*= nullptr*/)
-{
-  m_sProperty1 = szProperty1;
-  m_sProperty2 = szProperty2;
-  m_sProperty3 = szProperty3;
-  m_sProperty4 = szProperty4;
-  m_sProperty5 = szProperty5;
-  m_sProperty6 = szProperty6;
-}
-
-//////////////////////////////////////////////////////////////////////////
-
-// clang-format off
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdSphereManipulatorAttribute, 1, wdRTTIDefaultAllocator<wdSphereManipulatorAttribute>)
-{
-  WD_BEGIN_FUNCTIONS
-  {
-    WD_CONSTRUCTOR_PROPERTY(const char*),
-    WD_CONSTRUCTOR_PROPERTY(const char*, const char*),
-  }
-  WD_END_FUNCTIONS;
-}
-WD_END_DYNAMIC_REFLECTED_TYPE;
-// clang-format on
-
-wdSphereManipulatorAttribute::wdSphereManipulatorAttribute()
-  : wdManipulatorAttribute(nullptr)
-{
-}
-
-wdSphereManipulatorAttribute::wdSphereManipulatorAttribute(const char* szOuterRadius, const char* szInnerRadius)
-  : wdManipulatorAttribute(szOuterRadius, szInnerRadius)
+  : m_sProperty1(szProperty1)
+  , m_sProperty2(szProperty2)
+  , m_sProperty3(szProperty3)
+  , m_sProperty4(szProperty4)
+  , m_sProperty5(szProperty5)
+  , m_sProperty6(szProperty6)
 {
 }
 
 //////////////////////////////////////////////////////////////////////////
 
 // clang-format off
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdCapsuleManipulatorAttribute, 1, wdRTTIDefaultAllocator<wdCapsuleManipulatorAttribute>)
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsSphereManipulatorAttribute, 1, nsRTTIDefaultAllocator<nsSphereManipulatorAttribute>)
 {
-  WD_BEGIN_FUNCTIONS
+  NS_BEGIN_FUNCTIONS
   {
-    WD_CONSTRUCTOR_PROPERTY(const char*, const char*),
+    NS_CONSTRUCTOR_PROPERTY(const char*),
+    NS_CONSTRUCTOR_PROPERTY(const char*, const char*),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_END_DYNAMIC_REFLECTED_TYPE;
 // clang-format on
 
-wdCapsuleManipulatorAttribute::wdCapsuleManipulatorAttribute()
-  : wdManipulatorAttribute(nullptr)
+nsSphereManipulatorAttribute::nsSphereManipulatorAttribute()
+  : nsManipulatorAttribute(nullptr)
 {
 }
 
-wdCapsuleManipulatorAttribute::wdCapsuleManipulatorAttribute(const char* szLength, const char* szRadius)
-  : wdManipulatorAttribute(szLength, szRadius)
+nsSphereManipulatorAttribute::nsSphereManipulatorAttribute(const char* szOuterRadius, const char* szInnerRadius)
+  : nsManipulatorAttribute(szOuterRadius, szInnerRadius)
+{
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+// clang-format off
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsCapsuleManipulatorAttribute, 1, nsRTTIDefaultAllocator<nsCapsuleManipulatorAttribute>)
+{
+  NS_BEGIN_FUNCTIONS
+  {
+    NS_CONSTRUCTOR_PROPERTY(const char*, const char*),
+  }
+  NS_END_FUNCTIONS;
+}
+NS_END_DYNAMIC_REFLECTED_TYPE;
+// clang-format on
+
+nsCapsuleManipulatorAttribute::nsCapsuleManipulatorAttribute()
+  : nsManipulatorAttribute(nullptr)
+{
+}
+
+nsCapsuleManipulatorAttribute::nsCapsuleManipulatorAttribute(const char* szLength, const char* szRadius)
+  : nsManipulatorAttribute(szLength, szRadius)
 {
 }
 
@@ -427,33 +463,33 @@ wdCapsuleManipulatorAttribute::wdCapsuleManipulatorAttribute(const char* szLengt
 //////////////////////////////////////////////////////////////////////////
 
 // clang-format off
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdBoxManipulatorAttribute, 1, wdRTTIDefaultAllocator<wdBoxManipulatorAttribute>)
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsBoxManipulatorAttribute, 1, nsRTTIDefaultAllocator<nsBoxManipulatorAttribute>)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("scale", m_fSizeScale),
-    WD_MEMBER_PROPERTY("recenter", m_bRecenterParent),
+    NS_MEMBER_PROPERTY("scale", m_fSizeScale),
+    NS_MEMBER_PROPERTY("recenter", m_bRecenterParent),
   }
-  WD_END_PROPERTIES;
-  WD_BEGIN_FUNCTIONS
+  NS_END_PROPERTIES;
+  NS_BEGIN_FUNCTIONS
   {
-    WD_CONSTRUCTOR_PROPERTY(const char*, bool, float),
-    WD_CONSTRUCTOR_PROPERTY(const char*, bool, float),
-    WD_CONSTRUCTOR_PROPERTY(const char*, bool, float, const char*),
-    WD_CONSTRUCTOR_PROPERTY(const char*, bool, float, const char*, const char*),
+    NS_CONSTRUCTOR_PROPERTY(const char*, bool, float),
+    NS_CONSTRUCTOR_PROPERTY(const char*, bool, float),
+    NS_CONSTRUCTOR_PROPERTY(const char*, bool, float, const char*),
+    NS_CONSTRUCTOR_PROPERTY(const char*, bool, float, const char*, const char*),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_END_DYNAMIC_REFLECTED_TYPE;
 // clang-format on
 
-wdBoxManipulatorAttribute::wdBoxManipulatorAttribute()
-  : wdManipulatorAttribute(nullptr)
+nsBoxManipulatorAttribute::nsBoxManipulatorAttribute()
+  : nsManipulatorAttribute(nullptr)
 {
 }
 
-wdBoxManipulatorAttribute::wdBoxManipulatorAttribute(const char* szSizeProperty, float fSizeScale, bool bRecenterParent, const char* szOffsetProperty, const char* szRotationProperty)
-  : wdManipulatorAttribute(szSizeProperty, szOffsetProperty, szRotationProperty)
+nsBoxManipulatorAttribute::nsBoxManipulatorAttribute(const char* szSizeProperty, float fSizeScale, bool bRecenterParent, const char* szOffsetProperty, const char* szRotationProperty)
+  : nsManipulatorAttribute(szSizeProperty, szOffsetProperty, szRotationProperty)
 {
   m_bRecenterParent = bRecenterParent;
   m_fSizeScale = fSizeScale;
@@ -462,87 +498,87 @@ wdBoxManipulatorAttribute::wdBoxManipulatorAttribute(const char* szSizeProperty,
 //////////////////////////////////////////////////////////////////////////
 
 // clang-format off
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdNonUniformBoxManipulatorAttribute, 1, wdRTTIDefaultAllocator<wdNonUniformBoxManipulatorAttribute>)
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsNonUniformBoxManipulatorAttribute, 1, nsRTTIDefaultAllocator<nsNonUniformBoxManipulatorAttribute>)
 {
-  WD_BEGIN_FUNCTIONS
+  NS_BEGIN_FUNCTIONS
   {
-    WD_CONSTRUCTOR_PROPERTY(const char*, const char*, const char*),
-    WD_CONSTRUCTOR_PROPERTY(const char*, const char*, const char*, const char*, const char*, const char*),
+    NS_CONSTRUCTOR_PROPERTY(const char*, const char*, const char*),
+    NS_CONSTRUCTOR_PROPERTY(const char*, const char*, const char*, const char*, const char*, const char*),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_END_DYNAMIC_REFLECTED_TYPE;
 // clang-format on
 
-wdNonUniformBoxManipulatorAttribute::wdNonUniformBoxManipulatorAttribute()
-  : wdManipulatorAttribute(nullptr)
+nsNonUniformBoxManipulatorAttribute::nsNonUniformBoxManipulatorAttribute()
+  : nsManipulatorAttribute(nullptr)
 {
 }
 
-wdNonUniformBoxManipulatorAttribute::wdNonUniformBoxManipulatorAttribute(
+nsNonUniformBoxManipulatorAttribute::nsNonUniformBoxManipulatorAttribute(
   const char* szNegXProp, const char* szPosXProp, const char* szNegYProp, const char* szPosYProp, const char* szNegZProp, const char* szPosZProp)
-  : wdManipulatorAttribute(szNegXProp, szPosXProp, szNegYProp, szPosYProp, szNegZProp, szPosZProp)
+  : nsManipulatorAttribute(szNegXProp, szPosXProp, szNegYProp, szPosYProp, szNegZProp, szPosZProp)
 {
 }
 
-wdNonUniformBoxManipulatorAttribute::wdNonUniformBoxManipulatorAttribute(const char* szSizeX, const char* szSizeY, const char* szSizeZ)
-  : wdManipulatorAttribute(szSizeX, szSizeY, szSizeZ)
-{
-}
-
-//////////////////////////////////////////////////////////////////////////
-
-// clang-format off
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdConeLengthManipulatorAttribute, 1, wdRTTIDefaultAllocator<wdConeLengthManipulatorAttribute>)
-{
-  WD_BEGIN_FUNCTIONS
-  {
-    WD_CONSTRUCTOR_PROPERTY(const char*),
-  }
-  WD_END_FUNCTIONS;
-}
-WD_END_DYNAMIC_REFLECTED_TYPE;
-// clang-format on
-
-wdConeLengthManipulatorAttribute::wdConeLengthManipulatorAttribute()
-  : wdManipulatorAttribute(nullptr)
-{
-}
-
-wdConeLengthManipulatorAttribute::wdConeLengthManipulatorAttribute(const char* szRadiusProperty)
-  : wdManipulatorAttribute(szRadiusProperty)
+nsNonUniformBoxManipulatorAttribute::nsNonUniformBoxManipulatorAttribute(const char* szSizeX, const char* szSizeY, const char* szSizeZ)
+  : nsManipulatorAttribute(szSizeX, szSizeY, szSizeZ)
 {
 }
 
 //////////////////////////////////////////////////////////////////////////
 
 // clang-format off
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdConeAngleManipulatorAttribute, 1, wdRTTIDefaultAllocator<wdConeAngleManipulatorAttribute>)
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsConeLengthManipulatorAttribute, 1, nsRTTIDefaultAllocator<nsConeLengthManipulatorAttribute>)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_FUNCTIONS
   {
-    WD_MEMBER_PROPERTY("scale", m_fScale),
+    NS_CONSTRUCTOR_PROPERTY(const char*),
   }
-  WD_END_PROPERTIES;
-  WD_BEGIN_FUNCTIONS
-  {
-    WD_CONSTRUCTOR_PROPERTY(const char*),
-    WD_CONSTRUCTOR_PROPERTY(const char*, float),
-    WD_CONSTRUCTOR_PROPERTY(const char*, float, const char*),
-  }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_END_DYNAMIC_REFLECTED_TYPE;
 // clang-format on
 
-wdConeAngleManipulatorAttribute::wdConeAngleManipulatorAttribute()
-  : wdManipulatorAttribute(nullptr)
+nsConeLengthManipulatorAttribute::nsConeLengthManipulatorAttribute()
+  : nsManipulatorAttribute(nullptr)
+{
+}
+
+nsConeLengthManipulatorAttribute::nsConeLengthManipulatorAttribute(const char* szRadiusProperty)
+  : nsManipulatorAttribute(szRadiusProperty)
+{
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+// clang-format off
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsConeAngleManipulatorAttribute, 1, nsRTTIDefaultAllocator<nsConeAngleManipulatorAttribute>)
+{
+  NS_BEGIN_PROPERTIES
+  {
+    NS_MEMBER_PROPERTY("scale", m_fScale),
+  }
+  NS_END_PROPERTIES;
+  NS_BEGIN_FUNCTIONS
+  {
+    NS_CONSTRUCTOR_PROPERTY(const char*),
+    NS_CONSTRUCTOR_PROPERTY(const char*, float),
+    NS_CONSTRUCTOR_PROPERTY(const char*, float, const char*),
+  }
+  NS_END_FUNCTIONS;
+}
+NS_END_DYNAMIC_REFLECTED_TYPE;
+// clang-format on
+
+nsConeAngleManipulatorAttribute::nsConeAngleManipulatorAttribute()
+  : nsManipulatorAttribute(nullptr)
 {
   m_fScale = 1.0f;
 }
 
-wdConeAngleManipulatorAttribute::wdConeAngleManipulatorAttribute(const char* szAngleProperty, float fScale, const char* szRadiusProperty)
-  : wdManipulatorAttribute(szAngleProperty, szRadiusProperty)
+nsConeAngleManipulatorAttribute::nsConeAngleManipulatorAttribute(const char* szAngleProperty, float fScale, const char* szRadiusProperty)
+  : nsManipulatorAttribute(szAngleProperty, szRadiusProperty)
 {
   m_fScale = fScale;
 }
@@ -550,127 +586,127 @@ wdConeAngleManipulatorAttribute::wdConeAngleManipulatorAttribute(const char* szA
 //////////////////////////////////////////////////////////////////////////
 
 // clang-format off
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdTransformManipulatorAttribute, 1, wdRTTIDefaultAllocator<wdTransformManipulatorAttribute>)
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsTransformManipulatorAttribute, 1, nsRTTIDefaultAllocator<nsTransformManipulatorAttribute>)
 {
-  WD_BEGIN_FUNCTIONS
+  NS_BEGIN_FUNCTIONS
   {
-    WD_CONSTRUCTOR_PROPERTY(const char*, const char*, const char*),
+    NS_CONSTRUCTOR_PROPERTY(const char*, const char*, const char*),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_END_DYNAMIC_REFLECTED_TYPE;
 // clang-format on
 
-wdTransformManipulatorAttribute::wdTransformManipulatorAttribute()
-  : wdManipulatorAttribute(nullptr)
+nsTransformManipulatorAttribute::nsTransformManipulatorAttribute()
+  : nsManipulatorAttribute(nullptr)
 {
 }
 
-wdTransformManipulatorAttribute::wdTransformManipulatorAttribute(
+nsTransformManipulatorAttribute::nsTransformManipulatorAttribute(
   const char* szTranslateProperty, const char* szRotateProperty, const char* szScaleProperty, const char* szOffsetTranslation, const char* szOffsetRotation)
-  : wdManipulatorAttribute(szTranslateProperty, szRotateProperty, szScaleProperty, szOffsetTranslation, szOffsetRotation)
+  : nsManipulatorAttribute(szTranslateProperty, szRotateProperty, szScaleProperty, szOffsetTranslation, szOffsetRotation)
 {
 }
 
 //////////////////////////////////////////////////////////////////////////
 
 // clang-format off
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdBoneManipulatorAttribute, 1, wdRTTIDefaultAllocator<wdBoneManipulatorAttribute>)
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsBoneManipulatorAttribute, 1, nsRTTIDefaultAllocator<nsBoneManipulatorAttribute>)
 {
-  WD_BEGIN_FUNCTIONS
+  NS_BEGIN_FUNCTIONS
   {
-    WD_CONSTRUCTOR_PROPERTY(const char*, const char*),
+    NS_CONSTRUCTOR_PROPERTY(const char*, const char*),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_END_DYNAMIC_REFLECTED_TYPE;
 // clang-format on
 
-wdBoneManipulatorAttribute::wdBoneManipulatorAttribute()
-  : wdManipulatorAttribute(nullptr)
+nsBoneManipulatorAttribute::nsBoneManipulatorAttribute()
+  : nsManipulatorAttribute(nullptr)
 {
 }
 
-wdBoneManipulatorAttribute::wdBoneManipulatorAttribute(const char* szTransformProperty, const char* szBindTo)
-  : wdManipulatorAttribute(szTransformProperty, szBindTo)
+nsBoneManipulatorAttribute::nsBoneManipulatorAttribute(const char* szTransformProperty, const char* szBindTo)
+  : nsManipulatorAttribute(szTransformProperty, szBindTo)
 {
 }
 
 //////////////////////////////////////////////////////////////////////////
 
 // clang-format off
-WD_BEGIN_STATIC_REFLECTED_BITFLAGS(wdVisualizerAnchor, 1)
-  WD_BITFLAGS_CONSTANTS(wdVisualizerAnchor::Center, wdVisualizerAnchor::PosX, wdVisualizerAnchor::NegX, wdVisualizerAnchor::PosY, wdVisualizerAnchor::NegY, wdVisualizerAnchor::PosZ, wdVisualizerAnchor::NegZ)
-WD_END_STATIC_REFLECTED_BITFLAGS;
+NS_BEGIN_STATIC_REFLECTED_BITFLAGS(nsVisualizerAnchor, 1)
+  NS_BITFLAGS_CONSTANTS(nsVisualizerAnchor::Center, nsVisualizerAnchor::PosX, nsVisualizerAnchor::NegX, nsVisualizerAnchor::PosY, nsVisualizerAnchor::NegY, nsVisualizerAnchor::PosZ, nsVisualizerAnchor::NegZ)
+NS_END_STATIC_REFLECTED_BITFLAGS;
 // clang-format on
 
 //////////////////////////////////////////////////////////////////////////
 
 // clang-format off
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdVisualizerAttribute, 1, wdRTTINoAllocator)
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsVisualizerAttribute, 1, nsRTTINoAllocator)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("Property1", m_sProperty1),
-    WD_MEMBER_PROPERTY("Property2", m_sProperty2),
-    WD_MEMBER_PROPERTY("Property3", m_sProperty3),
-    WD_MEMBER_PROPERTY("Property4", m_sProperty4),
-    WD_MEMBER_PROPERTY("Property5", m_sProperty5),
-    WD_BITFLAGS_MEMBER_PROPERTY("Anchor", wdVisualizerAnchor, m_Anchor),
+    NS_MEMBER_PROPERTY("Property1", m_sProperty1),
+    NS_MEMBER_PROPERTY("Property2", m_sProperty2),
+    NS_MEMBER_PROPERTY("Property3", m_sProperty3),
+    NS_MEMBER_PROPERTY("Property4", m_sProperty4),
+    NS_MEMBER_PROPERTY("Property5", m_sProperty5),
+    NS_BITFLAGS_MEMBER_PROPERTY("Anchor", nsVisualizerAnchor, m_Anchor),
   }
-  WD_END_PROPERTIES;
+  NS_END_PROPERTIES;
 }
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_END_DYNAMIC_REFLECTED_TYPE;
 // clang-format on
 
-wdVisualizerAttribute::wdVisualizerAttribute(const char* szProperty1, const char* szProperty2 /*= nullptr*/, const char* szProperty3 /*= nullptr*/,
+nsVisualizerAttribute::nsVisualizerAttribute(const char* szProperty1, const char* szProperty2 /*= nullptr*/, const char* szProperty3 /*= nullptr*/,
   const char* szProperty4 /*= nullptr*/, const char* szProperty5 /*= nullptr*/)
+  : m_sProperty1(szProperty1)
+  , m_sProperty2(szProperty2)
+  , m_sProperty3(szProperty3)
+  , m_sProperty4(szProperty4)
+  , m_sProperty5(szProperty5)
 {
-  m_sProperty1 = szProperty1;
-  m_sProperty2 = szProperty2;
-  m_sProperty3 = szProperty3;
-  m_sProperty4 = szProperty4;
-  m_sProperty5 = szProperty5;
 }
 
 //////////////////////////////////////////////////////////////////////////
 
 // clang-format off
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdBoxVisualizerAttribute, 1, wdRTTIDefaultAllocator<wdBoxVisualizerAttribute>)
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsBoxVisualizerAttribute, 1, nsRTTIDefaultAllocator<nsBoxVisualizerAttribute>)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("Color", m_Color),
-    WD_MEMBER_PROPERTY("OffsetOrScale", m_vOffsetOrScale),
-    WD_MEMBER_PROPERTY("SizeScale", m_fSizeScale),
+    NS_MEMBER_PROPERTY("Color", m_Color),
+    NS_MEMBER_PROPERTY("OffsetOrScale", m_vOffsetOrScale),
+    NS_MEMBER_PROPERTY("SizeScale", m_fSizeScale),
   }
-  WD_END_PROPERTIES;
-  WD_BEGIN_FUNCTIONS
+  NS_END_PROPERTIES;
+  NS_BEGIN_FUNCTIONS
   {
-    WD_CONSTRUCTOR_PROPERTY(const char*, float, const wdColor&, const char*, wdBitflags<wdVisualizerAnchor>, wdVec3, const char*, const char*),
-    WD_CONSTRUCTOR_PROPERTY(const char*, float, const wdColor&, const char*, wdBitflags<wdVisualizerAnchor>, wdVec3, const char*),
-    WD_CONSTRUCTOR_PROPERTY(const char*, float, const wdColor&, const char*, wdBitflags<wdVisualizerAnchor>, wdVec3),
-    WD_CONSTRUCTOR_PROPERTY(const char*, float, const wdColor&, const char*, wdBitflags<wdVisualizerAnchor>),
-    WD_CONSTRUCTOR_PROPERTY(const char*, float, const wdColor&, const char*),
-    WD_CONSTRUCTOR_PROPERTY(const char*, float, const wdColor&),
-    WD_CONSTRUCTOR_PROPERTY(const char*, float),
-    WD_CONSTRUCTOR_PROPERTY(const char*),
+    NS_CONSTRUCTOR_PROPERTY(const char*, float, const nsColor&, const char*, nsBitflags<nsVisualizerAnchor>, nsVec3, const char*, const char*),
+    NS_CONSTRUCTOR_PROPERTY(const char*, float, const nsColor&, const char*, nsBitflags<nsVisualizerAnchor>, nsVec3, const char*),
+    NS_CONSTRUCTOR_PROPERTY(const char*, float, const nsColor&, const char*, nsBitflags<nsVisualizerAnchor>, nsVec3),
+    NS_CONSTRUCTOR_PROPERTY(const char*, float, const nsColor&, const char*, nsBitflags<nsVisualizerAnchor>),
+    NS_CONSTRUCTOR_PROPERTY(const char*, float, const nsColor&, const char*),
+    NS_CONSTRUCTOR_PROPERTY(const char*, float, const nsColor&),
+    NS_CONSTRUCTOR_PROPERTY(const char*, float),
+    NS_CONSTRUCTOR_PROPERTY(const char*),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_END_DYNAMIC_REFLECTED_TYPE;
 // clang-format on
 
-wdBoxVisualizerAttribute::wdBoxVisualizerAttribute()
-  : wdVisualizerAttribute(nullptr)
+nsBoxVisualizerAttribute::nsBoxVisualizerAttribute()
+  : nsVisualizerAttribute(nullptr)
 {
 }
 
-wdBoxVisualizerAttribute::wdBoxVisualizerAttribute(const char* szSizeProperty, float fSizeScale, const wdColor& fixedColor /*= wdColorScheme::LightUI(wdColorScheme::Grape)*/, const char* szColorProperty /*= nullptr*/, wdBitflags<wdVisualizerAnchor> anchor /*= wdVisualizerAnchor::Center*/, wdVec3 vOffsetOrScale /*= wdVec3::ZeroVector*/, const char* szOffsetProperty /*= nullptr*/, const char* szRotationProperty /*= nullptr*/)
-  : wdVisualizerAttribute(szSizeProperty, szColorProperty, szOffsetProperty, szRotationProperty)
+nsBoxVisualizerAttribute::nsBoxVisualizerAttribute(const char* szSizeProperty, float fSizeScale, const nsColor& fixedColor /*= nsColorScheme::LightUI(nsColorScheme::Grape)*/, const char* szColorProperty /*= nullptr*/, nsBitflags<nsVisualizerAnchor> anchor /*= nsVisualizerAnchor::Center*/, nsVec3 vOffsetOrScale /*= nsVec3::MakeZero*/, const char* szOffsetProperty /*= nullptr*/, const char* szRotationProperty /*= nullptr*/)
+  : nsVisualizerAttribute(szSizeProperty, szColorProperty, szOffsetProperty, szRotationProperty)
+  , m_Color(fixedColor)
+  , m_vOffsetOrScale(vOffsetOrScale)
 {
-  m_Color = fixedColor;
-  m_vOffsetOrScale = vOffsetOrScale;
   m_Anchor = anchor;
   m_fSizeScale = fSizeScale;
 }
@@ -678,420 +714,446 @@ wdBoxVisualizerAttribute::wdBoxVisualizerAttribute(const char* szSizeProperty, f
 //////////////////////////////////////////////////////////////////////////
 
 // clang-format off
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdSphereVisualizerAttribute, 1, wdRTTIDefaultAllocator<wdSphereVisualizerAttribute>)
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsSphereVisualizerAttribute, 1, nsRTTIDefaultAllocator<nsSphereVisualizerAttribute>)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("Color", m_Color),
-    WD_MEMBER_PROPERTY("OffsetOrScale", m_vOffsetOrScale),
+    NS_MEMBER_PROPERTY("Color", m_Color),
+    NS_MEMBER_PROPERTY("OffsetOrScale", m_vOffsetOrScale),
   }
-  WD_END_PROPERTIES;
-  WD_BEGIN_FUNCTIONS
+  NS_END_PROPERTIES;
+  NS_BEGIN_FUNCTIONS
   {
-    WD_CONSTRUCTOR_PROPERTY(const char*, const wdColor&, const char*, wdBitflags<wdVisualizerAnchor>, wdVec3, const char*),
-    WD_CONSTRUCTOR_PROPERTY(const char*, const wdColor&, const char*, wdBitflags<wdVisualizerAnchor>, wdVec3),
-    WD_CONSTRUCTOR_PROPERTY(const char*, const wdColor&, const char*, wdBitflags<wdVisualizerAnchor>),
-    WD_CONSTRUCTOR_PROPERTY(const char*, const wdColor&, const char*),
-    WD_CONSTRUCTOR_PROPERTY(const char*, const wdColor&),
-    WD_CONSTRUCTOR_PROPERTY(const char*),
+    NS_CONSTRUCTOR_PROPERTY(const char*, const nsColor&, const char*, nsBitflags<nsVisualizerAnchor>, nsVec3, const char*),
+    NS_CONSTRUCTOR_PROPERTY(const char*, const nsColor&, const char*, nsBitflags<nsVisualizerAnchor>, nsVec3),
+    NS_CONSTRUCTOR_PROPERTY(const char*, const nsColor&, const char*, nsBitflags<nsVisualizerAnchor>),
+    NS_CONSTRUCTOR_PROPERTY(const char*, const nsColor&, const char*),
+    NS_CONSTRUCTOR_PROPERTY(const char*, const nsColor&),
+    NS_CONSTRUCTOR_PROPERTY(const char*),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_END_DYNAMIC_REFLECTED_TYPE;
 // clang-format on
 
-wdSphereVisualizerAttribute::wdSphereVisualizerAttribute()
-  : wdVisualizerAttribute(nullptr)
+nsSphereVisualizerAttribute::nsSphereVisualizerAttribute()
+  : nsVisualizerAttribute(nullptr)
 {
 }
 
-wdSphereVisualizerAttribute::wdSphereVisualizerAttribute(const char* szRadiusProperty, const wdColor& fixedColor /*= wdColorScheme::LightUI(wdColorScheme::Grape)*/, const char* szColorProperty /*= nullptr*/, wdBitflags<wdVisualizerAnchor> anchor /*= wdVisualizerAnchor::Center*/, wdVec3 vOffsetOrScale /*= wdVec3::ZeroVector*/, const char* szOffsetProperty /*= nullptr*/)
-  : wdVisualizerAttribute(szRadiusProperty, szColorProperty, szOffsetProperty)
+nsSphereVisualizerAttribute::nsSphereVisualizerAttribute(const char* szRadiusProperty, const nsColor& fixedColor /*= nsColorScheme::LightUI(nsColorScheme::Grape)*/, const char* szColorProperty /*= nullptr*/, nsBitflags<nsVisualizerAnchor> anchor /*= nsVisualizerAnchor::Center*/, nsVec3 vOffsetOrScale /*= nsVec3::MakeZero*/, const char* szOffsetProperty /*= nullptr*/)
+  : nsVisualizerAttribute(szRadiusProperty, szColorProperty, szOffsetProperty)
+  , m_Color(fixedColor)
+  , m_vOffsetOrScale(vOffsetOrScale)
 {
-  m_Color = fixedColor;
-  m_vOffsetOrScale = vOffsetOrScale;
   m_Anchor = anchor;
 }
 
 //////////////////////////////////////////////////////////////////////////
 
 // clang-format off
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdCapsuleVisualizerAttribute, 1, wdRTTIDefaultAllocator<wdCapsuleVisualizerAttribute>)
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsCapsuleVisualizerAttribute, 1, nsRTTIDefaultAllocator<nsCapsuleVisualizerAttribute>)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("Color", m_Color),
+    NS_MEMBER_PROPERTY("Color", m_Color),
   }
-  WD_END_PROPERTIES;
-  WD_BEGIN_FUNCTIONS
+  NS_END_PROPERTIES;
+  NS_BEGIN_FUNCTIONS
   {
-    WD_CONSTRUCTOR_PROPERTY(const char*, const char*, const wdColor&, const char*, wdBitflags<wdVisualizerAnchor>),
-    WD_CONSTRUCTOR_PROPERTY(const char*, const char*, const wdColor&, const char*),
-    WD_CONSTRUCTOR_PROPERTY(const char*, const char*, const wdColor&),
-    WD_CONSTRUCTOR_PROPERTY(const char*, const char*),
+    NS_CONSTRUCTOR_PROPERTY(const char*, const char*, const nsColor&, const char*, nsBitflags<nsVisualizerAnchor>),
+    NS_CONSTRUCTOR_PROPERTY(const char*, const char*, const nsColor&, const char*),
+    NS_CONSTRUCTOR_PROPERTY(const char*, const char*, const nsColor&),
+    NS_CONSTRUCTOR_PROPERTY(const char*, const char*),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_END_DYNAMIC_REFLECTED_TYPE;
 // clang-format on
 
-wdCapsuleVisualizerAttribute::wdCapsuleVisualizerAttribute()
-  : wdVisualizerAttribute(nullptr)
+nsCapsuleVisualizerAttribute::nsCapsuleVisualizerAttribute()
+  : nsVisualizerAttribute(nullptr)
 {
 }
 
-wdCapsuleVisualizerAttribute::wdCapsuleVisualizerAttribute(const char* szHeightProperty, const char* szRadiusProperty, const wdColor& fixedColor /*= wdColorScheme::LightUI(wdColorScheme::Grape)*/, const char* szColorProperty /*= nullptr*/, wdBitflags<wdVisualizerAnchor> anchor /*= wdVisualizerAnchor::Center*/)
-  : wdVisualizerAttribute(szHeightProperty, szRadiusProperty, szColorProperty)
+nsCapsuleVisualizerAttribute::nsCapsuleVisualizerAttribute(const char* szHeightProperty, const char* szRadiusProperty, const nsColor& fixedColor /*= nsColorScheme::LightUI(nsColorScheme::Grape)*/, const char* szColorProperty /*= nullptr*/, nsBitflags<nsVisualizerAnchor> anchor /*= nsVisualizerAnchor::Center*/)
+  : nsVisualizerAttribute(szHeightProperty, szRadiusProperty, szColorProperty)
+  , m_Color(fixedColor)
 {
-  m_Color = fixedColor;
   m_Anchor = anchor;
 }
 
 //////////////////////////////////////////////////////////////////////////
 
 // clang-format off
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdCylinderVisualizerAttribute, 1, wdRTTIDefaultAllocator<wdCylinderVisualizerAttribute>)
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsCylinderVisualizerAttribute, 1, nsRTTIDefaultAllocator<nsCylinderVisualizerAttribute>)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("Color", m_Color),
-    WD_MEMBER_PROPERTY("OffsetOrScale", m_vOffsetOrScale),
-    WD_ENUM_MEMBER_PROPERTY("Axis", wdBasisAxis, m_Axis),
+    NS_MEMBER_PROPERTY("Color", m_Color),
+    NS_MEMBER_PROPERTY("OffsetOrScale", m_vOffsetOrScale),
+    NS_ENUM_MEMBER_PROPERTY("Axis", nsBasisAxis, m_Axis),
   }
-  WD_END_PROPERTIES;
-  WD_BEGIN_FUNCTIONS
+  NS_END_PROPERTIES;
+  NS_BEGIN_FUNCTIONS
   {
-    WD_CONSTRUCTOR_PROPERTY(wdEnum<wdBasisAxis>, const char*, const char*, const wdColor&, const char*, wdBitflags<wdVisualizerAnchor>, wdVec3, const char*),
-    WD_CONSTRUCTOR_PROPERTY(wdEnum<wdBasisAxis>, const char*, const char*, const wdColor&, const char*, wdBitflags<wdVisualizerAnchor>, wdVec3),
-    WD_CONSTRUCTOR_PROPERTY(wdEnum<wdBasisAxis>, const char*, const char*, const wdColor&, const char*, wdBitflags<wdVisualizerAnchor>),
-    WD_CONSTRUCTOR_PROPERTY(wdEnum<wdBasisAxis>, const char*, const char*, const wdColor&, const char*),
-    WD_CONSTRUCTOR_PROPERTY(wdEnum<wdBasisAxis>, const char*, const char*, const wdColor&),
-    WD_CONSTRUCTOR_PROPERTY(wdEnum<wdBasisAxis>, const char*, const char*),
-    WD_CONSTRUCTOR_PROPERTY(const char*, const char*, const char*, const wdColor&, const char*, wdBitflags<wdVisualizerAnchor>, wdVec3, const char*),
-    WD_CONSTRUCTOR_PROPERTY(const char*, const char*, const char*, const wdColor&, const char*, wdBitflags<wdVisualizerAnchor>, wdVec3),
-    WD_CONSTRUCTOR_PROPERTY(const char*, const char*, const char*, const wdColor&, const char*, wdBitflags<wdVisualizerAnchor>),
-    WD_CONSTRUCTOR_PROPERTY(const char*, const char*, const char*, const wdColor&, const char*),
-    WD_CONSTRUCTOR_PROPERTY(const char*, const char*, const char*, const wdColor&),
-    WD_CONSTRUCTOR_PROPERTY(const char*, const char*, const char*),
+    NS_CONSTRUCTOR_PROPERTY(nsEnum<nsBasisAxis>, const char*, const char*, const nsColor&, const char*, nsBitflags<nsVisualizerAnchor>, nsVec3, const char*),
+    NS_CONSTRUCTOR_PROPERTY(nsEnum<nsBasisAxis>, const char*, const char*, const nsColor&, const char*, nsBitflags<nsVisualizerAnchor>, nsVec3),
+    NS_CONSTRUCTOR_PROPERTY(nsEnum<nsBasisAxis>, const char*, const char*, const nsColor&, const char*, nsBitflags<nsVisualizerAnchor>),
+    NS_CONSTRUCTOR_PROPERTY(nsEnum<nsBasisAxis>, const char*, const char*, const nsColor&, const char*),
+    NS_CONSTRUCTOR_PROPERTY(nsEnum<nsBasisAxis>, const char*, const char*, const nsColor&),
+    NS_CONSTRUCTOR_PROPERTY(nsEnum<nsBasisAxis>, const char*, const char*),
+    NS_CONSTRUCTOR_PROPERTY(const char*, const char*, const char*, const nsColor&, const char*, nsBitflags<nsVisualizerAnchor>, nsVec3, const char*),
+    NS_CONSTRUCTOR_PROPERTY(const char*, const char*, const char*, const nsColor&, const char*, nsBitflags<nsVisualizerAnchor>, nsVec3),
+    NS_CONSTRUCTOR_PROPERTY(const char*, const char*, const char*, const nsColor&, const char*, nsBitflags<nsVisualizerAnchor>),
+    NS_CONSTRUCTOR_PROPERTY(const char*, const char*, const char*, const nsColor&, const char*),
+    NS_CONSTRUCTOR_PROPERTY(const char*, const char*, const char*, const nsColor&),
+    NS_CONSTRUCTOR_PROPERTY(const char*, const char*, const char*),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_END_DYNAMIC_REFLECTED_TYPE;
 // clang-format on
 
-wdCylinderVisualizerAttribute::wdCylinderVisualizerAttribute()
-  : wdVisualizerAttribute(nullptr)
+nsCylinderVisualizerAttribute::nsCylinderVisualizerAttribute()
+  : nsVisualizerAttribute(nullptr)
 {
 }
 
-wdCylinderVisualizerAttribute::wdCylinderVisualizerAttribute(wdEnum<wdBasisAxis> axis, const char* szHeightProperty, const char* szRadiusProperty, const wdColor& fixedColor /*= wdColorScheme::LightUI(wdColorScheme::Grape)*/, const char* szColorProperty /*= nullptr*/, wdBitflags<wdVisualizerAnchor> anchor /*= wdVisualizerAnchor::Center*/, wdVec3 vOffsetOrScale /*= wdVec3::ZeroVector*/, const char* szOffsetProperty /*= nullptr*/)
-  : wdVisualizerAttribute(szHeightProperty, szRadiusProperty, szColorProperty, szOffsetProperty)
+nsCylinderVisualizerAttribute::nsCylinderVisualizerAttribute(nsEnum<nsBasisAxis> axis, const char* szHeightProperty, const char* szRadiusProperty, const nsColor& fixedColor /*= nsColorScheme::LightUI(nsColorScheme::Grape)*/, const char* szColorProperty /*= nullptr*/, nsBitflags<nsVisualizerAnchor> anchor /*= nsVisualizerAnchor::Center*/, nsVec3 vOffsetOrScale /*= nsVec3::MakeZero*/, const char* szOffsetProperty /*= nullptr*/)
+  : nsVisualizerAttribute(szHeightProperty, szRadiusProperty, szColorProperty, szOffsetProperty)
+  , m_Color(fixedColor)
+  , m_vOffsetOrScale(vOffsetOrScale)
+  , m_Axis(axis)
 {
-  m_Color = fixedColor;
-  m_vOffsetOrScale = vOffsetOrScale;
-  m_Axis = axis;
   m_Anchor = anchor;
 }
 
-wdCylinderVisualizerAttribute::wdCylinderVisualizerAttribute(const char* szAxisProperty, const char* szHeightProperty, const char* szRadiusProperty, const wdColor& fixedColor /*= wdColorScheme::LightUI(wdColorScheme::Grape)*/, const char* szColorProperty /*= nullptr*/, wdBitflags<wdVisualizerAnchor> anchor /*= wdVisualizerAnchor::Center*/, wdVec3 vOffsetOrScale /*= wdVec3::ZeroVector()*/, const char* szOffsetProperty /*= nullptr*/)
-  : wdVisualizerAttribute(szHeightProperty, szRadiusProperty, szColorProperty, szOffsetProperty, szAxisProperty)
+nsCylinderVisualizerAttribute::nsCylinderVisualizerAttribute(const char* szAxisProperty, const char* szHeightProperty, const char* szRadiusProperty, const nsColor& fixedColor /*= nsColorScheme::LightUI(nsColorScheme::Grape)*/, const char* szColorProperty /*= nullptr*/, nsBitflags<nsVisualizerAnchor> anchor /*= nsVisualizerAnchor::Center*/, nsVec3 vOffsetOrScale /*= nsVec3::MakeZero()*/, const char* szOffsetProperty /*= nullptr*/)
+  : nsVisualizerAttribute(szHeightProperty, szRadiusProperty, szColorProperty, szOffsetProperty, szAxisProperty)
+  , m_Color(fixedColor)
+  , m_vOffsetOrScale(vOffsetOrScale)
 {
-  m_Color = fixedColor;
-  m_vOffsetOrScale = vOffsetOrScale;
-  m_Axis = wdBasisAxis::Default;
+  m_Axis = nsBasisAxis::Default;
   m_Anchor = anchor;
 }
 
 //////////////////////////////////////////////////////////////////////////
 
 // clang-format off
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdDirectionVisualizerAttribute, 1, wdRTTIDefaultAllocator<wdDirectionVisualizerAttribute>)
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsDirectionVisualizerAttribute, 1, nsRTTIDefaultAllocator<nsDirectionVisualizerAttribute>)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_ENUM_MEMBER_PROPERTY("Axis", wdBasisAxis, m_Axis),
-    WD_MEMBER_PROPERTY("Color", m_Color),
-    WD_MEMBER_PROPERTY("Scale", m_fScale)
+    NS_ENUM_MEMBER_PROPERTY("Axis", nsBasisAxis, m_Axis),
+    NS_MEMBER_PROPERTY("Color", m_Color),
+    NS_MEMBER_PROPERTY("Scale", m_fScale)
   }
-  WD_END_PROPERTIES;
-  WD_BEGIN_FUNCTIONS
+  NS_END_PROPERTIES;
+  NS_BEGIN_FUNCTIONS
   {
-    WD_CONSTRUCTOR_PROPERTY(wdEnum<wdBasisAxis>, float, const wdColor&, const char*, const char*),
-    WD_CONSTRUCTOR_PROPERTY(wdEnum<wdBasisAxis>, float, const wdColor&, const char*),
-    WD_CONSTRUCTOR_PROPERTY(wdEnum<wdBasisAxis>, float, const wdColor&),
-    WD_CONSTRUCTOR_PROPERTY(wdEnum<wdBasisAxis>, float),
-    WD_CONSTRUCTOR_PROPERTY(const char*, float, const wdColor&, const char*, const char*),
-    WD_CONSTRUCTOR_PROPERTY(const char*, float, const wdColor&, const char*),
-    WD_CONSTRUCTOR_PROPERTY(const char*, float, const wdColor&),
-    WD_CONSTRUCTOR_PROPERTY(const char*, float),
+    NS_CONSTRUCTOR_PROPERTY(nsEnum<nsBasisAxis>, float, const nsColor&, const char*, const char*),
+    NS_CONSTRUCTOR_PROPERTY(nsEnum<nsBasisAxis>, float, const nsColor&, const char*),
+    NS_CONSTRUCTOR_PROPERTY(nsEnum<nsBasisAxis>, float, const nsColor&),
+    NS_CONSTRUCTOR_PROPERTY(nsEnum<nsBasisAxis>, float),
+    NS_CONSTRUCTOR_PROPERTY(const char*, float, const nsColor&, const char*, const char*),
+    NS_CONSTRUCTOR_PROPERTY(const char*, float, const nsColor&, const char*),
+    NS_CONSTRUCTOR_PROPERTY(const char*, float, const nsColor&),
+    NS_CONSTRUCTOR_PROPERTY(const char*, float),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_END_DYNAMIC_REFLECTED_TYPE;
 // clang-format on
 
-wdDirectionVisualizerAttribute::wdDirectionVisualizerAttribute()
-  : wdVisualizerAttribute(nullptr)
+nsDirectionVisualizerAttribute::nsDirectionVisualizerAttribute()
+  : nsVisualizerAttribute(nullptr)
 {
-  m_Axis = wdBasisAxis::PositiveX;
+  m_Axis = nsBasisAxis::PositiveX;
   m_fScale = 1.0f;
-  m_Color = wdColor::White;
+  m_Color = nsColor::White;
 }
 
-wdDirectionVisualizerAttribute::wdDirectionVisualizerAttribute(wdEnum<wdBasisAxis> axis, float fScale, const wdColor& fixedColor /*= wdColorScheme::LightUI(wdColorScheme::Grape)*/, const char* szColorProperty /*= nullptr*/, const char* szLengthProperty /*= nullptr*/)
-  : wdVisualizerAttribute(szColorProperty, szLengthProperty)
+nsDirectionVisualizerAttribute::nsDirectionVisualizerAttribute(nsEnum<nsBasisAxis> axis, float fScale, const nsColor& fixedColor /*= nsColorScheme::LightUI(nsColorScheme::Grape)*/, const char* szColorProperty /*= nullptr*/, const char* szLengthProperty /*= nullptr*/)
+  : nsVisualizerAttribute(szColorProperty, szLengthProperty)
+  , m_Axis(axis)
+  , m_Color(fixedColor)
+  , m_fScale(fScale)
 {
-  m_Axis = axis;
-  m_fScale = fScale;
-  m_Color = fixedColor;
 }
 
-wdDirectionVisualizerAttribute::wdDirectionVisualizerAttribute(const char* szAxisProperty, float fScale, const wdColor& fixedColor /*= wdColorScheme::LightUI(wdColorScheme::Grape)*/, const char* szColorProperty /*= nullptr*/, const char* szLengthProperty /*= nullptr*/)
-  : wdVisualizerAttribute(szColorProperty, szLengthProperty, szAxisProperty)
+nsDirectionVisualizerAttribute::nsDirectionVisualizerAttribute(const char* szAxisProperty, float fScale, const nsColor& fixedColor /*= nsColorScheme::LightUI(nsColorScheme::Grape)*/, const char* szColorProperty /*= nullptr*/, const char* szLengthProperty /*= nullptr*/)
+  : nsVisualizerAttribute(szColorProperty, szLengthProperty, szAxisProperty)
+  , m_Axis(nsBasisAxis::PositiveX)
+  , m_Color(fixedColor)
+  , m_fScale(fScale)
 {
-  m_Axis = wdBasisAxis::PositiveX;
-  m_fScale = fScale;
-  m_Color = fixedColor;
 }
 
 //////////////////////////////////////////////////////////////////////////
 
 // clang-format off
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdConeVisualizerAttribute, 1, wdRTTIDefaultAllocator<wdConeVisualizerAttribute>)
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsConeVisualizerAttribute, 1, nsRTTIDefaultAllocator<nsConeVisualizerAttribute>)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_ENUM_MEMBER_PROPERTY("Axis", wdBasisAxis, m_Axis),
-    WD_MEMBER_PROPERTY("Color", m_Color),
-    WD_MEMBER_PROPERTY("Scale", m_fScale),
+    NS_ENUM_MEMBER_PROPERTY("Axis", nsBasisAxis, m_Axis),
+    NS_MEMBER_PROPERTY("Color", m_Color),
+    NS_MEMBER_PROPERTY("Scale", m_fScale),
   }
-  WD_END_PROPERTIES;
-  WD_BEGIN_FUNCTIONS
+  NS_END_PROPERTIES;
+  NS_BEGIN_FUNCTIONS
   {
-    WD_CONSTRUCTOR_PROPERTY(wdEnum<wdBasisAxis>, const char*, float, const char*, const wdColor&, const char*),
-    WD_CONSTRUCTOR_PROPERTY(wdEnum<wdBasisAxis>, const char*, float, const char*, const wdColor&),
-    WD_CONSTRUCTOR_PROPERTY(wdEnum<wdBasisAxis>, const char*, float, const char*),
+    NS_CONSTRUCTOR_PROPERTY(nsEnum<nsBasisAxis>, const char*, float, const char*, const nsColor&, const char*),
+    NS_CONSTRUCTOR_PROPERTY(nsEnum<nsBasisAxis>, const char*, float, const char*, const nsColor&),
+    NS_CONSTRUCTOR_PROPERTY(nsEnum<nsBasisAxis>, const char*, float, const char*),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_END_DYNAMIC_REFLECTED_TYPE;
 // clang-format on
 
-wdConeVisualizerAttribute::wdConeVisualizerAttribute()
-  : wdVisualizerAttribute(nullptr)
+nsConeVisualizerAttribute::nsConeVisualizerAttribute()
+  : nsVisualizerAttribute(nullptr)
+  , m_Axis(nsBasisAxis::PositiveX)
+  , m_Color(nsColor::Red)
+  , m_fScale(1.0f)
 {
-  m_Axis = wdBasisAxis::PositiveX;
-  m_Color = wdColor::Red;
-  m_fScale = 1.0f;
 }
 
-wdConeVisualizerAttribute::wdConeVisualizerAttribute(wdEnum<wdBasisAxis> axis, const char* szAngleProperty, float fScale,
-  const char* szRadiusProperty, const wdColor& fixedColor /*= wdColorScheme::LightUI(wdColorScheme::Grape)*/, const char* szColorProperty)
-  : wdVisualizerAttribute(szAngleProperty, szRadiusProperty, szColorProperty)
+nsConeVisualizerAttribute::nsConeVisualizerAttribute(nsEnum<nsBasisAxis> axis, const char* szAngleProperty, float fScale,
+  const char* szRadiusProperty, const nsColor& fixedColor /*= nsColorScheme::LightUI(nsColorScheme::Grape)*/, const char* szColorProperty)
+  : nsVisualizerAttribute(szAngleProperty, szRadiusProperty, szColorProperty)
+  , m_Axis(axis)
+  , m_Color(fixedColor)
+  , m_fScale(fScale)
 {
-  m_Axis = axis;
-  m_Color = fixedColor;
-  m_fScale = fScale;
 }
 
 //////////////////////////////////////////////////////////////////////////
 
 // clang-format off
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdCameraVisualizerAttribute, 1, wdRTTIDefaultAllocator<wdCameraVisualizerAttribute>)
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsCameraVisualizerAttribute, 1, nsRTTIDefaultAllocator<nsCameraVisualizerAttribute>)
 {
-  //WD_BEGIN_PROPERTIES
-  //WD_END_PROPERTIES;
-  WD_BEGIN_FUNCTIONS
+  //NS_BEGIN_PROPERTIES
+  //NS_END_PROPERTIES;
+  NS_BEGIN_FUNCTIONS
   {
-    WD_CONSTRUCTOR_PROPERTY(const char*, const char*, const char*, const char*, const char*),
+    NS_CONSTRUCTOR_PROPERTY(const char*, const char*, const char*, const char*, const char*),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_END_DYNAMIC_REFLECTED_TYPE;
 // clang-format on
 
-wdCameraVisualizerAttribute::wdCameraVisualizerAttribute()
-  : wdVisualizerAttribute(nullptr)
+nsCameraVisualizerAttribute::nsCameraVisualizerAttribute()
+  : nsVisualizerAttribute(nullptr)
 {
 }
 
-wdCameraVisualizerAttribute::wdCameraVisualizerAttribute(const char* szModeProperty, const char* szFovProperty, const char* szOrthoDimProperty,
+nsCameraVisualizerAttribute::nsCameraVisualizerAttribute(const char* szModeProperty, const char* szFovProperty, const char* szOrthoDimProperty,
   const char* szNearPlaneProperty, const char* szFarPlaneProperty)
-  : wdVisualizerAttribute(szModeProperty, szFovProperty, szOrthoDimProperty, szNearPlaneProperty, szFarPlaneProperty)
+  : nsVisualizerAttribute(szModeProperty, szFovProperty, szOrthoDimProperty, szNearPlaneProperty, szFarPlaneProperty)
 {
 }
 
 //////////////////////////////////////////////////////////////////////////
 
 // clang-format off
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdMaxArraySizeAttribute, 1, wdRTTIDefaultAllocator<wdMaxArraySizeAttribute>)
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsMaxArraySizeAttribute, 1, nsRTTIDefaultAllocator<nsMaxArraySizeAttribute>)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("MaxSize", m_uiMaxSize),
+    NS_MEMBER_PROPERTY("MaxSize", m_uiMaxSize),
   }
-  WD_END_PROPERTIES;
-  WD_BEGIN_FUNCTIONS
+  NS_END_PROPERTIES;
+  NS_BEGIN_FUNCTIONS
   {
-    WD_CONSTRUCTOR_PROPERTY(wdUInt32),
+    NS_CONSTRUCTOR_PROPERTY(nsUInt32),
   }
-  WD_END_FUNCTIONS;
+  NS_END_FUNCTIONS;
 }
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_END_DYNAMIC_REFLECTED_TYPE;
 // clang-format on
 
 
 //////////////////////////////////////////////////////////////////////////
 
 // clang-format off
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdPreventDuplicatesAttribute, 1, wdRTTIDefaultAllocator<wdPreventDuplicatesAttribute>)
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsPreventDuplicatesAttribute, 1, nsRTTIDefaultAllocator<nsPreventDuplicatesAttribute>)
+NS_END_DYNAMIC_REFLECTED_TYPE;
 // clang-format on
 
 //////////////////////////////////////////////////////////////////////////
 
 // clang-format off
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdAutoGenVisScriptMsgSender, 1, wdRTTIDefaultAllocator<wdAutoGenVisScriptMsgSender>)
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsExcludeFromScript, 1, nsRTTIDefaultAllocator<nsExcludeFromScript>)
+NS_END_DYNAMIC_REFLECTED_TYPE;
 // clang-format on
 
 //////////////////////////////////////////////////////////////////////////
 
 // clang-format off
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdAutoGenVisScriptMsgHandler, 1, wdRTTIDefaultAllocator<wdAutoGenVisScriptMsgHandler>)
-WD_END_DYNAMIC_REFLECTED_TYPE;
-// clang-format on
-
-//////////////////////////////////////////////////////////////////////////
-
-// clang-format off
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdScriptableFunctionAttribute, 1, wdRTTIDefaultAllocator<wdScriptableFunctionAttribute>)
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsScriptableFunctionAttribute, 1, nsRTTIDefaultAllocator<nsScriptableFunctionAttribute>)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("Arg1", m_sArg1),
-    WD_MEMBER_PROPERTY("Arg2", m_sArg2),
-    WD_MEMBER_PROPERTY("Arg3", m_sArg3),
-    WD_MEMBER_PROPERTY("Arg4", m_sArg4),
-    WD_MEMBER_PROPERTY("Arg5", m_sArg5),
-    WD_MEMBER_PROPERTY("Arg6", m_sArg6),
-    WD_MEMBER_PROPERTY("ArgType1", m_ArgType1),
-    WD_MEMBER_PROPERTY("ArgType2", m_ArgType2),
-    WD_MEMBER_PROPERTY("ArgType3", m_ArgType3),
-    WD_MEMBER_PROPERTY("ArgType4", m_ArgType4),
-    WD_MEMBER_PROPERTY("ArgType5", m_ArgType5),
-    WD_MEMBER_PROPERTY("ArgType6", m_ArgType6),
+    NS_ARRAY_MEMBER_PROPERTY("ArgNames", m_ArgNames),
+    NS_ARRAY_MEMBER_PROPERTY("ArgTypes", m_ArgTypes),
   }
-  WD_END_PROPERTIES;
+  NS_END_PROPERTIES;
 }
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_END_DYNAMIC_REFLECTED_TYPE;
 // clang-format on
 
-wdScriptableFunctionAttribute::wdScriptableFunctionAttribute(ArgType argType1 /*= In*/, const char* szArg1 /*= nullptr*/, ArgType argType2 /*= In*/,
+nsScriptableFunctionAttribute::nsScriptableFunctionAttribute(ArgType argType1 /*= In*/, const char* szArg1 /*= nullptr*/, ArgType argType2 /*= In*/,
   const char* szArg2 /*= nullptr*/, ArgType argType3 /*= In*/, const char* szArg3 /*= nullptr*/, ArgType argType4 /*= In*/,
   const char* szArg4 /*= nullptr*/, ArgType argType5 /*= In*/, const char* szArg5 /*= nullptr*/, ArgType argType6 /*= In*/,
   const char* szArg6 /*= nullptr*/)
 {
-  m_sArg1 = szArg1;
-  m_sArg2 = szArg2;
-  m_sArg3 = szArg3;
-  m_sArg4 = szArg4;
-  m_sArg5 = szArg5;
-  m_sArg6 = szArg6;
-
-  m_ArgType1 = argType1;
-  m_ArgType2 = argType2;
-  m_ArgType3 = argType3;
-  m_ArgType4 = argType4;
-  m_ArgType5 = argType5;
-  m_ArgType6 = argType6;
-}
-
-const char* wdScriptableFunctionAttribute::GetArgumentName(wdUInt32 uiIndex) const
-{
-  switch (uiIndex)
   {
-    case 0:
-      return m_sArg1;
-    case 1:
-      return m_sArg2;
-    case 2:
-      return m_sArg3;
-    case 3:
-      return m_sArg4;
-    case 4:
-      return m_sArg5;
-    case 5:
-      return m_sArg6;
+    if (nsStringUtils::IsNullOrEmpty(szArg1))
+      return;
+
+    m_ArgNames.PushBack(szArg1);
+    m_ArgTypes.PushBack(argType1);
   }
-
-  WD_ASSERT_NOT_IMPLEMENTED;
-  return nullptr;
-}
-
-wdScriptableFunctionAttribute::ArgType wdScriptableFunctionAttribute::GetArgumentType(wdUInt32 uiIndex) const
-{
-  switch (uiIndex)
   {
-    case 0:
-      return (ArgType)m_ArgType1;
-    case 1:
-      return (ArgType)m_ArgType2;
-    case 2:
-      return (ArgType)m_ArgType3;
-    case 3:
-      return (ArgType)m_ArgType4;
-    case 4:
-      return (ArgType)m_ArgType5;
-    case 5:
-      return (ArgType)m_ArgType6;
-  }
+    if (nsStringUtils::IsNullOrEmpty(szArg2))
+      return;
 
-  WD_ASSERT_NOT_IMPLEMENTED;
-  return ArgType::In;
+    m_ArgNames.PushBack(szArg2);
+    m_ArgTypes.PushBack(argType2);
+  }
+  {
+    if (nsStringUtils::IsNullOrEmpty(szArg3))
+      return;
+
+    m_ArgNames.PushBack(szArg3);
+    m_ArgTypes.PushBack(argType3);
+  }
+  {
+    if (nsStringUtils::IsNullOrEmpty(szArg4))
+      return;
+
+    m_ArgNames.PushBack(szArg4);
+    m_ArgTypes.PushBack(argType4);
+  }
+  {
+    if (nsStringUtils::IsNullOrEmpty(szArg5))
+      return;
+
+    m_ArgNames.PushBack(szArg5);
+    m_ArgTypes.PushBack(argType5);
+  }
+  {
+    if (nsStringUtils::IsNullOrEmpty(szArg6))
+      return;
+
+    m_ArgNames.PushBack(szArg6);
+    m_ArgTypes.PushBack(argType6);
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////
 
 // clang-format off
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdVisScriptMappingAttribute, 1, wdRTTIDefaultAllocator<wdVisScriptMappingAttribute>)
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsFunctionArgumentAttributes, 1, nsRTTIDefaultAllocator<nsFunctionArgumentAttributes>)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("Mapping", m_iMapping)
+    NS_MEMBER_PROPERTY("ArgIndex", m_uiArgIndex),
+    NS_ARRAY_MEMBER_PROPERTY("ArgAttributes", m_ArgAttributes)->AddFlags(nsPropertyFlags::PointerOwner),
   }
-  WD_END_PROPERTIES;
+  NS_END_PROPERTIES;
 }
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_END_DYNAMIC_REFLECTED_TYPE;
+// clang-format on
+
+nsFunctionArgumentAttributes::nsFunctionArgumentAttributes(nsUInt32 uiArgIndex, const nsPropertyAttribute* pAttribute1, const nsPropertyAttribute* pAttribute2 /*= nullptr*/, const nsPropertyAttribute* pAttribute3 /*= nullptr*/, const nsPropertyAttribute* pAttribute4 /*= nullptr*/)
+  : m_uiArgIndex(uiArgIndex)
+{
+  {
+    if (pAttribute1 == nullptr)
+      return;
+
+    m_ArgAttributes.PushBack(pAttribute1);
+  }
+  {
+    if (pAttribute2 == nullptr)
+      return;
+
+    m_ArgAttributes.PushBack(pAttribute2);
+  }
+  {
+    if (pAttribute3 == nullptr)
+      return;
+
+    m_ArgAttributes.PushBack(pAttribute3);
+  }
+  {
+    if (pAttribute4 == nullptr)
+      return;
+
+    m_ArgAttributes.PushBack(pAttribute4);
+  }
+}
+
+nsFunctionArgumentAttributes::~nsFunctionArgumentAttributes()
+{
+  for (auto pAttribute : m_ArgAttributes)
+  {
+    auto pAttributeNonConst = const_cast<nsPropertyAttribute*>(pAttribute);
+    NS_DEFAULT_DELETE(pAttributeNonConst);
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+// clang-format off
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsDynamicPinAttribute, 1, nsRTTIDefaultAllocator<nsDynamicPinAttribute>)
+{
+  NS_BEGIN_PROPERTIES
+  {
+    NS_MEMBER_PROPERTY("Property", m_sProperty)
+  }
+  NS_END_PROPERTIES;
+}
+NS_END_DYNAMIC_REFLECTED_TYPE;
+// clang-format on
+
+nsDynamicPinAttribute::nsDynamicPinAttribute(const char* szProperty)
+  : m_sProperty(szProperty)
+{
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+// clang-format off
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsLongOpAttribute, 1, nsRTTIDefaultAllocator<nsLongOpAttribute>)
+{
+  NS_BEGIN_PROPERTIES
+  {
+    NS_MEMBER_PROPERTY("Type", m_sOpTypeName),
+  }
+  NS_END_PROPERTIES;
+  NS_BEGIN_FUNCTIONS
+  {
+    NS_CONSTRUCTOR_PROPERTY(),
+    NS_CONSTRUCTOR_PROPERTY(const char*),
+  }
+  NS_END_FUNCTIONS;
+}
+NS_END_DYNAMIC_REFLECTED_TYPE;
 // clang-format on
 
 //////////////////////////////////////////////////////////////////////////
 
 // clang-format off
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdLongOpAttribute, 1, wdRTTIDefaultAllocator<wdLongOpAttribute>)
-{
-  WD_BEGIN_PROPERTIES
-  {
-    WD_MEMBER_PROPERTY("Type", m_sOpTypeName),
-  }
-  WD_END_PROPERTIES;
-  WD_BEGIN_FUNCTIONS
-  {
-    WD_CONSTRUCTOR_PROPERTY(),
-    WD_CONSTRUCTOR_PROPERTY(const char*),
-  }
-  WD_END_FUNCTIONS;
-}
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsGameObjectReferenceAttribute, 1, nsRTTIDefaultAllocator<nsGameObjectReferenceAttribute>)
+NS_END_DYNAMIC_REFLECTED_TYPE;
 // clang-format on
 
 //////////////////////////////////////////////////////////////////////////
 
-// clang-format off
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdGameObjectReferenceAttribute, 1, wdRTTIDefaultAllocator<wdGameObjectReferenceAttribute>)
-WD_END_DYNAMIC_REFLECTED_TYPE;
-// clang-format on
-
-//////////////////////////////////////////////////////////////////////////
-
-WD_STATICLINK_FILE(Foundation, Foundation_Reflection_Implementation_PropertyAttributes);
+NS_STATICLINK_FILE(Foundation, Foundation_Reflection_Implementation_PropertyAttributes);

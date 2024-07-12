@@ -1,6 +1,6 @@
 #pragma once
 
-WD_ALWAYS_INLINE wdColorBaseUB::wdColorBaseUB(wdUInt8 r, wdUInt8 g, wdUInt8 b, wdUInt8 a /* = 255*/)
+NS_ALWAYS_INLINE nsColorBaseUB::nsColorBaseUB(nsUInt8 r, nsUInt8 g, nsUInt8 b, nsUInt8 a /* = 255*/)
 {
   this->r = r;
   this->g = g;
@@ -8,59 +8,59 @@ WD_ALWAYS_INLINE wdColorBaseUB::wdColorBaseUB(wdUInt8 r, wdUInt8 g, wdUInt8 b, w
   this->a = a;
 }
 
-WD_ALWAYS_INLINE wdColorLinearUB::wdColorLinearUB(wdUInt8 r, wdUInt8 g, wdUInt8 b, wdUInt8 a /* = 255*/)
-  : wdColorBaseUB(r, g, b, a)
+NS_ALWAYS_INLINE nsColorLinearUB::nsColorLinearUB(nsUInt8 r, nsUInt8 g, nsUInt8 b, nsUInt8 a /* = 255*/)
+  : nsColorBaseUB(r, g, b, a)
 {
 }
 
-inline wdColorLinearUB::wdColorLinearUB(const wdColor& color)
+inline nsColorLinearUB::nsColorLinearUB(const nsColor& color)
 {
   *this = color;
 }
 
-inline void wdColorLinearUB::operator=(const wdColor& color)
+inline void nsColorLinearUB::operator=(const nsColor& color)
 {
-  r = wdMath::ColorFloatToByte(color.r);
-  g = wdMath::ColorFloatToByte(color.g);
-  b = wdMath::ColorFloatToByte(color.b);
-  a = wdMath::ColorFloatToByte(color.a);
+  r = nsMath::ColorFloatToByte(color.r);
+  g = nsMath::ColorFloatToByte(color.g);
+  b = nsMath::ColorFloatToByte(color.b);
+  a = nsMath::ColorFloatToByte(color.a);
 }
 
-inline wdColor wdColorLinearUB::ToLinearFloat() const
+inline nsColor nsColorLinearUB::ToLinearFloat() const
 {
-  return wdColor(wdMath::ColorByteToFloat(r), wdMath::ColorByteToFloat(g), wdMath::ColorByteToFloat(b), wdMath::ColorByteToFloat(a));
+  return nsColor(nsMath::ColorByteToFloat(r), nsMath::ColorByteToFloat(g), nsMath::ColorByteToFloat(b), nsMath::ColorByteToFloat(a));
 }
 
 // *****************
 
-WD_ALWAYS_INLINE wdColorGammaUB::wdColorGammaUB(wdUInt8 r, wdUInt8 g, wdUInt8 b, wdUInt8 a)
-  : wdColorBaseUB(r, g, b, a)
+NS_ALWAYS_INLINE nsColorGammaUB::nsColorGammaUB(nsUInt8 r, nsUInt8 g, nsUInt8 b, nsUInt8 a)
+  : nsColorBaseUB(r, g, b, a)
 {
 }
 
-inline wdColorGammaUB::wdColorGammaUB(const wdColor& color)
+inline nsColorGammaUB::nsColorGammaUB(const nsColor& color)
 {
   *this = color;
 }
 
-inline void wdColorGammaUB::operator=(const wdColor& color)
+inline void nsColorGammaUB::operator=(const nsColor& color)
 {
-  const wdVec3 gamma = wdColor::LinearToGamma(wdVec3(color.r, color.g, color.b));
+  const nsVec3 gamma = nsColor::LinearToGamma(nsVec3(color.r, color.g, color.b));
 
-  r = wdMath::ColorFloatToByte(gamma.x);
-  g = wdMath::ColorFloatToByte(gamma.y);
-  b = wdMath::ColorFloatToByte(gamma.z);
-  a = wdMath::ColorFloatToByte(color.a);
+  r = nsMath::ColorFloatToByte(gamma.x);
+  g = nsMath::ColorFloatToByte(gamma.y);
+  b = nsMath::ColorFloatToByte(gamma.z);
+  a = nsMath::ColorFloatToByte(color.a);
 }
 
-inline wdColor wdColorGammaUB::ToLinearFloat() const
+inline nsColor nsColorGammaUB::ToLinearFloat() const
 {
-  wdVec3 gamma;
-  gamma.x = wdMath::ColorByteToFloat(r);
-  gamma.y = wdMath::ColorByteToFloat(g);
-  gamma.z = wdMath::ColorByteToFloat(b);
+  nsVec3 gamma;
+  gamma.x = nsMath::ColorByteToFloat(r);
+  gamma.y = nsMath::ColorByteToFloat(g);
+  gamma.z = nsMath::ColorByteToFloat(b);
 
-  const wdVec3 linear = wdColor::GammaToLinear(gamma);
+  const nsVec3 linear = nsColor::GammaToLinear(gamma);
 
-  return wdColor(linear.x, linear.y, linear.z, wdMath::ColorByteToFloat(a));
+  return nsColor(linear.x, linear.y, linear.z, nsMath::ColorByteToFloat(a));
 }

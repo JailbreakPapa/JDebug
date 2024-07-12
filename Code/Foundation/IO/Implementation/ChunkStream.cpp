@@ -2,17 +2,17 @@
 
 #include <Foundation/IO/ChunkStream.h>
 
-wdChunkStreamWriter::wdChunkStreamWriter(wdStreamWriter& inout_stream)
+nsChunkStreamWriter::nsChunkStreamWriter(nsStreamWriter& inout_stream)
   : m_Stream(inout_stream)
 {
   m_bWritingFile = false;
   m_bWritingChunk = false;
 }
 
-void wdChunkStreamWriter::BeginStream(wdUInt16 uiVersion)
+void nsChunkStreamWriter::BeginStream(nsUInt16 uiVersion)
 {
-  WD_ASSERT_DEV(!m_bWritingFile, "Already writing the file.");
-  WD_ASSERT_DEV(uiVersion > 0, "The version number must be larger than 0");
+  NS_ASSERT_DEV(!m_bWritingFile, "Already writing the file.");
+  NS_ASSERT_DEV(uiVersion > 0, "The version number must be larger than 0");
 
   m_bWritingFile = true;
 
@@ -21,10 +21,10 @@ void wdChunkStreamWriter::BeginStream(wdUInt16 uiVersion)
   m_Stream.WriteBytes(&uiVersion, 2).IgnoreResult();
 }
 
-void wdChunkStreamWriter::EndStream()
+void nsChunkStreamWriter::EndStream()
 {
-  WD_ASSERT_DEV(m_bWritingFile, "Not writing to the file.");
-  WD_ASSERT_DEV(!m_bWritingChunk, "A chunk is still open for writing: '{0}'", m_sChunkName);
+  NS_ASSERT_DEV(m_bWritingFile, "Not writing to the file.");
+  NS_ASSERT_DEV(!m_bWritingChunk, "A chunk is still open for writing: '{0}'", m_sChunkName);
 
   m_bWritingFile = false;
 
@@ -32,10 +32,10 @@ void wdChunkStreamWriter::EndStream()
   m_Stream.WriteBytes(szTag, 8).IgnoreResult();
 }
 
-void wdChunkStreamWriter::BeginChunk(wdStringView sName, wdUInt32 uiVersion)
+void nsChunkStreamWriter::BeginChunk(nsStringView sName, nsUInt32 uiVersion)
 {
-  WD_ASSERT_DEV(m_bWritingFile, "Not writing to the file.");
-  WD_ASSERT_DEV(!m_bWritingChunk, "A chunk is already open for writing: '{0}'", m_sChunkName);
+  NS_ASSERT_DEV(m_bWritingFile, "Not writing to the file.");
+  NS_ASSERT_DEV(!m_bWritingChunk, "A chunk is already open for writing: '{0}'", m_sChunkName);
 
   m_sChunkName = sName;
 
@@ -49,22 +49,22 @@ void wdChunkStreamWriter::BeginChunk(wdStringView sName, wdUInt32 uiVersion)
 }
 
 
-void wdChunkStreamWriter::EndChunk()
+void nsChunkStreamWriter::EndChunk()
 {
-  WD_ASSERT_DEV(m_bWritingFile, "Not writing to the file.");
-  WD_ASSERT_DEV(m_bWritingChunk, "No chunk is currently open.");
+  NS_ASSERT_DEV(m_bWritingFile, "Not writing to the file.");
+  NS_ASSERT_DEV(m_bWritingChunk, "No chunk is currently open.");
 
   m_bWritingChunk = false;
 
-  const wdUInt32 uiStorageSize = m_Storage.GetCount();
+  const nsUInt32 uiStorageSize = m_Storage.GetCount();
   m_Stream << uiStorageSize;
   /// \todo Write Chunk CRC
 
-  for (wdUInt32 i = 0; i < uiStorageSize;)
+  for (nsUInt32 i = 0; i < uiStorageSize;)
   {
-    const wdUInt32 uiRange = m_Storage.GetContiguousRange(i);
+    const nsUInt32 uiRange = m_Storage.GetContiguousRange(i);
 
-    WD_ASSERT_DEBUG(uiRange > 0, "Invalid contiguous range");
+    NS_ASSERT_DEBUG(uiRange > 0, "Invalid contiguous range");
 
     m_Stream.WriteBytes(&m_Storage[i], uiRange).IgnoreResult();
     i += uiRange;
@@ -73,38 +73,38 @@ void wdChunkStreamWriter::EndChunk()
   m_Storage.Clear();
 }
 
-wdResult wdChunkStreamWriter::WriteBytes(const void* pWriteBuffer, wdUInt64 uiBytesToWrite)
+nsResult nsChunkStreamWriter::WriteBytes(const void* pWriteBuffer, nsUInt64 uiBytesToWrite)
 {
-  WD_ASSERT_DEV(m_bWritingChunk, "No chunk is currently written to");
+  NS_ASSERT_DEV(m_bWritingChunk, "No chunk is currently written to");
 
-  const wdUInt8* pBytes = (const wdUInt8*)pWriteBuffer;
+  const nsUInt8* pBytes = (const nsUInt8*)pWriteBuffer;
 
-  for (wdUInt64 i = 0; i < uiBytesToWrite; ++i)
+  for (nsUInt64 i = 0; i < uiBytesToWrite; ++i)
     m_Storage.PushBack(pBytes[i]);
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
 
 
-wdChunkStreamReader::wdChunkStreamReader(wdStreamReader& inout_stream)
+nsChunkStreamReader::nsChunkStreamReader(nsStreamReader& inout_stream)
   : m_Stream(inout_stream)
 {
   m_ChunkInfo.m_bValid = false;
   m_EndChunkFileMode = EndChunkFileMode::JustClose;
 }
 
-wdUInt64 wdChunkStreamReader::ReadBytes(void* pReadBuffer, wdUInt64 uiBytesToRead)
+nsUInt64 nsChunkStreamReader::ReadBytes(void* pReadBuffer, nsUInt64 uiBytesToRead)
 {
-  WD_ASSERT_DEV(m_ChunkInfo.m_bValid, "No valid chunk available.");
+  NS_ASSERT_DEV(m_ChunkInfo.m_bValid, "No valid chunk available.");
 
-  uiBytesToRead = wdMath::Min<wdUInt64>(uiBytesToRead, m_ChunkInfo.m_uiUnreadChunkBytes);
-  m_ChunkInfo.m_uiUnreadChunkBytes -= (wdUInt32)uiBytesToRead;
+  uiBytesToRead = nsMath::Min<nsUInt64>(uiBytesToRead, m_ChunkInfo.m_uiUnreadChunkBytes);
+  m_ChunkInfo.m_uiUnreadChunkBytes -= (nsUInt32)uiBytesToRead;
 
   return m_Stream.ReadBytes(pReadBuffer, uiBytesToRead);
 }
 
-wdUInt16 wdChunkStreamReader::BeginStream()
+nsUInt16 nsChunkStreamReader::BeginStream()
 {
   m_ChunkInfo.m_bValid = false;
 
@@ -112,23 +112,23 @@ wdUInt16 wdChunkStreamReader::BeginStream()
   m_Stream.ReadBytes(szTag, 8);
   szTag[8] = '\0';
 
-  wdUInt16 uiVersion = 0;
+  nsUInt16 uiVersion = 0;
 
-  if (wdStringUtils::IsEqual(szTag, "BGNCHNK2"))
+  if (nsStringUtils::IsEqual(szTag, "BGNCHNK2"))
   {
     m_Stream.ReadBytes(&uiVersion, 2);
   }
   else
   {
     // "BGN CHNK" is the old chunk identifier, before a version number was written
-    WD_ASSERT_DEV(wdStringUtils::IsEqual(szTag, "BGN CHNK"), "Not a valid chunk file.");
+    NS_ASSERT_DEV(nsStringUtils::IsEqual(szTag, "BGN CHNK"), "Not a valid chunk file.");
   }
 
   TryReadChunkHeader();
   return uiVersion;
 }
 
-void wdChunkStreamReader::EndStream()
+void nsChunkStreamReader::EndStream()
 {
   if (m_EndChunkFileMode == EndChunkFileMode::SkipToEnd)
   {
@@ -137,7 +137,7 @@ void wdChunkStreamReader::EndStream()
   }
 }
 
-void wdChunkStreamReader::TryReadChunkHeader()
+void nsChunkStreamReader::TryReadChunkHeader()
 {
   m_ChunkInfo.m_bValid = false;
 
@@ -145,10 +145,10 @@ void wdChunkStreamReader::TryReadChunkHeader()
   m_Stream.ReadBytes(szTag, 8);
   szTag[8] = '\0';
 
-  if (wdStringUtils::IsEqual(szTag, "END CHNK"))
+  if (nsStringUtils::IsEqual(szTag, "END CHNK"))
     return;
 
-  if (wdStringUtils::IsEqual(szTag, "NXT CHNK"))
+  if (nsStringUtils::IsEqual(szTag, "NXT CHNK"))
   {
     m_Stream >> m_ChunkInfo.m_sChunkName;
     m_Stream >> m_ChunkInfo.m_uiChunkVersion;
@@ -160,21 +160,17 @@ void wdChunkStreamReader::TryReadChunkHeader()
     return;
   }
 
-  WD_REPORT_FAILURE("Invalid chunk file, tag is '{0}'", szTag);
+  NS_REPORT_FAILURE("Invalid chunk file, tag is '{0}'", szTag);
 }
 
-void wdChunkStreamReader::NextChunk()
+void nsChunkStreamReader::NextChunk()
 {
   if (!m_ChunkInfo.m_bValid)
     return;
 
-  const wdUInt64 uiToSkip = m_ChunkInfo.m_uiUnreadChunkBytes;
-  const wdUInt64 uiSkipped = SkipBytes(uiToSkip);
-  WD_VERIFY(uiSkipped == uiToSkip, "Corrupt chunk '{0}' (version {1}), tried to skip {2} bytes, could only read {3} bytes", m_ChunkInfo.m_sChunkName, m_ChunkInfo.m_uiChunkVersion, uiToSkip, uiSkipped);
+  const nsUInt64 uiToSkip = m_ChunkInfo.m_uiUnreadChunkBytes;
+  const nsUInt64 uiSkipped = SkipBytes(uiToSkip);
+  NS_VERIFY(uiSkipped == uiToSkip, "Corrupt chunk '{0}' (version {1}), tried to skip {2} bytes, could only read {3} bytes", m_ChunkInfo.m_sChunkName, m_ChunkInfo.m_uiChunkVersion, uiToSkip, uiSkipped);
 
   TryReadChunkHeader();
 }
-
-
-
-WD_STATICLINK_FILE(Foundation, Foundation_IO_Implementation_ChunkStream);

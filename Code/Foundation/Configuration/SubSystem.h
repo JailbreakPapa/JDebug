@@ -4,7 +4,7 @@
 #include <Foundation/Utilities/EnumerableClass.h>
 
 /// \brief Describes the different stages during startup and shutdown
-struct wdStartupStage
+struct nsStartupStage
 {
   enum Enum
   {
@@ -19,45 +19,45 @@ struct wdStartupStage
 
 /// \brief Base class for all subsystems.
 ///
-/// wdStartup will initialize and shut down all instances of this class, according to their dependencies etc.
+/// nsStartup will initialize and shut down all instances of this class, according to their dependencies etc.
 /// If you have a subsystem that is a non-static class, just derive from this base class and override the
 /// virtual functions as required.
 /// If you have a subsystem that is implemented in a purely static way (there is no class instance),
-/// just use the macros WD_BEGIN_SUBSYSTEM_DECLARATION, WD_END_SUBSYSTEM_DECLARATION etc.
-/// Those macros will create a wrapper object (derived from wdSubSystem) to handle initialization.
-class WD_FOUNDATION_DLL wdSubSystem : public wdEnumerable<wdSubSystem>
+/// just use the macros NS_BEGIN_SUBSYSTEM_DECLARATION, NS_END_SUBSYSTEM_DECLARATION etc.
+/// Those macros will create a wrapper object (derived from nsSubSystem) to handle initialization.
+class NS_FOUNDATION_DLL nsSubSystem : public nsEnumerable<nsSubSystem>
 {
-  WD_DECLARE_ENUMERABLE_CLASS(wdSubSystem);
-  WD_DISALLOW_COPY_AND_ASSIGN(wdSubSystem);
+  NS_DECLARE_ENUMERABLE_CLASS(nsSubSystem);
+  NS_DISALLOW_COPY_AND_ASSIGN(nsSubSystem);
 
 public:
-  wdSubSystem()
+  nsSubSystem()
   {
-    for (wdInt32 i = 0; i < wdStartupStage::ENUM_COUNT; ++i)
+    for (nsInt32 i = 0; i < nsStartupStage::ENUM_COUNT; ++i)
       m_bStartupDone[i] = false;
   }
 
-  virtual ~wdSubSystem() = default;
+  virtual ~nsSubSystem() = default;
 
   /// \brief Returns the name of the subsystem. Must be overridden.
-  virtual const char* GetSubSystemName() const = 0;
+  virtual nsStringView GetSubSystemName() const = 0;
 
   /// \brief Returns the name of the group to which this subsystem belongs. Must be overridden.
-  virtual const char* GetGroupName() const = 0;
+  virtual nsStringView GetGroupName() const = 0;
 
   /// \brief Returns a series of strings with the names of the subsystem, which this subsystem depends on. nullptr indicates the last entry.
   /// Must be overridden.
-  virtual const char* GetDependency(wdInt32 iDep) { return nullptr; }
+  virtual nsStringView GetDependency(nsInt32 iDep) { return {}; }
 
   /// \brief Returns the plugin name to which this subsystem belongs.
-  const char* GetPluginName() const { return m_szPluginName; }
+  nsStringView GetPluginName() const { return m_sPluginName; }
 
   /// \brief Returns whether the given startup stage has been done on this subsystem.
-  bool IsStartupPhaseDone(wdStartupStage::Enum stage) const { return m_bStartupDone[stage]; }
+  bool IsStartupPhaseDone(nsStartupStage::Enum stage) const { return m_bStartupDone[stage]; }
 
 private:
   // only the startup system may access the following functionality
-  friend class wdStartup;
+  friend class nsStartup;
 
   /// \brief This will be called to initialize the subsystems base components. Can be overridden to handle this event.
   virtual void OnBaseSystemsStartup() {}
@@ -74,11 +74,11 @@ private:
   /// \brief This will be called to shut down the subsystems engine / rendering components. Can be overridden to handle this event.
   virtual void OnHighLevelSystemsShutdown() {}
 
-  /// Set by wdStartup to store to which plugin this subsystem belongs.
-  const char* m_szPluginName = nullptr;
+  /// Set by nsStartup to store to which plugin this subsystem belongs.
+  nsStringView m_sPluginName;
 
   /// Stores which startup phase has been done already.
-  bool m_bStartupDone[wdStartupStage::ENUM_COUNT];
+  bool m_bStartupDone[nsStartupStage::ENUM_COUNT];
 };
 
 #include <Foundation/Configuration/StaticSubSystem.h>

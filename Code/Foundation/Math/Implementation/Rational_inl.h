@@ -1,16 +1,15 @@
 
-WD_ALWAYS_INLINE wdRational::wdRational()
-  : m_uiNumerator(0)
-  , m_uiDenominator(1)
-{}
+NS_ALWAYS_INLINE nsRational::nsRational()
 
-WD_ALWAYS_INLINE wdRational::wdRational(wdUInt32 uiNumerator, wdUInt32 uiDenominator)
+  = default;
+
+NS_ALWAYS_INLINE nsRational::nsRational(nsUInt32 uiNumerator, nsUInt32 uiDenominator)
   : m_uiNumerator(uiNumerator)
   , m_uiDenominator(uiDenominator)
 {
 }
 
-WD_ALWAYS_INLINE bool wdRational::IsIntegral() const
+NS_ALWAYS_INLINE bool nsRational::IsIntegral() const
 {
   if (m_uiNumerator == 0 && m_uiDenominator == 0)
     return true;
@@ -18,27 +17,27 @@ WD_ALWAYS_INLINE bool wdRational::IsIntegral() const
   return ((m_uiNumerator / m_uiDenominator) * m_uiDenominator) == m_uiNumerator;
 }
 
-WD_ALWAYS_INLINE bool wdRational::operator==(const wdRational& other) const
+NS_ALWAYS_INLINE bool nsRational::operator==(const nsRational& other) const
 {
   return m_uiNumerator == other.m_uiNumerator && m_uiDenominator == other.m_uiDenominator;
 }
 
-WD_ALWAYS_INLINE bool wdRational::operator!=(const wdRational& other) const
+NS_ALWAYS_INLINE bool nsRational::operator!=(const nsRational& other) const
 {
   return m_uiNumerator != other.m_uiNumerator || m_uiDenominator != other.m_uiDenominator;
 }
 
-WD_ALWAYS_INLINE wdUInt32 wdRational::GetNumerator() const
+NS_ALWAYS_INLINE nsUInt32 nsRational::GetNumerator() const
 {
   return m_uiNumerator;
 }
 
-WD_ALWAYS_INLINE wdUInt32 wdRational::GetDenominator() const
+NS_ALWAYS_INLINE nsUInt32 nsRational::GetDenominator() const
 {
   return m_uiDenominator;
 }
 
-WD_ALWAYS_INLINE wdUInt32 wdRational::GetIntegralResult() const
+NS_ALWAYS_INLINE nsUInt32 nsRational::GetIntegralResult() const
 {
   if (m_uiNumerator == 0 && m_uiDenominator == 0)
     return 0;
@@ -46,7 +45,7 @@ WD_ALWAYS_INLINE wdUInt32 wdRational::GetIntegralResult() const
   return m_uiNumerator / m_uiDenominator;
 }
 
-WD_ALWAYS_INLINE double wdRational::GetFloatingPointResult() const
+NS_ALWAYS_INLINE double nsRational::GetFloatingPointResult() const
 {
   if (m_uiNumerator == 0 && m_uiDenominator == 0)
     return 0.0;
@@ -54,14 +53,14 @@ WD_ALWAYS_INLINE double wdRational::GetFloatingPointResult() const
   return static_cast<double>(m_uiNumerator) / static_cast<double>(m_uiDenominator);
 }
 
-WD_ALWAYS_INLINE bool wdRational::IsValid() const
+NS_ALWAYS_INLINE bool nsRational::IsValid() const
 {
   return m_uiDenominator != 0 || (m_uiNumerator == 0 && m_uiDenominator == 0);
 }
 
-WD_ALWAYS_INLINE wdRational wdRational::ReduceIntegralFraction() const
+NS_ALWAYS_INLINE nsRational nsRational::ReduceIntegralFraction() const
 {
-  WD_ASSERT_DEV(IsValid() && IsIntegral(), "ReduceIntegralFraction can only be called on valid, integral rational numbers");
+  NS_ASSERT_DEV(IsValid() && IsIntegral(), "ReduceIntegralFraction can only be called on valid, integral rational numbers");
 
-  return wdRational(m_uiNumerator / m_uiDenominator, 1);
+  return nsRational(m_uiNumerator / m_uiDenominator, 1);
 }

@@ -2,8 +2,8 @@
 
 #include <Foundation/Basics.h>
 
-/// \brief Base class for wdDelegate
-class wdDelegateBase
+/// \brief Base class for nsDelegate
+class nsDelegateBase
 {
 public:
   union InstancePtr
@@ -12,7 +12,7 @@ public:
     const void* m_ConstPtr;
   };
 
-  WD_ALWAYS_INLINE wdDelegateBase() { m_Instance.m_Ptr = nullptr; }
+  NS_ALWAYS_INLINE nsDelegateBase() { m_Instance.m_Ptr = nullptr; }
 
 protected:
   InstancePtr m_Instance;
@@ -28,17 +28,17 @@ protected:
 /// Delegates have a rather strange syntax:
 ///
 /// \code{.cpp}
-///   typedef wdDelegate<void (wdUInt32, float)> SomeCallback;
+///   using SomeCallback = nsDelegate<void (nsUInt32, float)>;
 /// \endcode
 ///
 /// This defines a type 'SomeCallback' that can call any function that returns void and
-/// takes two parameters, the first being wdUInt32, the second being a float parameter.
+/// takes two parameters, the first being nsUInt32, the second being a float parameter.
 /// Now you can use SomeCallback just like any other function pointer type.
 ///
 /// Assigning a C function as the value to the delegate is straight-forward:
 ///
 /// \code{.cpp}
-///   void SomeFunction(wdUInt32 i, float f);
+///   void SomeFunction(nsUInt32 i, float f);
 ///   SomeCallback callback = SomeFunction;
 /// \endcode
 ///
@@ -46,10 +46,10 @@ protected:
 ///
 /// \code{.cpp}
 ///   class SomeClass {
-///     void SomeFunction(wdUInt32 i, float f);
+///     void SomeFunction(nsUInt32 i, float f);
 ///   };
 ///   SomeClass instance;
-///   SomeCallback callback = wdDelegate<void (wdUInt32, float)>(&SomeClass::SomeFunction, &instance);
+///   SomeCallback callback = nsDelegate<void (nsUInt32, float)>(&SomeClass::SomeFunction, &instance);
 /// \endcode
 ///
 /// Here you have to construct a delegate of the proper type and pass along both the member function pointer
@@ -71,22 +71,22 @@ protected:
 ///
 /// \note If you are wondering where the code is, the delegate is implemented with macro and template magic in
 /// Delegate_inl.h and DelegateHelper_inl.h.
-template <typename T, wdUInt32 DataSize = 16>
-struct wdDelegate : public wdDelegateBase
+template <typename T, nsUInt32 DataSize = 16>
+struct nsDelegate : public nsDelegateBase
 {
 };
 
 template <typename T>
-struct wdMakeDelegateHelper;
+struct nsMakeDelegateHelper;
 
 /// \brief A helper function to create delegates from function pointers.
 ///
 /// \code{.cpp}
 ///   void foo() { }
-///   auto delegate = wdMakeDelegate(&foo);
+///   auto delegate = nsMakeDelegate(&foo);
 /// \endcode
 template <typename Function>
-wdDelegate<Function> wdMakeDelegate(Function* pFunction);
+nsDelegate<Function> nsMakeDelegate(Function* pFunction);
 
 /// \brief A helper function to create delegates from methods.
 ///
@@ -97,9 +97,9 @@ wdDelegate<Function> wdMakeDelegate(Function* pFunction);
 ///     void foo() {}
 ///   };
 ///   Example instance;
-///   auto delegate = wdMakeDelegate(&Example::foo, &instance);
+///   auto delegate = nsMakeDelegate(&Example::foo, &instance);
 /// \endcode
 template <typename Method, typename Class>
-typename wdMakeDelegateHelper<Method>::DelegateType wdMakeDelegate(Method method, Class* pClass);
+typename nsMakeDelegateHelper<Method>::DelegateType nsMakeDelegate(Method method, Class* pClass);
 
 #include <Foundation/Types/Implementation/Delegate_inl.h>

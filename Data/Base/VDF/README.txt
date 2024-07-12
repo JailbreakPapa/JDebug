@@ -1,1 +1,0 @@
-the VDF File should be shipped with the engine. please change the app id (480) to the one listed in steamworks.

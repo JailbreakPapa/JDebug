@@ -2,94 +2,104 @@
 
 /// \file
 
-/// \brief Used in conjunction with WD_ENABLED and WD_DISABLED for safe checks. Define something to WD_ON or WD_OFF to work with those macros.
-#define WD_ON =
+/// \brief Used in conjunction with NS_ENABLED and NS_DISABLED for safe checks. Define something to NS_ON or NS_OFF to work with those macros.
+#define NS_ON =
 
-/// \brief Used in conjunction with WD_ENABLED and WD_DISABLED for safe checks. Define something to WD_ON or WD_OFF to work with those macros.
-#define WD_OFF !
+/// \brief Used in conjunction with NS_ENABLED and NS_DISABLED for safe checks. Define something to NS_ON or NS_OFF to work with those macros.
+#define NS_OFF !
 
-/// \brief Used in conjunction with WD_ON and WD_OFF for safe checks. Use #if WD_ENABLED(x) or #if WD_DISABLED(x) in conditional compilation.
-#define WD_ENABLED(x) (1 WD_CONCAT(x, =) 1)
+/// \brief Used in conjunction with NS_ON and NS_OFF for safe checks. Use #if NS_ENABLED(x) or #if NS_DISABLED(x) in conditional compilation.
+#define NS_ENABLED(x) (1 NS_CONCAT(x, =) 1)
 
-/// \brief Used in conjunction with WD_ON and WD_OFF for safe checks. Use #if WD_ENABLED(x) or #if WD_DISABLED(x) in conditional compilation.
-#define WD_DISABLED(x) (1 WD_CONCAT(x, =) 2)
+/// \brief Used in conjunction with NS_ON and NS_OFF for safe checks. Use #if NS_ENABLED(x) or #if NS_DISABLED(x) in conditional compilation.
+#define NS_DISABLED(x) (1 NS_CONCAT(x, =) 2)
 
-/// \brief Checks whether x AND y are both defined as WD_ON or WD_OFF. Usually used to check whether configurations overlap, to issue an error.
-#define WD_IS_NOT_EXCLUSIVE(x, y) ((1 WD_CONCAT(x, =) 1) == (1 WD_CONCAT(y, =) 1))
+/// \brief Checks whether x AND y are both defined as NS_ON or NS_OFF. Usually used to check whether configurations overlap, to issue an error.
+#define NS_IS_NOT_EXCLUSIVE(x, y) ((1 NS_CONCAT(x, =) 1) == (1 NS_CONCAT(y, =) 1))
 
 
 
 // All the supported Platforms
-#define WD_PLATFORM_WINDOWS WD_OFF         // enabled for all Windows platforms, both UWP and desktop
-#define WD_PLATFORM_WINDOWS_UWP WD_OFF     // enabled for UWP apps, together with WD_PLATFORM_WINDOWS
-#define WD_PLATFORM_WINDOWS_DESKTOP WD_OFF // enabled for desktop apps, together with WD_PLATFORM_WINDOWS
-#define WD_PLATFORM_OSX WD_OFF
-#define WD_PLATFORM_LINUX WD_OFF
-#define WD_PLATFORM_IOS WD_OFF
-#define WD_PLATFORM_ANDROID WD_OFF
-
+#define NS_PLATFORM_WINDOWS NS_OFF         // enabled for all Windows platforms, both UWP and desktop
+#define NS_PLATFORM_WINDOWS_UWP NS_OFF     // enabled for UWP apps, together with NS_PLATFORM_WINDOWS
+#define NS_PLATFORM_WINDOWS_DESKTOP NS_OFF // enabled for desktop apps, together with NS_PLATFORM_WINDOWS
+#define NS_PLATFORM_OSX NS_OFF
+#define NS_PLATFORM_LINUX NS_OFF
+#define NS_PLATFORM_IOS NS_OFF
+#define NS_PLATFORM_ANDROID NS_OFF
+#define NS_PLATFORM_PLAYSTATION_5 NS_OFF
+#define NS_PLATFORM_XBOX_NS_OFF
+#define NS_PLATFORM_SWITCH NS_OFF
+#define NS_PLATFORM_CONSOLE NS_OFF
 // Different Bit OSes
-#define WD_PLATFORM_32BIT WD_OFF
-#define WD_PLATFORM_64BIT WD_OFF
+#define NS_PLATFORM_32BIT NS_OFF
+#define NS_PLATFORM_64BIT NS_OFF
 
 // Different CPU architectures
-#define WD_PLATFORM_ARCH_X86 WD_OFF
-#define WD_PLATFORM_ARCH_ARM WD_OFF
+#define NS_PLATFORM_ARCH_X86 NS_OFF
+#define NS_PLATFORM_ARCH_ARM NS_OFF
 
 // Endianess
-#define WD_PLATFORM_LITTLE_ENDIAN WD_OFF
-#define WD_PLATFORM_BIG_ENDIAN WD_OFF
+#define NS_PLATFORM_LITTLE_ENDIAN NS_OFF
+#define NS_PLATFORM_BIG_ENDIAN NS_OFF
 
 // Different Compilers
-#define WD_COMPILER_MSVC WD_OFF
-#define WD_COMPILER_MSVC_CLANG WD_OFF // Clang front-end with MSVC CodeGen
-#define WD_COMPILER_MSVC_PURE WD_OFF  // MSVC front-end and CodeGen, no mixed compilers
-#define WD_COMPILER_CLANG WD_OFF
-#define WD_COMPILER_GCC WD_OFF
+#define NS_COMPILER_MSVC NS_OFF
+#define NS_COMPILER_MSVC_CLANG NS_OFF // Clang front-end with MSVC CodeGen
+#define NS_COMPILER_MSVC_PURE NS_OFF  // MSVC front-end and CodeGen, no mixed compilers
+#define NS_COMPILER_CLANG NS_OFF
+#define NS_COMPILER_PROSPERO_CLANG NS_OFF
+#define NS_COMPILER_GCC NS_OFF
 
 // How to compile the engine
-#define WD_COMPILE_ENGINE_AS_DLL WD_OFF
-#define WD_COMPILE_FOR_DEBUG WD_OFF
-#define WD_COMPILE_FOR_DEVELOPMENT WD_OFF
+#define NS_COMPILE_ENGINE_AS_DLL NS_OFF
+#define NS_COMPILE_FOR_DEBUG NS_OFF
+#define NS_COMPILE_FOR_DEVELOPMENT NS_OFF
 
 // Platform Features
-#define WD_USE_POSIX_FILE_API WD_OFF
-#define WD_SUPPORTS_FILE_ITERATORS WD_OFF
-#define WD_SUPPORTS_FILE_STATS WD_OFF
-#define WD_SUPPORTS_DIRECTORY_WATCHER WD_OFF
-#define WD_SUPPORTS_MEMORY_MAPPED_FILE WD_OFF
-#define WD_SUPPORTS_SHARED_MEMORY WD_OFF
-#define WD_SUPPORTS_DYNAMIC_PLUGINS WD_OFF
-#define WD_SUPPORTS_UNRESTRICTED_FILE_ACCESS WD_OFF
-#define WD_SUPPORTS_CASE_INSENSITIVE_PATHS WD_OFF
-#define WD_SUPPORTS_CRASH_DUMPS WD_OFF
-#define WD_SUPPORTS_LONG_PATHS WD_OFF
-#define WD_SUPPORTS_GLFW WD_OFF
+#define NS_USE_POSIX_FILE_API NS_OFF
+#define NS_USE_LINUX_POSIX_EXTENSIONS NS_OFF // linux specific posix extensions like pipe2, dup3, etc.
+#define NS_USE_CPP20_OPERATORS NS_OFF
+#define NS_SUPPORTS_FILE_ITERATORS NS_OFF
+#define NS_SUPPORTS_FILE_STATS NS_OFF
+#define NS_SUPPORTS_DIRECTORY_WATCHER NS_OFF
+#define NS_SUPPORTS_MEMORY_MAPPED_FILE NS_OFF
+#define NS_SUPPORTS_SHARED_MEMORY NS_OFF
+#define NS_SUPPORTS_DYNAMIC_PLUGINS NS_OFF
+#define NS_SUPPORTS_UNRESTRICTED_FILE_ACCESS NS_OFF
+#define NS_SUPPORTS_CASE_INSENSITIVE_PATHS NS_OFF
+#define NS_SUPPORTS_CRASH_DUMPS NS_OFF
+#define NS_SUPPORTS_LONG_PATHS NS_OFF
 
 // Allocators
-#define WD_USE_ALLOCATION_TRACKING WD_OFF
-#define WD_USE_ALLOCATION_STACK_TRACING WD_OFF
-#define WD_USE_GUARDED_ALLOCATIONS WD_OFF
+#define NS_ALLOC_GUARD_ALLOCATIONS NS_OFF
+#define NS_ALLOC_TRACKING_DEFAULT nsAllocatorTrackingMode::Nothing
 
 // Other Features
-#define WD_USE_PROFILING WD_OFF
+#define NS_USE_PROFILING NS_OFF
+#define NS_USE_STRING_VALIDATION NS_OFF
 
 // Hashed String
 /// \brief Ref counting on hashed strings adds the possibility to cleanup unused strings. Since ref counting has a performance overhead it is disabled
 /// by default.
-#define WD_HASHED_STRING_REF_COUNTING WD_OFF
+#define NS_HASHED_STRING_REF_COUNTING NS_OFF
 
 // Math Debug Checks
-#define WD_MATH_CHECK_FOR_NAN WD_OFF
+#define NS_MATH_CHECK_FOR_NAN NS_OFF
 
 // SIMD support
-#define WD_SIMD_IMPLEMENTATION_FPU 1
-#define WD_SIMD_IMPLEMENTATION_SSE 2
+#define NS_SIMD_IMPLEMENTATION_FPU 1
+#define NS_SIMD_IMPLEMENTATION_SSE 2
+#define NS_SIMD_IMPLEMENTATION_NEON 3
 
-#define WD_SIMD_IMPLEMENTATION 0
+#define NS_SIMD_IMPLEMENTATION 0
 
 // Application entry point code injection (undef and redefine in UserConfig.h if needed)
-#define WD_APPLICATION_ENTRY_POINT_CODE_INJECTION
+#define NS_APPLICATION_ENTRY_POINT_CODE_INJECTION
 
 // Whether 'RuntimeConfigs' files should be searched in the old location
-#define WD_MIGRATE_RUNTIMECONFIGS WD_OFF
+#define NS_MIGRATE_RUNTIMECONFIGS NS_OFF
+
+// Interoperability with other libraries
+#define NS_INTEROP_STL_STRINGS NS_OFF
+#define NS_INTEROP_STL_SPAN NS_OFF

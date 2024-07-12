@@ -4,7 +4,7 @@
 
 /// \brief This is a helper class that splits up task items via index ranges.
 template <typename IndexType, typename Callback>
-class IndexedTask final : public wdTask
+class IndexedTask final : public nsTask
 {
 public:
   IndexedTask(IndexType uiStartIndex, IndexType uiNumItems, Callback taskCallback, IndexType uiItemsPerInvocation)
@@ -21,12 +21,12 @@ public:
     m_TaskCallback(m_uiStartIndex, m_uiStartIndex + m_uiNumItems);
   }
 
-  void ExecuteWithMultiplicity(wdUInt32 uiInvocation) const override
+  void ExecuteWithMultiplicity(nsUInt32 uiInvocation) const override
   {
     const IndexType uiSliceStartIndex = uiInvocation * m_uiItemsPerInvocation;
-    const IndexType uiSliceEndIndex = wdMath::Min(uiSliceStartIndex + m_uiItemsPerInvocation, m_uiStartIndex + m_uiNumItems);
+    const IndexType uiSliceEndIndex = nsMath::Min(uiSliceStartIndex + m_uiItemsPerInvocation, m_uiStartIndex + m_uiNumItems);
 
-    WD_ASSERT_DEV(uiSliceStartIndex < uiSliceEndIndex, "ParallelFor start/end indices given to index task are invalid: {} -> {}", uiSliceStartIndex, uiSliceEndIndex);
+    NS_ASSERT_DEV(uiSliceStartIndex < uiSliceEndIndex, "ParallelFor start/end indices given to index task are invalid: {} -> {}", uiSliceStartIndex, uiSliceEndIndex);
 
     // Run through the calculated slice, the end index is exclusive, i.e., should not be handled by this instance.
     m_TaskCallback(uiSliceStartIndex, uiSliceEndIndex);
@@ -40,7 +40,7 @@ private:
 };
 
 template <typename IndexType, typename Callback>
-void ParallelForIndexedInternal(IndexType uiStartIndex, IndexType uiNumItems, const Callback& taskCallback, const char* szTaskName, const wdParallelForParams& params)
+void ParallelForIndexedInternal(IndexType uiStartIndex, IndexType uiNumItems, const Callback&& taskCallback, const char* szTaskName, const nsParallelForParams& params, nsTaskNesting taskNesting)
 {
   typedef IndexedTask<IndexType, Callback> Task;
 
@@ -54,36 +54,36 @@ void ParallelForIndexedInternal(IndexType uiStartIndex, IndexType uiNumItems, co
     // If we have not exceeded the threading threshold we use serial execution
 
     Task indexedTask(uiStartIndex, uiNumItems, std::move(taskCallback), uiNumItems);
-    indexedTask.ConfigureTask(szTaskName, wdTaskNesting::Never);
+    indexedTask.ConfigureTask(szTaskName, taskNesting);
 
-    WD_PROFILE_SCOPE(szTaskName);
+    NS_PROFILE_SCOPE(szTaskName);
     indexedTask.Execute();
   }
   else
   {
-    wdUInt32 uiMultiplicity;
-    wdUInt64 uiItemsPerInvocation;
+    nsUInt32 uiMultiplicity;
+    nsUInt64 uiItemsPerInvocation;
     params.DetermineThreading(uiNumItems, uiMultiplicity, uiItemsPerInvocation);
 
-    wdAllocatorBase* pAllocator = (params.m_pTaskAllocator != nullptr) ? params.m_pTaskAllocator : wdFoundation::GetDefaultAllocator();
+    nsAllocator* pAllocator = (params.m_pTaskAllocator != nullptr) ? params.m_pTaskAllocator : nsFoundation::GetDefaultAllocator();
 
-    wdSharedPtr<Task> pIndexedTask = WD_NEW(pAllocator, Task, uiStartIndex, uiNumItems, std::move(taskCallback), static_cast<IndexType>(uiItemsPerInvocation));
-    pIndexedTask->ConfigureTask(szTaskName, wdTaskNesting::Never);
+    nsSharedPtr<Task> pIndexedTask = NS_NEW(pAllocator, Task, uiStartIndex, uiNumItems, std::move(taskCallback), static_cast<IndexType>(uiItemsPerInvocation));
+    pIndexedTask->ConfigureTask(szTaskName, taskNesting);
 
     pIndexedTask->SetMultiplicity(uiMultiplicity);
-    wdTaskGroupID taskGroupId = wdTaskSystem::StartSingleTask(pIndexedTask, wdTaskPriority::EarlyThisFrame);
-    wdTaskSystem::WaitForGroup(taskGroupId);
+    nsTaskGroupID taskGroupId = nsTaskSystem::StartSingleTask(pIndexedTask, nsTaskPriority::EarlyThisFrame);
+    nsTaskSystem::WaitForGroup(taskGroupId);
   }
 }
 
-void wdParallelForParams::DetermineThreading(wdUInt64 uiNumItemsToExecute, wdUInt32& out_uiNumTasksToRun, wdUInt64& out_uiNumItemsPerTask) const
+void nsParallelForParams::DetermineThreading(nsUInt64 uiNumItemsToExecute, nsUInt32& out_uiNumTasksToRun, nsUInt64& out_uiNumItemsPerTask) const
 {
   // we create a single task, but we set it's multiplicity to M (= out_uiNumTasksToRun)
   // so that it gets scheduled M times, which is effectively the same as creating M tasks
 
-  const wdUInt32 uiNumWorkerThreads = wdTaskSystem::GetWorkerThreadCount(wdWorkerThreadType::ShortTasks);
-  const wdUInt64 uiMaxTasksToUse = uiNumWorkerThreads * m_uiMaxTasksPerThread;
-  const wdUInt64 uiMaxExecutionsRequired = wdMath::Max(1llu, uiNumItemsToExecute / m_uiBinSize);
+  const nsUInt32 uiNumWorkerThreads = nsTaskSystem::GetWorkerThreadCount(nsWorkerThreadType::ShortTasks);
+  const nsUInt64 uiMaxTasksToUse = uiNumWorkerThreads * m_uiMaxTasksPerThread;
+  const nsUInt64 uiMaxExecutionsRequired = nsMath::Max(1llu, uiNumItemsToExecute / m_uiBinSize);
 
   if (uiMaxExecutionsRequired >= uiMaxTasksToUse)
   {
@@ -125,18 +125,16 @@ void wdParallelForParams::DetermineThreading(wdUInt64 uiNumItemsToExecute, wdUIn
       }
     }
 
-    WD_ASSERT_DEV(out_uiNumItemsPerTask * out_uiNumTasksToRun >= uiNumItemsToExecute, "wdParallelFor is missing invocations");
+    NS_ASSERT_DEV(out_uiNumItemsPerTask * out_uiNumTasksToRun >= uiNumItemsToExecute, "nsParallelFor is missing invocations");
   }
 }
 
-void wdTaskSystem::ParallelForIndexed(wdUInt32 uiStartIndex, wdUInt32 uiNumItems, wdParallelForIndexedFunction32 taskCallback, const char* szTaskName, const wdParallelForParams& params)
+void nsTaskSystem::ParallelForIndexed(nsUInt32 uiStartIndex, nsUInt32 uiNumItems, nsParallelForIndexedFunction32 taskCallback, const char* szTaskName, nsTaskNesting taskNesting, const nsParallelForParams& params)
 {
-  ParallelForIndexedInternal<wdUInt32, wdParallelForIndexedFunction32>(uiStartIndex, uiNumItems, taskCallback, szTaskName, params);
+  ParallelForIndexedInternal<nsUInt32, nsParallelForIndexedFunction32>(uiStartIndex, uiNumItems, std::move(taskCallback), szTaskName, params, taskNesting);
 }
 
-void wdTaskSystem::ParallelForIndexed(wdUInt64 uiStartIndex, wdUInt64 uiNumItems, wdParallelForIndexedFunction64 taskCallback, const char* szTaskName, const wdParallelForParams& params)
+void nsTaskSystem::ParallelForIndexed(nsUInt64 uiStartIndex, nsUInt64 uiNumItems, nsParallelForIndexedFunction64 taskCallback, const char* szTaskName, nsTaskNesting taskNesting, const nsParallelForParams& params)
 {
-  ParallelForIndexedInternal<wdUInt64, wdParallelForIndexedFunction64>(uiStartIndex, uiNumItems, taskCallback, szTaskName, params);
+  ParallelForIndexedInternal<nsUInt64, nsParallelForIndexedFunction64>(uiStartIndex, uiNumItems, std::move(taskCallback), szTaskName, params, taskNesting);
 }
-
-WD_STATICLINK_FILE(Foundation, Foundation_Threading_Implementation_ParallelFor);

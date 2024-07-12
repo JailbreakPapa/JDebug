@@ -4,19 +4,19 @@
 
 /// \brief Represents an interval with a start and an end value.
 template <class Type>
-class wdInterval
+class nsInterval
 {
 public:
   /// \brief The default constructor initializes the two values to zero.
-  constexpr wdInterval() = default;
+  constexpr nsInterval() = default;
 
   /// \brief Initializes both start and end to the same value.
-  constexpr wdInterval(Type startAndEndValue);
+  constexpr nsInterval(Type startAndEndValue);
 
   /// \brief Initializes start and end to the given values.
   ///
   /// Clamps the end value to not be lower than the start value.
-  constexpr wdInterval(Type start, Type end);
+  constexpr nsInterval(Type start, Type end);
 
   /// \brief Sets the start value. If necessary, the end value will adjusted to not be lower than the start value.
   void SetStartAdjustEnd(Type value);
@@ -37,14 +37,14 @@ public:
   /// \brief Returns how much the start and and value are separated from each other.
   Type GetSeparation() const;
 
-  bool operator==(const wdInterval<Type>& rhs) const;
-  bool operator!=(const wdInterval<Type>& rhs) const;
+  bool operator==(const nsInterval<Type>& rhs) const;
+  bool operator!=(const nsInterval<Type>& rhs) const;
 
   Type m_StartValue = Type();
   Type m_EndValue = Type();
 };
 
-using wdFloatInterval = wdInterval<float>;
-using wdIntInterval = wdInterval<wdInt32>;
+using nsFloatInterval = nsInterval<float>;
+using nsIntInterval = nsInterval<nsInt32>;
 
 #include <Foundation/Types/Implementation/Interval_inl.h>

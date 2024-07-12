@@ -22,22 +22,22 @@
 #include <Foundation/Configuration/Startup.h>
 
 
-class Application : public wdApplication
+class Application : public nsApplication
 {
-  void AfterEngineInit() WD_OVERRIDE
+  void AfterEngineInit() NS_OVERRIDE
   {
     // string & string builder
     {
-      wdString bla_wd("bla");
-      wdStringBuilder bla_wd_builder("bla");
+      nsString bla_ns("bla");
+      nsStringBuilder bla_ns_builder("bla");
       std::string bla_std = "bla";
     }
 
     // dynamic array
     {
-      wdDynamicArray<wdString> dynarray_wd;
-      dynarray_wd.PushBack("asdf");
-      dynarray_wd.PushBack("fads");
+      nsDynamicArray<nsString> dynarray_ns;
+      dynarray_ns.PushBack("asdf");
+      dynarray_ns.PushBack("fads");
 
       std::vector<std::string> dynarray_std;
       dynarray_std.push_back("asdf");
@@ -46,9 +46,9 @@ class Application : public wdApplication
 
     // linked list
     {
-      wdList<wdString> linkedlist_wd;
-      linkedlist_wd.PushBack("asdf");
-      linkedlist_wd.PushBack("fads");
+      nsList<nsString> linkedlist_ns;
+      linkedlist_ns.PushBack("asdf");
+      linkedlist_ns.PushBack("fads");
 
       std::vector<std::string> linkedlist_std;
       linkedlist_std.push_back("asdf");
@@ -57,9 +57,9 @@ class Application : public wdApplication
 
     // map
     {
-      wdMap<wdString, wdString> map_wd;
-      map_wd.Insert("asdf", "value");
-      map_wd.Insert("fads", "value");
+      nsMap<nsString, nsString> map_ns;
+      map_ns.Insert("asdf", "value");
+      map_ns.Insert("fads", "value");
 
       std::map<std::string, std::string> map_std;
       map_std.insert(std::pair<std::string, std::string>("asdf", "value"));
@@ -68,9 +68,9 @@ class Application : public wdApplication
 
     // set
     {
-      wdSet<wdString> set_wd;
-      set_wd.Insert("asdf");
-      set_wd.Insert("fads");
+      nsSet<nsString> set_ns;
+      set_ns.Insert("asdf");
+      set_ns.Insert("fads");
 
       std::set<std::string> set_std;
       set_std.insert("asdf");
@@ -79,20 +79,20 @@ class Application : public wdApplication
 
     // hashtable
     {
-      wdHashTable<wdString, wdString> hashmap_wd;
-      hashmap_wd.Insert("asdf", "value");
-      hashmap_wd.Insert("fads", "value"); // currently some troubles here with reading the strings - even in raw view; usage works fine
+      nsHashTable<nsString, nsString> hashmap_ns;
+      hashmap_ns.Insert("asdf", "value");
+      hashmap_ns.Insert("fads", "value"); // currently some troubles here with reading the strings - even in raw view; usage works fine
 
-      std::unordered_map<std::string, wdString> hashmap_std;
-      hashmap_std.insert(std::pair<std::string, wdString>("asdf", "value"));
-      hashmap_std.insert(std::pair<std::string, wdString>("fads", "value"));
+      std::unordered_map<std::string, nsString> hashmap_std;
+      hashmap_std.insert(std::pair<std::string, nsString>("asdf", "value"));
+      hashmap_std.insert(std::pair<std::string, nsString>("fads", "value"));
     }
 
-    // deque - doesn't work yet (chunked based design of wdDeque makes it difficult)
+    // deque - doesn't work yet (chunked based design of nsDeque makes it difficult)
   /*{
-      wdDeque<wdString> deque_wd;
-      deque_wd.PushBack("asdf");
-      deque_wd.PushBack("fads");
+      nsDeque<nsString> deque_ns;
+      deque_ns.PushBack("asdf");
+      deque_ns.PushBack("fads");
 
       std::deque<std::string> deque_std;
       deque_std.push_back("asdf");
@@ -101,15 +101,15 @@ class Application : public wdApplication
 
     // array
     {
-      wdArrayPtr<int> pArray = WD_DEFAULT_NEW_ARRAY(int, 100);
-      WD_DEFAULT_DELETE_ARRAY(pArray);
+      nsArrayPtr<int> pArray = NS_DEFAULT_NEW_ARRAY(int, 100);
+      NS_DEFAULT_DELETE_ARRAY(pArray);
     }
 
     // static array
     {
-      wdStaticArray<std::string, 2> array_wd;
-      array_wd.PushBack("asdf");
-      array_wd.PushBack("fads");
+      nsStaticArray<std::string, 2> array_ns;
+      array_ns.PushBack("asdf");
+      array_ns.PushBack("fads");
 
       std::array<std::string, 2> array_std;
       array_std[0] = "asdf";
@@ -119,8 +119,8 @@ class Application : public wdApplication
 
   virtual ApplicationExecution Run()
   {
-    return wdApplication::Quit;
+    return nsApplication::Quit;
   }
 };
 
-WD_CONSOLEAPP_ENTRY_POINT(Application)
+NS_CONSOLEAPP_ENTRY_POINT(Application)

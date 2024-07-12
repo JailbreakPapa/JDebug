@@ -2,76 +2,78 @@
 
 #include <Foundation/IO/OSFile.h>
 
-wdString64 wdOSFile::s_sApplicationPath;
-wdString64 wdOSFile::s_sUserDataPath;
-wdString64 wdOSFile::s_sTempDataPath;
-wdAtomicInteger32 wdOSFile::s_iFileCounter;
-wdOSFile::Event wdOSFile::s_FileEvents;
+nsString64 nsOSFile::s_sApplicationPath;
+nsString64 nsOSFile::s_sUserDataPath;
+nsString64 nsOSFile::s_sTempDataPath;
+nsString64 nsOSFile::s_sUserDocumentsPath;
+nsAtomicInteger32 nsOSFile::s_iFileCounter;
 
-wdFileStats::wdFileStats() = default;
-wdFileStats::~wdFileStats() = default;
+nsOSFile::Event nsOSFile::s_FileEvents;
 
-void wdFileStats::GetFullPath(wdStringBuilder& ref_sPath) const
+nsFileStats::nsFileStats() = default;
+nsFileStats::~nsFileStats() = default;
+
+void nsFileStats::GetFullPath(nsStringBuilder& ref_sPath) const
 {
   ref_sPath.Set(m_sParentPath, "/", m_sName);
   ref_sPath.MakeCleanPath();
 }
 
-wdOSFile::wdOSFile()
+nsOSFile::nsOSFile()
 {
-  m_FileMode = wdFileOpenMode::None;
+  m_FileMode = nsFileOpenMode::None;
   m_iFileID = s_iFileCounter.Increment();
 }
 
-wdOSFile::~wdOSFile()
+nsOSFile::~nsOSFile()
 {
   Close();
 }
 
-wdResult wdOSFile::Open(wdStringView sFile, wdFileOpenMode::Enum openMode, wdFileShareMode::Enum fileShareMode)
+nsResult nsOSFile::Open(nsStringView sFile, nsFileOpenMode::Enum openMode, nsFileShareMode::Enum fileShareMode)
 {
   m_iFileID = s_iFileCounter.Increment();
 
-  WD_ASSERT_DEV(openMode >= wdFileOpenMode::Read && openMode <= wdFileOpenMode::Append, "Invalid Mode");
-  WD_ASSERT_DEV(!IsOpen(), "The file has already been opened.");
+  NS_ASSERT_DEV(openMode >= nsFileOpenMode::Read && openMode <= nsFileOpenMode::Append, "Invalid Mode");
+  NS_ASSERT_DEV(!IsOpen(), "The file has already been opened.");
 
-  const wdTime t0 = wdTime::Now();
+  const nsTime t0 = nsTime::Now();
 
   m_sFileName = sFile;
   m_sFileName.MakeCleanPath();
   m_sFileName.MakePathSeparatorsNative();
 
-  wdResult Res = WD_FAILURE;
+  nsResult Res = NS_FAILURE;
 
   if (!m_sFileName.IsAbsolutePath())
     goto done;
 
   {
-    wdStringBuilder sFolder = m_sFileName.GetFileDirectory();
+    nsStringBuilder sFolder = m_sFileName.GetFileDirectory();
 
-    if (openMode == wdFileOpenMode::Write || openMode == wdFileOpenMode::Append)
+    if (openMode == nsFileOpenMode::Write || openMode == nsFileOpenMode::Append)
     {
-      WD_SUCCEED_OR_RETURN(CreateDirectoryStructure(sFolder.GetData()));
+      NS_SUCCEED_OR_RETURN(CreateDirectoryStructure(sFolder.GetData()));
     }
   }
 
-  if (InternalOpen(m_sFileName.GetData(), openMode, fileShareMode) == WD_SUCCESS)
+  if (InternalOpen(m_sFileName.GetData(), openMode, fileShareMode) == NS_SUCCESS)
   {
     m_FileMode = openMode;
-    Res = WD_SUCCESS;
+    Res = NS_SUCCESS;
     goto done;
   }
 
   m_sFileName.Clear();
-  m_FileMode = wdFileOpenMode::None;
+  m_FileMode = nsFileOpenMode::None;
   goto done;
 
 done:
-  const wdTime t1 = wdTime::Now();
-  const wdTime tdiff = t1 - t0;
+  const nsTime t1 = nsTime::Now();
+  const nsTime tdiff = t1 - t0;
 
   EventData e;
-  e.m_bSuccess = Res == WD_SUCCESS;
+  e.m_bSuccess = Res == NS_SUCCESS;
   e.m_Duration = tdiff;
   e.m_FileMode = openMode;
   e.m_iFileID = m_iFileID;
@@ -83,22 +85,22 @@ done:
   return Res;
 }
 
-bool wdOSFile::IsOpen() const
+bool nsOSFile::IsOpen() const
 {
-  return m_FileMode != wdFileOpenMode::None;
+  return m_FileMode != nsFileOpenMode::None;
 }
 
-void wdOSFile::Close()
+void nsOSFile::Close()
 {
   if (!IsOpen())
     return;
 
-  const wdTime t0 = wdTime::Now();
+  const nsTime t0 = nsTime::Now();
 
   InternalClose();
 
-  const wdTime t1 = wdTime::Now();
-  const wdTime tdiff = t1 - t0;
+  const nsTime t1 = nsTime::Now();
+  const nsTime tdiff = t1 - t0;
 
   EventData e;
   e.m_bSuccess = true;
@@ -110,23 +112,23 @@ void wdOSFile::Close()
   s_FileEvents.Broadcast(e);
 
   m_sFileName.Clear();
-  m_FileMode = wdFileOpenMode::None;
+  m_FileMode = nsFileOpenMode::None;
 }
 
-wdResult wdOSFile::Write(const void* pBuffer, wdUInt64 uiBytes)
+nsResult nsOSFile::Write(const void* pBuffer, nsUInt64 uiBytes)
 {
-  WD_ASSERT_DEV((m_FileMode == wdFileOpenMode::Write) || (m_FileMode == wdFileOpenMode::Append), "The file is not opened for writing.");
-  WD_ASSERT_DEV(pBuffer != nullptr, "pBuffer must not be nullptr.");
+  NS_ASSERT_DEV((m_FileMode == nsFileOpenMode::Write) || (m_FileMode == nsFileOpenMode::Append), "The file is not opened for writing.");
+  NS_ASSERT_DEV(pBuffer != nullptr, "pBuffer must not be nullptr.");
 
-  const wdTime t0 = wdTime::Now();
+  const nsTime t0 = nsTime::Now();
 
-  const wdResult Res = InternalWrite(pBuffer, uiBytes);
+  const nsResult Res = InternalWrite(pBuffer, uiBytes);
 
-  const wdTime t1 = wdTime::Now();
-  const wdTime tdiff = t1 - t0;
+  const nsTime t1 = nsTime::Now();
+  const nsTime tdiff = t1 - t0;
 
   EventData e;
-  e.m_bSuccess = Res == WD_SUCCESS;
+  e.m_bSuccess = Res == NS_SUCCESS;
   e.m_Duration = tdiff;
   e.m_iFileID = m_iFileID;
   e.m_sFile = m_sFileName;
@@ -138,17 +140,17 @@ wdResult wdOSFile::Write(const void* pBuffer, wdUInt64 uiBytes)
   return Res;
 }
 
-wdUInt64 wdOSFile::Read(void* pBuffer, wdUInt64 uiBytes)
+nsUInt64 nsOSFile::Read(void* pBuffer, nsUInt64 uiBytes)
 {
-  WD_ASSERT_DEV(m_FileMode == wdFileOpenMode::Read, "The file is not opened for reading.");
-  WD_ASSERT_DEV(pBuffer != nullptr, "pBuffer must not be nullptr.");
+  NS_ASSERT_DEV(m_FileMode == nsFileOpenMode::Read, "The file is not opened for reading.");
+  NS_ASSERT_DEV(pBuffer != nullptr, "pBuffer must not be nullptr.");
 
-  const wdTime t0 = wdTime::Now();
+  const nsTime t0 = nsTime::Now();
 
-  const wdUInt64 Res = InternalRead(pBuffer, uiBytes);
+  const nsUInt64 Res = InternalRead(pBuffer, uiBytes);
 
-  const wdTime t1 = wdTime::Now();
-  const wdTime tdiff = t1 - t0;
+  const nsTime t1 = nsTime::Now();
+  const nsTime tdiff = t1 - t0;
 
   EventData e;
   e.m_bSuccess = (Res == uiBytes);
@@ -163,12 +165,12 @@ wdUInt64 wdOSFile::Read(void* pBuffer, wdUInt64 uiBytes)
   return Res;
 }
 
-wdUInt64 wdOSFile::ReadAll(wdDynamicArray<wdUInt8>& out_fileContent)
+nsUInt64 nsOSFile::ReadAll(nsDynamicArray<nsUInt8>& out_fileContent)
 {
-  WD_ASSERT_DEV(m_FileMode == wdFileOpenMode::Read, "The file is not opened for reading.");
+  NS_ASSERT_DEV(m_FileMode == nsFileOpenMode::Read, "The file is not opened for reading.");
 
   out_fileContent.Clear();
-  out_fileContent.SetCountUninitialized((wdUInt32)GetFileSize());
+  out_fileContent.SetCountUninitialized((nsUInt32)GetFileSize());
 
   if (!out_fileContent.IsEmpty())
   {
@@ -178,41 +180,41 @@ wdUInt64 wdOSFile::ReadAll(wdDynamicArray<wdUInt8>& out_fileContent)
   return out_fileContent.GetCount();
 }
 
-wdUInt64 wdOSFile::GetFilePosition() const
+nsUInt64 nsOSFile::GetFilePosition() const
 {
-  WD_ASSERT_DEV(IsOpen(), "The file must be open to tell the file pointer position.");
+  NS_ASSERT_DEV(IsOpen(), "The file must be open to tell the file pointer position.");
 
   return InternalGetFilePosition();
 }
 
-void wdOSFile::SetFilePosition(wdInt64 iDistance, wdFileSeekMode::Enum pos) const
+void nsOSFile::SetFilePosition(nsInt64 iDistance, nsFileSeekMode::Enum pos) const
 {
-  WD_ASSERT_DEV(IsOpen(), "The file must be open to tell the file pointer position.");
-  WD_ASSERT_DEV(m_FileMode != wdFileOpenMode::Append, "SetFilePosition is not possible on files that were opened for appending.");
+  NS_ASSERT_DEV(IsOpen(), "The file must be open to tell the file pointer position.");
+  NS_ASSERT_DEV(m_FileMode != nsFileOpenMode::Append, "SetFilePosition is not possible on files that were opened for appending.");
 
   return InternalSetFilePosition(iDistance, pos);
 }
 
-wdUInt64 wdOSFile::GetFileSize() const
+nsUInt64 nsOSFile::GetFileSize() const
 {
-  WD_ASSERT_DEV(IsOpen(), "The file must be open to tell the file size.");
+  NS_ASSERT_DEV(IsOpen(), "The file must be open to tell the file size.");
 
-  const wdInt64 iCurPos = static_cast<wdInt64>(GetFilePosition());
-
-  // to circumvent the 'append does not support SetFilePosition' assert, we use the internal function directly
-  InternalSetFilePosition(0, wdFileSeekMode::FromEnd);
-
-  const wdUInt64 uiCurSize = static_cast<wdInt64>(GetFilePosition());
+  const nsInt64 iCurPos = static_cast<nsInt64>(GetFilePosition());
 
   // to circumvent the 'append does not support SetFilePosition' assert, we use the internal function directly
-  InternalSetFilePosition(iCurPos, wdFileSeekMode::FromStart);
+  InternalSetFilePosition(0, nsFileSeekMode::FromEnd);
+
+  const nsUInt64 uiCurSize = static_cast<nsInt64>(GetFilePosition());
+
+  // to circumvent the 'append does not support SetFilePosition' assert, we use the internal function directly
+  InternalSetFilePosition(iCurPos, nsFileSeekMode::FromStart);
 
   return uiCurSize;
 }
 
-const wdString wdOSFile::MakePathAbsoluteWithCWD(wdStringView sPath)
+const nsString nsOSFile::MakePathAbsoluteWithCWD(nsStringView sPath)
 {
-  wdStringBuilder tmp = sPath;
+  nsStringBuilder tmp = sPath;
   tmp.MakeCleanPath();
 
   if (tmp.IsRelativePath())
@@ -224,18 +226,18 @@ const wdString wdOSFile::MakePathAbsoluteWithCWD(wdStringView sPath)
   return tmp;
 }
 
-bool wdOSFile::ExistsFile(wdStringView sFile)
+bool nsOSFile::ExistsFile(nsStringView sFile)
 {
-  const wdTime t0 = wdTime::Now();
+  const nsTime t0 = nsTime::Now();
 
-  wdStringBuilder s(sFile);
+  nsStringBuilder s(sFile);
   s.MakeCleanPath();
   s.MakePathSeparatorsNative();
 
   const bool bRes = InternalExistsFile(s);
 
-  const wdTime t1 = wdTime::Now();
-  const wdTime tdiff = t1 - t0;
+  const nsTime t1 = nsTime::Now();
+  const nsTime tdiff = t1 - t0;
 
 
   EventData e;
@@ -250,20 +252,20 @@ bool wdOSFile::ExistsFile(wdStringView sFile)
   return bRes;
 }
 
-bool wdOSFile::ExistsDirectory(wdStringView sDirectory)
+bool nsOSFile::ExistsDirectory(nsStringView sDirectory)
 {
-  const wdTime t0 = wdTime::Now();
+  const nsTime t0 = nsTime::Now();
 
-  wdStringBuilder s(sDirectory);
+  nsStringBuilder s(sDirectory);
   s.MakeCleanPath();
   s.MakePathSeparatorsNative();
 
-  WD_ASSERT_DEV(s.IsAbsolutePath(), "Path must be absolute");
+  NS_ASSERT_DEV(s.IsAbsolutePath(), "Path must be absolute");
 
   const bool bRes = InternalExistsDirectory(s);
 
-  const wdTime t1 = wdTime::Now();
-  const wdTime tdiff = t1 - t0;
+  const nsTime t1 = nsTime::Now();
+  const nsTime tdiff = t1 - t0;
 
 
   EventData e;
@@ -278,21 +280,44 @@ bool wdOSFile::ExistsDirectory(wdStringView sDirectory)
   return bRes;
 }
 
-wdResult wdOSFile::DeleteFile(wdStringView sFile)
+void nsOSFile::FindFreeFilename(nsStringBuilder& inout_sPath, nsStringView sSuffix /*= {}*/)
 {
-  const wdTime t0 = wdTime::Now();
+  NS_ASSERT_DEV(!inout_sPath.IsEmpty() && inout_sPath.IsAbsolutePath(), "Invalid input path.");
 
-  wdStringBuilder s(sFile);
+  if (!nsOSFile::ExistsFile(inout_sPath))
+    return;
+
+  const nsString orgName = inout_sPath.GetFileName();
+
+  nsStringBuilder newName;
+
+  for (nsUInt32 i = 1; i < 100000; ++i)
+  {
+    newName.SetFormat("{}{}{}", orgName, sSuffix, i);
+
+    inout_sPath.ChangeFileName(newName);
+    if (!nsOSFile::ExistsFile(inout_sPath))
+      return;
+  }
+
+  NS_REPORT_FAILURE("Something went wrong.");
+}
+
+nsResult nsOSFile::DeleteFile(nsStringView sFile)
+{
+  const nsTime t0 = nsTime::Now();
+
+  nsStringBuilder s(sFile);
   s.MakeCleanPath();
   s.MakePathSeparatorsNative();
 
-  const wdResult Res = InternalDeleteFile(s.GetData());
+  const nsResult Res = InternalDeleteFile(s.GetData());
 
-  const wdTime t1 = wdTime::Now();
-  const wdTime tdiff = t1 - t0;
+  const nsTime t1 = nsTime::Now();
+  const nsTime tdiff = t1 - t0;
 
   EventData e;
-  e.m_bSuccess = Res == WD_SUCCESS;
+  e.m_bSuccess = Res == NS_SUCCESS;
   e.m_Duration = tdiff;
   e.m_iFileID = s_iFileCounter.Increment();
   e.m_sFile = sFile;
@@ -303,25 +328,37 @@ wdResult wdOSFile::DeleteFile(wdStringView sFile)
   return Res;
 }
 
-wdResult wdOSFile::CreateDirectoryStructure(wdStringView sDirectory)
+nsStringView nsOSFile::GetApplicationDirectory()
 {
-  const wdTime t0 = wdTime::Now();
+  if (s_sApplicationPath.IsEmpty())
+  {
+    // s_sApplicationPath is filled out and cached by GetApplicationPath(), so call that first, if necessary
+    GetApplicationPath();
+  }
 
-  wdStringBuilder s(sDirectory);
+  NS_ASSERT_ALWAYS(!s_sApplicationPath.IsEmpty(), "Invalid application directory");
+  return s_sApplicationPath.GetFileDirectory();
+}
+
+nsResult nsOSFile::CreateDirectoryStructure(nsStringView sDirectory)
+{
+  const nsTime t0 = nsTime::Now();
+
+  nsStringBuilder s(sDirectory);
   s.MakeCleanPath();
   s.MakePathSeparatorsNative();
 
-  WD_ASSERT_DEV(s.IsAbsolutePath(), "The path '{0}' is not absolute.", s);
+  NS_ASSERT_DEV(s.IsAbsolutePath(), "The path '{0}' is not absolute.", s);
 
-  wdStringBuilder sCurPath;
+  nsStringBuilder sCurPath;
 
   auto it = s.GetIteratorFront();
 
-  wdResult Res = WD_SUCCESS;
+  nsResult Res = NS_SUCCESS;
 
   while (it.IsValid())
   {
-    while ((it.GetCharacter() != '\0') && (!wdPathUtils::IsPathSeparator(it.GetCharacter())))
+    while ((it.GetCharacter() != '\0') && (!nsPathUtils::IsPathSeparator(it.GetCharacter())))
     {
       sCurPath.Append(it.GetCharacter());
       ++it;
@@ -330,18 +367,18 @@ wdResult wdOSFile::CreateDirectoryStructure(wdStringView sDirectory)
     sCurPath.Append(it.GetCharacter());
     ++it;
 
-    if (InternalCreateDirectory(sCurPath.GetData()) == WD_FAILURE)
+    if (InternalCreateDirectory(sCurPath.GetData()) == NS_FAILURE)
     {
-      Res = WD_FAILURE;
+      Res = NS_FAILURE;
       break;
     }
   }
 
-  const wdTime t1 = wdTime::Now();
-  const wdTime tdiff = t1 - t0;
+  const nsTime t1 = nsTime::Now();
+  const nsTime tdiff = t1 - t0;
 
   EventData e;
-  e.m_bSuccess = Res == WD_SUCCESS;
+  e.m_bSuccess = Res == NS_SUCCESS;
   e.m_Duration = tdiff;
   e.m_iFileID = s_iFileCounter.Increment();
   e.m_sFile = sDirectory;
@@ -352,62 +389,62 @@ wdResult wdOSFile::CreateDirectoryStructure(wdStringView sDirectory)
   return Res;
 }
 
-wdResult wdOSFile::MoveFileOrDirectory(wdStringView sDirectoryFrom, wdStringView sDirectoryTo)
+nsResult nsOSFile::MoveFileOrDirectory(nsStringView sDirectoryFrom, nsStringView sDirectoryTo)
 {
-  wdStringBuilder sFrom(sDirectoryFrom);
+  nsStringBuilder sFrom(sDirectoryFrom);
   sFrom.MakeCleanPath();
   sFrom.MakePathSeparatorsNative();
 
-  wdStringBuilder sTo(sDirectoryTo);
+  nsStringBuilder sTo(sDirectoryTo);
   sTo.MakeCleanPath();
   sTo.MakePathSeparatorsNative();
 
   return InternalMoveFileOrDirectory(sFrom, sTo);
 }
 
-wdResult wdOSFile::CopyFile(wdStringView sSource, wdStringView sDestination)
+nsResult nsOSFile::CopyFile(nsStringView sSource, nsStringView sDestination)
 {
-  const wdTime t0 = wdTime::Now();
+  const nsTime t0 = nsTime::Now();
 
-  wdOSFile SrcFile, DstFile;
+  nsOSFile SrcFile, DstFile;
 
-  wdResult Res = WD_FAILURE;
+  nsResult Res = NS_FAILURE;
 
-  if (SrcFile.Open(sSource, wdFileOpenMode::Read) == WD_FAILURE)
+  if (SrcFile.Open(sSource, nsFileOpenMode::Read) == NS_FAILURE)
     goto done;
 
   DstFile.m_bRetryOnSharingViolation = false;
-  if (DstFile.Open(sDestination, wdFileOpenMode::Write) == WD_FAILURE)
+  if (DstFile.Open(sDestination, nsFileOpenMode::Write) == NS_FAILURE)
     goto done;
 
   {
-    const wdUInt32 uiTempSize = 1024 * 1024 * 8; // 8 MB
+    const nsUInt32 uiTempSize = 1024 * 1024 * 8; // 8 MB
 
     // can't allocate that much data on the stack
-    wdDynamicArray<wdUInt8> TempBuffer;
+    nsDynamicArray<nsUInt8> TempBuffer;
     TempBuffer.SetCountUninitialized(uiTempSize);
 
     while (true)
     {
-      const wdUInt64 uiRead = SrcFile.Read(&TempBuffer[0], uiTempSize);
+      const nsUInt64 uiRead = SrcFile.Read(&TempBuffer[0], uiTempSize);
 
       if (uiRead == 0)
         break;
 
-      if (DstFile.Write(&TempBuffer[0], uiRead) == WD_FAILURE)
+      if (DstFile.Write(&TempBuffer[0], uiRead) == NS_FAILURE)
         goto done;
     }
   }
 
-  Res = WD_SUCCESS;
+  Res = NS_SUCCESS;
 
 done:
 
-  const wdTime t1 = wdTime::Now();
-  const wdTime tdiff = t1 - t0;
+  const nsTime t1 = nsTime::Now();
+  const nsTime tdiff = t1 - t0;
 
   EventData e;
-  e.m_bSuccess = Res == WD_SUCCESS;
+  e.m_bSuccess = Res == NS_SUCCESS;
   e.m_Duration = tdiff;
   e.m_iFileID = s_iFileCounter.Increment();
   e.m_sFile = sSource;
@@ -419,25 +456,25 @@ done:
   return Res;
 }
 
-#if WD_ENABLED(WD_SUPPORTS_FILE_STATS)
+#if NS_ENABLED(NS_SUPPORTS_FILE_STATS)
 
-wdResult wdOSFile::GetFileStats(wdStringView sFileOrFolder, wdFileStats& out_stats)
+nsResult nsOSFile::GetFileStats(nsStringView sFileOrFolder, nsFileStats& out_stats)
 {
-  const wdTime t0 = wdTime::Now();
+  const nsTime t0 = nsTime::Now();
 
-  wdStringBuilder s = sFileOrFolder;
+  nsStringBuilder s = sFileOrFolder;
   s.MakeCleanPath();
   s.MakePathSeparatorsNative();
 
-  WD_ASSERT_DEV(s.IsAbsolutePath(), "The path '{0}' is not absolute.", s);
+  NS_ASSERT_DEV(s.IsAbsolutePath(), "The path '{0}' is not absolute.", s);
 
-  const wdResult Res = InternalGetFileStats(s.GetData(), out_stats);
+  const nsResult Res = InternalGetFileStats(s.GetData(), out_stats);
 
-  const wdTime t1 = wdTime::Now();
-  const wdTime tdiff = t1 - t0;
+  const nsTime t1 = nsTime::Now();
+  const nsTime tdiff = t1 - t0;
 
   EventData e;
-  e.m_bSuccess = Res == WD_SUCCESS;
+  e.m_bSuccess = Res == NS_SUCCESS;
   e.m_Duration = tdiff;
   e.m_iFileID = s_iFileCounter.Increment();
   e.m_sFile = sFileOrFolder;
@@ -448,30 +485,30 @@ wdResult wdOSFile::GetFileStats(wdStringView sFileOrFolder, wdFileStats& out_sta
   return Res;
 }
 
-#  if WD_ENABLED(WD_SUPPORTS_CASE_INSENSITIVE_PATHS) && WD_ENABLED(WD_SUPPORTS_UNRESTRICTED_FILE_ACCESS)
-wdResult wdOSFile::GetFileCasing(wdStringView sFileOrFolder, wdStringBuilder& out_sCorrectSpelling)
+#  if NS_ENABLED(NS_SUPPORTS_CASE_INSENSITIVE_PATHS) && NS_ENABLED(NS_SUPPORTS_UNRESTRICTED_FILE_ACCESS)
+nsResult nsOSFile::GetFileCasing(nsStringView sFileOrFolder, nsStringBuilder& out_sCorrectSpelling)
 {
-  /// \todo We should implement this also on wdFileSystem, to be able to support stats through virtual filesystems
+  /// \todo We should implement this also on nsFileSystem, to be able to support stats through virtual filesystems
 
-  const wdTime t0 = wdTime::Now();
+  const nsTime t0 = nsTime::Now();
 
-  wdStringBuilder s(sFileOrFolder);
+  nsStringBuilder s(sFileOrFolder);
   s.MakeCleanPath();
   s.MakePathSeparatorsNative();
 
-  WD_ASSERT_DEV(s.IsAbsolutePath(), "The path '{0}' is not absolute.", s);
+  NS_ASSERT_DEV(s.IsAbsolutePath(), "The path '{0}' is not absolute.", s);
 
-  wdStringBuilder sCurPath;
+  nsStringBuilder sCurPath;
 
   auto it = s.GetIteratorFront();
 
   out_sCorrectSpelling.Clear();
 
-  wdResult Res = WD_SUCCESS;
+  nsResult Res = NS_SUCCESS;
 
   while (it.IsValid())
   {
-    while ((it.GetCharacter() != '\0') && (!wdPathUtils::IsPathSeparator(it.GetCharacter())))
+    while ((it.GetCharacter() != '\0') && (!nsPathUtils::IsPathSeparator(it.GetCharacter())))
     {
       sCurPath.Append(it.GetCharacter());
       ++it;
@@ -479,10 +516,10 @@ wdResult wdOSFile::GetFileCasing(wdStringView sFileOrFolder, wdStringBuilder& ou
 
     if (!sCurPath.IsEmpty())
     {
-      wdFileStats stats;
-      if (GetFileStats(sCurPath.GetData(), stats) == WD_FAILURE)
+      nsFileStats stats;
+      if (GetFileStats(sCurPath.GetData(), stats) == NS_FAILURE)
       {
-        Res = WD_FAILURE;
+        Res = NS_FAILURE;
         break;
       }
 
@@ -492,11 +529,11 @@ wdResult wdOSFile::GetFileCasing(wdStringView sFileOrFolder, wdStringBuilder& ou
     ++it;
   }
 
-  const wdTime t1 = wdTime::Now();
-  const wdTime tdiff = t1 - t0;
+  const nsTime t1 = nsTime::Now();
+  const nsTime tdiff = t1 - t0;
 
   EventData e;
-  e.m_bSuccess = Res == WD_SUCCESS;
+  e.m_bSuccess = Res == NS_SUCCESS;
   e.m_Duration = tdiff;
   e.m_iFileID = s_iFileCounter.Increment();
   e.m_sFile = sFileOrFolder;
@@ -507,17 +544,17 @@ wdResult wdOSFile::GetFileCasing(wdStringView sFileOrFolder, wdStringBuilder& ou
   return Res;
 }
 
-#  endif // WD_SUPPORTS_CASE_INSENSITIVE_PATHS && WD_SUPPORTS_UNRESTRICTED_FILE_ACCESS
+#  endif // NS_SUPPORTS_CASE_INSENSITIVE_PATHS && NS_SUPPORTS_UNRESTRICTED_FILE_ACCESS
 
-#endif // WD_SUPPORTS_FILE_STATS
+#endif   // NS_SUPPORTS_FILE_STATS
 
-#if WD_ENABLED(WD_SUPPORTS_FILE_ITERATORS) && WD_ENABLED(WD_SUPPORTS_FILE_STATS)
+#if NS_ENABLED(NS_SUPPORTS_FILE_ITERATORS) && NS_ENABLED(NS_SUPPORTS_FILE_STATS)
 
-void wdOSFile::GatherAllItemsInFolder(wdDynamicArray<wdFileStats>& out_itemList, wdStringView sFolder, wdBitflags<wdFileSystemIteratorFlags> flags /*= wdFileSystemIteratorFlags::All*/)
+void nsOSFile::GatherAllItemsInFolder(nsDynamicArray<nsFileStats>& out_itemList, nsStringView sFolder, nsBitflags<nsFileSystemIteratorFlags> flags /*= nsFileSystemIteratorFlags::All*/)
 {
   out_itemList.Clear();
 
-  wdFileSystemIterator iterator;
+  nsFileSystemIterator iterator;
   iterator.StartSearch(sFolder, flags);
 
   if (!iterator.IsValid())
@@ -533,14 +570,14 @@ void wdOSFile::GatherAllItemsInFolder(wdDynamicArray<wdFileStats>& out_itemList,
   }
 }
 
-wdResult wdOSFile::CopyFolder(wdStringView sSourceFolder, wdStringView sDestinationFolder, wdDynamicArray<wdString>* out_pFilesCopied /*= nullptr*/)
+nsResult nsOSFile::CopyFolder(nsStringView sSourceFolder, nsStringView sDestinationFolder, nsDynamicArray<nsString>* out_pFilesCopied /*= nullptr*/)
 {
-  wdDynamicArray<wdFileStats> items;
+  nsDynamicArray<nsFileStats> items;
   GatherAllItemsInFolder(items, sSourceFolder);
 
-  wdStringBuilder srcPath;
-  wdStringBuilder dstPath;
-  wdStringBuilder relPath;
+  nsStringBuilder srcPath;
+  nsStringBuilder dstPath;
+  nsStringBuilder relPath;
 
   for (const auto& item : items)
   {
@@ -550,20 +587,20 @@ wdResult wdOSFile::CopyFolder(wdStringView sSourceFolder, wdStringView sDestinat
     relPath = srcPath;
 
     if (relPath.MakeRelativeTo(sSourceFolder).Failed())
-      return WD_FAILURE; // unexpected to ever fail, but don't want to assert on it
+      return NS_FAILURE; // unexpected to ever fail, but don't want to assert on it
 
     dstPath = sDestinationFolder;
     dstPath.AppendPath(relPath);
 
     if (item.m_bIsDirectory)
     {
-      if (wdOSFile::CreateDirectoryStructure(dstPath).Failed())
-        return WD_FAILURE;
+      if (nsOSFile::CreateDirectoryStructure(dstPath).Failed())
+        return NS_FAILURE;
     }
     else
     {
-      if (wdOSFile::CopyFile(srcPath, dstPath).Failed())
-        return WD_FAILURE;
+      if (nsOSFile::CopyFile(srcPath, dstPath).Failed())
+        return NS_FAILURE;
 
       if (out_pFilesCopied)
       {
@@ -574,15 +611,15 @@ wdResult wdOSFile::CopyFolder(wdStringView sSourceFolder, wdStringView sDestinat
     // TODO: make sure to remove read-only flags of copied files ?
   }
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
-wdResult wdOSFile::DeleteFolder(wdStringView sFolder)
+nsResult nsOSFile::DeleteFolder(nsStringView sFolder)
 {
-  wdDynamicArray<wdFileStats> items;
+  nsDynamicArray<nsFileStats> items;
   GatherAllItemsInFolder(items, sFolder);
 
-  wdStringBuilder fullPath;
+  nsStringBuilder fullPath;
 
   for (const auto& item : items)
   {
@@ -592,11 +629,11 @@ wdResult wdOSFile::DeleteFolder(wdStringView sFolder)
     fullPath = item.m_sParentPath;
     fullPath.AppendPath(item.m_sName);
 
-    if (wdOSFile::DeleteFile(fullPath).Failed())
-      return WD_FAILURE;
+    if (nsOSFile::DeleteFile(fullPath).Failed())
+      return NS_FAILURE;
   }
 
-  for (wdUInt32 i = items.GetCount(); i > 0; --i)
+  for (nsUInt32 i = items.GetCount(); i > 0; --i)
   {
     const auto& item = items[i - 1];
 
@@ -606,21 +643,21 @@ wdResult wdOSFile::DeleteFolder(wdStringView sFolder)
     fullPath = item.m_sParentPath;
     fullPath.AppendPath(item.m_sName);
 
-    if (wdOSFile::InternalDeleteDirectory(fullPath).Failed())
-      return WD_FAILURE;
+    if (nsOSFile::InternalDeleteDirectory(fullPath).Failed())
+      return NS_FAILURE;
   }
 
-  if (wdOSFile::InternalDeleteDirectory(sFolder).Failed())
-    return WD_FAILURE;
+  if (nsOSFile::InternalDeleteDirectory(sFolder).Failed())
+    return NS_FAILURE;
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
-#endif // WD_ENABLED(WD_SUPPORTS_FILE_ITERATORS) && WD_ENABLED(WD_SUPPORTS_FILE_STATS)
+#endif // NS_ENABLED(NS_SUPPORTS_FILE_ITERATORS) && NS_ENABLED(NS_SUPPORTS_FILE_STATS)
 
-#if WD_ENABLED(WD_SUPPORTS_FILE_ITERATORS)
+#if NS_ENABLED(NS_SUPPORTS_FILE_ITERATORS)
 
-void wdFileSystemIterator::StartMultiFolderSearch(wdArrayPtr<wdString> startFolders, wdStringView sSearchTerm, wdBitflags<wdFileSystemIteratorFlags> flags /*= wdFileSystemIteratorFlags::Default*/)
+void nsFileSystemIterator::StartMultiFolderSearch(nsArrayPtr<nsString> startFolders, nsStringView sSearchTerm, nsBitflags<nsFileSystemIteratorFlags> flags /*= nsFileSystemIteratorFlags::Default*/)
 {
   if (startFolders.IsEmpty())
     return;
@@ -630,7 +667,7 @@ void wdFileSystemIterator::StartMultiFolderSearch(wdArrayPtr<wdString> startFold
   m_uiCurrentStartFolder = 0;
   m_StartFolders = startFolders;
 
-  wdStringBuilder search = startFolders[m_uiCurrentStartFolder];
+  nsStringBuilder search = startFolders[m_uiCurrentStartFolder];
   search.AppendPath(sSearchTerm);
 
   StartSearch(search, m_Flags);
@@ -641,11 +678,11 @@ void wdFileSystemIterator::StartMultiFolderSearch(wdArrayPtr<wdString> startFold
   }
 }
 
-void wdFileSystemIterator::Next()
+void nsFileSystemIterator::Next()
 {
   while (true)
   {
-    const wdInt32 res = InternalNext();
+    const nsInt32 res = InternalNext();
 
     if (res == 1) // success
     {
@@ -657,10 +694,13 @@ void wdFileSystemIterator::Next()
 
       if (m_uiCurrentStartFolder < m_StartFolders.GetCount())
       {
-        wdStringBuilder search = m_StartFolders[m_uiCurrentStartFolder];
+        nsStringBuilder search = m_StartFolders[m_uiCurrentStartFolder];
         search.AppendPath(m_sMultiSearchTerm);
 
-        StartSearch(search, m_Flags);
+        if (search.IsAbsolutePath())
+        {
+          StartSearch(search, m_Flags);
+        }
       }
       else
       {
@@ -679,32 +719,16 @@ void wdFileSystemIterator::Next()
   }
 }
 
-void wdFileSystemIterator::SkipFolder()
+void nsFileSystemIterator::SkipFolder()
 {
-  WD_ASSERT_DEBUG(m_Flags.IsSet(wdFileSystemIteratorFlags::Recursive), "SkipFolder has no meaning when the iterator is not set to be recursive.");
-  WD_ASSERT_DEBUG(m_CurFile.m_bIsDirectory, "SkipFolder can only be called when the current object is a folder.");
+  NS_ASSERT_DEBUG(m_Flags.IsSet(nsFileSystemIteratorFlags::Recursive), "SkipFolder has no meaning when the iterator is not set to be recursive.");
+  NS_ASSERT_DEBUG(m_CurFile.m_bIsDirectory, "SkipFolder can only be called when the current object is a folder.");
 
-  m_Flags.Remove(wdFileSystemIteratorFlags::Recursive);
+  m_Flags.Remove(nsFileSystemIteratorFlags::Recursive);
 
   Next();
 
-  m_Flags.Add(wdFileSystemIteratorFlags::Recursive);
+  m_Flags.Add(nsFileSystemIteratorFlags::Recursive);
 }
 
 #endif
-
-
-#if WD_ENABLED(WD_PLATFORM_WINDOWS)
-#  include <Foundation/IO/Implementation/Win/OSFile_win.h>
-
-// For UWP we're currently using a mix of WinRT functions and posix.
-#  if WD_ENABLED(WD_PLATFORM_WINDOWS_UWP)
-#    include <Foundation/IO/Implementation/Posix/OSFile_posix.h>
-#  endif
-#elif WD_ENABLED(WD_USE_POSIX_FILE_API)
-#  include <Foundation/IO/Implementation/Posix/OSFile_posix.h>
-#else
-#  error "Unknown Platform."
-#endif
-
-WD_STATICLINK_FILE(Foundation, Foundation_IO_Implementation_OSFile);

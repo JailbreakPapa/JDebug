@@ -4,18 +4,18 @@
 #include <Foundation/Configuration/SubSystem.h>
 #include <Foundation/Containers/Deque.h>
 
-#define WD_GLOBALEVENT_STARTUP_CORESYSTEMS_BEGIN "wdStartup_StartupCoreSystems_Begin"
-#define WD_GLOBALEVENT_STARTUP_CORESYSTEMS_END "wdStartup_StartupCoreSystems_End"
-#define WD_GLOBALEVENT_SHUTDOWN_CORESYSTEMS_BEGIN "wdStartup_ShutdownCoreSystems_Begin"
-#define WD_GLOBALEVENT_SHUTDOWN_CORESYSTEMS_END "wdStartup_ShutdownCoreSystems_End"
+#define NS_GLOBALEVENT_STARTUP_CORESYSTEMS_BEGIN "nsStartup_StartupCoreSystems_Begin"
+#define NS_GLOBALEVENT_STARTUP_CORESYSTEMS_END "nsStartup_StartupCoreSystems_End"
+#define NS_GLOBALEVENT_SHUTDOWN_CORESYSTEMS_BEGIN "nsStartup_ShutdownCoreSystems_Begin"
+#define NS_GLOBALEVENT_SHUTDOWN_CORESYSTEMS_END "nsStartup_ShutdownCoreSystems_End"
 
-#define WD_GLOBALEVENT_STARTUP_HIGHLEVELSYSTEMS_BEGIN "wdStartup_StartupHighLevelSystems_Begin"
-#define WD_GLOBALEVENT_STARTUP_HIGHLEVELSYSTEMS_END "wdStartup_StartupHighLevelSystems_End"
-#define WD_GLOBALEVENT_SHUTDOWN_HIGHLEVELSYSTEMS_BEGIN "wdStartup_ShutdownHighLevelSystems_Begin"
-#define WD_GLOBALEVENT_SHUTDOWN_HIGHLEVELSYSTEMS_END "wdStartup_ShutdownHighLevelSystems_End"
+#define NS_GLOBALEVENT_STARTUP_HIGHLEVELSYSTEMS_BEGIN "nsStartup_StartupHighLevelSystems_Begin"
+#define NS_GLOBALEVENT_STARTUP_HIGHLEVELSYSTEMS_END "nsStartup_StartupHighLevelSystems_End"
+#define NS_GLOBALEVENT_SHUTDOWN_HIGHLEVELSYSTEMS_BEGIN "nsStartup_ShutdownHighLevelSystems_Begin"
+#define NS_GLOBALEVENT_SHUTDOWN_HIGHLEVELSYSTEMS_END "nsStartup_ShutdownHighLevelSystems_End"
 
-#define WD_GLOBALEVENT_UNLOAD_PLUGIN_BEGIN "wdStartup_UnloadPlugin_Begin"
-#define WD_GLOBALEVENT_UNLOAD_PLUGIN_END "wdStartup_UnloadPlugin_End"
+#define NS_GLOBALEVENT_UNLOAD_PLUGIN_BEGIN "nsStartup_UnloadPlugin_Begin"
+#define NS_GLOBALEVENT_UNLOAD_PLUGIN_END "nsStartup_UnloadPlugin_End"
 
 /// \brief The startup system makes sure to initialize and shut down all known subsystems in the proper order.
 ///
@@ -33,7 +33,7 @@
 /// A subsystem startup configuration for a static subsystem needs to be put in some cpp file of the subsystem and looks like this:
 ///
 /// // clang-format off
-/// WD_BEGIN_SUBSYSTEM_DECLARATION(ExampleGroup, ExampleSubSystem)
+/// NS_BEGIN_SUBSYSTEM_DECLARATION(ExampleGroup, ExampleSubSystem)
 ///
 ///   BEGIN_SUBSYSTEM_DEPENDENCIES
 ///     "SomeOtherSubSystem",
@@ -43,37 +43,37 @@
 ///
 ///   ON_CORESYSTEMS_STARTUP
 ///   {
-///     wdExampleSubSystem::BasicStartup();
+///     nsExampleSubSystem::BasicStartup();
 ///   }
 ///
 ///   ON_CORESYSTEMS_SHUTDOWN
 ///   {
-///     wdExampleSubSystem::BasicShutdown();
+///     nsExampleSubSystem::BasicShutdown();
 ///   }
 ///
 ///   ON_HIGHLEVELSYSTEMS_STARTUP
 ///   {
-///     wdExampleSubSystem::EngineStartup();
+///     nsExampleSubSystem::EngineStartup();
 ///   }
 ///
 ///   ON_HIGHLEVELSYSTEMS_SHUTDOWN
 ///   {
-///     wdExampleSubSystem::EngineShutdown();
+///     nsExampleSubSystem::EngineShutdown();
 ///   }
 ///
-/// WD_END_SUBSYSTEM_DECLARATION;
+/// NS_END_SUBSYSTEM_DECLARATION;
 /// // clang-format on
 ///
 /// This will automatically register the subsystem, once the code is being loaded (can be dynamically loaded from a DLL).
-/// The next time any of the wdStartup functions are called (StartupCoreSystems, StartupHighLevelSystems) the subsystem will be initialized.
+/// The next time any of the nsStartup functions are called (StartupCoreSystems, StartupHighLevelSystems) the subsystem will be initialized.
 ///
-/// If however your subsystem is implemented as a normal class, you need to derive from the base class 'wdSubSystem' and
-/// override the virtual functions. Then when you have an instance of that class and call wdStartup::StartupCore etc., that
+/// If however your subsystem is implemented as a normal class, you need to derive from the base class 'nsSubSystem' and
+/// override the virtual functions. Then when you have an instance of that class and call nsStartup::StartupCore etc., that
 /// instance will be properly initialized as well. However, you must ensure that the subsystem is properly shut down, before
 /// its instance is destroyed. Also you should never have two instances of the same subsystem.
 ///
 /// All startup / shutdown procedures broadcast global events before and after they execute.
-class WD_FOUNDATION_DLL wdStartup
+class NS_FOUNDATION_DLL nsStartup
 {
 public:
   // 'Base Startup' happens even before 'Core Startup', but only really low level stuff should  be done there
@@ -88,9 +88,9 @@ public:
   /// This makes it possible for the startup functions to conditionally configure things.
   ///
   /// Strings that should be used for common things:
-  /// 'runtime' : For all applications that run the full engine, automatically added by wdGameApplication. Be aware that some tool applications have
+  /// 'runtime' : For all applications that run the full engine, automatically added by nsGameApplication. Be aware that some tool applications have
   /// this set, even though they don't use graphical output. 'editor' : for all applications that run the editor framework, set on the Editor and the
-  /// EditorProcessor 'testframework' : for applications that execute the wdTestFramework 'tool' : for all stand-alone tool applications, set by the
+  /// EditorProcessor 'testframework' : for applications that execute the nsTestFramework 'tool' : for all stand-alone tool applications, set by the
   /// editor, editorprocessor, fileserve, etc.
   static void AddApplicationTag(const char* szTag);
 
@@ -102,35 +102,35 @@ public:
   /// Run this, if you only require very low level systems to be initialized. Otherwise prefer StartupCore.
   /// There is NO ShutdownBaseSystems, everything that gets initialized during the 'Base Startup' should not need any deinitialization.
   /// This function is automatically called by StartupCore, if it hasn't been called before already.
-  static void StartupBaseSystems() { Startup(wdStartupStage::BaseSystems); }
+  static void StartupBaseSystems() { Startup(nsStartupStage::BaseSystems); }
 
   /// \brief Runs the 'core' startup sequence of all subsystems in the proper order.
   ///
   /// Run this BEFORE any window and graphics context have been created.
-  /// Broadcasts the global event WD_GLOBALEVENT_STARTUP_CORESYSTEMS_BEGIN and WD_GLOBALEVENT_STARTUP_CORESYSTEMS_END
-  static void StartupCoreSystems() { Startup(wdStartupStage::CoreSystems); }
+  /// Broadcasts the global event NS_GLOBALEVENT_STARTUP_CORESYSTEMS_BEGIN and NS_GLOBALEVENT_STARTUP_CORESYSTEMS_END
+  static void StartupCoreSystems() { Startup(nsStartupStage::CoreSystems); }
 
   /// \brief Runs the 'core' shutdown sequence of all subsystems in the proper order (reversed startup order).
   ///
   /// Call this AFTER window and graphics context have been destroyed already, shortly before application exit.
   /// Makes sure that the 'high level' shutdown has been run first.
-  /// Broadcasts the global event WD_GLOBALEVENT_SHUTDOWN_CORESYSTEMS_BEGIN and WD_GLOBALEVENT_SHUTDOWN_CORESYSTEMS_END
-  static void ShutdownCoreSystems() { Shutdown(wdStartupStage::CoreSystems); }
+  /// Broadcasts the global event NS_GLOBALEVENT_SHUTDOWN_CORESYSTEMS_BEGIN and NS_GLOBALEVENT_SHUTDOWN_CORESYSTEMS_END
+  static void ShutdownCoreSystems() { Shutdown(nsStartupStage::CoreSystems); }
 
   /// \brief Runs the 'high level' startup sequence of all subsystems in the proper order.
   ///
   /// Run this AFTER a window and graphics context have been created, such that anything that depends on that
   /// can now do its initialization.
   /// Makes sure that the 'core' initialization has been run first.
-  /// Broadcasts the global event WD_GLOBALEVENT_STARTUP_HIGHLEVELSYSTEMS_BEGIN and WD_GLOBALEVENT_STARTUP_HIGHLEVELSYSTEMS_END
-  static void StartupHighLevelSystems() { Startup(wdStartupStage::HighLevelSystems); }
+  /// Broadcasts the global event NS_GLOBALEVENT_STARTUP_HIGHLEVELSYSTEMS_BEGIN and NS_GLOBALEVENT_STARTUP_HIGHLEVELSYSTEMS_END
+  static void StartupHighLevelSystems() { Startup(nsStartupStage::HighLevelSystems); }
 
   /// \brief Runs the 'high level' shutdown sequence of all subsystems in the proper order (reversed startup order).
   ///
   /// Run this BEFORE the window and graphics context have been destroyed, such that code that requires those
   /// can do its deinitialization first.
-  /// Broadcasts the global event WD_GLOBALEVENT_SHUTDOWN_HIGHLEVELSYSTEMS_BEGIN and WD_GLOBALEVENT_SHUTDOWN_HIGHLEVELSYSTEMS_END
-  static void ShutdownHighLevelSystems() { Shutdown(wdStartupStage::HighLevelSystems); }
+  /// Broadcasts the global event NS_GLOBALEVENT_SHUTDOWN_HIGHLEVELSYSTEMS_BEGIN and NS_GLOBALEVENT_SHUTDOWN_HIGHLEVELSYSTEMS_END
+  static void ShutdownHighLevelSystems() { Shutdown(nsStartupStage::HighLevelSystems); }
 
   /// \brief Output info about all known subsystems via the logging system (can change when DLLs are loaded dynamically).
   static void PrintAllSubsystems();
@@ -144,20 +144,20 @@ private:
   /// \brief Unloads all subsystems from the given plugin AND all subsystems that directly or indirectly depend on them.
   ///
   /// This can be used to shutdown all systems from certain DLLs before that DLL is unloaded (and possibly reloaded).
-  /// Broadcasts the global event WD_GLOBALEVENT_UNLOAD_PLUGIN_BEGIN and WD_GLOBALEVENT_UNLOAD_PLUGIN_END and passes szPluginName in the first event
+  /// Broadcasts the global event NS_GLOBALEVENT_UNLOAD_PLUGIN_BEGIN and NS_GLOBALEVENT_UNLOAD_PLUGIN_END and passes szPluginName in the first event
   /// parameter.
-  static void UnloadPluginSubSystems(const char* szPluginName);
+  static void UnloadPluginSubSystems(nsStringView sPluginName);
 
-  static void PluginEventHandler(const wdPluginEvent& EventData);
-  static void AssignSubSystemPlugin(const char* szPluginName);
+  static void PluginEventHandler(const nsPluginEvent& EventData);
+  static void AssignSubSystemPlugin(nsStringView sPluginName);
 
-  static void ComputeOrder(wdDeque<wdSubSystem*>& Order);
-  static bool HasDependencyOnPlugin(wdSubSystem* pSubSystem, const char* szModule);
+  static void ComputeOrder(nsDeque<nsSubSystem*>& Order);
+  static bool HasDependencyOnPlugin(nsSubSystem* pSubSystem, nsStringView sModule);
 
-  static void Startup(wdStartupStage::Enum stage);
-  static void Shutdown(wdStartupStage::Enum stage);
+  static void Startup(nsStartupStage::Enum stage);
+  static void Shutdown(nsStartupStage::Enum stage);
 
   static bool s_bPrintAllSubSystems;
-  static wdStartupStage::Enum s_CurrentState;
-  static wdDynamicArray<const char*> s_ApplicationTags;
+  static nsStartupStage::Enum s_CurrentState;
+  static nsDynamicArray<const char*> s_ApplicationTags;
 };

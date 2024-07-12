@@ -4,43 +4,43 @@
 
 #include <Foundation/Reflection/Implementation/AbstractProperty.h>
 
-class wdRTTI;
+class nsRTTI;
 
 template <typename Type>
-class wdTypedMapProperty : public wdAbstractMapProperty
+class nsTypedMapProperty : public nsAbstractMapProperty
 {
 public:
-  wdTypedMapProperty(const char* szPropertyName)
-    : wdAbstractMapProperty(szPropertyName)
+  nsTypedMapProperty(const char* szPropertyName)
+    : nsAbstractMapProperty(szPropertyName)
   {
-    m_Flags = wdPropertyFlags::GetParameterFlags<Type>();
-    WD_CHECK_AT_COMPILETIME_MSG(
+    m_Flags = nsPropertyFlags::GetParameterFlags<Type>();
+    NS_CHECK_AT_COMPILETIME_MSG(
       !std::is_pointer<Type>::value ||
-        wdVariant::TypeDeduction<typename wdTypeTraits<Type>::NonConstReferencePointerType>::value == wdVariantType::Invalid,
+        nsVariant::TypeDeduction<typename nsTypeTraits<Type>::NonConstReferencePointerType>::value == nsVariantType::Invalid,
       "Pointer to standard types are not supported.");
   }
 
-  virtual const wdRTTI* GetSpecificType() const override { return wdGetStaticRTTI<typename wdTypeTraits<Type>::NonConstReferencePointerType>(); }
+  virtual const nsRTTI* GetSpecificType() const override { return nsGetStaticRTTI<typename nsTypeTraits<Type>::NonConstReferencePointerType>(); }
 };
 
 
 template <typename Class, typename Type, typename Container>
-class wdAccessorMapProperty : public wdTypedMapProperty<Type>
+class nsAccessorMapProperty : public nsTypedMapProperty<Type>
 {
 public:
-  using ContainerType = typename wdTypeTraits<Container>::NonConstReferenceType;
-  using RealType = typename wdTypeTraits<Type>::NonConstReferenceType;
+  using ContainerType = typename nsTypeTraits<Container>::NonConstReferenceType;
+  using RealType = typename nsTypeTraits<Type>::NonConstReferenceType;
 
   using InsertFunc = void (Class::*)(const char* szKey, Type value);
   using RemoveFunc = void (Class::*)(const char* szKey);
   using GetValueFunc = bool (Class::*)(const char* szKey, RealType& value) const;
   using GetKeyRangeFunc = Container (Class::*)() const;
 
-  wdAccessorMapProperty(const char* szPropertyName, GetKeyRangeFunc getKeys, GetValueFunc getValue, InsertFunc insert, RemoveFunc remove)
-    : wdTypedMapProperty<Type>(szPropertyName)
+  nsAccessorMapProperty(const char* szPropertyName, GetKeyRangeFunc getKeys, GetValueFunc getValue, InsertFunc insert, RemoveFunc remove)
+    : nsTypedMapProperty<Type>(szPropertyName)
   {
-    WD_ASSERT_DEBUG(getKeys != nullptr, "The getKeys function of a map property cannot be nullptr.");
-    WD_ASSERT_DEBUG(getValue != nullptr, "The GetValueFunc function of a map property cannot be nullptr.");
+    NS_ASSERT_DEBUG(getKeys != nullptr, "The getKeys function of a map property cannot be nullptr.");
+    NS_ASSERT_DEBUG(getValue != nullptr, "The GetValueFunc function of a map property cannot be nullptr.");
 
     m_GetKeyRange = getKeys;
     m_GetValue = getValue;
@@ -48,7 +48,7 @@ public:
     m_Remove = remove;
 
     if (m_Insert == nullptr || remove == nullptr)
-      wdAbstractMapProperty::m_Flags.Add(wdPropertyFlags::ReadOnly);
+      nsAbstractMapProperty::m_Flags.Add(nsPropertyFlags::ReadOnly);
   }
 
   virtual bool IsEmpty(const void* pInstance) const override
@@ -59,7 +59,7 @@ public:
     return begin(c) == end(c);
   }
 
-  virtual void Clear(void* pInstance) override
+  virtual void Clear(void* pInstance) const override
   {
     while (true)
     {
@@ -74,15 +74,15 @@ public:
     }
   }
 
-  virtual void Insert(void* pInstance, const char* szKey, const void* pObject) override
+  virtual void Insert(void* pInstance, const char* szKey, const void* pObject) const override
   {
-    WD_ASSERT_DEBUG(m_Insert != nullptr, "The property '{0}' has no insert function, thus it is read-only.", wdAbstractProperty::GetPropertyName());
+    NS_ASSERT_DEBUG(m_Insert != nullptr, "The property '{0}' has no insert function, thus it is read-only.", nsAbstractProperty::GetPropertyName());
     (static_cast<Class*>(pInstance)->*m_Insert)(szKey, *static_cast<const RealType*>(pObject));
   }
 
-  virtual void Remove(void* pInstance, const char* szKey) override
+  virtual void Remove(void* pInstance, const char* szKey) const override
   {
-    WD_ASSERT_DEBUG(m_Remove != nullptr, "The property '{0}' has no remove function, thus it is read-only.", wdAbstractProperty::GetPropertyName());
+    NS_ASSERT_DEBUG(m_Remove != nullptr, "The property '{0}' has no remove function, thus it is read-only.", nsAbstractProperty::GetPropertyName());
     (static_cast<Class*>(pInstance)->*m_Remove)(szKey);
   }
 
@@ -97,7 +97,7 @@ public:
     return (static_cast<const Class*>(pInstance)->*m_GetValue)(szKey, *static_cast<RealType*>(pObject));
   }
 
-  virtual void GetKeys(const void* pInstance, wdHybridArray<wdString, 16>& out_keys) const override
+  virtual void GetKeys(const void* pInstance, nsHybridArray<nsString, 16>& out_keys) const override
   {
     out_keys.Clear();
     decltype(auto) c = (static_cast<const Class*>(pInstance)->*m_GetKeyRange)();
@@ -116,33 +116,33 @@ private:
 
 
 template <typename Class, typename Type, typename Container>
-class wdWriteAccessorMapProperty : public wdTypedMapProperty<Type>
+class nsWriteAccessorMapProperty : public nsTypedMapProperty<Type>
 {
 public:
-  using ContainerType = typename wdTypeTraits<Container>::NonConstReferenceType;
-  using ContainerSubType = typename wdContainerSubTypeResolver<ContainerType>::Type;
-  using RealType = typename wdTypeTraits<Type>::NonConstReferenceType;
+  using ContainerType = typename nsTypeTraits<Container>::NonConstReferenceType;
+  using ContainerSubType = typename nsContainerSubTypeResolver<ContainerType>::Type;
+  using RealType = typename nsTypeTraits<Type>::NonConstReferenceType;
 
   using InsertFunc = void (Class::*)(const char* szKey, Type value);
   using RemoveFunc = void (Class::*)(const char* szKey);
   using GetContainerFunc = Container (Class::*)() const;
 
-  wdWriteAccessorMapProperty(const char* szPropertyName, GetContainerFunc getContainer, InsertFunc insert, RemoveFunc remove)
-    : wdTypedMapProperty<Type>(szPropertyName)
+  nsWriteAccessorMapProperty(const char* szPropertyName, GetContainerFunc getContainer, InsertFunc insert, RemoveFunc remove)
+    : nsTypedMapProperty<Type>(szPropertyName)
   {
-    WD_ASSERT_DEBUG(getContainer != nullptr, "The get count function of a map property cannot be nullptr.");
+    NS_ASSERT_DEBUG(getContainer != nullptr, "The get count function of a map property cannot be nullptr.");
 
     m_GetContainer = getContainer;
     m_Insert = insert;
     m_Remove = remove;
 
     if (m_Insert == nullptr)
-      wdAbstractMapProperty::m_Flags.Add(wdPropertyFlags::ReadOnly);
+      nsAbstractMapProperty::m_Flags.Add(nsPropertyFlags::ReadOnly);
   }
 
   virtual bool IsEmpty(const void* pInstance) const override { return (static_cast<const Class*>(pInstance)->*m_GetContainer)().IsEmpty(); }
 
-  virtual void Clear(void* pInstance) override
+  virtual void Clear(void* pInstance) const override
   {
     decltype(auto) c = (static_cast<const Class*>(pInstance)->*m_GetContainer)();
     while (!IsEmpty(pInstance))
@@ -152,15 +152,15 @@ public:
     }
   }
 
-  virtual void Insert(void* pInstance, const char* szKey, const void* pObject) override
+  virtual void Insert(void* pInstance, const char* szKey, const void* pObject) const override
   {
-    WD_ASSERT_DEBUG(m_Insert != nullptr, "The property '{0}' has no insert function, thus it is read-only.", wdAbstractProperty::GetPropertyName());
+    NS_ASSERT_DEBUG(m_Insert != nullptr, "The property '{0}' has no insert function, thus it is read-only.", nsAbstractProperty::GetPropertyName());
     (static_cast<Class*>(pInstance)->*m_Insert)(szKey, *static_cast<const RealType*>(pObject));
   }
 
-  virtual void Remove(void* pInstance, const char* szKey) override
+  virtual void Remove(void* pInstance, const char* szKey) const override
   {
-    WD_ASSERT_DEBUG(m_Remove != nullptr, "The property '{0}' has no remove function, thus it is read-only.", wdAbstractProperty::GetPropertyName());
+    NS_ASSERT_DEBUG(m_Remove != nullptr, "The property '{0}' has no remove function, thus it is read-only.", nsAbstractProperty::GetPropertyName());
     (static_cast<Class*>(pInstance)->*m_Remove)(szKey);
   }
 
@@ -180,7 +180,7 @@ public:
     return value != nullptr;
   }
 
-  virtual void GetKeys(const void* pInstance, wdHybridArray<wdString, 16>& out_keys) const override
+  virtual void GetKeys(const void* pInstance, nsHybridArray<nsString, 16>& out_keys) const override
   {
     decltype(auto) c = (static_cast<const Class*>(pInstance)->*m_GetContainer)();
     out_keys.Clear();
@@ -199,10 +199,10 @@ private:
 
 
 template <typename Class, typename Container, Container Class::*Member>
-struct wdMapPropertyAccessor
+struct nsMapPropertyAccessor
 {
-  using ContainerType = typename wdTypeTraits<Container>::NonConstReferenceType;
-  using Type = typename wdTypeTraits<typename wdContainerSubTypeResolver<ContainerType>::Type>::NonConstReferenceType;
+  using ContainerType = typename nsTypeTraits<Container>::NonConstReferenceType;
+  using Type = typename nsTypeTraits<typename nsContainerSubTypeResolver<ContainerType>::Type>::NonConstReferenceType;
 
   static const ContainerType& GetConstContainer(const Class* pInstance) { return (*pInstance).*Member; }
 
@@ -211,45 +211,45 @@ struct wdMapPropertyAccessor
 
 
 template <typename Class, typename Container, typename Type>
-class wdMemberMapProperty : public wdTypedMapProperty<typename wdTypeTraits<Type>::NonConstReferenceType>
+class nsMemberMapProperty : public nsTypedMapProperty<typename nsTypeTraits<Type>::NonConstReferenceType>
 {
 public:
-  using RealType = typename wdTypeTraits<Type>::NonConstReferenceType;
+  using RealType = typename nsTypeTraits<Type>::NonConstReferenceType;
   using GetConstContainerFunc = const Container& (*)(const Class* pInstance);
   using GetContainerFunc = Container& (*)(Class* pInstance);
 
-  wdMemberMapProperty(const char* szPropertyName, GetConstContainerFunc constGetter, GetContainerFunc getter)
-    : wdTypedMapProperty<RealType>(szPropertyName)
+  nsMemberMapProperty(const char* szPropertyName, GetConstContainerFunc constGetter, GetContainerFunc getter)
+    : nsTypedMapProperty<RealType>(szPropertyName)
   {
-    WD_ASSERT_DEBUG(constGetter != nullptr, "The const get count function of an array property cannot be nullptr.");
+    NS_ASSERT_DEBUG(constGetter != nullptr, "The const get count function of an array property cannot be nullptr.");
 
     m_ConstGetter = constGetter;
     m_Getter = getter;
 
     if (m_Getter == nullptr)
-      wdAbstractMapProperty::m_Flags.Add(wdPropertyFlags::ReadOnly);
+      nsAbstractMapProperty::m_Flags.Add(nsPropertyFlags::ReadOnly);
   }
 
   virtual bool IsEmpty(const void* pInstance) const override { return m_ConstGetter(static_cast<const Class*>(pInstance)).IsEmpty(); }
 
-  virtual void Clear(void* pInstance) override
+  virtual void Clear(void* pInstance) const override
   {
-    WD_ASSERT_DEBUG(
-      m_Getter != nullptr, "The property '{0}' has no non-const set accessor function, thus it is read-only.", wdAbstractProperty::GetPropertyName());
+    NS_ASSERT_DEBUG(
+      m_Getter != nullptr, "The property '{0}' has no non-const set accessor function, thus it is read-only.", nsAbstractProperty::GetPropertyName());
     m_Getter(static_cast<Class*>(pInstance)).Clear();
   }
 
-  virtual void Insert(void* pInstance, const char* szKey, const void* pObject) override
+  virtual void Insert(void* pInstance, const char* szKey, const void* pObject) const override
   {
-    WD_ASSERT_DEBUG(
-      m_Getter != nullptr, "The property '{0}' has no non-const set accessor function, thus it is read-only.", wdAbstractProperty::GetPropertyName());
+    NS_ASSERT_DEBUG(
+      m_Getter != nullptr, "The property '{0}' has no non-const set accessor function, thus it is read-only.", nsAbstractProperty::GetPropertyName());
     m_Getter(static_cast<Class*>(pInstance)).Insert(szKey, *static_cast<const RealType*>(pObject));
   }
 
-  virtual void Remove(void* pInstance, const char* szKey) override
+  virtual void Remove(void* pInstance, const char* szKey) const override
   {
-    WD_ASSERT_DEBUG(
-      m_Getter != nullptr, "The property '{0}' has no non-const set accessor function, thus it is read-only.", wdAbstractProperty::GetPropertyName());
+    NS_ASSERT_DEBUG(
+      m_Getter != nullptr, "The property '{0}' has no non-const set accessor function, thus it is read-only.", nsAbstractProperty::GetPropertyName());
     m_Getter(static_cast<Class*>(pInstance)).Remove(szKey);
   }
 
@@ -268,7 +268,7 @@ public:
     return value != nullptr;
   }
 
-  virtual void GetKeys(const void* pInstance, wdHybridArray<wdString, 16>& out_keys) const override
+  virtual void GetKeys(const void* pInstance, nsHybridArray<nsString, 16>& out_keys) const override
   {
     decltype(auto) c = m_ConstGetter(static_cast<const Class*>(pInstance));
     out_keys.Clear();

@@ -6,34 +6,34 @@
 #include <Foundation/Logging/Log.h>
 #include <Foundation/Strings/TranslationLookup.h>
 
-bool wdTranslator::s_bHighlightUntranslated = false;
-wdHybridArray<wdTranslator*, 4> wdTranslator::s_AllTranslators;
+bool nsTranslator::s_bHighlightUntranslated = false;
+nsHybridArray<nsTranslator*, 4> nsTranslator::s_AllTranslators;
 
-wdTranslator::wdTranslator()
+nsTranslator::nsTranslator()
 {
   s_AllTranslators.PushBack(this);
 }
 
-wdTranslator::~wdTranslator()
+nsTranslator::~nsTranslator()
 {
   s_AllTranslators.RemoveAndSwap(this);
 }
 
-void wdTranslator::Reset() {}
+void nsTranslator::Reset() {}
 
-void wdTranslator::Reload() {}
+void nsTranslator::Reload() {}
 
-void wdTranslator::ReloadAllTranslators()
+void nsTranslator::ReloadAllTranslators()
 {
-  WD_LOG_BLOCK("ReloadAllTranslators");
+  NS_LOG_BLOCK("ReloadAllTranslators");
 
-  for (wdTranslator* pTranslator : s_AllTranslators)
+  for (nsTranslator* pTranslator : s_AllTranslators)
   {
     pTranslator->Reload();
   }
 }
 
-void wdTranslator::HighlightUntranslated(bool bHighlight)
+void nsTranslator::HighlightUntranslated(bool bHighlight)
 {
   if (s_bHighlightUntranslated == bHighlight)
     return;
@@ -45,53 +45,56 @@ void wdTranslator::HighlightUntranslated(bool bHighlight)
 
 //////////////////////////////////////////////////////////////////////////
 
-wdHybridArray<wdUniquePtr<wdTranslator>, 16> wdTranslationLookup::s_Translators;
+nsHybridArray<nsUniquePtr<nsTranslator>, 16> nsTranslationLookup::s_Translators;
 
-void wdTranslationLookup::AddTranslator(wdUniquePtr<wdTranslator> pTranslator)
+void nsTranslationLookup::AddTranslator(nsUniquePtr<nsTranslator> pTranslator)
 {
   s_Translators.PushBack(std::move(pTranslator));
 }
 
 
-const char* wdTranslationLookup::Translate(const char* szString, wdUInt64 uiStringHash, wdTranslationUsage usage)
+nsStringView nsTranslationLookup::Translate(nsStringView sString, nsUInt64 uiStringHash, nsTranslationUsage usage)
 {
-  for (wdUInt32 i = s_Translators.GetCount(); i > 0; --i)
+  for (nsUInt32 i = s_Translators.GetCount(); i > 0; --i)
   {
-    const char* szResult = s_Translators[i - 1]->Translate(szString, uiStringHash, usage);
+    nsStringView sResult = s_Translators[i - 1]->Translate(sString, uiStringHash, usage);
 
-    if (szResult != nullptr)
-      return szResult;
+    if (!sResult.IsEmpty())
+      return sResult;
   }
 
-  return szString;
+  if (usage != nsTranslationUsage::Default)
+    return {};
+
+  return sString;
 }
 
 
-void wdTranslationLookup::Clear()
+void nsTranslationLookup::Clear()
 {
   s_Translators.Clear();
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-void wdTranslatorFromFiles::AddTranslationFilesFromFolder(const char* szFolder)
+void nsTranslatorFromFiles::AddTranslationFilesFromFolder(const char* szFolder)
 {
-  WD_LOG_BLOCK("AddTranslationFilesFromFolder", szFolder);
+  NS_LOG_BLOCK("AddTranslationFilesFromFolder", szFolder);
 
   if (!m_Folders.Contains(szFolder))
   {
     m_Folders.PushBack(szFolder);
   }
 
-#if WD_ENABLED(WD_SUPPORTS_FILE_ITERATORS)
-  wdStringBuilder startPath;
-  if (wdFileSystem::ResolvePath(szFolder, &startPath, nullptr).Failed())
+#if NS_ENABLED(NS_SUPPORTS_FILE_ITERATORS)
+  nsStringBuilder startPath;
+  if (nsFileSystem::ResolvePath(szFolder, &startPath, nullptr).Failed())
     return;
 
-  wdStringBuilder fullpath;
+  nsStringBuilder fullpath;
 
-  wdFileSystemIterator it;
-  it.StartSearch(startPath, wdFileSystemIteratorFlags::ReportFilesRecursive);
+  nsFileSystemIterator it;
+  it.StartSearch(startPath, nsFileSystemIteratorFlags::ReportFilesRecursive);
 
 
   while (it.IsValid())
@@ -107,14 +110,14 @@ void wdTranslatorFromFiles::AddTranslationFilesFromFolder(const char* szFolder)
 #endif
 }
 
-const char* wdTranslatorFromFiles::Translate(const char* szString, wdUInt64 uiStringHash, wdTranslationUsage usage)
+nsStringView nsTranslatorFromFiles::Translate(nsStringView sString, nsUInt64 uiStringHash, nsTranslationUsage usage)
 {
-  return wdTranslatorStorage::Translate(szString, uiStringHash, usage);
+  return nsTranslatorStorage::Translate(sString, uiStringHash, usage);
 }
 
-void wdTranslatorFromFiles::Reload()
+void nsTranslatorFromFiles::Reload()
 {
-  wdTranslatorStorage::Reload();
+  nsTranslatorStorage::Reload();
 
   for (const auto& sFolder : m_Folders)
   {
@@ -122,28 +125,28 @@ void wdTranslatorFromFiles::Reload()
   }
 }
 
-void wdTranslatorFromFiles::LoadTranslationFile(const char* szFullPath)
+void nsTranslatorFromFiles::LoadTranslationFile(const char* szFullPath)
 {
-  WD_LOG_BLOCK("LoadTranslationFile", szFullPath);
+  NS_LOG_BLOCK("LoadTranslationFile", szFullPath);
 
-  wdLog::Dev("Loading Localization File '{0}'", szFullPath);
+  nsLog::Dev("Loading Localization File '{0}'", szFullPath);
 
-  wdFileReader file;
+  nsFileReader file;
   if (file.Open(szFullPath).Failed())
   {
-    wdLog::Warning("Failed to open localization file '{0}'", szFullPath);
+    nsLog::Warning("Failed to open localization file '{0}'", szFullPath);
     return;
   }
 
-  wdStringBuilder sContent;
+  nsStringBuilder sContent;
   sContent.ReadAll(file);
 
-  wdDeque<wdStringView> Lines;
+  nsDeque<nsStringView> Lines;
   sContent.Split(false, Lines, "\n");
 
-  wdHybridArray<wdStringView, 4> entries;
+  nsHybridArray<nsStringView, 4> entries;
 
-  wdStringBuilder sLine, sKey, sValue, sTooltip, sHelpUrl;
+  nsStringBuilder sLine, sKey, sValue, sTooltip, sHelpUrl;
   for (const auto& line : Lines)
   {
     sLine = line;
@@ -157,7 +160,7 @@ void wdTranslatorFromFiles::LoadTranslationFile(const char* szFullPath)
 
     if (entries.GetCount() <= 1)
     {
-      wdLog::Error("Invalid line in translation file: '{0}'", sLine);
+      nsLog::Error("Invalid line in translation file: '{0}'", sLine);
       continue;
     }
 
@@ -183,85 +186,95 @@ void wdTranslatorFromFiles::LoadTranslationFile(const char* szFullPath)
       sValue.Append(" (@", sKey, ")");
     }
 
-    StoreTranslation(sValue, wdHashingUtils::StringHash(sKey), wdTranslationUsage::Default);
-    StoreTranslation(sTooltip, wdHashingUtils::StringHash(sKey), wdTranslationUsage::Tooltip);
-    StoreTranslation(sHelpUrl, wdHashingUtils::StringHash(sKey), wdTranslationUsage::HelpURL);
+    StoreTranslation(sValue, nsHashingUtils::StringHash(sKey), nsTranslationUsage::Default);
+    StoreTranslation(sTooltip, nsHashingUtils::StringHash(sKey), nsTranslationUsage::Tooltip);
+    StoreTranslation(sHelpUrl, nsHashingUtils::StringHash(sKey), nsTranslationUsage::HelpURL);
   }
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-void wdTranslatorStorage::StoreTranslation(const char* szString, wdUInt64 uiStringHash, wdTranslationUsage usage)
+void nsTranslatorStorage::StoreTranslation(nsStringView sString, nsUInt64 uiStringHash, nsTranslationUsage usage)
 {
-  m_Translations[(wdUInt32)usage][uiStringHash] = szString;
+  m_Translations[(nsUInt32)usage][uiStringHash] = sString;
 }
 
-const char* wdTranslatorStorage::Translate(const char* szString, wdUInt64 uiStringHash, wdTranslationUsage usage)
+nsStringView nsTranslatorStorage::Translate(nsStringView sString, nsUInt64 uiStringHash, nsTranslationUsage usage)
 {
-  auto it = m_Translations[(wdUInt32)usage].Find(uiStringHash);
+  auto it = m_Translations[(nsUInt32)usage].Find(uiStringHash);
   if (it.IsValid())
     return it.Value().GetData();
 
-  return nullptr;
+  return {};
 }
 
-void wdTranslatorStorage::Reset()
+void nsTranslatorStorage::Reset()
 {
-  for (wdUInt32 i = 0; i < (wdUInt32)wdTranslationUsage::ENUM_COUNT; ++i)
+  for (nsUInt32 i = 0; i < (nsUInt32)nsTranslationUsage::ENUM_COUNT; ++i)
   {
     m_Translations[i].Clear();
   }
 }
 
-void wdTranslatorStorage::Reload()
+void nsTranslatorStorage::Reload()
 {
   Reset();
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-bool wdTranslatorLogMissing::s_bActive = true;
+bool nsTranslatorLogMissing::s_bActive = true;
 
-const char* wdTranslatorLogMissing::Translate(const char* szString, wdUInt64 uiStringHash, wdTranslationUsage usage)
+nsStringView nsTranslatorLogMissing::Translate(nsStringView sString, nsUInt64 uiStringHash, nsTranslationUsage usage)
 {
-  if (!wdTranslatorLogMissing::s_bActive && !GetHighlightUntranslated())
-    return nullptr;
+  if (!nsTranslatorLogMissing::s_bActive && !GetHighlightUntranslated())
+    return {};
 
-  if (usage != wdTranslationUsage::Default)
-    return nullptr;
+  if (usage != nsTranslationUsage::Default)
+    return {};
 
-  const char* szResult = wdTranslatorStorage::Translate(szString, uiStringHash, usage);
+  nsStringView sResult = nsTranslatorStorage::Translate(sString, uiStringHash, usage);
 
-  if (szResult == nullptr)
+  if (sResult.IsEmpty())
   {
-    wdLog::Warning("Missing translation: {0};", szString);
+    nsLog::Warning("Missing translation: {0};", sString);
 
-    StoreTranslation(szString, uiStringHash, usage);
+    StoreTranslation(sString, uiStringHash, usage);
   }
 
-  return nullptr;
+  return {};
 }
 
-const char* wdTranslatorMakeMoreReadable::Translate(const char* szString, wdUInt64 uiStringHash, wdTranslationUsage usage)
+nsStringView nsTranslatorMakeMoreReadable::Translate(nsStringView sString, nsUInt64 uiStringHash, nsTranslationUsage usage)
 {
-  const char* szResult = wdTranslatorStorage::Translate(szString, uiStringHash, usage);
+  if (usage != nsTranslationUsage::Default)
+    return {};
 
-  if (szResult != nullptr)
-    return szResult;
+  nsStringView sResult = nsTranslatorStorage::Translate(sString, uiStringHash, usage);
 
+  if (!sResult.IsEmpty())
+    return sResult;
 
-  wdStringBuilder result;
-  wdStringBuilder tmp = szString;
+  nsStringBuilder result;
+  nsStringBuilder tmp = sString;
   tmp.Trim(" _-");
-  tmp.TrimWordStart("wd");
-  tmp.TrimWordEnd("Component");
 
-  auto IsUpper = [](wdUInt32 c) { return c == wdStringUtils::ToUpperChar(c); };
-  auto IsNumber = [](wdUInt32 c) { return c >= '0' && c <= '9'; };
+  tmp.TrimWordStart("ns");
 
-  wdUInt32 uiPrev = ' ';
-  wdUInt32 uiCur = ' ';
-  wdUInt32 uiNext = ' ';
+  nsStringView sComponent = "Component";
+  if (tmp.EndsWith(sComponent) && tmp.GetElementCount() > sComponent.GetElementCount())
+  {
+    tmp.Shrink(0, sComponent.GetElementCount());
+  }
+
+  auto IsUpper = [](nsUInt32 c)
+  { return c == nsStringUtils::ToUpperChar(c); };
+  auto IsNumber = [](nsUInt32 c)
+  { return c >= '0' && c <= '9'; };
+
+  nsUInt32 uiPrev = ' ';
+  nsUInt32 uiCur = ' ';
+  nsUInt32 uiNext = ' ';
 
   bool bContinue = true;
 
@@ -289,9 +302,15 @@ const char* wdTranslatorMakeMoreReadable::Translate(const char* szString, wdUInt
       continue;
     }
 
-    if (!IsNumber(uiPrev) && IsNumber(uiCur))
+    if (uiPrev != '[' && uiCur != ']' && IsNumber(uiPrev) != IsNumber(uiCur))
     {
       result.Append(" ");
+      result.Append(uiCur);
+      continue;
+    }
+
+    if (IsNumber(uiPrev) && IsNumber(uiCur))
+    {
       result.Append(uiCur);
       continue;
     }
@@ -314,15 +333,17 @@ const char* wdTranslatorMakeMoreReadable::Translate(const char* szString, wdUInt
   }
 
   result.Trim(" ");
+  while (result.ReplaceAll("  ", " ") > 0)
+  {
+    // remove double whitespaces
+  }
 
   if (GetHighlightUntranslated())
   {
-    result.Append(" (@", szString, ")");
+    result.Append(" (@", sString, ")");
   }
 
   StoreTranslation(result, uiStringHash, usage);
 
-  return wdTranslatorStorage::Translate(szString, uiStringHash, usage);
+  return nsTranslatorStorage::Translate(sString, uiStringHash, usage);
 }
-
-WD_STATICLINK_FILE(Foundation, Foundation_Strings_Implementation_TranslationLookup);

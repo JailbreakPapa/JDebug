@@ -5,18 +5,18 @@
 #include <Foundation/Communication/RemoteMessage.h>
 #include <Foundation/Configuration/Startup.h>
 
-WD_IMPLEMENT_SINGLETON(wdMessageLoop);
+NS_IMPLEMENT_SINGLETON(nsMessageLoop);
 
-#if WD_ENABLED(WD_PLATFORM_WINDOWS_DESKTOP)
-#  include <Foundation/Communication/Implementation/Win/MessageLoop_win.h>
-#elif WD_ENABLED(WD_PLATFORM_LINUX)
-#  include <Foundation/Communication/Implementation/Linux/MessageLoop_linux.h>
+#if NS_ENABLED(NS_PLATFORM_WINDOWS_DESKTOP)
+#  include <Foundation/Platform/Win/MessageLoop_Win.h>
+#elif NS_ENABLED(NS_PLATFORM_LINUX)
+#  include <Foundation/Platform/Linux/MessageLoop_Linux.h>
 #else
-#  include <Foundation/Communication/Implementation/Mobile/MessageLoop_mobile.h>
+#  include <Foundation/Communication/Implementation/MessageLoop_Fallback.h>
 #endif
 
 // clang-format off
-WD_BEGIN_SUBSYSTEM_DECLARATION(Foundation, MessageLoop)
+NS_BEGIN_SUBSYSTEM_DECLARATION(Foundation, MessageLoop)
 
   BEGIN_SUBSYSTEM_DEPENDENCIES
     "TaskSystem",
@@ -25,79 +25,82 @@ WD_BEGIN_SUBSYSTEM_DECLARATION(Foundation, MessageLoop)
 
   ON_CORESYSTEMS_STARTUP
   {
-    #if WD_ENABLED(WD_PLATFORM_WINDOWS_DESKTOP)
-      WD_DEFAULT_NEW(wdMessageLoop_win);
-    #elif WD_ENABLED(WD_PLATFORM_LINUX)
-      WD_DEFAULT_NEW(wdMessageLoop_linux);
+    if (nsStartup::HasApplicationTag("NoMessageLoop"))
+      return;
+
+    #if NS_ENABLED(NS_PLATFORM_WINDOWS_DESKTOP)
+      NS_DEFAULT_NEW(nsMessageLoop_win);
+    #elif NS_ENABLED(NS_PLATFORM_LINUX)
+      NS_DEFAULT_NEW(nsMessageLoop_linux);
     #else
-      WD_DEFAULT_NEW(wdMessageLoop_mobile);
+      NS_DEFAULT_NEW(nsMessageLoop_Fallback);
     #endif
   }
 
   ON_CORESYSTEMS_SHUTDOWN
   {
-    wdMessageLoop* pDummy = wdMessageLoop::GetSingleton();
-    WD_DEFAULT_DELETE(pDummy);
+    nsMessageLoop* pDummy = nsMessageLoop::GetSingleton();
+    NS_DEFAULT_DELETE(pDummy);
   }
 
-WD_END_SUBSYSTEM_DECLARATION;
+NS_END_SUBSYSTEM_DECLARATION;
 // clang-format on
 
-class wdLoopThread : public wdThread
+class nsLoopThread : public nsThread
 {
 public:
-  wdLoopThread()
-    : wdThread("wdMessageLoopThread")
+  nsLoopThread()
+    : nsThread("nsMessageLoopThread")
   {
   }
-  wdMessageLoop* m_pRemoteInterface = nullptr;
-  virtual wdUInt32 Run() override
+  nsMessageLoop* m_pRemoteInterface = nullptr;
+  virtual nsUInt32 Run() override
   {
     m_pRemoteInterface->RunLoop();
     return 0;
   }
 };
 
-wdMessageLoop::wdMessageLoop()
+nsMessageLoop::nsMessageLoop()
   : m_SingletonRegistrar(this)
 {
 }
 
-void wdMessageLoop::StartUpdateThread()
+void nsMessageLoop::StartUpdateThread()
 {
-  WD_LOCK(m_Mutex);
+  NS_LOCK(m_Mutex);
   if (m_pUpdateThread == nullptr)
   {
-    m_pUpdateThread = WD_DEFAULT_NEW(wdLoopThread);
+    m_pUpdateThread = NS_DEFAULT_NEW(nsLoopThread);
     m_pUpdateThread->m_pRemoteInterface = this;
     m_pUpdateThread->Start();
   }
 }
 
-void wdMessageLoop::StopUpdateThread()
+void nsMessageLoop::StopUpdateThread()
 {
-  WD_LOCK(m_Mutex);
+  NS_LOCK(m_Mutex);
   if (m_pUpdateThread != nullptr)
   {
     m_bShouldQuit = true;
     WakeUp();
     m_pUpdateThread->Join();
 
-    WD_DEFAULT_DELETE(m_pUpdateThread);
+    NS_DEFAULT_DELETE(m_pUpdateThread);
   }
 }
 
-void wdMessageLoop::RunLoop()
+void nsMessageLoop::RunLoop()
 {
-#if WD_ENABLED(WD_COMPILE_FOR_DEBUG)
-  m_ThreadId = wdThreadUtils::GetCurrentThreadID();
+#if NS_ENABLED(NS_COMPILE_FOR_DEBUG)
+  m_ThreadId = nsThreadUtils::GetCurrentThreadID();
 #endif
 
   while (true)
   {
     if (m_bCallTickFunction)
     {
-      for (wdIpcChannel* pChannel : m_AllAddedChannels)
+      for (nsIpcChannel* pChannel : m_AllAddedChannels)
       {
         if (pChannel->RequiresRegularTick())
         {
@@ -126,25 +129,25 @@ void wdMessageLoop::RunLoop()
   }
 }
 
-bool wdMessageLoop::ProcessTasks()
+bool nsMessageLoop::ProcessTasks()
 {
   {
-    WD_LOCK(m_TasksMutex);
+    NS_LOCK(m_TasksMutex);
     // Swap out the queues under the lock so we can process them without holding the lock
     m_ConnectQueueTask.Swap(m_ConnectQueue);
     m_SendQueueTask.Swap(m_SendQueue);
     m_DisconnectQueueTask.Swap(m_DisconnectQueue);
   }
 
-  for (wdIpcChannel* pChannel : m_ConnectQueueTask)
+  for (nsIpcChannel* pChannel : m_ConnectQueueTask)
   {
     pChannel->InternalConnect();
   }
-  for (wdIpcChannel* pChannel : m_SendQueueTask)
+  for (nsIpcChannel* pChannel : m_SendQueueTask)
   {
     pChannel->InternalSend();
   }
-  for (wdIpcChannel* pChannel : m_DisconnectQueueTask)
+  for (nsIpcChannel* pChannel : m_DisconnectQueueTask)
   {
     pChannel->InternalDisconnect();
   }
@@ -156,15 +159,15 @@ bool wdMessageLoop::ProcessTasks()
   return bDidWork;
 }
 
-void wdMessageLoop::Quit()
+void nsMessageLoop::Quit()
 {
   m_bShouldQuit = true;
 }
 
-void wdMessageLoop::AddChannel(wdIpcChannel* pChannel)
+void nsMessageLoop::AddChannel(nsIpcChannel* pChannel)
 {
   {
-    WD_LOCK(m_TasksMutex);
+    NS_LOCK(m_TasksMutex);
     m_AllAddedChannels.PushBack(pChannel);
 
     m_bCallTickFunction = false;
@@ -180,12 +183,11 @@ void wdMessageLoop::AddChannel(wdIpcChannel* pChannel)
 
   StartUpdateThread();
   pChannel->m_pOwner = this;
-  pChannel->AddToMessageLoop(this);
 }
 
-void wdMessageLoop::RemoveChannel(wdIpcChannel* pChannel)
+void nsMessageLoop::RemoveChannel(nsIpcChannel* pChannel)
 {
-  WD_LOCK(m_TasksMutex);
+  NS_LOCK(m_TasksMutex);
 
   m_AllAddedChannels.RemoveAndSwap(pChannel);
   m_ConnectQueue.RemoveAndSwap(pChannel);
@@ -193,4 +195,4 @@ void wdMessageLoop::RemoveChannel(wdIpcChannel* pChannel)
   m_SendQueue.RemoveAndSwap(pChannel);
 }
 
-WD_STATICLINK_FILE(Foundation, Foundation_Communication_Implementation_MessageLoop);
+NS_STATICLINK_FILE(Foundation, Foundation_Communication_Implementation_MessageLoop);

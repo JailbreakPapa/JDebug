@@ -1,375 +1,399 @@
 #pragma once
 
 template <typename Derived>
-WD_ALWAYS_INLINE const char* wdStringBase<Derived>::InternalGetData() const
+NS_ALWAYS_INLINE const char* nsStringBase<Derived>::InternalGetData() const
 {
   const Derived* pDerived = static_cast<const Derived*>(this);
   return pDerived->GetData();
 }
 
 template <typename Derived>
-WD_ALWAYS_INLINE const char* wdStringBase<Derived>::InternalGetDataEnd() const
+NS_ALWAYS_INLINE const char* nsStringBase<Derived>::InternalGetDataEnd() const
 {
   const Derived* pDerived = static_cast<const Derived*>(this);
   return pDerived->GetData() + pDerived->GetElementCount();
 }
 
 template <typename Derived>
-WD_ALWAYS_INLINE wdUInt32 wdStringBase<Derived>::InternalGetElementCount() const
+NS_ALWAYS_INLINE nsUInt32 nsStringBase<Derived>::InternalGetElementCount() const
 {
   const Derived* pDerived = static_cast<const Derived*>(this);
   return pDerived->GetElementCount();
 }
 
 template <typename Derived>
-WD_ALWAYS_INLINE bool wdStringBase<Derived>::IsEmpty() const
+NS_ALWAYS_INLINE bool nsStringBase<Derived>::IsEmpty() const
 {
-  return wdStringUtils::IsNullOrEmpty(InternalGetData()) || (InternalGetData() == InternalGetDataEnd());
+  return nsStringUtils::IsNullOrEmpty(InternalGetData()) || (InternalGetData() == InternalGetDataEnd());
 }
 
 template <typename Derived>
-bool wdStringBase<Derived>::StartsWith(wdStringView sStartsWith) const
+bool nsStringBase<Derived>::StartsWith(nsStringView sStartsWith) const
 {
-  return wdStringUtils::StartsWith(InternalGetData(), sStartsWith.GetStartPointer(), InternalGetDataEnd(), sStartsWith.GetEndPointer());
+  return nsStringUtils::StartsWith(InternalGetData(), sStartsWith.GetStartPointer(), InternalGetDataEnd(), sStartsWith.GetEndPointer());
 }
 
 template <typename Derived>
-bool wdStringBase<Derived>::StartsWith_NoCase(wdStringView sStartsWith) const
+bool nsStringBase<Derived>::StartsWith_NoCase(nsStringView sStartsWith) const
 {
-  return wdStringUtils::StartsWith_NoCase(InternalGetData(), sStartsWith.GetStartPointer(), InternalGetDataEnd(), sStartsWith.GetEndPointer());
+  return nsStringUtils::StartsWith_NoCase(InternalGetData(), sStartsWith.GetStartPointer(), InternalGetDataEnd(), sStartsWith.GetEndPointer());
 }
 
 template <typename Derived>
-bool wdStringBase<Derived>::EndsWith(wdStringView sEndsWith) const
+bool nsStringBase<Derived>::EndsWith(nsStringView sEndsWith) const
 {
-  return wdStringUtils::EndsWith(InternalGetData(), sEndsWith.GetStartPointer(), InternalGetDataEnd(), sEndsWith.GetEndPointer());
+  return nsStringUtils::EndsWith(InternalGetData(), sEndsWith.GetStartPointer(), InternalGetDataEnd(), sEndsWith.GetEndPointer());
 }
 
 template <typename Derived>
-bool wdStringBase<Derived>::EndsWith_NoCase(wdStringView sEndsWith) const
+bool nsStringBase<Derived>::EndsWith_NoCase(nsStringView sEndsWith) const
 {
-  return wdStringUtils::EndsWith_NoCase(InternalGetData(), sEndsWith.GetStartPointer(), InternalGetDataEnd(), sEndsWith.GetEndPointer());
+  return nsStringUtils::EndsWith_NoCase(InternalGetData(), sEndsWith.GetStartPointer(), InternalGetDataEnd(), sEndsWith.GetEndPointer());
 }
 
 template <typename Derived>
-const char* wdStringBase<Derived>::FindSubString(wdStringView sStringToFind, const char* szStartSearchAt /* = nullptr */) const
-{
-  if (szStartSearchAt == nullptr)
-    szStartSearchAt = InternalGetData();
-
-  WD_ASSERT_DEV((szStartSearchAt >= InternalGetData()) && (szStartSearchAt <= InternalGetDataEnd()), "The given pointer to start searching at is not inside this strings valid range.");
-
-  return wdStringUtils::FindSubString(szStartSearchAt, sStringToFind.GetStartPointer(), InternalGetDataEnd(), sStringToFind.GetEndPointer());
-}
-
-template <typename Derived>
-const char* wdStringBase<Derived>::FindSubString_NoCase(wdStringView sStringToFind, const char* szStartSearchAt /* = nullptr */) const
+const char* nsStringBase<Derived>::FindSubString(nsStringView sStringToFind, const char* szStartSearchAt /* = nullptr */) const
 {
   if (szStartSearchAt == nullptr)
     szStartSearchAt = InternalGetData();
 
-  WD_ASSERT_DEV((szStartSearchAt >= InternalGetData()) && (szStartSearchAt <= InternalGetDataEnd()), "The given pointer to start searching at is not inside this strings valid range.");
+  NS_ASSERT_DEV((szStartSearchAt >= InternalGetData()) && (szStartSearchAt <= InternalGetDataEnd()), "The given pointer to start searching at is not inside this strings valid range.");
 
-  return wdStringUtils::FindSubString_NoCase(szStartSearchAt, sStringToFind.GetStartPointer(), InternalGetDataEnd(), sStringToFind.GetEndPointer());
+  return nsStringUtils::FindSubString(szStartSearchAt, sStringToFind.GetStartPointer(), InternalGetDataEnd(), sStringToFind.GetEndPointer());
 }
 
 template <typename Derived>
-inline const char* wdStringBase<Derived>::FindLastSubString(wdStringView sStringToFind, const char* szStartSearchAt /* = nullptr */) const
+const char* nsStringBase<Derived>::FindSubString_NoCase(nsStringView sStringToFind, const char* szStartSearchAt /* = nullptr */) const
+{
+  if (szStartSearchAt == nullptr)
+    szStartSearchAt = InternalGetData();
+
+  NS_ASSERT_DEV((szStartSearchAt >= InternalGetData()) && (szStartSearchAt <= InternalGetDataEnd()), "The given pointer to start searching at is not inside this strings valid range.");
+
+  return nsStringUtils::FindSubString_NoCase(szStartSearchAt, sStringToFind.GetStartPointer(), InternalGetDataEnd(), sStringToFind.GetEndPointer());
+}
+
+template <typename Derived>
+inline const char* nsStringBase<Derived>::FindLastSubString(nsStringView sStringToFind, const char* szStartSearchAt /* = nullptr */) const
 {
   if (szStartSearchAt == nullptr)
     szStartSearchAt = InternalGetDataEnd();
 
-  WD_ASSERT_DEV((szStartSearchAt >= InternalGetData()) && (szStartSearchAt <= InternalGetDataEnd()),
+  NS_ASSERT_DEV((szStartSearchAt >= InternalGetData()) && (szStartSearchAt <= InternalGetDataEnd()),
     "The given pointer to start searching at is not inside this strings valid range.");
 
-  return wdStringUtils::FindLastSubString(InternalGetData(), sStringToFind.GetStartPointer(), szStartSearchAt, InternalGetDataEnd(), sStringToFind.GetEndPointer());
+  return nsStringUtils::FindLastSubString(InternalGetData(), sStringToFind.GetStartPointer(), szStartSearchAt, InternalGetDataEnd(), sStringToFind.GetEndPointer());
 }
 
 template <typename Derived>
-inline const char* wdStringBase<Derived>::FindLastSubString_NoCase(wdStringView sStringToFind, const char* szStartSearchAt /* = nullptr */) const
+inline const char* nsStringBase<Derived>::FindLastSubString_NoCase(nsStringView sStringToFind, const char* szStartSearchAt /* = nullptr */) const
 {
   if (szStartSearchAt == nullptr)
     szStartSearchAt = InternalGetDataEnd();
 
-  WD_ASSERT_DEV((szStartSearchAt >= InternalGetData()) && (szStartSearchAt <= InternalGetDataEnd()),
+  NS_ASSERT_DEV((szStartSearchAt >= InternalGetData()) && (szStartSearchAt <= InternalGetDataEnd()),
     "The given pointer to start searching at is not inside this strings valid range.");
 
-  return wdStringUtils::FindLastSubString_NoCase(InternalGetData(), sStringToFind.GetStartPointer(), szStartSearchAt, InternalGetDataEnd(), sStringToFind.GetEndPointer());
+  return nsStringUtils::FindLastSubString_NoCase(InternalGetData(), sStringToFind.GetStartPointer(), szStartSearchAt, InternalGetDataEnd(), sStringToFind.GetEndPointer());
 }
 
 template <typename Derived>
-inline const char* wdStringBase<Derived>::FindWholeWord(const char* szSearchFor, wdStringUtils::WD_CHARACTER_FILTER isDelimiterCB, const char* szStartSearchAt /* = nullptr */) const
+inline const char* nsStringBase<Derived>::FindWholeWord(const char* szSearchFor, nsStringUtils::NS_CHARACTER_FILTER isDelimiterCB, const char* szStartSearchAt /* = nullptr */) const
 {
   if (szStartSearchAt == nullptr)
     szStartSearchAt = InternalGetData();
 
-  WD_ASSERT_DEV((szStartSearchAt >= InternalGetData()) && (szStartSearchAt <= InternalGetDataEnd()), "The given pointer to start searching at is not inside this strings valid range.");
+  NS_ASSERT_DEV((szStartSearchAt >= InternalGetData()) && (szStartSearchAt <= InternalGetDataEnd()), "The given pointer to start searching at is not inside this strings valid range.");
 
-  return wdStringUtils::FindWholeWord(szStartSearchAt, szSearchFor, isDelimiterCB, InternalGetDataEnd());
+  return nsStringUtils::FindWholeWord(szStartSearchAt, szSearchFor, isDelimiterCB, InternalGetDataEnd());
 }
 
 template <typename Derived>
-inline const char* wdStringBase<Derived>::FindWholeWord_NoCase(const char* szSearchFor, wdStringUtils::WD_CHARACTER_FILTER isDelimiterCB, const char* szStartSearchAt /* = nullptr */) const
+inline const char* nsStringBase<Derived>::FindWholeWord_NoCase(const char* szSearchFor, nsStringUtils::NS_CHARACTER_FILTER isDelimiterCB, const char* szStartSearchAt /* = nullptr */) const
 {
   if (szStartSearchAt == nullptr)
     szStartSearchAt = InternalGetData();
 
-  WD_ASSERT_DEV((szStartSearchAt >= InternalGetData()) && (szStartSearchAt <= InternalGetDataEnd()), "The given pointer to start searching at is not inside this strings valid range.");
+  NS_ASSERT_DEV((szStartSearchAt >= InternalGetData()) && (szStartSearchAt <= InternalGetDataEnd()), "The given pointer to start searching at is not inside this strings valid range.");
 
-  return wdStringUtils::FindWholeWord_NoCase(szStartSearchAt, szSearchFor, isDelimiterCB, InternalGetDataEnd());
+  return nsStringUtils::FindWholeWord_NoCase(szStartSearchAt, szSearchFor, isDelimiterCB, InternalGetDataEnd());
 }
 
 template <typename Derived>
-wdInt32 wdStringBase<Derived>::Compare(wdStringView sOther) const
+nsInt32 nsStringBase<Derived>::Compare(nsStringView sOther) const
 {
-  return wdStringUtils::Compare(InternalGetData(), sOther.GetStartPointer(), InternalGetDataEnd(), sOther.GetEndPointer());
+  return nsStringUtils::Compare(InternalGetData(), sOther.GetStartPointer(), InternalGetDataEnd(), sOther.GetEndPointer());
 }
 
 template <typename Derived>
-wdInt32 wdStringBase<Derived>::CompareN(wdStringView sOther, wdUInt32 uiCharsToCompare) const
+nsInt32 nsStringBase<Derived>::CompareN(nsStringView sOther, nsUInt32 uiCharsToCompare) const
 {
-  return wdStringUtils::CompareN(InternalGetData(), sOther.GetStartPointer(), uiCharsToCompare, InternalGetDataEnd(), sOther.GetEndPointer());
+  return nsStringUtils::CompareN(InternalGetData(), sOther.GetStartPointer(), uiCharsToCompare, InternalGetDataEnd(), sOther.GetEndPointer());
 }
 
 template <typename Derived>
-wdInt32 wdStringBase<Derived>::Compare_NoCase(wdStringView sOther) const
+nsInt32 nsStringBase<Derived>::Compare_NoCase(nsStringView sOther) const
 {
-  return wdStringUtils::Compare_NoCase(InternalGetData(), sOther.GetStartPointer(), InternalGetDataEnd(), sOther.GetEndPointer());
+  return nsStringUtils::Compare_NoCase(InternalGetData(), sOther.GetStartPointer(), InternalGetDataEnd(), sOther.GetEndPointer());
 }
 
 template <typename Derived>
-wdInt32 wdStringBase<Derived>::CompareN_NoCase(wdStringView sOther, wdUInt32 uiCharsToCompare) const
+nsInt32 nsStringBase<Derived>::CompareN_NoCase(nsStringView sOther, nsUInt32 uiCharsToCompare) const
 {
-  return wdStringUtils::CompareN_NoCase(InternalGetData(), sOther.GetStartPointer(), uiCharsToCompare, InternalGetDataEnd(), sOther.GetEndPointer());
+  return nsStringUtils::CompareN_NoCase(InternalGetData(), sOther.GetStartPointer(), uiCharsToCompare, InternalGetDataEnd(), sOther.GetEndPointer());
 }
 
 template <typename Derived>
-bool wdStringBase<Derived>::IsEqual(wdStringView sOther) const
+bool nsStringBase<Derived>::IsEqual(nsStringView sOther) const
 {
-  return wdStringUtils::IsEqual(InternalGetData(), sOther.GetStartPointer(), InternalGetDataEnd(), sOther.GetEndPointer());
+  return nsStringUtils::IsEqual(InternalGetData(), sOther.GetStartPointer(), InternalGetDataEnd(), sOther.GetEndPointer());
 }
 
 template <typename Derived>
-bool wdStringBase<Derived>::IsEqualN(wdStringView sOther, wdUInt32 uiCharsToCompare) const
+bool nsStringBase<Derived>::IsEqualN(nsStringView sOther, nsUInt32 uiCharsToCompare) const
 {
-  return wdStringUtils::IsEqualN(InternalGetData(), sOther.GetStartPointer(), uiCharsToCompare, InternalGetDataEnd(), sOther.GetEndPointer());
+  return nsStringUtils::IsEqualN(InternalGetData(), sOther.GetStartPointer(), uiCharsToCompare, InternalGetDataEnd(), sOther.GetEndPointer());
 }
 
 template <typename Derived>
-bool wdStringBase<Derived>::IsEqual_NoCase(wdStringView sOther) const
+bool nsStringBase<Derived>::IsEqual_NoCase(nsStringView sOther) const
 {
-  return wdStringUtils::IsEqual_NoCase(InternalGetData(), sOther.GetStartPointer(), InternalGetDataEnd(), sOther.GetEndPointer());
+  return nsStringUtils::IsEqual_NoCase(InternalGetData(), sOther.GetStartPointer(), InternalGetDataEnd(), sOther.GetEndPointer());
 }
 
 template <typename Derived>
-bool wdStringBase<Derived>::IsEqualN_NoCase(wdStringView sOther, wdUInt32 uiCharsToCompare) const
+bool nsStringBase<Derived>::IsEqualN_NoCase(nsStringView sOther, nsUInt32 uiCharsToCompare) const
 {
-  return wdStringUtils::IsEqualN_NoCase(InternalGetData(), sOther.GetStartPointer(), uiCharsToCompare, InternalGetDataEnd(), sOther.GetEndPointer());
+  return nsStringUtils::IsEqualN_NoCase(InternalGetData(), sOther.GetStartPointer(), uiCharsToCompare, InternalGetDataEnd(), sOther.GetEndPointer());
 }
 
 template <typename Derived>
-const char* wdStringBase<Derived>::ComputeCharacterPosition(wdUInt32 uiCharacterIndex) const
+const char* nsStringBase<Derived>::ComputeCharacterPosition(nsUInt32 uiCharacterIndex) const
 {
   const char* pos = InternalGetData();
-  wdUnicodeUtils::MoveToNextUtf8(pos, InternalGetDataEnd(), uiCharacterIndex);
+  if (nsUnicodeUtils::MoveToNextUtf8(pos, InternalGetDataEnd(), uiCharacterIndex).Failed())
+    return nullptr;
+
   return pos;
 }
 
 template <typename Derived>
-typename wdStringBase<Derived>::iterator wdStringBase<Derived>::GetIteratorFront() const
+typename nsStringBase<Derived>::iterator nsStringBase<Derived>::GetIteratorFront() const
 {
   return begin(*this);
 }
 
 template <typename Derived>
-typename wdStringBase<Derived>::reverse_iterator wdStringBase<Derived>::GetIteratorBack() const
+typename nsStringBase<Derived>::reverse_iterator nsStringBase<Derived>::GetIteratorBack() const
 {
   return rbegin(*this);
 }
 
 template <typename DerivedLhs, typename DerivedRhs>
-WD_ALWAYS_INLINE bool operator==(const wdStringBase<DerivedLhs>& lhs, const wdStringBase<DerivedRhs>& rhs) // [tested]
+NS_ALWAYS_INLINE bool operator==(const nsStringBase<DerivedLhs>& lhs, const nsStringBase<DerivedRhs>& rhs) // [tested]
 {
   return lhs.IsEqual(rhs.GetView());
 }
 
 template <typename DerivedRhs>
-WD_ALWAYS_INLINE bool operator==(const char* lhs, const wdStringBase<DerivedRhs>& rhs) // [tested]
+NS_ALWAYS_INLINE bool operator==(const char* lhs, const nsStringBase<DerivedRhs>& rhs) // [tested]
 {
   return rhs.IsEqual(lhs);
 }
 
 template <typename DerivedLhs>
-WD_ALWAYS_INLINE bool operator==(const wdStringBase<DerivedLhs>& lhs, const char* rhs) // [tested]
+NS_ALWAYS_INLINE bool operator==(const nsStringBase<DerivedLhs>& lhs, const char* rhs) // [tested]
 {
   return lhs.IsEqual(rhs);
 }
 
+#if NS_DISABLED(NS_USE_CPP20_OPERATORS)
+
 template <typename DerivedLhs, typename DerivedRhs>
-WD_ALWAYS_INLINE bool operator!=(const wdStringBase<DerivedLhs>& lhs, const wdStringBase<DerivedRhs>& rhs) // [tested]
+NS_ALWAYS_INLINE bool operator!=(const nsStringBase<DerivedLhs>& lhs, const nsStringBase<DerivedRhs>& rhs) // [tested]
 {
   return !lhs.IsEqual(rhs);
 }
 
 template <typename DerivedRhs>
-WD_ALWAYS_INLINE bool operator!=(const char* lhs, const wdStringBase<DerivedRhs>& rhs) // [tested]
+NS_ALWAYS_INLINE bool operator!=(const char* lhs, const nsStringBase<DerivedRhs>& rhs) // [tested]
 {
   return !rhs.IsEqual(lhs);
 }
 
 template <typename DerivedLhs>
-WD_ALWAYS_INLINE bool operator!=(const wdStringBase<DerivedLhs>& lhs, const char* rhs) // [tested]
+NS_ALWAYS_INLINE bool operator!=(const nsStringBase<DerivedLhs>& lhs, const char* rhs) // [tested]
 {
   return !lhs.IsEqual(rhs);
 }
 
+#endif
+
+#if NS_ENABLED(NS_USE_CPP20_OPERATORS)
+
 template <typename DerivedLhs, typename DerivedRhs>
-WD_ALWAYS_INLINE bool operator<(const wdStringBase<DerivedLhs>& lhs, const wdStringBase<DerivedRhs>& rhs) // [tested]
+NS_ALWAYS_INLINE std::strong_ordering operator<=>(const nsStringBase<DerivedLhs>& lhs, const nsStringBase<DerivedRhs>& rhs)
+{
+  return lhs.Compare(rhs) <=> 0;
+}
+
+template <typename DerivedLhs, typename DerivedRhs>
+NS_ALWAYS_INLINE std::strong_ordering operator<=>(const nsStringBase<DerivedLhs>& lhs, const char* rhs)
+{
+  return lhs.Compare(rhs) <=> 0;
+}
+
+#else
+
+template <typename DerivedLhs, typename DerivedRhs>
+NS_ALWAYS_INLINE bool operator<(const nsStringBase<DerivedLhs>& lhs, const nsStringBase<DerivedRhs>& rhs) // [tested]
 {
   return lhs.Compare(rhs) < 0;
 }
 
 template <typename DerivedRhs>
-WD_ALWAYS_INLINE bool operator<(const char* lhs, const wdStringBase<DerivedRhs>& rhs) // [tested]
+NS_ALWAYS_INLINE bool operator<(const char* lhs, const nsStringBase<DerivedRhs>& rhs) // [tested]
 {
   return rhs.Compare(lhs) > 0;
 }
 
 template <typename DerivedLhs>
-WD_ALWAYS_INLINE bool operator<(const wdStringBase<DerivedLhs>& lhs, const char* rhs) // [tested]
+NS_ALWAYS_INLINE bool operator<(const nsStringBase<DerivedLhs>& lhs, const char* rhs) // [tested]
 {
   return lhs.Compare(rhs) < 0;
 }
 
 template <typename DerivedLhs, typename DerivedRhs>
-WD_ALWAYS_INLINE bool operator>(const wdStringBase<DerivedLhs>& lhs, const wdStringBase<DerivedRhs>& rhs) // [tested]
+NS_ALWAYS_INLINE bool operator>(const nsStringBase<DerivedLhs>& lhs, const nsStringBase<DerivedRhs>& rhs) // [tested]
 {
   return lhs.Compare(rhs) > 0;
 }
 
 template <typename DerivedRhs>
-WD_ALWAYS_INLINE bool operator>(const char* lhs, const wdStringBase<DerivedRhs>& rhs) // [tested]
+NS_ALWAYS_INLINE bool operator>(const char* lhs, const nsStringBase<DerivedRhs>& rhs) // [tested]
 {
   return rhs.Compare(lhs) < 0;
 }
 
 template <typename DerivedLhs>
-WD_ALWAYS_INLINE bool operator>(const wdStringBase<DerivedLhs>& lhs, const char* rhs) // [tested]
+NS_ALWAYS_INLINE bool operator>(const nsStringBase<DerivedLhs>& lhs, const char* rhs) // [tested]
 {
   return lhs.Compare(rhs) > 0;
 }
 
 template <typename DerivedLhs, typename DerivedRhs>
-WD_ALWAYS_INLINE bool operator<=(const wdStringBase<DerivedLhs>& lhs, const wdStringBase<DerivedRhs>& rhs) // [tested]
+NS_ALWAYS_INLINE bool operator<=(const nsStringBase<DerivedLhs>& lhs, const nsStringBase<DerivedRhs>& rhs) // [tested]
 {
-  return wdStringUtils::Compare(lhs.InternalGetData(), rhs.InternalGetData(), lhs.InternalGetDataEnd(), rhs.InternalGetDataEnd()) <= 0;
+  return nsStringUtils::Compare(lhs.InternalGetData(), rhs.InternalGetData(), lhs.InternalGetDataEnd(), rhs.InternalGetDataEnd()) <= 0;
 }
 
 template <typename DerivedRhs>
-WD_ALWAYS_INLINE bool operator<=(const char* lhs, const wdStringBase<DerivedRhs>& rhs) // [tested]
+NS_ALWAYS_INLINE bool operator<=(const char* lhs, const nsStringBase<DerivedRhs>& rhs) // [tested]
 {
   return rhs.Compare(lhs) >= 0;
 }
 
 template <typename DerivedLhs>
-WD_ALWAYS_INLINE bool operator<=(const wdStringBase<DerivedLhs>& lhs, const char* rhs) // [tested]
+NS_ALWAYS_INLINE bool operator<=(const nsStringBase<DerivedLhs>& lhs, const char* rhs) // [tested]
 {
   return lhs.Compare(rhs) <= 0;
 }
 
 template <typename DerivedLhs, typename DerivedRhs>
-WD_ALWAYS_INLINE bool operator>=(const wdStringBase<DerivedLhs>& lhs, const wdStringBase<DerivedRhs>& rhs) // [tested]
+NS_ALWAYS_INLINE bool operator>=(const nsStringBase<DerivedLhs>& lhs, const nsStringBase<DerivedRhs>& rhs) // [tested]
 {
-  return wdStringUtils::Compare(lhs.InternalGetData(), rhs.InternalGetData(), lhs.InternalGetDataEnd(), rhs.InternalGetDataEnd()) >= 0;
+  return nsStringUtils::Compare(lhs.InternalGetData(), rhs.InternalGetData(), lhs.InternalGetDataEnd(), rhs.InternalGetDataEnd()) >= 0;
 }
 
 template <typename DerivedRhs>
-WD_ALWAYS_INLINE bool operator>=(const char* lhs, const wdStringBase<DerivedRhs>& rhs) // [tested]
+NS_ALWAYS_INLINE bool operator>=(const char* lhs, const nsStringBase<DerivedRhs>& rhs) // [tested]
 {
   return rhs.Compare(lhs) <= 0;
 }
 
 template <typename DerivedLhs>
-WD_ALWAYS_INLINE bool operator>=(const wdStringBase<DerivedLhs>& lhs, const char* rhs) // [tested]
+NS_ALWAYS_INLINE bool operator>=(const nsStringBase<DerivedLhs>& lhs, const char* rhs) // [tested]
 {
   return lhs.Compare(rhs) >= 0;
 }
 
+#endif
+
 template <typename DerivedLhs>
-WD_ALWAYS_INLINE wdStringBase<DerivedLhs>::operator wdStringView() const
+NS_ALWAYS_INLINE nsStringBase<DerivedLhs>::operator nsStringView() const
 {
-  return wdStringView(InternalGetData(), InternalGetElementCount());
+  return nsStringView(InternalGetData(), InternalGetElementCount());
 }
 
 template <typename Derived>
-WD_ALWAYS_INLINE wdStringView wdStringBase<Derived>::GetView() const
+NS_ALWAYS_INLINE nsStringView nsStringBase<Derived>::GetView() const
 {
-  return wdStringView(InternalGetData(), InternalGetElementCount());
+  return nsStringView(InternalGetData(), InternalGetElementCount());
 }
 
 template <typename Derived>
 template <typename Container>
-void wdStringBase<Derived>::Split(bool bReturnEmptyStrings, Container& ref_output, const char* szSeparator1, const char* szSeparator2 /*= nullptr*/, const char* szSeparator3 /*= nullptr*/, const char* szSeparator4 /*= nullptr*/, const char* szSeparator5 /*= nullptr*/, const char* szSeparator6 /*= nullptr*/) const
+void nsStringBase<Derived>::Split(bool bReturnEmptyStrings, Container& ref_output, const char* szSeparator1, const char* szSeparator2 /*= nullptr*/, const char* szSeparator3 /*= nullptr*/, const char* szSeparator4 /*= nullptr*/, const char* szSeparator5 /*= nullptr*/, const char* szSeparator6 /*= nullptr*/) const
 {
   GetView().Split(bReturnEmptyStrings, ref_output, szSeparator1, szSeparator2, szSeparator3, szSeparator4, szSeparator5, szSeparator6);
 }
 
 template <typename Derived>
-wdStringView wdStringBase<Derived>::GetRootedPathRootName() const
+nsStringView nsStringBase<Derived>::GetRootedPathRootName() const
 {
   return GetView().GetRootedPathRootName();
 }
 
 template <typename Derived>
-bool wdStringBase<Derived>::IsRootedPath() const
+bool nsStringBase<Derived>::IsRootedPath() const
 {
   return GetView().IsRootedPath();
 }
 
 template <typename Derived>
-bool wdStringBase<Derived>::IsRelativePath() const
+bool nsStringBase<Derived>::IsRelativePath() const
 {
   return GetView().IsRelativePath();
 }
 
 template <typename Derived>
-bool wdStringBase<Derived>::IsAbsolutePath() const
+bool nsStringBase<Derived>::IsAbsolutePath() const
 {
   return GetView().IsAbsolutePath();
 }
 
 template <typename Derived>
-wdStringView wdStringBase<Derived>::GetFileDirectory() const
+nsStringView nsStringBase<Derived>::GetFileDirectory() const
 {
   return GetView().GetFileDirectory();
 }
 
 template <typename Derived>
-wdStringView wdStringBase<Derived>::GetFileNameAndExtension() const
+nsStringView nsStringBase<Derived>::GetFileNameAndExtension() const
 {
   return GetView().GetFileNameAndExtension();
 }
 
 template <typename Derived>
-wdStringView wdStringBase<Derived>::GetFileName() const
+nsStringView nsStringBase<Derived>::GetFileName() const
 {
   return GetView().GetFileName();
 }
 
 template <typename Derived>
-wdStringView wdStringBase<Derived>::GetFileExtension() const
+nsStringView nsStringBase<Derived>::GetFileExtension() const
 {
   return GetView().GetFileExtension();
 }
 
 template <typename Derived>
-bool wdStringBase<Derived>::HasExtension(wdStringView sExtension) const
+bool nsStringBase<Derived>::HasExtension(nsStringView sExtension) const
 {
   return GetView().HasExtension(sExtension);
 }
 
 template <typename Derived>
-bool wdStringBase<Derived>::HasAnyExtension() const
+bool nsStringBase<Derived>::HasAnyExtension() const
 {
   return GetView().HasAnyExtension();
 }

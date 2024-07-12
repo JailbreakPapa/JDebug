@@ -4,21 +4,21 @@
 
 /// \brief STL forward iterator used by all string classes. Iterates over unicode characters.
 ///  The iterator starts at the first character of the string and ends at the address beyond the last character of the string.
-struct wdStringIterator
+struct nsStringIterator
 {
   using iterator_category = std::bidirectional_iterator_tag;
-  using value_type = wdUInt32;
-  using difference_type = ptrdiff_t;
+  using value_type = nsUInt32;
+  using difference_type = std::ptrdiff_t;
   using pointer = const char*;
-  using reference = wdUInt32;
+  using reference = nsUInt32;
 
-  WD_DECLARE_POD_TYPE();
+  NS_DECLARE_POD_TYPE();
 
   /// \brief Constructs an invalid iterator.
-  WD_ALWAYS_INLINE wdStringIterator() = default; // [tested]
+  NS_ALWAYS_INLINE nsStringIterator() = default; // [tested]
 
   /// \brief Constructs either a begin or end iterator for the given string.
-  WD_FORCE_INLINE explicit wdStringIterator(const char* pStartPtr, const char* pEndPtr, const char* pCurPtr)
+  NS_FORCE_INLINE explicit nsStringIterator(const char* pStartPtr, const char* pEndPtr, const char* pCurPtr)
   {
     m_pStartPtr = pStartPtr;
     m_pEndPtr = pEndPtr;
@@ -26,76 +26,74 @@ struct wdStringIterator
   }
 
   /// \brief Checks whether this iterator points to a valid element. Invalid iterators either point to m_pEndPtr or were never initialized.
-  WD_ALWAYS_INLINE bool IsValid() const { return m_pCurPtr != nullptr && m_pCurPtr != m_pEndPtr; } // [tested]
+  NS_ALWAYS_INLINE bool IsValid() const { return m_pCurPtr != nullptr && m_pCurPtr != m_pEndPtr; } // [tested]
 
   /// \brief Returns the currently pointed to character in Utf32 encoding.
-  WD_ALWAYS_INLINE wdUInt32 GetCharacter() const { return IsValid() ? wdUnicodeUtils::ConvertUtf8ToUtf32(m_pCurPtr) : wdUInt32(0); } // [tested]
+  NS_ALWAYS_INLINE nsUInt32 GetCharacter() const { return IsValid() ? nsUnicodeUtils::ConvertUtf8ToUtf32(m_pCurPtr) : nsUInt32(0); } // [tested]
 
   /// \brief Returns the currently pointed to character in Utf32 encoding.
-  WD_ALWAYS_INLINE wdUInt32 operator*() const { return GetCharacter(); } // [tested]
+  NS_ALWAYS_INLINE nsUInt32 operator*() const { return GetCharacter(); } // [tested]
 
   /// \brief Returns the address the iterator currently points to.
-  WD_ALWAYS_INLINE const char* GetData() const { return m_pCurPtr; } // [tested]
+  NS_ALWAYS_INLINE const char* GetData() const { return m_pCurPtr; } // [tested]
 
   /// \brief Checks whether the two iterators point to the same element.
-  WD_ALWAYS_INLINE bool operator==(const wdStringIterator& it2) const { return (m_pCurPtr == it2.m_pCurPtr); } // [tested]
-
-  /// \brief Checks whether the two iterators point to the same element.
-  WD_ALWAYS_INLINE bool operator!=(const wdStringIterator& it2) const { return (m_pCurPtr != it2.m_pCurPtr); } // [tested]
+  NS_ALWAYS_INLINE bool operator==(const nsStringIterator& it2) const { return (m_pCurPtr == it2.m_pCurPtr); } // [tested]
+  NS_ADD_DEFAULT_OPERATOR_NOTEQUAL(const nsStringIterator&);
 
   /// \brief Advances the iterated to the next character, same as operator++, but returns how many bytes were consumed in the source string.
-  WD_ALWAYS_INLINE wdUInt32 Advance()
+  NS_ALWAYS_INLINE nsUInt32 Advance()
   {
     const char* pPrevElement = m_pCurPtr;
 
     if (m_pCurPtr < m_pEndPtr)
     {
-      wdUnicodeUtils::MoveToNextUtf8(m_pCurPtr);
+      nsUnicodeUtils::MoveToNextUtf8(m_pCurPtr).AssertSuccess();
     }
 
-    return static_cast<wdUInt32>(m_pCurPtr - pPrevElement);
+    return static_cast<nsUInt32>(m_pCurPtr - pPrevElement);
   }
 
   /// \brief Move to the next Utf8 character
-  WD_ALWAYS_INLINE wdStringIterator& operator++() // [tested]
+  NS_ALWAYS_INLINE nsStringIterator& operator++() // [tested]
   {
     if (m_pCurPtr < m_pEndPtr)
     {
-      wdUnicodeUtils::MoveToNextUtf8(m_pCurPtr);
+      nsUnicodeUtils::MoveToNextUtf8(m_pCurPtr).AssertSuccess();
     }
 
     return *this;
   }
 
   /// \brief Move to the previous Utf8 character
-  WD_ALWAYS_INLINE wdStringIterator& operator--() // [tested]
+  NS_ALWAYS_INLINE nsStringIterator& operator--() // [tested]
   {
     if (m_pStartPtr < m_pCurPtr)
     {
-      wdUnicodeUtils::MoveToPriorUtf8(m_pCurPtr);
+      nsUnicodeUtils::MoveToPriorUtf8(m_pCurPtr, m_pStartPtr).AssertSuccess();
     }
 
     return *this;
   }
 
   /// \brief Move to the next Utf8 character
-  WD_ALWAYS_INLINE wdStringIterator operator++(int) // [tested]
+  NS_ALWAYS_INLINE nsStringIterator operator++(int) // [tested]
   {
-    wdStringIterator tmp = *this;
+    nsStringIterator tmp = *this;
     ++(*this);
     return tmp;
   }
 
   /// \brief Move to the previous Utf8 character
-  WD_ALWAYS_INLINE wdStringIterator operator--(int) // [tested]
+  NS_ALWAYS_INLINE nsStringIterator operator--(int) // [tested]
   {
-    wdStringIterator tmp = *this;
+    nsStringIterator tmp = *this;
     --(*this);
     return tmp;
   }
 
   /// \brief Advances the iterator forwards by d characters. Does not move it beyond the range's end.
-  WD_FORCE_INLINE void operator+=(difference_type d) // [tested]
+  NS_FORCE_INLINE void operator+=(difference_type d) // [tested]
   {
     while (d > 0)
     {
@@ -110,7 +108,7 @@ struct wdStringIterator
   }
 
   /// \brief Moves the iterator backwards by d characters. Does not move it beyond the range's start.
-  WD_FORCE_INLINE void operator-=(difference_type d) // [tested]
+  NS_FORCE_INLINE void operator-=(difference_type d) // [tested]
   {
     while (d > 0)
     {
@@ -125,17 +123,17 @@ struct wdStringIterator
   }
 
   /// \brief Returns an iterator that is advanced forwards by d characters.
-  WD_ALWAYS_INLINE wdStringIterator operator+(difference_type d) const // [tested]
+  NS_ALWAYS_INLINE nsStringIterator operator+(difference_type d) const // [tested]
   {
-    wdStringIterator it = *this;
+    nsStringIterator it = *this;
     it += d;
     return it;
   }
 
   /// \brief Returns an iterator that is advanced backwards by d characters.
-  WD_ALWAYS_INLINE wdStringIterator operator-(difference_type d) const // [tested]
+  NS_ALWAYS_INLINE nsStringIterator operator-(difference_type d) const // [tested]
   {
-    wdStringIterator it = *this;
+    nsStringIterator it = *this;
     it -= d;
     return it;
   }
@@ -145,7 +143,7 @@ struct wdStringIterator
   /// Must be between the iterators start and end range.
   void SetCurrentPosition(const char* szCurPos)
   {
-    WD_ASSERT_DEV((szCurPos >= m_pStartPtr) && (szCurPos <= m_pEndPtr), "New position must still be inside the iterator's range.");
+    NS_ASSERT_DEV((szCurPos >= m_pStartPtr) && (szCurPos <= m_pEndPtr), "New position must still be inside the iterator's range.");
 
     m_pCurPtr = szCurPos;
   }
@@ -159,21 +157,21 @@ private:
 
 /// \brief STL reverse iterator used by all string classes. Iterates over unicode characters.
 ///  The iterator starts at the last character of the string and ends at the address before the first character of the string.
-struct wdStringReverseIterator
+struct nsStringReverseIterator
 {
   using iterator_category = std::bidirectional_iterator_tag;
-  using value_type = wdUInt32;
-  using difference_type = ptrdiff_t;
+  using value_type = nsUInt32;
+  using difference_type = std::ptrdiff_t;
   using pointer = const char*;
-  using reference = wdUInt32;
+  using reference = nsUInt32;
 
-  WD_DECLARE_POD_TYPE();
+  NS_DECLARE_POD_TYPE();
 
   /// \brief Constructs an invalid iterator.
-  WD_ALWAYS_INLINE wdStringReverseIterator() = default; // [tested]
+  NS_ALWAYS_INLINE nsStringReverseIterator() = default; // [tested]
 
   /// \brief Constructs either a rbegin or rend iterator for the given string.
-  WD_FORCE_INLINE explicit wdStringReverseIterator(const char* pStartPtr, const char* pEndPtr, const char* pCurPtr) // [tested]
+  NS_FORCE_INLINE explicit nsStringReverseIterator(const char* pStartPtr, const char* pEndPtr, const char* pCurPtr) // [tested]
   {
     m_pStartPtr = pStartPtr;
     m_pEndPtr = pEndPtr;
@@ -185,33 +183,31 @@ struct wdStringReverseIterator
     }
     else if (m_pCurPtr == m_pEndPtr)
     {
-      wdUnicodeUtils::MoveToPriorUtf8(m_pCurPtr);
+      nsUnicodeUtils::MoveToPriorUtf8(m_pCurPtr, m_pStartPtr).AssertSuccess();
     }
   }
 
   /// \brief Checks whether this iterator points to a valid element.
-  WD_ALWAYS_INLINE bool IsValid() const { return (m_pCurPtr != nullptr); } // [tested]
+  NS_ALWAYS_INLINE bool IsValid() const { return (m_pCurPtr != nullptr); } // [tested]
 
   /// \brief Returns the currently pointed to character in Utf32 encoding.
-  WD_ALWAYS_INLINE wdUInt32 GetCharacter() const { return IsValid() ? wdUnicodeUtils::ConvertUtf8ToUtf32(m_pCurPtr) : wdUInt32(0); } // [tested]
+  NS_ALWAYS_INLINE nsUInt32 GetCharacter() const { return IsValid() ? nsUnicodeUtils::ConvertUtf8ToUtf32(m_pCurPtr) : nsUInt32(0); } // [tested]
 
   /// \brief Returns the currently pointed to character in Utf32 encoding.
-  WD_ALWAYS_INLINE wdUInt32 operator*() const { return GetCharacter(); } // [tested]
+  NS_ALWAYS_INLINE nsUInt32 operator*() const { return GetCharacter(); } // [tested]
 
   /// \brief Returns the address the iterator currently points to.
-  WD_ALWAYS_INLINE const char* GetData() const { return m_pCurPtr; } // [tested]
+  NS_ALWAYS_INLINE const char* GetData() const { return m_pCurPtr; } // [tested]
 
   /// \brief Checks whether the two iterators point to the same element.
-  WD_ALWAYS_INLINE bool operator==(const wdStringReverseIterator& it2) const { return (m_pCurPtr == it2.m_pCurPtr); } // [tested]
-
-  /// \brief Checks whether the two iterators point to the same element.
-  WD_ALWAYS_INLINE bool operator!=(const wdStringReverseIterator& it2) const { return (m_pCurPtr != it2.m_pCurPtr); } // [tested]
+  NS_ALWAYS_INLINE bool operator==(const nsStringReverseIterator& it2) const { return (m_pCurPtr == it2.m_pCurPtr); } // [tested]
+  NS_ADD_DEFAULT_OPERATOR_NOTEQUAL(const nsStringReverseIterator&);
 
   /// \brief Move to the next Utf8 character
-  WD_FORCE_INLINE wdStringReverseIterator& operator++() // [tested]
+  NS_FORCE_INLINE nsStringReverseIterator& operator++() // [tested]
   {
     if (m_pCurPtr != nullptr && m_pStartPtr < m_pCurPtr)
-      wdUnicodeUtils::MoveToPriorUtf8(m_pCurPtr);
+      nsUnicodeUtils::MoveToPriorUtf8(m_pCurPtr, m_pStartPtr).AssertSuccess();
     else
       m_pCurPtr = nullptr;
 
@@ -219,12 +215,12 @@ struct wdStringReverseIterator
   }
 
   /// \brief Move to the previous Utf8 character
-  WD_FORCE_INLINE wdStringReverseIterator& operator--() // [tested]
+  NS_FORCE_INLINE nsStringReverseIterator& operator--() // [tested]
   {
     if (m_pCurPtr != nullptr)
     {
       const char* szOldPos = m_pCurPtr;
-      wdUnicodeUtils::MoveToNextUtf8(m_pCurPtr);
+      nsUnicodeUtils::MoveToNextUtf8(m_pCurPtr).AssertSuccess();
 
       if (m_pCurPtr == m_pEndPtr)
         m_pCurPtr = szOldPos;
@@ -238,23 +234,23 @@ struct wdStringReverseIterator
   }
 
   /// \brief Move to the next Utf8 character
-  WD_ALWAYS_INLINE wdStringReverseIterator operator++(int) // [tested]
+  NS_ALWAYS_INLINE nsStringReverseIterator operator++(int) // [tested]
   {
-    wdStringReverseIterator tmp = *this;
+    nsStringReverseIterator tmp = *this;
     ++(*this);
     return tmp;
   }
 
   /// \brief Move to the previous Utf8 character
-  WD_ALWAYS_INLINE wdStringReverseIterator operator--(int) // [tested]
+  NS_ALWAYS_INLINE nsStringReverseIterator operator--(int) // [tested]
   {
-    wdStringReverseIterator tmp = *this;
+    nsStringReverseIterator tmp = *this;
     --(*this);
     return tmp;
   }
 
   /// \brief Advances the iterator forwards by d characters. Does not move it beyond the range's end.
-  WD_FORCE_INLINE void operator+=(difference_type d) // [tested]
+  NS_FORCE_INLINE void operator+=(difference_type d) // [tested]
   {
     while (d > 0)
     {
@@ -269,7 +265,7 @@ struct wdStringReverseIterator
   }
 
   /// \brief Moves the iterator backwards by d characters. Does not move it beyond the range's start.
-  WD_FORCE_INLINE void operator-=(difference_type d) // [tested]
+  NS_FORCE_INLINE void operator-=(difference_type d) // [tested]
   {
     while (d > 0)
     {
@@ -284,17 +280,17 @@ struct wdStringReverseIterator
   }
 
   /// \brief Returns an iterator that is advanced forwards by d characters.
-  WD_ALWAYS_INLINE wdStringReverseIterator operator+(difference_type d) const // [tested]
+  NS_ALWAYS_INLINE nsStringReverseIterator operator+(difference_type d) const // [tested]
   {
-    wdStringReverseIterator it = *this;
+    nsStringReverseIterator it = *this;
     it += d;
     return it;
   }
 
   /// \brief Returns an iterator that is advanced backwards by d characters.
-  WD_ALWAYS_INLINE wdStringReverseIterator operator-(difference_type d) const // [tested]
+  NS_ALWAYS_INLINE nsStringReverseIterator operator-(difference_type d) const // [tested]
   {
-    wdStringReverseIterator it = *this;
+    nsStringReverseIterator it = *this;
     it -= d;
     return it;
   }
@@ -302,9 +298,9 @@ struct wdStringReverseIterator
   /// \brief Allows to set the 'current' iteration position to a different value.
   ///
   /// Must be between the iterators start and end range.
-  WD_FORCE_INLINE void SetCurrentPosition(const char* szCurPos)
+  NS_FORCE_INLINE void SetCurrentPosition(const char* szCurPos)
   {
-    WD_ASSERT_DEV((szCurPos == nullptr) || ((szCurPos >= m_pStartPtr) && (szCurPos < m_pEndPtr)), "New position must still be inside the iterator's range.");
+    NS_ASSERT_DEV((szCurPos == nullptr) || ((szCurPos >= m_pStartPtr) && (szCurPos < m_pEndPtr)), "New position must still be inside the iterator's range.");
 
     m_pCurPtr = szCurPos;
   }

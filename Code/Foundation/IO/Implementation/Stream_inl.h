@@ -1,504 +1,504 @@
 #pragma once
 
-#if WD_ENABLED(WD_PLATFORM_BIG_ENDIAN)
+#if NS_ENABLED(NS_PLATFORM_BIG_ENDIAN)
 
 template <typename T>
-wdResult wdStreamReader::ReadWordValue(T* pWordValue)
+nsResult nsStreamReader::ReadWordValue(T* pWordValue)
 {
-  WD_CHECK_AT_COMPILETIME(sizeof(T) == sizeof(wdUInt16));
+  NS_CHECK_AT_COMPILETIME(sizeof(T) == sizeof(nsUInt16));
 
-  wdUInt16 uiTemp;
+  nsUInt16 uiTemp;
 
-  const wdUInt32 uiRead = ReadBytes(reinterpret_cast<wdUInt8*>(&uiTemp), sizeof(T));
+  const nsUInt32 uiRead = ReadBytes(reinterpret_cast<nsUInt8*>(&uiTemp), sizeof(T));
 
-  *reinterpret_cast<wdUInt16*>(pWordValue) = wdEndianHelper::Switch(uiTemp);
+  *reinterpret_cast<nsUInt16*>(pWordValue) = nsEndianHelper::Switch(uiTemp);
 
-  return (uiRead == sizeof(T)) ? WD_SUCCESS : WD_FAILURE;
+  return (uiRead == sizeof(T)) ? NS_SUCCESS : NS_FAILURE;
 }
 
 template <typename T>
-wdResult wdStreamReader::ReadDWordValue(T* pDWordValue)
+nsResult nsStreamReader::ReadDWordValue(T* pDWordValue)
 {
-  WD_CHECK_AT_COMPILETIME(sizeof(T) == sizeof(wdUInt32));
+  NS_CHECK_AT_COMPILETIME(sizeof(T) == sizeof(nsUInt32));
 
-  wdUInt32 uiTemp;
+  nsUInt32 uiTemp;
 
-  const wdUInt32 uiRead = ReadBytes(reinterpret_cast<wdUInt8*>(&uiTemp), sizeof(T));
+  const nsUInt32 uiRead = ReadBytes(reinterpret_cast<nsUInt8*>(&uiTemp), sizeof(T));
 
-  *reinterpret_cast<wdUInt32*>(pDWordValue) = wdEndianHelper::Switch(uiTemp);
+  *reinterpret_cast<nsUInt32*>(pDWordValue) = nsEndianHelper::Switch(uiTemp);
 
-  return (uiRead == sizeof(T)) ? WD_SUCCESS : WD_FAILURE;
+  return (uiRead == sizeof(T)) ? NS_SUCCESS : NS_FAILURE;
 }
 
 template <typename T>
-wdResult wdStreamReader::ReadQWordValue(T* pQWordValue)
+nsResult nsStreamReader::ReadQWordValue(T* pQWordValue)
 {
-  WD_CHECK_AT_COMPILETIME(sizeof(T) == sizeof(wdUInt64));
+  NS_CHECK_AT_COMPILETIME(sizeof(T) == sizeof(nsUInt64));
 
-  wdUInt64 uiTemp;
+  nsUInt64 uiTemp;
 
-  const wdUInt32 uiRead = ReadBytes(reinterpret_cast<wdUInt8*>(&uiTemp), sizeof(T));
+  const nsUInt32 uiRead = ReadBytes(reinterpret_cast<nsUInt8*>(&uiTemp), sizeof(T));
 
-  *reinterpret_cast<wdUInt64*>(pQWordValue) = wdEndianHelper::Switch(uiTemp);
+  *reinterpret_cast<nsUInt64*>(pQWordValue) = nsEndianHelper::Switch(uiTemp);
 
-  return (uiRead == sizeof(T)) ? WD_SUCCESS : WD_FAILURE;
+  return (uiRead == sizeof(T)) ? NS_SUCCESS : NS_FAILURE;
 }
 
 
 
 template <typename T>
-wdResult wdStreamWriter::WriteWordValue(const T* pWordValue)
+nsResult nsStreamWriter::WriteWordValue(const T* pWordValue)
 {
-  WD_CHECK_AT_COMPILETIME(sizeof(T) == sizeof(wdUInt16));
+  NS_CHECK_AT_COMPILETIME(sizeof(T) == sizeof(nsUInt16));
 
-  wdUInt16 uiTemp = *reinterpret_cast<const wdUInt16*>(pWordValue);
-  uiTemp = wdEndianHelper::Switch(uiTemp);
+  nsUInt16 uiTemp = *reinterpret_cast<const nsUInt16*>(pWordValue);
+  uiTemp = nsEndianHelper::Switch(uiTemp);
 
-  return WriteBytes(reinterpret_cast<wdUInt8*>(&uiTemp), sizeof(T));
+  return WriteBytes(reinterpret_cast<nsUInt8*>(&uiTemp), sizeof(T));
 }
 
 template <typename T>
-wdResult wdStreamWriter::WriteDWordValue(const T* pDWordValue)
+nsResult nsStreamWriter::WriteDWordValue(const T* pDWordValue)
 {
-  WD_CHECK_AT_COMPILETIME(sizeof(T) == sizeof(wdUInt32));
+  NS_CHECK_AT_COMPILETIME(sizeof(T) == sizeof(nsUInt32));
 
-  wdUInt32 uiTemp = *reinterpret_cast<const wdUInt16*>(pDWordValue);
-  uiTemp = wdEndianHelper::Switch(uiTemp);
+  nsUInt32 uiTemp = *reinterpret_cast<const nsUInt32*>(pDWordValue);
+  uiTemp = nsEndianHelper::Switch(uiTemp);
 
-  return WriteBytes(reinterpret_cast<wdUInt8*>(&uiTemp), sizeof(T));
+  return WriteBytes(reinterpret_cast<nsUInt8*>(&uiTemp), sizeof(T));
 }
 
 template <typename T>
-wdResult wdStreamWriter::WriteQWordValue(const T* pQWordValue)
+nsResult nsStreamWriter::WriteQWordValue(const T* pQWordValue)
 {
-  WD_CHECK_AT_COMPILETIME(sizeof(T) == sizeof(wdUInt64));
+  NS_CHECK_AT_COMPILETIME(sizeof(T) == sizeof(nsUInt64));
 
-  wdUInt64 uiTemp = *reinterpret_cast<const wdUInt64*>(pQWordValue);
-  uiTemp = wdEndianHelper::Switch(uiTemp);
+  nsUInt64 uiTemp = *reinterpret_cast<const nsUInt64*>(pQWordValue);
+  uiTemp = nsEndianHelper::Switch(uiTemp);
 
-  return WriteBytes(reinterpret_cast<wdUInt8*>(&uiTemp), sizeof(T));
+  return WriteBytes(reinterpret_cast<nsUInt8*>(&uiTemp), sizeof(T));
 }
 
 #else
 
 template <typename T>
-wdResult wdStreamReader::ReadWordValue(T* pWordValue)
+nsResult nsStreamReader::ReadWordValue(T* pWordValue)
 {
-  WD_CHECK_AT_COMPILETIME(sizeof(T) == sizeof(wdUInt16));
+  NS_CHECK_AT_COMPILETIME(sizeof(T) == sizeof(nsUInt16));
 
-  if (ReadBytes(reinterpret_cast<wdUInt8*>(pWordValue), sizeof(T)) != sizeof(T))
-    return WD_FAILURE;
+  if (ReadBytes(reinterpret_cast<nsUInt8*>(pWordValue), sizeof(T)) != sizeof(T))
+    return NS_FAILURE;
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
 template <typename T>
-wdResult wdStreamReader::ReadDWordValue(T* pDWordValue)
+nsResult nsStreamReader::ReadDWordValue(T* pDWordValue)
 {
-  WD_CHECK_AT_COMPILETIME(sizeof(T) == sizeof(wdUInt32));
+  NS_CHECK_AT_COMPILETIME(sizeof(T) == sizeof(nsUInt32));
 
-  if (ReadBytes(reinterpret_cast<wdUInt8*>(pDWordValue), sizeof(T)) != sizeof(T))
-    return WD_FAILURE;
+  if (ReadBytes(reinterpret_cast<nsUInt8*>(pDWordValue), sizeof(T)) != sizeof(T))
+    return NS_FAILURE;
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
 template <typename T>
-wdResult wdStreamReader::ReadQWordValue(T* pQWordValue)
+nsResult nsStreamReader::ReadQWordValue(T* pQWordValue)
 {
-  WD_CHECK_AT_COMPILETIME(sizeof(T) == sizeof(wdUInt64));
+  NS_CHECK_AT_COMPILETIME(sizeof(T) == sizeof(nsUInt64));
 
-  if (ReadBytes(reinterpret_cast<wdUInt8*>(pQWordValue), sizeof(T)) != sizeof(T))
-    return WD_FAILURE;
+  if (ReadBytes(reinterpret_cast<nsUInt8*>(pQWordValue), sizeof(T)) != sizeof(T))
+    return NS_FAILURE;
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
 template <typename T>
-wdResult wdStreamWriter::WriteWordValue(const T* pWordValue)
+nsResult nsStreamWriter::WriteWordValue(const T* pWordValue)
 {
-  WD_CHECK_AT_COMPILETIME(sizeof(T) == sizeof(wdUInt16));
+  NS_CHECK_AT_COMPILETIME(sizeof(T) == sizeof(nsUInt16));
 
-  return WriteBytes(reinterpret_cast<const wdUInt8*>(pWordValue), sizeof(T));
+  return WriteBytes(reinterpret_cast<const nsUInt8*>(pWordValue), sizeof(T));
 }
 
 template <typename T>
-wdResult wdStreamWriter::WriteDWordValue(const T* pDWordValue)
+nsResult nsStreamWriter::WriteDWordValue(const T* pDWordValue)
 {
-  WD_CHECK_AT_COMPILETIME(sizeof(T) == sizeof(wdUInt32));
+  NS_CHECK_AT_COMPILETIME(sizeof(T) == sizeof(nsUInt32));
 
-  return WriteBytes(reinterpret_cast<const wdUInt8*>(pDWordValue), sizeof(T));
+  return WriteBytes(reinterpret_cast<const nsUInt8*>(pDWordValue), sizeof(T));
 }
 
 template <typename T>
-wdResult wdStreamWriter::WriteQWordValue(const T* pQWordValue)
+nsResult nsStreamWriter::WriteQWordValue(const T* pQWordValue)
 {
-  WD_CHECK_AT_COMPILETIME(sizeof(T) == sizeof(wdUInt64));
+  NS_CHECK_AT_COMPILETIME(sizeof(T) == sizeof(nsUInt64));
 
-  return WriteBytes(reinterpret_cast<const wdUInt8*>(pQWordValue), sizeof(T));
+  return WriteBytes(reinterpret_cast<const nsUInt8*>(pQWordValue), sizeof(T));
 }
 
 #endif
 
-wdTypeVersion wdStreamReader::ReadVersion(wdTypeVersion expectedMaxVersion)
+nsTypeVersion nsStreamReader::ReadVersion(nsTypeVersion expectedMaxVersion)
 {
-  wdTypeVersion v = 0;
+  nsTypeVersion v = 0;
   ReadWordValue(&v).IgnoreResult();
 
-  WD_ASSERT_ALWAYS(v <= expectedMaxVersion, "Read version ({0}) is larger than expected max version ({1}).", v, expectedMaxVersion);
-  WD_ASSERT_ALWAYS(v > 0, "Invalid version.");
+  NS_ASSERT_ALWAYS(v <= expectedMaxVersion, "Read version ({0}) is larger than expected max version ({1}).", v, expectedMaxVersion);
+  NS_ASSERT_ALWAYS(v > 0, "Invalid version.");
 
   return v;
 }
 
-void wdStreamWriter::WriteVersion(wdTypeVersion version)
+void nsStreamWriter::WriteVersion(nsTypeVersion version)
 {
-  WD_ASSERT_ALWAYS(version > 0, "Version cannot be zero.");
+  NS_ASSERT_ALWAYS(version > 0, "Version cannot be zero.");
 
   WriteWordValue(&version).IgnoreResult();
 }
 
 
-namespace wdStreamWriterUtil
+namespace nsStreamWriterUtil
 {
   // single element serialization
 
   template <class T>
-  WD_ALWAYS_INLINE auto SerializeImpl(wdStreamWriter& inout_stream, const T& obj, int) -> decltype(inout_stream << obj, wdResult(WD_SUCCESS))
+  NS_ALWAYS_INLINE auto SerializeImpl(nsStreamWriter& inout_stream, const T& obj, int) -> decltype(inout_stream << obj, nsResult(NS_SUCCESS))
   {
     inout_stream << obj;
 
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
 
   template <class T>
-  WD_ALWAYS_INLINE auto SerializeImpl(wdStreamWriter& inout_stream, const T& obj, long) -> decltype(obj.Serialize(inout_stream).IgnoreResult(), wdResult(WD_SUCCESS))
+  NS_ALWAYS_INLINE auto SerializeImpl(nsStreamWriter& inout_stream, const T& obj, long) -> decltype(obj.Serialize(inout_stream).IgnoreResult(), nsResult(NS_SUCCESS))
   {
-    return wdToResult(obj.Serialize(inout_stream));
+    return nsToResult(obj.Serialize(inout_stream));
   }
 
   template <class T>
-  WD_ALWAYS_INLINE auto SerializeImpl(wdStreamWriter& inout_stream, const T& obj, float) -> decltype(obj.serialize(inout_stream).IgnoreResult(), wdResult(WD_SUCCESS))
+  NS_ALWAYS_INLINE auto SerializeImpl(nsStreamWriter& inout_stream, const T& obj, float) -> decltype(obj.serialize(inout_stream).IgnoreResult(), nsResult(NS_SUCCESS))
   {
-    return wdToResult(obj.serialize(inout_stream));
+    return nsToResult(obj.serialize(inout_stream));
   }
 
   template <class T>
-  WD_ALWAYS_INLINE auto Serialize(wdStreamWriter& inout_stream, const T& obj) -> decltype(SerializeImpl(inout_stream, obj, 0).IgnoreResult(), wdResult(WD_SUCCESS))
+  NS_ALWAYS_INLINE auto Serialize(nsStreamWriter& inout_stream, const T& obj) -> decltype(SerializeImpl(inout_stream, obj, 0).IgnoreResult(), nsResult(NS_SUCCESS))
   {
     return SerializeImpl(inout_stream, obj, 0);
   }
 
   // serialization of array
 
-#if WD_DISABLED(WD_PLATFORM_WINDOWS_UWP)
+#if NS_DISABLED(NS_PLATFORM_WINDOWS_UWP)
   template <class T>
-  WD_ALWAYS_INLINE auto SerializeArrayImpl(wdStreamWriter& inout_stream, const T* pArray, wdUInt64 uiCount, int) -> decltype(SerializeArray(inout_stream, pArray, uiCount), wdResult(WD_SUCCESS))
+  NS_ALWAYS_INLINE auto SerializeArrayImpl(nsStreamWriter& inout_stream, const T* pArray, nsUInt64 uiCount, int) -> decltype(SerializeArray(inout_stream, pArray, uiCount), nsResult(NS_SUCCESS))
   {
     return SerializeArray(inout_stream, pArray, uiCount);
   }
 #endif
 
   template <class T>
-  wdResult SerializeArrayImpl(wdStreamWriter& inout_stream, const T* pArray, wdUInt64 uiCount, long)
+  nsResult SerializeArrayImpl(nsStreamWriter& inout_stream, const T* pArray, nsUInt64 uiCount, long)
   {
-    for (wdUInt64 i = 0; i < uiCount; ++i)
+    for (nsUInt64 i = 0; i < uiCount; ++i)
     {
-      WD_SUCCEED_OR_RETURN(wdStreamWriterUtil::Serialize<T>(inout_stream, pArray[i]));
+      NS_SUCCEED_OR_RETURN(nsStreamWriterUtil::Serialize<T>(inout_stream, pArray[i]));
     }
 
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
 
   template <class T>
-  WD_ALWAYS_INLINE wdResult SerializeArray(wdStreamWriter& inout_stream, const T* pArray, wdUInt64 uiCount)
+  NS_ALWAYS_INLINE nsResult SerializeArray(nsStreamWriter& inout_stream, const T* pArray, nsUInt64 uiCount)
   {
     return SerializeArrayImpl(inout_stream, pArray, uiCount, 0);
   }
-} // namespace wdStreamWriterUtil
+} // namespace nsStreamWriterUtil
 
 template <typename ArrayType, typename ValueType>
-wdResult wdStreamWriter::WriteArray(const wdArrayBase<ValueType, ArrayType>& array)
+nsResult nsStreamWriter::WriteArray(const nsArrayBase<ValueType, ArrayType>& array)
 {
-  const wdUInt64 uiCount = array.GetCount();
-  WD_SUCCEED_OR_RETURN(WriteQWordValue(&uiCount));
+  const nsUInt64 uiCount = array.GetCount();
+  NS_SUCCEED_OR_RETURN(WriteQWordValue(&uiCount));
 
-  return wdStreamWriterUtil::SerializeArray<ValueType>(*this, array.GetData(), array.GetCount());
+  return nsStreamWriterUtil::SerializeArray<ValueType>(*this, array.GetData(), array.GetCount());
 }
 
-template <typename ValueType, wdUInt16 uiSize>
-wdResult wdStreamWriter::WriteArray(const wdSmallArrayBase<ValueType, uiSize>& array)
+template <typename ValueType, nsUInt16 uiSize>
+nsResult nsStreamWriter::WriteArray(const nsSmallArrayBase<ValueType, uiSize>& array)
 {
-  const wdUInt32 uiCount = array.GetCount();
-  WD_SUCCEED_OR_RETURN(WriteDWordValue(&uiCount));
+  const nsUInt32 uiCount = array.GetCount();
+  NS_SUCCEED_OR_RETURN(WriteDWordValue(&uiCount));
 
-  return wdStreamWriterUtil::SerializeArray<ValueType>(*this, array.GetData(), array.GetCount());
+  return nsStreamWriterUtil::SerializeArray<ValueType>(*this, array.GetData(), array.GetCount());
 }
 
-template <typename ValueType, wdUInt32 uiSize>
-wdResult wdStreamWriter::WriteArray(const ValueType (&array)[uiSize])
+template <typename ValueType, nsUInt32 uiSize>
+nsResult nsStreamWriter::WriteArray(const ValueType (&array)[uiSize])
 {
-  const wdUInt64 uiWriteSize = uiSize;
-  WD_SUCCEED_OR_RETURN(WriteQWordValue(&uiWriteSize));
+  const nsUInt64 uiWriteSize = uiSize;
+  NS_SUCCEED_OR_RETURN(WriteQWordValue(&uiWriteSize));
 
-  return wdStreamWriterUtil::SerializeArray<ValueType>(*this, array, uiSize);
+  return nsStreamWriterUtil::SerializeArray<ValueType>(*this, array, uiSize);
 }
 
 template <typename KeyType, typename Comparer>
-wdResult wdStreamWriter::WriteSet(const wdSetBase<KeyType, Comparer>& set)
+nsResult nsStreamWriter::WriteSet(const nsSetBase<KeyType, Comparer>& set)
 {
-  const wdUInt64 uiWriteSize = set.GetCount();
-  WD_SUCCEED_OR_RETURN(WriteQWordValue(&uiWriteSize));
+  const nsUInt64 uiWriteSize = set.GetCount();
+  NS_SUCCEED_OR_RETURN(WriteQWordValue(&uiWriteSize));
 
   for (const auto& item : set)
   {
-    WD_SUCCEED_OR_RETURN(wdStreamWriterUtil::Serialize<KeyType>(*this, item));
+    NS_SUCCEED_OR_RETURN(nsStreamWriterUtil::Serialize<KeyType>(*this, item));
   }
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
 template <typename KeyType, typename ValueType, typename Comparer>
-wdResult wdStreamWriter::WriteMap(const wdMapBase<KeyType, ValueType, Comparer>& map)
+nsResult nsStreamWriter::WriteMap(const nsMapBase<KeyType, ValueType, Comparer>& map)
 {
-  const wdUInt64 uiWriteSize = map.GetCount();
-  WD_SUCCEED_OR_RETURN(WriteQWordValue(&uiWriteSize));
+  const nsUInt64 uiWriteSize = map.GetCount();
+  NS_SUCCEED_OR_RETURN(WriteQWordValue(&uiWriteSize));
 
   for (auto It = map.GetIterator(); It.IsValid(); ++It)
   {
-    WD_SUCCEED_OR_RETURN(wdStreamWriterUtil::Serialize<KeyType>(*this, It.Key()));
-    WD_SUCCEED_OR_RETURN(wdStreamWriterUtil::Serialize<ValueType>(*this, It.Value()));
+    NS_SUCCEED_OR_RETURN(nsStreamWriterUtil::Serialize<KeyType>(*this, It.Key()));
+    NS_SUCCEED_OR_RETURN(nsStreamWriterUtil::Serialize<ValueType>(*this, It.Value()));
   }
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
 template <typename KeyType, typename ValueType, typename Hasher>
-wdResult wdStreamWriter::WriteHashTable(const wdHashTableBase<KeyType, ValueType, Hasher>& hashTable)
+nsResult nsStreamWriter::WriteHashTable(const nsHashTableBase<KeyType, ValueType, Hasher>& hashTable)
 {
-  const wdUInt64 uiWriteSize = hashTable.GetCount();
-  WD_SUCCEED_OR_RETURN(WriteQWordValue(&uiWriteSize));
+  const nsUInt64 uiWriteSize = hashTable.GetCount();
+  NS_SUCCEED_OR_RETURN(WriteQWordValue(&uiWriteSize));
 
   for (auto It = hashTable.GetIterator(); It.IsValid(); ++It)
   {
-    WD_SUCCEED_OR_RETURN(wdStreamWriterUtil::Serialize<KeyType>(*this, It.Key()));
-    WD_SUCCEED_OR_RETURN(wdStreamWriterUtil::Serialize<ValueType>(*this, It.Value()));
+    NS_SUCCEED_OR_RETURN(nsStreamWriterUtil::Serialize<KeyType>(*this, It.Key()));
+    NS_SUCCEED_OR_RETURN(nsStreamWriterUtil::Serialize<ValueType>(*this, It.Value()));
   }
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
-namespace wdStreamReaderUtil
+namespace nsStreamReaderUtil
 {
   template <class T>
-  WD_ALWAYS_INLINE auto DeserializeImpl(wdStreamReader& inout_stream, T& ref_obj, int) -> decltype(inout_stream >> ref_obj, wdResult(WD_SUCCESS))
+  NS_ALWAYS_INLINE auto DeserializeImpl(nsStreamReader& inout_stream, T& ref_obj, int) -> decltype(inout_stream >> ref_obj, nsResult(NS_SUCCESS))
   {
     inout_stream >> ref_obj;
 
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
 
   template <class T>
-  WD_ALWAYS_INLINE auto DeserializeImpl(wdStreamReader& inout_stream, T& inout_obj, long) -> decltype(inout_obj.Deserialize(inout_stream).IgnoreResult(), wdResult(WD_SUCCESS))
+  NS_ALWAYS_INLINE auto DeserializeImpl(nsStreamReader& inout_stream, T& inout_obj, long) -> decltype(inout_obj.Deserialize(inout_stream).IgnoreResult(), nsResult(NS_SUCCESS))
   {
-    return wdToResult(inout_obj.Deserialize(inout_stream));
+    return nsToResult(inout_obj.Deserialize(inout_stream));
   }
 
   template <class T>
-  WD_ALWAYS_INLINE auto DeserializeImpl(wdStreamReader& inout_stream, T& inout_obj, float) -> decltype(inout_obj.deserialize(inout_stream).IgnoreResult(), wdResult(WD_SUCCESS))
+  NS_ALWAYS_INLINE auto DeserializeImpl(nsStreamReader& inout_stream, T& inout_obj, float) -> decltype(inout_obj.deserialize(inout_stream).IgnoreResult(), nsResult(NS_SUCCESS))
   {
-    return wdToResult(inout_obj.deserialize(inout_stream));
+    return nsToResult(inout_obj.deserialize(inout_stream));
   }
 
   template <class T>
-  WD_ALWAYS_INLINE auto Deserialize(wdStreamReader& inout_stream, T& inout_obj) -> decltype(DeserializeImpl(inout_stream, inout_obj, 0).IgnoreResult(), wdResult(WD_SUCCESS))
+  NS_ALWAYS_INLINE auto Deserialize(nsStreamReader& inout_stream, T& inout_obj) -> decltype(DeserializeImpl(inout_stream, inout_obj, 0).IgnoreResult(), nsResult(NS_SUCCESS))
   {
     return DeserializeImpl(inout_stream, inout_obj, 0);
   }
 
   // serialization of array
 
-#if WD_DISABLED(WD_PLATFORM_WINDOWS_UWP)
+#if NS_DISABLED(NS_PLATFORM_WINDOWS_UWP)
   template <class T>
-  WD_ALWAYS_INLINE auto DeserializeArrayImpl(wdStreamReader& inout_stream, T* pArray, wdUInt64 uiCount, int) -> decltype(DeserializeArray(inout_stream, pArray, uiCount), wdResult(WD_SUCCESS))
+  NS_ALWAYS_INLINE auto DeserializeArrayImpl(nsStreamReader& inout_stream, T* pArray, nsUInt64 uiCount, int) -> decltype(DeserializeArray(inout_stream, pArray, uiCount), nsResult(NS_SUCCESS))
   {
     return DeserializeArray(inout_stream, pArray, uiCount);
   }
 #endif
 
   template <class T>
-  wdResult DeserializeArrayImpl(wdStreamReader& inout_stream, T* pArray, wdUInt64 uiCount, long)
+  nsResult DeserializeArrayImpl(nsStreamReader& inout_stream, T* pArray, nsUInt64 uiCount, long)
   {
-    for (wdUInt64 i = 0; i < uiCount; ++i)
+    for (nsUInt64 i = 0; i < uiCount; ++i)
     {
-      WD_SUCCEED_OR_RETURN(wdStreamReaderUtil::Deserialize<T>(inout_stream, pArray[i]));
+      NS_SUCCEED_OR_RETURN(nsStreamReaderUtil::Deserialize<T>(inout_stream, pArray[i]));
     }
 
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
 
   template <class T>
-  WD_ALWAYS_INLINE wdResult DeserializeArray(wdStreamReader& inout_stream, T* pArray, wdUInt64 uiCount)
+  NS_ALWAYS_INLINE nsResult DeserializeArray(nsStreamReader& inout_stream, T* pArray, nsUInt64 uiCount)
   {
     return DeserializeArrayImpl(inout_stream, pArray, uiCount, 0);
   }
 
-} // namespace wdStreamReaderUtil
+} // namespace nsStreamReaderUtil
 
 template <typename ArrayType, typename ValueType>
-wdResult wdStreamReader::ReadArray(wdArrayBase<ValueType, ArrayType>& inout_array)
+nsResult nsStreamReader::ReadArray(nsArrayBase<ValueType, ArrayType>& inout_array)
 {
-  wdUInt64 uiCount = 0;
-  WD_SUCCEED_OR_RETURN(ReadQWordValue(&uiCount));
+  nsUInt64 uiCount = 0;
+  NS_SUCCEED_OR_RETURN(ReadQWordValue(&uiCount));
 
-  if (uiCount < wdMath::MaxValue<wdUInt32>())
+  if (uiCount < nsMath::MaxValue<nsUInt32>())
   {
     inout_array.Clear();
 
     if (uiCount > 0)
     {
-      static_cast<ArrayType&>(inout_array).SetCount(static_cast<wdUInt32>(uiCount));
+      static_cast<ArrayType&>(inout_array).SetCount(static_cast<nsUInt32>(uiCount));
 
-      WD_SUCCEED_OR_RETURN(wdStreamReaderUtil::DeserializeArray<ValueType>(*this, inout_array.GetData(), uiCount));
+      NS_SUCCEED_OR_RETURN(nsStreamReaderUtil::DeserializeArray<ValueType>(*this, inout_array.GetData(), uiCount));
     }
 
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
   else
   {
     // Containers currently use 32 bit for counts internally. Value from file is too large.
-    return WD_FAILURE;
+    return NS_FAILURE;
   }
 }
 
-template <typename ValueType, wdUInt16 uiSize, typename AllocatorWrapper>
-wdResult wdStreamReader::ReadArray(wdSmallArray<ValueType, uiSize, AllocatorWrapper>& ref_array)
+template <typename ValueType, nsUInt16 uiSize, typename AllocatorWrapper>
+nsResult nsStreamReader::ReadArray(nsSmallArray<ValueType, uiSize, AllocatorWrapper>& ref_array)
 {
-  wdUInt32 uiCount = 0;
-  WD_SUCCEED_OR_RETURN(ReadDWordValue(&uiCount));
+  nsUInt32 uiCount = 0;
+  NS_SUCCEED_OR_RETURN(ReadDWordValue(&uiCount));
 
-  if (uiCount < wdMath::MaxValue<wdUInt16>())
+  if (uiCount < nsMath::MaxValue<nsUInt16>())
   {
     ref_array.Clear();
 
     if (uiCount > 0)
     {
-      ref_array.SetCount(static_cast<wdUInt16>(uiCount));
+      ref_array.SetCount(static_cast<nsUInt16>(uiCount));
 
-      WD_SUCCEED_OR_RETURN(wdStreamReaderUtil::DeserializeArray<ValueType>(*this, ref_array.GetData(), uiCount));
+      NS_SUCCEED_OR_RETURN(nsStreamReaderUtil::DeserializeArray<ValueType>(*this, ref_array.GetData(), uiCount));
     }
 
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
   else
   {
     // Small array uses 16 bit for counts internally. Value from file is too large.
-    return WD_FAILURE;
+    return NS_FAILURE;
   }
 }
 
-template <typename ValueType, wdUInt32 uiSize>
-wdResult wdStreamReader::ReadArray(ValueType (&array)[uiSize])
+template <typename ValueType, nsUInt32 uiSize>
+nsResult nsStreamReader::ReadArray(ValueType (&array)[uiSize])
 {
-  wdUInt64 uiCount = 0;
-  WD_SUCCEED_OR_RETURN(ReadQWordValue(&uiCount));
+  nsUInt64 uiCount = 0;
+  NS_SUCCEED_OR_RETURN(ReadQWordValue(&uiCount));
 
-  if (static_cast<wdUInt32>(uiCount) != uiSize)
-    return WD_FAILURE;
+  if (static_cast<nsUInt32>(uiCount) != uiSize)
+    return NS_FAILURE;
 
-  if (uiCount < wdMath::MaxValue<wdUInt32>())
+  if (uiCount < nsMath::MaxValue<nsUInt32>())
   {
-    WD_SUCCEED_OR_RETURN(wdStreamReaderUtil::DeserializeArray<ValueType>(*this, array, uiCount));
+    NS_SUCCEED_OR_RETURN(nsStreamReaderUtil::DeserializeArray<ValueType>(*this, array, uiCount));
 
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
 
   // Containers currently use 32 bit for counts internally. Value from file is too large.
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
 template <typename KeyType, typename Comparer>
-wdResult wdStreamReader::ReadSet(wdSetBase<KeyType, Comparer>& inout_set)
+nsResult nsStreamReader::ReadSet(nsSetBase<KeyType, Comparer>& inout_set)
 {
-  wdUInt64 uiCount = 0;
-  WD_SUCCEED_OR_RETURN(ReadQWordValue(&uiCount));
+  nsUInt64 uiCount = 0;
+  NS_SUCCEED_OR_RETURN(ReadQWordValue(&uiCount));
 
-  if (uiCount < wdMath::MaxValue<wdUInt32>())
+  if (uiCount < nsMath::MaxValue<nsUInt32>())
   {
     inout_set.Clear();
 
-    for (wdUInt32 i = 0; i < static_cast<wdUInt32>(uiCount); ++i)
+    for (nsUInt32 i = 0; i < static_cast<nsUInt32>(uiCount); ++i)
     {
       KeyType Item;
-      WD_SUCCEED_OR_RETURN(wdStreamReaderUtil::Deserialize(*this, Item));
+      NS_SUCCEED_OR_RETURN(nsStreamReaderUtil::Deserialize(*this, Item));
 
       inout_set.Insert(std::move(Item));
     }
 
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
   else
   {
     // Containers currently use 32 bit for counts internally. Value from file is too large.
-    return WD_FAILURE;
+    return NS_FAILURE;
   }
 }
 
 template <typename KeyType, typename ValueType, typename Comparer>
-wdResult wdStreamReader::ReadMap(wdMapBase<KeyType, ValueType, Comparer>& inout_map)
+nsResult nsStreamReader::ReadMap(nsMapBase<KeyType, ValueType, Comparer>& inout_map)
 {
-  wdUInt64 uiCount = 0;
-  WD_SUCCEED_OR_RETURN(ReadQWordValue(&uiCount));
+  nsUInt64 uiCount = 0;
+  NS_SUCCEED_OR_RETURN(ReadQWordValue(&uiCount));
 
-  if (uiCount < wdMath::MaxValue<wdUInt32>())
+  if (uiCount < nsMath::MaxValue<nsUInt32>())
   {
     inout_map.Clear();
 
-    for (wdUInt32 i = 0; i < static_cast<wdUInt32>(uiCount); ++i)
+    for (nsUInt32 i = 0; i < static_cast<nsUInt32>(uiCount); ++i)
     {
       KeyType Key;
       ValueType Value;
-      WD_SUCCEED_OR_RETURN(wdStreamReaderUtil::Deserialize(*this, Key));
-      WD_SUCCEED_OR_RETURN(wdStreamReaderUtil::Deserialize(*this, Value));
+      NS_SUCCEED_OR_RETURN(nsStreamReaderUtil::Deserialize(*this, Key));
+      NS_SUCCEED_OR_RETURN(nsStreamReaderUtil::Deserialize(*this, Value));
 
       inout_map.Insert(std::move(Key), std::move(Value));
     }
 
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
   else
   {
     // Containers currently use 32 bit for counts internally. Value from file is too large.
-    return WD_FAILURE;
+    return NS_FAILURE;
   }
 }
 
 template <typename KeyType, typename ValueType, typename Hasher>
-wdResult wdStreamReader::ReadHashTable(wdHashTableBase<KeyType, ValueType, Hasher>& inout_hashTable)
+nsResult nsStreamReader::ReadHashTable(nsHashTableBase<KeyType, ValueType, Hasher>& inout_hashTable)
 {
-  wdUInt64 uiCount = 0;
-  WD_SUCCEED_OR_RETURN(ReadQWordValue(&uiCount));
+  nsUInt64 uiCount = 0;
+  NS_SUCCEED_OR_RETURN(ReadQWordValue(&uiCount));
 
-  if (uiCount < wdMath::MaxValue<wdUInt32>())
+  if (uiCount < nsMath::MaxValue<nsUInt32>())
   {
     inout_hashTable.Clear();
-    inout_hashTable.Reserve(static_cast<wdUInt32>(uiCount));
+    inout_hashTable.Reserve(static_cast<nsUInt32>(uiCount));
 
-    for (wdUInt32 i = 0; i < static_cast<wdUInt32>(uiCount); ++i)
+    for (nsUInt32 i = 0; i < static_cast<nsUInt32>(uiCount); ++i)
     {
       KeyType Key;
       ValueType Value;
-      WD_SUCCEED_OR_RETURN(wdStreamReaderUtil::Deserialize(*this, Key));
-      WD_SUCCEED_OR_RETURN(wdStreamReaderUtil::Deserialize(*this, Value));
+      NS_SUCCEED_OR_RETURN(nsStreamReaderUtil::Deserialize(*this, Key));
+      NS_SUCCEED_OR_RETURN(nsStreamReaderUtil::Deserialize(*this, Value));
 
       inout_hashTable.Insert(std::move(Key), std::move(Value));
     }
 
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
   else
   {
     // Containers currently use 32 bit for counts internally. Value from file is too large.
-    return WD_FAILURE;
+    return NS_FAILURE;
   }
 }

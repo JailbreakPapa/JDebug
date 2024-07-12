@@ -2,44 +2,44 @@
 
 #include <Foundation/Time/Stopwatch.h>
 
-wdStopwatch::wdStopwatch()
+nsStopwatch::nsStopwatch()
 {
-  m_LastCheckpoint = wdTime::Now();
+  m_LastCheckpoint = nsTime::Now();
 
   StopAndReset();
   Resume();
 }
 
-void wdStopwatch::StopAndReset()
+void nsStopwatch::StopAndReset()
 {
-  m_TotalDuration.SetZero();
+  m_TotalDuration = nsTime::MakeZero();
   m_bRunning = false;
 }
 
-void wdStopwatch::Resume()
+void nsStopwatch::Resume()
 {
   if (m_bRunning)
     return;
 
   m_bRunning = true;
-  m_LastUpdate = wdTime::Now();
+  m_LastUpdate = nsTime::Now();
 }
 
-void wdStopwatch::Pause()
+void nsStopwatch::Pause()
 {
   if (!m_bRunning)
     return;
 
   m_bRunning = false;
 
-  m_TotalDuration += wdTime::Now() - m_LastUpdate;
+  m_TotalDuration += nsTime::Now() - m_LastUpdate;
 }
 
-wdTime wdStopwatch::GetRunningTotal() const
+nsTime nsStopwatch::GetRunningTotal() const
 {
   if (m_bRunning)
   {
-    const wdTime tNow = wdTime::Now();
+    const nsTime tNow = nsTime::Now();
 
     m_TotalDuration += tNow - m_LastUpdate;
     m_LastUpdate = tNow;
@@ -48,16 +48,12 @@ wdTime wdStopwatch::GetRunningTotal() const
   return m_TotalDuration;
 }
 
-wdTime wdStopwatch::Checkpoint()
+nsTime nsStopwatch::Checkpoint()
 {
-  const wdTime tNow = wdTime::Now();
+  const nsTime tNow = nsTime::Now();
 
-  const wdTime tDiff = tNow - m_LastCheckpoint;
+  const nsTime tDiff = tNow - m_LastCheckpoint;
   m_LastCheckpoint = tNow;
 
   return tDiff;
 }
-
-
-
-WD_STATICLINK_FILE(Foundation, Foundation_Time_Implementation_Stopwatch);

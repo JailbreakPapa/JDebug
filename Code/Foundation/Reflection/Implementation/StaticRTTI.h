@@ -7,25 +7,25 @@
 #include <Foundation/Types/VariantType.h>
 #include <type_traits>
 
-class wdRTTI;
-class wdReflectedClass;
-class wdVariant;
+class nsRTTI;
+class nsReflectedClass;
+class nsVariant;
 
 /// \brief Flags that describe a reflected type.
-struct wdTypeFlags
+struct nsTypeFlags
 {
-  typedef wdUInt8 StorageType;
+  using StorageType = nsUInt8;
 
   enum Enum
   {
-    StandardType = WD_BIT(0), ///< Anything that can be stored inside an wdVariant except for pointers and containers.
-    IsEnum = WD_BIT(1),       ///< enum struct used for wdEnum.
-    Bitflags = WD_BIT(2),     ///< bitflags struct used for wdBitflags.
-    Class = WD_BIT(3),        ///< A class or struct. The above flags are mutually exclusive.
+    StandardType = NS_BIT(0), ///< Anything that can be stored inside an nsVariant except for pointers and containers.
+    IsEnum = NS_BIT(1),       ///< enum struct used for nsEnum.
+    Bitflags = NS_BIT(2),     ///< bitflags struct used for nsBitflags.
+    Class = NS_BIT(3),        ///< A class or struct. The above flags are mutually exclusive.
 
-    Abstract = WD_BIT(4), ///< Type is abstract.
-    Phantom = WD_BIT(5),  ///< De-serialized type information that cannot be created on this process.
-    Minimal = WD_BIT(6),  ///< Does not contain any property, function or attribute information. Used only for versioning.
+    Abstract = NS_BIT(4),     ///< Type is abstract.
+    Phantom = NS_BIT(5),      ///< De-serialized type information that cannot be created on this process.
+    Minimal = NS_BIT(6),      ///< Does not contain any property, function or attribute information. Used only for versioning.
     Default = 0
   };
 
@@ -40,147 +40,147 @@ struct wdTypeFlags
   };
 };
 
-WD_DECLARE_FLAGS_OPERATORS(wdTypeFlags)
+NS_DECLARE_FLAGS_OPERATORS(nsTypeFlags)
 
 
 // ****************************************************
 // ***** Templates for accessing static RTTI data *****
 
-namespace wdInternal
+namespace nsInternal
 {
   /// \brief [internal] Helper struct for accessing static RTTI data.
   template <typename T>
-  struct wdStaticRTTI
+  struct nsStaticRTTI
   {
   };
 
   // Special implementation for types that have no base
   template <>
-  struct wdStaticRTTI<wdNoBase>
+  struct nsStaticRTTI<nsNoBase>
   {
-    static const wdRTTI* GetRTTI() { return nullptr; }
+    static const nsRTTI* GetRTTI() { return nullptr; }
   };
 
   // Special implementation for void to make function reflection compile void return values without further specialization.
   template <>
-  struct wdStaticRTTI<void>
+  struct nsStaticRTTI<void>
   {
-    static const wdRTTI* GetRTTI() { return nullptr; }
+    static const nsRTTI* GetRTTI() { return nullptr; }
   };
 
   template <typename T>
-  WD_ALWAYS_INLINE const wdRTTI* GetStaticRTTI(wdTraitInt<1>) // class derived from wdReflectedClass
+  NS_ALWAYS_INLINE const nsRTTI* GetStaticRTTI(nsTraitInt<1>) // class derived from nsReflectedClass
   {
     return T::GetStaticRTTI();
   }
 
   template <typename T>
-  WD_ALWAYS_INLINE const wdRTTI* GetStaticRTTI(wdTraitInt<0>) // static rtti
+  NS_ALWAYS_INLINE const nsRTTI* GetStaticRTTI(nsTraitInt<0>) // static rtti
   {
-    // Since this is pure C++ and no preprocessor macro, calling it with types such as 'int' and 'wdInt32' will
+    // Since this is pure C++ and no preprocessor macro, calling it with types such as 'int' and 'nsInt32' will
     // actually return the same RTTI object, which would not be possible with a purely macro based solution
 
-    return wdStaticRTTI<T>::GetRTTI();
+    return nsStaticRTTI<T>::GetRTTI();
   }
 
   template <typename Type>
-  wdBitflags<wdTypeFlags> DetermineTypeFlags()
+  nsBitflags<nsTypeFlags> DetermineTypeFlags()
   {
-    wdBitflags<wdTypeFlags> flags;
-    wdVariantType::Enum type =
-      static_cast<wdVariantType::Enum>(wdVariantTypeDeduction<typename wdTypeTraits<Type>::NonConstReferenceType>::value);
-    if ((type >= wdVariantType::FirstStandardType && type <= wdVariantType::LastStandardType) || WD_IS_SAME_TYPE(wdVariant, Type))
-      flags.Add(wdTypeFlags::StandardType);
+    nsBitflags<nsTypeFlags> flags;
+    nsVariantType::Enum type =
+      static_cast<nsVariantType::Enum>(nsVariantTypeDeduction<typename nsTypeTraits<Type>::NonConstReferenceType>::value);
+    if ((type >= nsVariantType::FirstStandardType && type <= nsVariantType::LastStandardType) || NS_IS_SAME_TYPE(nsVariant, Type))
+      flags.Add(nsTypeFlags::StandardType);
     else
-      flags.Add(wdTypeFlags::Class);
+      flags.Add(nsTypeFlags::Class);
 
     if (std::is_abstract<Type>::value)
-      flags.Add(wdTypeFlags::Abstract);
+      flags.Add(nsTypeFlags::Abstract);
 
     return flags;
   }
 
   template <>
-  WD_ALWAYS_INLINE wdBitflags<wdTypeFlags> DetermineTypeFlags<wdVariant>()
+  NS_ALWAYS_INLINE nsBitflags<nsTypeFlags> DetermineTypeFlags<nsVariant>()
   {
-    return wdTypeFlags::StandardType;
+    return nsTypeFlags::StandardType;
   }
 
   template <typename T>
-  struct wdStaticRTTIWrapper
+  struct nsStaticRTTIWrapper
   {
-    static_assert(sizeof(T) == 0, "Type has not been declared as reflectable (use WD_DECLARE_REFLECTABLE_TYPE macro)");
+    static_assert(sizeof(T) == 0, "Type has not been declared as reflectable (use NS_DECLARE_REFLECTABLE_TYPE macro)");
   };
-} // namespace wdInternal
+} // namespace nsInternal
 
 /// \brief Use this function, specialized with the type that you are interested in, to get the static RTTI data for some type.
 template <typename T>
-WD_ALWAYS_INLINE const wdRTTI* wdGetStaticRTTI()
+NS_ALWAYS_INLINE const nsRTTI* nsGetStaticRTTI()
 {
-  return wdInternal::GetStaticRTTI<T>(wdTraitInt<WD_IS_DERIVED_FROM_STATIC(wdReflectedClass, T)>());
+  return nsInternal::GetStaticRTTI<T>(nsTraitInt<NS_IS_DERIVED_FROM_STATIC(nsReflectedClass, T)>());
 }
 
 // **************************************************
 // ***** Macros for declaring types reflectable *****
 
-#define WD_NO_LINKAGE
+#define NS_NO_LINKAGE
 
 /// \brief Declares a type to be statically reflectable. Insert this into the header of a type to enable reflection on it.
 /// This is not needed if the type is already dynamically reflectable.
-#define WD_DECLARE_REFLECTABLE_TYPE(Linkage, TYPE)                    \
-  namespace wdInternal                                                \
+#define NS_DECLARE_REFLECTABLE_TYPE(Linkage, TYPE)                    \
+  namespace nsInternal                                                \
   {                                                                   \
     template <>                                                       \
-    struct Linkage wdStaticRTTIWrapper<TYPE>                          \
+    struct Linkage nsStaticRTTIWrapper<TYPE>                          \
     {                                                                 \
-      static wdRTTI s_RTTI;                                           \
+      static nsRTTI s_RTTI;                                           \
     };                                                                \
                                                                       \
     /* This specialization calls the function to get the RTTI data */ \
     /* This code might get duplicated in different DLLs, but all   */ \
     /* will call the same function, so the RTTI object is unique   */ \
     template <>                                                       \
-    struct wdStaticRTTI<TYPE>                                         \
+    struct nsStaticRTTI<TYPE>                                         \
     {                                                                 \
-      WD_ALWAYS_INLINE static const wdRTTI* GetRTTI()                 \
+      NS_ALWAYS_INLINE static const nsRTTI* GetRTTI()                 \
       {                                                               \
-        return &wdStaticRTTIWrapper<TYPE>::s_RTTI;                    \
+        return &nsStaticRTTIWrapper<TYPE>::s_RTTI;                    \
       }                                                               \
     };                                                                \
   }
 
 /// \brief Insert this into a class/struct to enable properties that are private members.
-/// All types that have dynamic reflection (\see WD_ADD_DYNAMIC_REFLECTION) already have this ability.
-#define WD_ALLOW_PRIVATE_PROPERTIES(SELF) friend wdRTTI GetRTTI(SELF*)
+/// All types that have dynamic reflection (\see NS_ADD_DYNAMIC_REFLECTION) already have this ability.
+#define NS_ALLOW_PRIVATE_PROPERTIES(SELF) friend nsRTTI GetRTTI(SELF*)
 
 /// \cond
 // internal helper macro
-#define WD_RTTIINFO_DECL(Type, BaseType, Version) \
+#define NS_RTTIINFO_DECL(Type, BaseType, Version) \
                                                   \
-  const char* GetTypeName(Type*)                  \
+  nsStringView GetTypeName(Type*)                 \
   {                                               \
     return #Type;                                 \
   }                                               \
-  wdUInt32 GetTypeVersion(Type*)                  \
+  nsUInt32 GetTypeVersion(Type*)                  \
   {                                               \
     return Version;                               \
   }                                               \
                                                   \
-  wdRTTI GetRTTI(Type*);
+  nsRTTI GetRTTI(Type*);
 
 // internal helper macro
-#define WD_RTTIINFO_GETRTTI_IMPL_BEGIN(Type, BaseType, AllocatorType)              \
-  wdRTTI GetRTTI(Type*)                                                            \
+#define NS_RTTIINFO_GETRTTI_IMPL_BEGIN(Type, BaseType, AllocatorType)              \
+  nsRTTI GetRTTI(Type*)                                                            \
   {                                                                                \
     using OwnType = Type;                                                          \
     using OwnBaseType = BaseType;                                                  \
     static AllocatorType Allocator;                                                \
-    static wdBitflags<wdTypeFlags> flags = wdInternal::DetermineTypeFlags<Type>(); \
-    static wdArrayPtr<wdAbstractProperty*> Properties;                             \
-    static wdArrayPtr<wdAbstractProperty*> Functions;                              \
-    static wdArrayPtr<wdPropertyAttribute*> Attributes;                            \
-    static wdArrayPtr<wdAbstractMessageHandler*> MessageHandlers;                  \
-    static wdArrayPtr<wdMessageSenderInfo> MessageSenders;
+    static nsBitflags<nsTypeFlags> flags = nsInternal::DetermineTypeFlags<Type>(); \
+    static nsArrayPtr<const nsAbstractProperty*> Properties;                       \
+    static nsArrayPtr<const nsAbstractFunctionProperty*> Functions;                \
+    static nsArrayPtr<const nsPropertyAttribute*> Attributes;                      \
+    static nsArrayPtr<nsAbstractMessageHandler*> MessageHandlers;                  \
+    static nsArrayPtr<nsMessageSenderInfo> MessageSenders;
 
 /// \endcond
 
@@ -189,66 +189,66 @@ WD_ALWAYS_INLINE const wdRTTI* wdGetStaticRTTI()
 /// \param Type
 ///   The type for which the reflection functionality should be implemented.
 /// \param BaseType
-///   The base class type of \a Type. If it has no base class, pass wdNoBase
+///   The base class type of \a Type. If it has no base class, pass nsNoBase
 /// \param Version
 ///   The version of \a Type. Must be increased when the class serialization changes.
 /// \param AllocatorType
-///   The type of an wdRTTIAllocator that can be used to create and destroy instances
-///   of \a Type. Pass wdRTTINoAllocator for types that should not be created dynamically.
-///   Pass wdRTTIDefaultAllocator<Type> for types that should be created on the default heap.
-///   Pass a custom wdRTTIAllocator type to handle allocation differently.
-#define WD_BEGIN_STATIC_REFLECTED_TYPE(Type, BaseType, Version, AllocatorType) \
-  WD_RTTIINFO_DECL(Type, BaseType, Version)                                    \
-  wdRTTI wdInternal::wdStaticRTTIWrapper<Type>::s_RTTI = GetRTTI((Type*)0);    \
-  WD_RTTIINFO_GETRTTI_IMPL_BEGIN(Type, BaseType, AllocatorType)
+///   The type of an nsRTTIAllocator that can be used to create and destroy instances
+///   of \a Type. Pass nsRTTINoAllocator for types that should not be created dynamically.
+///   Pass nsRTTIDefaultAllocator<Type> for types that should be created on the default heap.
+///   Pass a custom nsRTTIAllocator type to handle allocation differently.
+#define NS_BEGIN_STATIC_REFLECTED_TYPE(Type, BaseType, Version, AllocatorType) \
+  NS_RTTIINFO_DECL(Type, BaseType, Version)                                    \
+  nsRTTI nsInternal::nsStaticRTTIWrapper<Type>::s_RTTI = GetRTTI((Type*)0);    \
+  NS_RTTIINFO_GETRTTI_IMPL_BEGIN(Type, BaseType, AllocatorType)
 
 
-/// \brief Ends the reflection code block that was opened with WD_BEGIN_STATIC_REFLECTED_TYPE.
-#define WD_END_STATIC_REFLECTED_TYPE                                                                                                         \
+/// \brief Ends the reflection code block that was opened with NS_BEGIN_STATIC_REFLECTED_TYPE.
+#define NS_END_STATIC_REFLECTED_TYPE                                                                                                         \
   ;                                                                                                                                          \
-  return wdRTTI(GetTypeName((OwnType*)0), wdGetStaticRTTI<OwnBaseType>(), sizeof(OwnType), GetTypeVersion((OwnType*)0),                      \
-    wdVariantTypeDeduction<OwnType>::value, flags, &Allocator, Properties, Functions, Attributes, MessageHandlers, MessageSenders, nullptr); \
+  return nsRTTI(GetTypeName((OwnType*)0), nsGetStaticRTTI<OwnBaseType>(), sizeof(OwnType), GetTypeVersion((OwnType*)0),                      \
+    nsVariantTypeDeduction<OwnType>::value, flags, &Allocator, Properties, Functions, Attributes, MessageHandlers, MessageSenders, nullptr); \
   }
 
 
-/// \brief Within a WD_BEGIN_REFLECTED_TYPE / WD_END_REFLECTED_TYPE block, use this to start the block that declares all the properties.
-#define WD_BEGIN_PROPERTIES static wdAbstractProperty* PropertyList[] =
+/// \brief Within a NS_BEGIN_REFLECTED_TYPE / NS_END_REFLECTED_TYPE block, use this to start the block that declares all the properties.
+#define NS_BEGIN_PROPERTIES static const nsAbstractProperty* PropertyList[] =
 
 
 
-/// \brief Ends the block to declare properties that was started with WD_BEGIN_PROPERTIES.
-#define WD_END_PROPERTIES \
+/// \brief Ends the block to declare properties that was started with NS_BEGIN_PROPERTIES.
+#define NS_END_PROPERTIES \
   ;                       \
   Properties = PropertyList
 
-/// \brief Within a WD_BEGIN_REFLECTED_TYPE / WD_END_REFLECTED_TYPE block, use this to start the block that declares all the functions.
-#define WD_BEGIN_FUNCTIONS static wdAbstractProperty* FunctionList[] =
+/// \brief Within a NS_BEGIN_REFLECTED_TYPE / NS_END_REFLECTED_TYPE block, use this to start the block that declares all the functions.
+#define NS_BEGIN_FUNCTIONS static const nsAbstractFunctionProperty* FunctionList[] =
 
 
 
-/// \brief Ends the block to declare functions that was started with WD_BEGIN_FUNCTIONS.
-#define WD_END_FUNCTIONS \
+/// \brief Ends the block to declare functions that was started with NS_BEGIN_FUNCTIONS.
+#define NS_END_FUNCTIONS \
   ;                      \
   Functions = FunctionList
 
-/// \brief Within a WD_BEGIN_REFLECTED_TYPE / WD_END_REFLECTED_TYPE block, use this to start the block that declares all the attributes.
-#define WD_BEGIN_ATTRIBUTES static wdPropertyAttribute* AttributeList[] =
+/// \brief Within a NS_BEGIN_REFLECTED_TYPE / NS_END_REFLECTED_TYPE block, use this to start the block that declares all the attributes.
+#define NS_BEGIN_ATTRIBUTES static const nsPropertyAttribute* AttributeList[] =
 
 
 
-/// \brief Ends the block to declare attributes that was started with WD_BEGIN_ATTRIBUTES.
-#define WD_END_ATTRIBUTES \
+/// \brief Ends the block to declare attributes that was started with NS_BEGIN_ATTRIBUTES.
+#define NS_END_ATTRIBUTES \
   ;                       \
   Attributes = AttributeList
 
-/// \brief Within a WD_BEGIN_FUNCTIONS / WD_END_FUNCTIONS; block, this adds a member or static function property stored inside the RTTI
+/// \brief Within a NS_BEGIN_FUNCTIONS / NS_END_FUNCTIONS; block, this adds a member or static function property stored inside the RTTI
 /// data.
 ///
 /// \param Function
 ///   The function to be executed, must match the C++ function name.
-#define WD_FUNCTION_PROPERTY(Function) (new wdFunctionProperty<decltype(&OwnType::Function)>(WD_STRINGIZE(Function), &OwnType::Function))
+#define NS_FUNCTION_PROPERTY(Function) (new nsFunctionProperty<decltype(&OwnType::Function)>(NS_STRINGIZE(Function), &OwnType::Function))
 
-/// \brief Within a WD_BEGIN_FUNCTIONS / WD_END_FUNCTIONS; block, this adds a member or static function property stored inside the RTTI
+/// \brief Within a NS_BEGIN_FUNCTIONS / NS_END_FUNCTIONS; block, this adds a member or static function property stored inside the RTTI
 /// data. Use this version if you need to change the name of the function or need to cast the function to one of its overload versions.
 ///
 /// \param PropertyName
@@ -256,38 +256,38 @@ WD_ALWAYS_INLINE const wdRTTI* wdGetStaticRTTI()
 ///
 /// \param Function
 ///   The function to be executed, must match the C++ function name including the class name e.g. 'CLASS::NAME'.
-#define WD_FUNCTION_PROPERTY_EX(PropertyName, Function) (new wdFunctionProperty<decltype(&Function)>(PropertyName, &Function))
+#define NS_FUNCTION_PROPERTY_EX(PropertyName, Function) (new nsFunctionProperty<decltype(&Function)>(PropertyName, &Function))
 
-/// \internal Used by WD_SCRIPT_FUNCTION_PROPERTY
-#define _WD_SCRIPT_FUNCTION_PARAM(type, name) wdScriptableFunctionAttribute::ArgType::type, name
+/// \internal Used by NS_SCRIPT_FUNCTION_PROPERTY
+#define _NS_SCRIPT_FUNCTION_PARAM(type, name) nsScriptableFunctionAttribute::ArgType::type, name
 
 /// \brief Convenience macro to declare a function that can be called from scripts.
 ///
 /// \param Function
 ///   The function to be executed, must match the C++ function name including the class name e.g. 'CLASS::NAME'.
 ///
-/// Internally this calls WD_FUNCTION_PROPERTY and adds a wdScriptableFunctionAttribute.
+/// Internally this calls NS_FUNCTION_PROPERTY and adds a nsScriptableFunctionAttribute.
 /// Use the variadic arguments in pairs to configure how each function parameter gets exposed.
 ///   Use 'In', 'Out' or 'Inout' to specify whether a function parameter is only read, or also written back to.
 ///   Follow it with a string to specify the name under which the parameter should show up.
 ///
 /// Example:
-///   WD_SCRIPT_FUNCTION_PROPERTY(MyFunc1NoParams)
-///   WD_SCRIPT_FUNCTION_PROPERTY(MyFunc2FloatInDoubleOut, In, "FloatValue", Out, "DoubleResult")
-#define WD_SCRIPT_FUNCTION_PROPERTY(Function, ...) \
-  WD_FUNCTION_PROPERTY(Function)->AddAttributes(new wdScriptableFunctionAttribute(WD_EXPAND_ARGS_PAIR_COMMA(_WD_SCRIPT_FUNCTION_PARAM, ##__VA_ARGS__)))
+///   NS_SCRIPT_FUNCTION_PROPERTY(MyFunc1NoParams)
+///   NS_SCRIPT_FUNCTION_PROPERTY(MyFunc2FloatInDoubleOut, In, "FloatValue", Out, "DoubleResult")
+#define NS_SCRIPT_FUNCTION_PROPERTY(Function, ...) \
+  NS_FUNCTION_PROPERTY(Function)->AddAttributes(new nsScriptableFunctionAttribute(NS_EXPAND_ARGS_PAIR_COMMA(_NS_SCRIPT_FUNCTION_PARAM, ##__VA_ARGS__)))
 
-/// \brief Within a WD_BEGIN_FUNCTIONS / WD_END_FUNCTIONS; block, this adds a constructor function property stored inside the RTTI data.
+/// \brief Within a NS_BEGIN_FUNCTIONS / NS_END_FUNCTIONS; block, this adds a constructor function property stored inside the RTTI data.
 ///
 /// \param Function
 ///   The function to be executed in the form of CLASS::FUNCTION_NAME.
-#define WD_CONSTRUCTOR_PROPERTY(...) (new wdConstructorFunctionProperty<OwnType, ##__VA_ARGS__>())
+#define NS_CONSTRUCTOR_PROPERTY(...) (new nsConstructorFunctionProperty<OwnType, ##__VA_ARGS__>())
 
 
 // [internal] Helper macro to get the return type of a getter function.
-#define WD_GETTER_TYPE(Class, GetterFunc) decltype(std::declval<Class>().GetterFunc())
+#define NS_GETTER_TYPE(Class, GetterFunc) decltype(std::declval<Class>().GetterFunc())
 
-/// \brief Within a WD_BEGIN_PROPERTIES / WD_END_PROPERTIES; block, this adds a property that uses custom getter / setter functions.
+/// \brief Within a NS_BEGIN_PROPERTIES / NS_END_PROPERTIES; block, this adds a property that uses custom getter / setter functions.
 ///
 /// \param PropertyName
 ///   The unique (in this class) name under which the property should be registered.
@@ -298,45 +298,45 @@ WD_ALWAYS_INLINE const wdRTTI* wdGetStaticRTTI()
 ///
 /// \note There does not actually need to be a variable for this type of properties, as all accesses go through functions.
 /// Thus you can for example expose a 'vector' property that is actually stored as a column of a matrix.
-#define WD_ACCESSOR_PROPERTY(PropertyName, Getter, Setter) \
-  (new wdAccessorProperty<OwnType, WD_GETTER_TYPE(OwnType, OwnType::Getter)>(PropertyName, &OwnType::Getter, &OwnType::Setter))
+#define NS_ACCESSOR_PROPERTY(PropertyName, Getter, Setter) \
+  (new nsAccessorProperty<OwnType, NS_GETTER_TYPE(OwnType, OwnType::Getter)>(PropertyName, &OwnType::Getter, &OwnType::Setter))
 
-/// \brief Same as WD_ACCESSOR_PROPERTY, but no setter is provided, thus making the property read-only.
-#define WD_ACCESSOR_PROPERTY_READ_ONLY(PropertyName, Getter) \
-  (new wdAccessorProperty<OwnType, WD_GETTER_TYPE(OwnType, OwnType::Getter)>(PropertyName, &OwnType::Getter, nullptr))
+/// \brief Same as NS_ACCESSOR_PROPERTY, but no setter is provided, thus making the property read-only.
+#define NS_ACCESSOR_PROPERTY_READ_ONLY(PropertyName, Getter) \
+  (new nsAccessorProperty<OwnType, NS_GETTER_TYPE(OwnType, OwnType::Getter)>(PropertyName, &OwnType::Getter, nullptr))
 
 // [internal] Helper macro to get the return type of a array getter function.
-#define WD_ARRAY_GETTER_TYPE(Class, GetterFunc) decltype(std::declval<Class>().GetterFunc(0))
+#define NS_ARRAY_GETTER_TYPE(Class, GetterFunc) decltype(std::declval<Class>().GetterFunc(0))
 
-/// \brief Within a WD_BEGIN_PROPERTIES / WD_END_PROPERTIES; block, this adds a property that uses custom functions to access an array.
+/// \brief Within a NS_BEGIN_PROPERTIES / NS_END_PROPERTIES; block, this adds a property that uses custom functions to access an array.
 ///
 /// \param PropertyName
 ///   The unique (in this class) name under which the property should be registered.
 /// \param GetCount
-///   Function signature: wdUInt32 GetCount() const;
+///   Function signature: nsUInt32 GetCount() const;
 /// \param Getter
-///   Function signature: Type GetValue(wdUInt32 uiIndex) const;
+///   Function signature: Type GetValue(nsUInt32 uiIndex) const;
 /// \param Setter
-///   Function signature: void SetValue(wdUInt32 uiIndex, Type value);
+///   Function signature: void SetValue(nsUInt32 uiIndex, Type value);
 /// \param Insert
-///   Function signature: void Insert(wdUInt32 uiIndex, Type value);
+///   Function signature: void Insert(nsUInt32 uiIndex, Type value);
 /// \param Remove
-///   Function signature: void Remove(wdUInt32 uiIndex);
-#define WD_ARRAY_ACCESSOR_PROPERTY(PropertyName, GetCount, Getter, Setter, Insert, Remove) \
-  (new wdAccessorArrayProperty<OwnType, WD_ARRAY_GETTER_TYPE(OwnType, OwnType::Getter)>(   \
+///   Function signature: void Remove(nsUInt32 uiIndex);
+#define NS_ARRAY_ACCESSOR_PROPERTY(PropertyName, GetCount, Getter, Setter, Insert, Remove) \
+  (new nsAccessorArrayProperty<OwnType, NS_ARRAY_GETTER_TYPE(OwnType, OwnType::Getter)>(   \
     PropertyName, &OwnType::GetCount, &OwnType::Getter, &OwnType::Setter, &OwnType::Insert, &OwnType::Remove))
 
-/// \brief Same as WD_ARRAY_ACCESSOR_PROPERTY, but no setter is provided, thus making the property read-only.
-#define WD_ARRAY_ACCESSOR_PROPERTY_READ_ONLY(PropertyName, GetCount, Getter)             \
-  (new wdAccessorArrayProperty<OwnType, WD_ARRAY_GETTER_TYPE(OwnType, OwnType::Getter)>( \
+/// \brief Same as NS_ARRAY_ACCESSOR_PROPERTY, but no setter is provided, thus making the property read-only.
+#define NS_ARRAY_ACCESSOR_PROPERTY_READ_ONLY(PropertyName, GetCount, Getter)             \
+  (new nsAccessorArrayProperty<OwnType, NS_ARRAY_GETTER_TYPE(OwnType, OwnType::Getter)>( \
     PropertyName, &OwnType::GetCount, &OwnType::Getter, nullptr, nullptr, nullptr))
 
-#define WD_SET_CONTAINER_TYPE(Class, GetterFunc) decltype(std::declval<Class>().GetterFunc())
+#define NS_SET_CONTAINER_TYPE(Class, GetterFunc) decltype(std::declval<Class>().GetterFunc())
 
-#define WD_SET_CONTAINER_SUB_TYPE(Class, GetterFunc) \
-  wdContainerSubTypeResolver<wdTypeTraits<decltype(std::declval<Class>().GetterFunc())>::NonConstReferenceType>::Type
+#define NS_SET_CONTAINER_SUB_TYPE(Class, GetterFunc) \
+  nsContainerSubTypeResolver<nsTypeTraits<decltype(std::declval<Class>().GetterFunc())>::NonConstReferenceType>::Type
 
-/// \brief Within a WD_BEGIN_PROPERTIES / WD_END_PROPERTIES; block, this adds a property that uses custom functions to access a set.
+/// \brief Within a NS_BEGIN_PROPERTIES / NS_END_PROPERTIES; block, this adds a property that uses custom functions to access a set.
 ///
 /// \param PropertyName
 ///   The unique (in this class) name under which the property should be registered.
@@ -348,18 +348,18 @@ WD_ALWAYS_INLINE const wdRTTI* wdGetStaticRTTI()
 ///   Function signature: void Remove(Type value);
 ///
 /// \note Container<Type> can be any container that can be iterated via range based for loops.
-#define WD_SET_ACCESSOR_PROPERTY(PropertyName, GetValues, Insert, Remove)                                            \
-  (new wdAccessorSetProperty<OwnType, wdFunctionParameterTypeResolver<0, decltype(&OwnType::Insert)>::ParameterType, \
-    WD_SET_CONTAINER_TYPE(OwnType, GetValues)>(PropertyName, &OwnType::GetValues, &OwnType::Insert, &OwnType::Remove))
+#define NS_SET_ACCESSOR_PROPERTY(PropertyName, GetValues, Insert, Remove)                                            \
+  (new nsAccessorSetProperty<OwnType, nsFunctionParameterTypeResolver<0, decltype(&OwnType::Insert)>::ParameterType, \
+    NS_SET_CONTAINER_TYPE(OwnType, GetValues)>(PropertyName, &OwnType::GetValues, &OwnType::Insert, &OwnType::Remove))
 
-/// \brief Same as WD_SET_ACCESSOR_PROPERTY, but no setter is provided, thus making the property read-only.
-#define WD_SET_ACCESSOR_PROPERTY_READ_ONLY(PropertyName, GetValues)                                                              \
-  (new wdAccessorSetProperty<OwnType, WD_SET_CONTAINER_SUB_TYPE(OwnType, GetValues), WD_SET_CONTAINER_TYPE(OwnType, GetValues)>( \
+/// \brief Same as NS_SET_ACCESSOR_PROPERTY, but no setter is provided, thus making the property read-only.
+#define NS_SET_ACCESSOR_PROPERTY_READ_ONLY(PropertyName, GetValues)                                                              \
+  (new nsAccessorSetProperty<OwnType, NS_SET_CONTAINER_SUB_TYPE(OwnType, GetValues), NS_SET_CONTAINER_TYPE(OwnType, GetValues)>( \
     PropertyName, &OwnType::GetValues, nullptr, nullptr))
 
-/// \brief Within a WD_BEGIN_PROPERTIES / WD_END_PROPERTIES; block, this adds a property that uses custom functions to for write access to a
+/// \brief Within a NS_BEGIN_PROPERTIES / NS_END_PROPERTIES; block, this adds a property that uses custom functions to for write access to a
 /// map.
-///   Use this if you have a wdHashTable or wdMap to expose directly and just want to be informed of write operations.
+///   Use this if you have a nsHashTable or nsMap to expose directly and just want to be informed of write operations.
 ///
 /// \param PropertyName
 ///   The unique (in this class) name under which the property should be registered.
@@ -370,12 +370,12 @@ WD_ALWAYS_INLINE const wdRTTI* wdGetStaticRTTI()
 /// \param Remove
 ///   Function signature: void Remove(const char* szKey);
 ///
-/// \note Container can be wdMap or wdHashTable
-#define WD_MAP_WRITE_ACCESSOR_PROPERTY(PropertyName, GetContainer, Insert, Remove)                                        \
-  (new wdWriteAccessorMapProperty<OwnType, wdFunctionParameterTypeResolver<1, decltype(&OwnType::Insert)>::ParameterType, \
-    WD_SET_CONTAINER_TYPE(OwnType, GetContainer)>(PropertyName, &OwnType::GetContainer, &OwnType::Insert, &OwnType::Remove))
+/// \note Container can be nsMap or nsHashTable
+#define NS_MAP_WRITE_ACCESSOR_PROPERTY(PropertyName, GetContainer, Insert, Remove)                                        \
+  (new nsWriteAccessorMapProperty<OwnType, nsFunctionParameterTypeResolver<1, decltype(&OwnType::Insert)>::ParameterType, \
+    NS_SET_CONTAINER_TYPE(OwnType, GetContainer)>(PropertyName, &OwnType::GetContainer, &OwnType::Insert, &OwnType::Remove))
 
-/// \brief Within a WD_BEGIN_PROPERTIES / WD_END_PROPERTIES; block, this adds a property that uses custom functions to access a map.
+/// \brief Within a NS_BEGIN_PROPERTIES / NS_END_PROPERTIES; block, this adds a property that uses custom functions to access a map.
 ///   Use this if you you want to hide the implementation details of the map from the user.
 ///
 /// \param PropertyName
@@ -383,9 +383,9 @@ WD_ALWAYS_INLINE const wdRTTI* wdGetStaticRTTI()
 /// \param GetKeyRange
 ///   Function signature: const Range GetValues() const;
 ///   Range has to be an object that a ranged based for-loop can iterate over containing the keys
-///   implicitly convertible to Type / wdString.
+///   implicitly convertible to Type / nsString.
 /// \param GetValue
-///   Function signature: bool GetValue(const char* szKey, Type& value);
+///   Function signature: bool GetValue(const char* szKey, Type& value) const;
 ///   Returns whether the the key existed. value must be a non const ref as it is written to.
 /// \param Insert
 ///   Function signature: void Insert(const char* szKey, Type value);
@@ -393,52 +393,52 @@ WD_ALWAYS_INLINE const wdRTTI* wdGetStaticRTTI()
 /// \param Remove
 ///   Function signature: void Remove(const char* szKey);
 ///
-/// \note Container can be wdMap or wdHashTable
-#define WD_MAP_ACCESSOR_PROPERTY(PropertyName, GetKeyRange, GetValue, Insert, Remove)                                \
-  (new wdAccessorMapProperty<OwnType, wdFunctionParameterTypeResolver<1, decltype(&OwnType::Insert)>::ParameterType, \
-    WD_SET_CONTAINER_TYPE(OwnType, GetKeyRange)>(PropertyName, &OwnType::GetKeyRange, &OwnType::GetValue, &OwnType::Insert, &OwnType::Remove))
+/// \note Container can be nsMap or nsHashTable
+#define NS_MAP_ACCESSOR_PROPERTY(PropertyName, GetKeyRange, GetValue, Insert, Remove)                                \
+  (new nsAccessorMapProperty<OwnType, nsFunctionParameterTypeResolver<1, decltype(&OwnType::Insert)>::ParameterType, \
+    NS_SET_CONTAINER_TYPE(OwnType, GetKeyRange)>(PropertyName, &OwnType::GetKeyRange, &OwnType::GetValue, &OwnType::Insert, &OwnType::Remove))
 
-/// \brief Same as WD_MAP_ACCESSOR_PROPERTY, but no setter is provided, thus making the property read-only.
-#define WD_MAP_ACCESSOR_PROPERTY_READ_ONLY(PropertyName, GetKeyRange, GetValue)                                           \
-  (new wdAccessorMapProperty<OwnType,                                                                                     \
-    wdTypeTraits<wdFunctionParameterTypeResolver<1, decltype(&OwnType::GetValue)>::ParameterType>::NonConstReferenceType, \
-    WD_SET_CONTAINER_TYPE(OwnType, GetKeyRange)>(PropertyName, &OwnType::GetKeyRange, &OwnType::GetValue, nullptr, nullptr))
+/// \brief Same as NS_MAP_ACCESSOR_PROPERTY, but no setter is provided, thus making the property read-only.
+#define NS_MAP_ACCESSOR_PROPERTY_READ_ONLY(PropertyName, GetKeyRange, GetValue)                                           \
+  (new nsAccessorMapProperty<OwnType,                                                                                     \
+    nsTypeTraits<nsFunctionParameterTypeResolver<1, decltype(&OwnType::GetValue)>::ParameterType>::NonConstReferenceType, \
+    NS_SET_CONTAINER_TYPE(OwnType, GetKeyRange)>(PropertyName, &OwnType::GetKeyRange, &OwnType::GetValue, nullptr, nullptr))
 
 
 
-/// \brief Within a WD_BEGIN_PROPERTIES / WD_END_PROPERTIES; block, this adds a property that uses custom getter / setter functions.
+/// \brief Within a NS_BEGIN_PROPERTIES / NS_END_PROPERTIES; block, this adds a property that uses custom getter / setter functions.
 ///
 /// \param PropertyName
 ///   The unique (in this class) name under which the property should be registered.
 /// \param EnumType
-///   The name of the enum struct used by wdEnum.
+///   The name of the enum struct used by nsEnum.
 /// \param Getter
 ///   The getter function for this property.
 /// \param Setter
 ///   The setter function for this property.
-#define WD_ENUM_ACCESSOR_PROPERTY(PropertyName, EnumType, Getter, Setter) \
-  (new wdEnumAccessorProperty<OwnType, EnumType, WD_GETTER_TYPE(OwnType, OwnType::Getter)>(PropertyName, &OwnType::Getter, &OwnType::Setter))
+#define NS_ENUM_ACCESSOR_PROPERTY(PropertyName, EnumType, Getter, Setter) \
+  (new nsEnumAccessorProperty<OwnType, EnumType, NS_GETTER_TYPE(OwnType, OwnType::Getter)>(PropertyName, &OwnType::Getter, &OwnType::Setter))
 
-/// \brief Same as WD_ENUM_ACCESSOR_PROPERTY, but no setter is provided, thus making the property read-only.
-#define WD_ENUM_ACCESSOR_PROPERTY_READ_ONLY(PropertyName, EnumType, Getter) \
-  (new wdEnumAccessorProperty<OwnType, EnumType, WD_GETTER_TYPE(OwnType, OwnType::Getter)>(PropertyName, &OwnType::Getter, nullptr))
+/// \brief Same as NS_ENUM_ACCESSOR_PROPERTY, but no setter is provided, thus making the property read-only.
+#define NS_ENUM_ACCESSOR_PROPERTY_READ_ONLY(PropertyName, EnumType, Getter) \
+  (new nsEnumAccessorProperty<OwnType, EnumType, NS_GETTER_TYPE(OwnType, OwnType::Getter)>(PropertyName, &OwnType::Getter, nullptr))
 
-/// \brief Same as WD_ENUM_ACCESSOR_PROPERTY, but for bitfields.
-#define WD_BITFLAGS_ACCESSOR_PROPERTY(PropertyName, BitflagsType, Getter, Setter) \
-  (new wdBitflagsAccessorProperty<OwnType, BitflagsType, WD_GETTER_TYPE(OwnType, OwnType::Getter)>(PropertyName, &OwnType::Getter, &OwnType::Setter))
+/// \brief Same as NS_ENUM_ACCESSOR_PROPERTY, but for bitfields.
+#define NS_BITFLAGS_ACCESSOR_PROPERTY(PropertyName, BitflagsType, Getter, Setter) \
+  (new nsBitflagsAccessorProperty<OwnType, BitflagsType, NS_GETTER_TYPE(OwnType, OwnType::Getter)>(PropertyName, &OwnType::Getter, &OwnType::Setter))
 
-/// \brief Same as WD_BITFLAGS_ACCESSOR_PROPERTY, but no setter is provided, thus making the property read-only.
-#define WD_BITFLAGS_ACCESSOR_PROPERTY_READ_ONLY(PropertyName, BitflagsType, Getter) \
-  (new wdBitflagsAccessorProperty<OwnType, BitflagsType, WD_GETTER_TYPE(OwnType, OwnType::Getter)>(PropertyName, &OwnType::Getter, nullptr))
+/// \brief Same as NS_BITFLAGS_ACCESSOR_PROPERTY, but no setter is provided, thus making the property read-only.
+#define NS_BITFLAGS_ACCESSOR_PROPERTY_READ_ONLY(PropertyName, BitflagsType, Getter) \
+  (new nsBitflagsAccessorProperty<OwnType, BitflagsType, NS_GETTER_TYPE(OwnType, OwnType::Getter)>(PropertyName, &OwnType::Getter, nullptr))
 
 
 // [internal] Helper macro to get the type of a class member.
-#define WD_MEMBER_TYPE(Class, Member) decltype(std::declval<Class>().Member)
+#define NS_MEMBER_TYPE(Class, Member) decltype(std::declval<Class>().Member)
 
-#define WD_MEMBER_CONTAINER_SUB_TYPE(Class, Member) \
-  wdContainerSubTypeResolver<wdTypeTraits<decltype(std::declval<Class>().Member)>::NonConstReferenceType>::Type
+#define NS_MEMBER_CONTAINER_SUB_TYPE(Class, Member) \
+  nsContainerSubTypeResolver<nsTypeTraits<decltype(std::declval<Class>().Member)>::NonConstReferenceType>::Type
 
-/// \brief Within a WD_BEGIN_PROPERTIES / WD_END_PROPERTIES; block, this adds a property that actually exists as a member.
+/// \brief Within a NS_BEGIN_PROPERTIES / NS_END_PROPERTIES; block, this adds a property that actually exists as a member.
 ///
 /// \param PropertyName
 ///   The unique (in this class) name under which the property should be registered.
@@ -447,210 +447,210 @@ WD_ALWAYS_INLINE const wdRTTI* wdGetStaticRTTI()
 ///
 /// \note Since the member is exposed directly, there is no way to know when the variable was modified. That also means
 /// no custom limits to the values can be applied. If that becomes necessary, just add getter / setter functions and
-/// expose the property as a WD_ENUM_ACCESSOR_PROPERTY instead.
-#define WD_MEMBER_PROPERTY(PropertyName, MemberName)                                                   \
-  (new wdMemberProperty<OwnType, WD_MEMBER_TYPE(OwnType, MemberName)>(PropertyName,                    \
-    &wdPropertyAccessor<OwnType, WD_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::GetValue, \
-    &wdPropertyAccessor<OwnType, WD_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::SetValue, \
-    &wdPropertyAccessor<OwnType, WD_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::GetPropertyPointer))
+/// expose the property as a NS_ENUM_ACCESSOR_PROPERTY instead.
+#define NS_MEMBER_PROPERTY(PropertyName, MemberName)                                                   \
+  (new nsMemberProperty<OwnType, NS_MEMBER_TYPE(OwnType, MemberName)>(PropertyName,                    \
+    &nsPropertyAccessor<OwnType, NS_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::GetValue, \
+    &nsPropertyAccessor<OwnType, NS_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::SetValue, \
+    &nsPropertyAccessor<OwnType, NS_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::GetPropertyPointer))
 
-/// \brief Same as WD_MEMBER_PROPERTY, but the property is read-only.
-#define WD_MEMBER_PROPERTY_READ_ONLY(PropertyName, MemberName)                                                  \
-  (new wdMemberProperty<OwnType, WD_MEMBER_TYPE(OwnType, MemberName)>(PropertyName,                             \
-    &wdPropertyAccessor<OwnType, WD_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::GetValue, nullptr, \
-    &wdPropertyAccessor<OwnType, WD_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::GetPropertyPointer))
+/// \brief Same as NS_MEMBER_PROPERTY, but the property is read-only.
+#define NS_MEMBER_PROPERTY_READ_ONLY(PropertyName, MemberName)                                                  \
+  (new nsMemberProperty<OwnType, NS_MEMBER_TYPE(OwnType, MemberName)>(PropertyName,                             \
+    &nsPropertyAccessor<OwnType, NS_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::GetValue, nullptr, \
+    &nsPropertyAccessor<OwnType, NS_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::GetPropertyPointer))
 
-/// \brief Same as WD_MEMBER_PROPERTY, but the property is an array (wdHybridArray, wdDynamicArray or wdDeque).
-#define WD_ARRAY_MEMBER_PROPERTY(PropertyName, MemberName)                                                                                  \
-  (new wdMemberArrayProperty<OwnType, WD_MEMBER_TYPE(OwnType, MemberName), WD_MEMBER_CONTAINER_SUB_TYPE(OwnType, MemberName)>(PropertyName, \
-    &wdArrayPropertyAccessor<OwnType, WD_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::GetConstContainer,                        \
-    &wdArrayPropertyAccessor<OwnType, WD_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::GetContainer))
+/// \brief Same as NS_MEMBER_PROPERTY, but the property is an array (nsHybridArray, nsDynamicArray or nsDeque).
+#define NS_ARRAY_MEMBER_PROPERTY(PropertyName, MemberName)                                                                                  \
+  (new nsMemberArrayProperty<OwnType, NS_MEMBER_TYPE(OwnType, MemberName), NS_MEMBER_CONTAINER_SUB_TYPE(OwnType, MemberName)>(PropertyName, \
+    &nsArrayPropertyAccessor<OwnType, NS_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::GetConstContainer,                        \
+    &nsArrayPropertyAccessor<OwnType, NS_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::GetContainer))
 
-/// \brief Same as WD_MEMBER_PROPERTY, but the property is a read-only array (wdArrayPtr, wdHybridArray, wdDynamicArray or wdDeque).
-#define WD_ARRAY_MEMBER_PROPERTY_READ_ONLY(PropertyName, MemberName)                                                                   \
-  (new wdMemberArrayReadOnlyProperty<OwnType, WD_MEMBER_TYPE(OwnType, MemberName), WD_MEMBER_CONTAINER_SUB_TYPE(OwnType, MemberName)>( \
-    PropertyName, &wdArrayPropertyAccessor<OwnType, WD_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::GetConstContainer))
+/// \brief Same as NS_MEMBER_PROPERTY, but the property is a read-only array (nsArrayPtr, nsHybridArray, nsDynamicArray or nsDeque).
+#define NS_ARRAY_MEMBER_PROPERTY_READ_ONLY(PropertyName, MemberName)                                                                   \
+  (new nsMemberArrayReadOnlyProperty<OwnType, NS_MEMBER_TYPE(OwnType, MemberName), NS_MEMBER_CONTAINER_SUB_TYPE(OwnType, MemberName)>( \
+    PropertyName, &nsArrayPropertyAccessor<OwnType, NS_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::GetConstContainer))
 
-/// \brief Same as WD_MEMBER_PROPERTY, but the property is a set (wdSet, wdHashSet).
-#define WD_SET_MEMBER_PROPERTY(PropertyName, MemberName)                                                                                  \
-  (new wdMemberSetProperty<OwnType, WD_MEMBER_TYPE(OwnType, MemberName), WD_MEMBER_CONTAINER_SUB_TYPE(OwnType, MemberName)>(PropertyName, \
-    &wdSetPropertyAccessor<OwnType, WD_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::GetConstContainer,                        \
-    &wdSetPropertyAccessor<OwnType, WD_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::GetContainer))
+/// \brief Same as NS_MEMBER_PROPERTY, but the property is a set (nsSet, nsHashSet).
+#define NS_SET_MEMBER_PROPERTY(PropertyName, MemberName)                                                                                  \
+  (new nsMemberSetProperty<OwnType, NS_MEMBER_TYPE(OwnType, MemberName), NS_MEMBER_CONTAINER_SUB_TYPE(OwnType, MemberName)>(PropertyName, \
+    &nsSetPropertyAccessor<OwnType, NS_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::GetConstContainer,                        \
+    &nsSetPropertyAccessor<OwnType, NS_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::GetContainer))
 
-/// \brief Same as WD_MEMBER_PROPERTY, but the property is a read-only set (wdSet, wdHashSet).
-#define WD_SET_MEMBER_PROPERTY_READ_ONLY(PropertyName, MemberName)                                                           \
-  (new wdMemberSetProperty<OwnType, WD_MEMBER_TYPE(OwnType, MemberName), WD_MEMBER_CONTAINER_SUB_TYPE(OwnType, MemberName)>( \
-    PropertyName, &wdSetPropertyAccessor<OwnType, WD_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::GetConstContainer, nullptr))
+/// \brief Same as NS_MEMBER_PROPERTY, but the property is a read-only set (nsSet, nsHashSet).
+#define NS_SET_MEMBER_PROPERTY_READ_ONLY(PropertyName, MemberName)                                                           \
+  (new nsMemberSetProperty<OwnType, NS_MEMBER_TYPE(OwnType, MemberName), NS_MEMBER_CONTAINER_SUB_TYPE(OwnType, MemberName)>( \
+    PropertyName, &nsSetPropertyAccessor<OwnType, NS_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::GetConstContainer, nullptr))
 
-/// \brief Same as WD_MEMBER_PROPERTY, but the property is a map (wdMap, wdHashTable).
-#define WD_MAP_MEMBER_PROPERTY(PropertyName, MemberName)                                                                                  \
-  (new wdMemberMapProperty<OwnType, WD_MEMBER_TYPE(OwnType, MemberName), WD_MEMBER_CONTAINER_SUB_TYPE(OwnType, MemberName)>(PropertyName, \
-    &wdMapPropertyAccessor<OwnType, WD_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::GetConstContainer,                        \
-    &wdMapPropertyAccessor<OwnType, WD_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::GetContainer))
+/// \brief Same as NS_MEMBER_PROPERTY, but the property is a map (nsMap, nsHashTable).
+#define NS_MAP_MEMBER_PROPERTY(PropertyName, MemberName)                                                                                  \
+  (new nsMemberMapProperty<OwnType, NS_MEMBER_TYPE(OwnType, MemberName), NS_MEMBER_CONTAINER_SUB_TYPE(OwnType, MemberName)>(PropertyName, \
+    &nsMapPropertyAccessor<OwnType, NS_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::GetConstContainer,                        \
+    &nsMapPropertyAccessor<OwnType, NS_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::GetContainer))
 
-/// \brief Same as WD_MEMBER_PROPERTY, but the property is a read-only map (wdMap, wdHashTable).
-#define WD_MAP_MEMBER_PROPERTY_READ_ONLY(PropertyName, MemberName)                                                           \
-  (new wdMemberMapProperty<OwnType, WD_MEMBER_TYPE(OwnType, MemberName), WD_MEMBER_CONTAINER_SUB_TYPE(OwnType, MemberName)>( \
-    PropertyName, &wdMapPropertyAccessor<OwnType, WD_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::GetConstContainer, nullptr))
+/// \brief Same as NS_MEMBER_PROPERTY, but the property is a read-only map (nsMap, nsHashTable).
+#define NS_MAP_MEMBER_PROPERTY_READ_ONLY(PropertyName, MemberName)                                                           \
+  (new nsMemberMapProperty<OwnType, NS_MEMBER_TYPE(OwnType, MemberName), NS_MEMBER_CONTAINER_SUB_TYPE(OwnType, MemberName)>( \
+    PropertyName, &nsMapPropertyAccessor<OwnType, NS_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::GetConstContainer, nullptr))
 
-/// \brief Within a WD_BEGIN_PROPERTIES / WD_END_PROPERTIES; block, this adds a property that actually exists as a member.
+/// \brief Within a NS_BEGIN_PROPERTIES / NS_END_PROPERTIES; block, this adds a property that actually exists as a member.
 ///
 /// \param PropertyName
 ///   The unique (in this class) name under which the property should be registered.
 /// \param EnumType
-///   Name of the struct used by wdEnum.
+///   Name of the struct used by nsEnum.
 /// \param MemberName
 ///   The name of the member variable that should get exposed as a property.
 ///
 /// \note Since the member is exposed directly, there is no way to know when the variable was modified. That also means
 /// no custom limits to the values can be applied. If that becomes necessary, just add getter / setter functions and
-/// expose the property as a WD_ACCESSOR_PROPERTY instead.
-#define WD_ENUM_MEMBER_PROPERTY(PropertyName, EnumType, MemberName)                                    \
-  (new wdEnumMemberProperty<OwnType, EnumType, WD_MEMBER_TYPE(OwnType, MemberName)>(PropertyName,      \
-    &wdPropertyAccessor<OwnType, WD_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::GetValue, \
-    &wdPropertyAccessor<OwnType, WD_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::SetValue, \
-    &wdPropertyAccessor<OwnType, WD_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::GetPropertyPointer))
+/// expose the property as a NS_ACCESSOR_PROPERTY instead.
+#define NS_ENUM_MEMBER_PROPERTY(PropertyName, EnumType, MemberName)                                    \
+  (new nsEnumMemberProperty<OwnType, EnumType, NS_MEMBER_TYPE(OwnType, MemberName)>(PropertyName,      \
+    &nsPropertyAccessor<OwnType, NS_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::GetValue, \
+    &nsPropertyAccessor<OwnType, NS_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::SetValue, \
+    &nsPropertyAccessor<OwnType, NS_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::GetPropertyPointer))
 
-/// \brief Same as WD_ENUM_MEMBER_PROPERTY, but the property is read-only.
-#define WD_ENUM_MEMBER_PROPERTY_READ_ONLY(PropertyName, EnumType, MemberName)                                   \
-  (new wdEnumMemberProperty<OwnType, EnumType, WD_MEMBER_TYPE(OwnType, MemberName)>(PropertyName,               \
-    &wdPropertyAccessor<OwnType, WD_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::GetValue, nullptr, \
-    &wdPropertyAccessor<OwnType, WD_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::GetPropertyPointer))
+/// \brief Same as NS_ENUM_MEMBER_PROPERTY, but the property is read-only.
+#define NS_ENUM_MEMBER_PROPERTY_READ_ONLY(PropertyName, EnumType, MemberName)                                   \
+  (new nsEnumMemberProperty<OwnType, EnumType, NS_MEMBER_TYPE(OwnType, MemberName)>(PropertyName,               \
+    &nsPropertyAccessor<OwnType, NS_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::GetValue, nullptr, \
+    &nsPropertyAccessor<OwnType, NS_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::GetPropertyPointer))
 
-/// \brief Same as WD_ENUM_MEMBER_PROPERTY, but for bitfields.
-#define WD_BITFLAGS_MEMBER_PROPERTY(PropertyName, BitflagsType, MemberName)                               \
-  (new wdBitflagsMemberProperty<OwnType, BitflagsType, WD_MEMBER_TYPE(OwnType, MemberName)>(PropertyName, \
-    &wdPropertyAccessor<OwnType, WD_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::GetValue,    \
-    &wdPropertyAccessor<OwnType, WD_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::SetValue,    \
-    &wdPropertyAccessor<OwnType, WD_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::GetPropertyPointer))
+/// \brief Same as NS_ENUM_MEMBER_PROPERTY, but for bitfields.
+#define NS_BITFLAGS_MEMBER_PROPERTY(PropertyName, BitflagsType, MemberName)                               \
+  (new nsBitflagsMemberProperty<OwnType, BitflagsType, NS_MEMBER_TYPE(OwnType, MemberName)>(PropertyName, \
+    &nsPropertyAccessor<OwnType, NS_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::GetValue,    \
+    &nsPropertyAccessor<OwnType, NS_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::SetValue,    \
+    &nsPropertyAccessor<OwnType, NS_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::GetPropertyPointer))
 
-/// \brief Same as WD_ENUM_MEMBER_PROPERTY_READ_ONLY, but for bitfields.
-#define WD_BITFLAGS_MEMBER_PROPERTY_READ_ONLY(PropertyName, BitflagsType, MemberName)                           \
-  (new wdBitflagsMemberProperty<OwnType, BitflagsType, WD_MEMBER_TYPE(OwnType, MemberName)>(PropertyName,       \
-    &wdPropertyAccessor<OwnType, WD_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::GetValue, nullptr, \
-    &wdPropertyAccessor<OwnType, WD_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::GetPropertyPointer))
+/// \brief Same as NS_ENUM_MEMBER_PROPERTY_READ_ONLY, but for bitfields.
+#define NS_BITFLAGS_MEMBER_PROPERTY_READ_ONLY(PropertyName, BitflagsType, MemberName)                           \
+  (new nsBitflagsMemberProperty<OwnType, BitflagsType, NS_MEMBER_TYPE(OwnType, MemberName)>(PropertyName,       \
+    &nsPropertyAccessor<OwnType, NS_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::GetValue, nullptr, \
+    &nsPropertyAccessor<OwnType, NS_MEMBER_TYPE(OwnType, MemberName), &OwnType::MemberName>::GetPropertyPointer))
 
 
 
-/// \brief Within a WD_BEGIN_PROPERTIES / WD_END_PROPERTIES; block, this adds a constant property stored inside the RTTI data.
+/// \brief Within a NS_BEGIN_PROPERTIES / NS_END_PROPERTIES; block, this adds a constant property stored inside the RTTI data.
 ///
 /// \param PropertyName
 ///   The unique (in this class) name under which the property should be registered.
 /// \param Value
 ///   The constant value to be stored.
-#define WD_CONSTANT_PROPERTY(PropertyName, Value) (new wdConstantProperty<decltype(Value)>(PropertyName, Value))
+#define NS_CONSTANT_PROPERTY(PropertyName, Value) (new nsConstantProperty<decltype(Value)>(PropertyName, Value))
 
 
 
 // [internal] Helper macro
-#define WD_ENUM_VALUE_TO_CONSTANT_PROPERTY(name) WD_CONSTANT_PROPERTY(WD_STRINGIZE(name), (Storage)name),
+#define NS_ENUM_VALUE_TO_CONSTANT_PROPERTY(name) NS_CONSTANT_PROPERTY(NS_STRINGIZE(name), (Storage)name),
 
-/// \brief Within a WD_BEGIN_STATIC_REFLECTED_ENUM / WD_END_STATIC_REFLECTED_ENUM block, this converts a
+/// \brief Within a NS_BEGIN_STATIC_REFLECTED_ENUM / NS_END_STATIC_REFLECTED_ENUM block, this converts a
 /// list of enum values into constant RTTI properties.
-#define WD_ENUM_CONSTANTS(...) WD_EXPAND_ARGS(WD_ENUM_VALUE_TO_CONSTANT_PROPERTY, ##__VA_ARGS__)
+#define NS_ENUM_CONSTANTS(...) NS_EXPAND_ARGS(NS_ENUM_VALUE_TO_CONSTANT_PROPERTY, ##__VA_ARGS__)
 
-/// \brief Within a WD_BEGIN_STATIC_REFLECTED_ENUM / WD_END_STATIC_REFLECTED_ENUM block, this converts a
+/// \brief Within a NS_BEGIN_STATIC_REFLECTED_ENUM / NS_END_STATIC_REFLECTED_ENUM block, this converts a
 /// an enum value into a constant RTTI property.
-#define WD_ENUM_CONSTANT(Value) WD_CONSTANT_PROPERTY(WD_STRINGIZE(Value), (Storage)Value)
+#define NS_ENUM_CONSTANT(Value) NS_CONSTANT_PROPERTY(NS_STRINGIZE(Value), (Storage)Value)
 
-/// \brief Within a WD_BEGIN_STATIC_REFLECTED_BITFLAGS / WD_END_STATIC_REFLECTED_BITFLAGS block, this converts a
+/// \brief Within a NS_BEGIN_STATIC_REFLECTED_BITFLAGS / NS_END_STATIC_REFLECTED_BITFLAGS block, this converts a
 /// list of bitflags into constant RTTI properties.
-#define WD_BITFLAGS_CONSTANTS(...) WD_EXPAND_ARGS(WD_ENUM_VALUE_TO_CONSTANT_PROPERTY, ##__VA_ARGS__)
+#define NS_BITFLAGS_CONSTANTS(...) NS_EXPAND_ARGS(NS_ENUM_VALUE_TO_CONSTANT_PROPERTY, ##__VA_ARGS__)
 
-/// \brief Within a WD_BEGIN_STATIC_REFLECTED_BITFLAGS / WD_END_STATIC_REFLECTED_BITFLAGS block, this converts a
+/// \brief Within a NS_BEGIN_STATIC_REFLECTED_BITFLAGS / NS_END_STATIC_REFLECTED_BITFLAGS block, this converts a
 /// an bitflags into a constant RTTI property.
-#define WD_BITFLAGS_CONSTANT(Value) WD_CONSTANT_PROPERTY(WD_STRINGIZE(Value), (Storage)Value)
+#define NS_BITFLAGS_CONSTANT(Value) NS_CONSTANT_PROPERTY(NS_STRINGIZE(Value), (Storage)Value)
 
 
 
 /// \brief Implements the necessary functionality for an enum to be statically reflectable.
 ///
 /// \param Type
-///   The enum struct used by wdEnum for which reflection should be defined.
+///   The enum struct used by nsEnum for which reflection should be defined.
 /// \param Version
 ///   The version of \a Type. Must be increased when the class changes.
-#define WD_BEGIN_STATIC_REFLECTED_ENUM(Type, Version)                          \
-  WD_BEGIN_STATIC_REFLECTED_TYPE(Type, wdEnumBase, Version, wdRTTINoAllocator) \
+#define NS_BEGIN_STATIC_REFLECTED_ENUM(Type, Version)                          \
+  NS_BEGIN_STATIC_REFLECTED_TYPE(Type, nsEnumBase, Version, nsRTTINoAllocator) \
     ;                                                                          \
-    typedef Type::StorageType Storage;                                         \
-    WD_BEGIN_PROPERTIES                                                        \
+    using Storage = Type::StorageType;                                         \
+    NS_BEGIN_PROPERTIES                                                        \
       {                                                                        \
-        WD_CONSTANT_PROPERTY(WD_STRINGIZE(Type::Default), (Storage)Type::Default),
+        NS_CONSTANT_PROPERTY(NS_STRINGIZE(Type::Default), (Storage)Type::Default),
 
-#define WD_END_STATIC_REFLECTED_ENUM \
+#define NS_END_STATIC_REFLECTED_ENUM \
   }                                  \
-  WD_END_PROPERTIES                  \
+  NS_END_PROPERTIES                  \
   ;                                  \
-  flags |= wdTypeFlags::IsEnum;      \
-  flags.Remove(wdTypeFlags::Class);  \
-  WD_END_STATIC_REFLECTED_TYPE
+  flags |= nsTypeFlags::IsEnum;      \
+  flags.Remove(nsTypeFlags::Class);  \
+  NS_END_STATIC_REFLECTED_TYPE
 
 
 /// \brief Implements the necessary functionality for bitflags to be statically reflectable.
 ///
 /// \param Type
-///   The bitflags struct used by wdBitflags for which reflection should be defined.
+///   The bitflags struct used by nsBitflags for which reflection should be defined.
 /// \param Version
 ///   The version of \a Type. Must be increased when the class changes.
-#define WD_BEGIN_STATIC_REFLECTED_BITFLAGS(Type, Version)                          \
-  WD_BEGIN_STATIC_REFLECTED_TYPE(Type, wdBitflagsBase, Version, wdRTTINoAllocator) \
+#define NS_BEGIN_STATIC_REFLECTED_BITFLAGS(Type, Version)                          \
+  NS_BEGIN_STATIC_REFLECTED_TYPE(Type, nsBitflagsBase, Version, nsRTTINoAllocator) \
     ;                                                                              \
-    typedef Type::StorageType Storage;                                             \
-    WD_BEGIN_PROPERTIES                                                            \
+    using Storage = Type::StorageType;                                             \
+    NS_BEGIN_PROPERTIES                                                            \
       {                                                                            \
-        WD_CONSTANT_PROPERTY(WD_STRINGIZE(Type::Default), (Storage)Type::Default),
+        NS_CONSTANT_PROPERTY(NS_STRINGIZE(Type::Default), (Storage)Type::Default),
 
-#define WD_END_STATIC_REFLECTED_BITFLAGS \
+#define NS_END_STATIC_REFLECTED_BITFLAGS \
   }                                      \
-  WD_END_PROPERTIES                      \
+  NS_END_PROPERTIES                      \
   ;                                      \
-  flags |= wdTypeFlags::Bitflags;        \
-  flags.Remove(wdTypeFlags::Class);      \
-  WD_END_STATIC_REFLECTED_TYPE
+  flags |= nsTypeFlags::Bitflags;        \
+  flags.Remove(nsTypeFlags::Class);      \
+  NS_END_STATIC_REFLECTED_TYPE
 
 
 
-/// \brief Within an WD_BEGIN_REFLECTED_TYPE / WD_END_REFLECTED_TYPE block, use this to start the block that declares all the message
+/// \brief Within an NS_BEGIN_REFLECTED_TYPE / NS_END_REFLECTED_TYPE block, use this to start the block that declares all the message
 /// handlers.
-#define WD_BEGIN_MESSAGEHANDLERS static wdAbstractMessageHandler* HandlerList[] =
+#define NS_BEGIN_MESSAGEHANDLERS static nsAbstractMessageHandler* HandlerList[] =
 
 
-/// \brief Ends the block to declare message handlers that was started with WD_BEGIN_MESSAGEHANDLERS.
-#define WD_END_MESSAGEHANDLERS \
+/// \brief Ends the block to declare message handlers that was started with NS_BEGIN_MESSAGEHANDLERS.
+#define NS_END_MESSAGEHANDLERS \
   ;                            \
   MessageHandlers = HandlerList
 
 
-/// \brief Within an WD_BEGIN_MESSAGEHANDLERS / WD_END_MESSAGEHANDLERS; block, this adds another message handler.
+/// \brief Within an NS_BEGIN_MESSAGEHANDLERS / NS_END_MESSAGEHANDLERS; block, this adds another message handler.
 ///
 /// \param MessageType
 ///   The type of message that this handler function accepts. You may add 'const' in front of it.
 /// \param FunctionName
 ///   The actual C++ name of the message handler function.
 ///
-/// \note A message handler is a function that takes one parameter of type wdMessage (or a derived type) and returns void.
-#define WD_MESSAGE_HANDLER(MessageType, FunctionName)                                                                                   \
-  new wdInternal::MessageHandler<WD_IS_CONST_MESSAGE_HANDLER(OwnType, MessageType, &OwnType::FunctionName)>::Impl<OwnType, MessageType, \
+/// \note A message handler is a function that takes one parameter of type nsMessage (or a derived type) and returns void.
+#define NS_MESSAGE_HANDLER(MessageType, FunctionName)                                                                                   \
+  new nsInternal::MessageHandler<NS_IS_CONST_MESSAGE_HANDLER(OwnType, MessageType, &OwnType::FunctionName)>::Impl<OwnType, MessageType, \
     &OwnType::FunctionName>()
 
 
-/// \brief Within an WD_BEGIN_REFLECTED_TYPE / WD_END_REFLECTED_TYPE block, use this to start the block that declares all the message
+/// \brief Within an NS_BEGIN_REFLECTED_TYPE / NS_END_REFLECTED_TYPE block, use this to start the block that declares all the message
 /// senders.
-#define WD_BEGIN_MESSAGESENDERS static wdMessageSenderInfo SenderList[] =
+#define NS_BEGIN_MESSAGESENDERS static nsMessageSenderInfo SenderList[] =
 
 
-/// \brief Ends the block to declare message senders that was started with WD_BEGIN_MESSAGESENDERS.
-#define WD_END_MESSAGESENDERS \
+/// \brief Ends the block to declare message senders that was started with NS_BEGIN_MESSAGESENDERS.
+#define NS_END_MESSAGESENDERS \
   ;                           \
   MessageSenders = SenderList;
 
-/// \brief Within an WD_BEGIN_MESSAGESENDERS / WD_END_MESSAGESENDERS block, this adds another message sender.
+/// \brief Within an NS_BEGIN_MESSAGESENDERS / NS_END_MESSAGESENDERS block, this adds another message sender.
 ///
 /// \param MemberName
 ///   The name of the member variable that should get exposed as a message sender.
 ///
-/// \note A message sender must be derived from wdMessageSenderBase.
-#define WD_MESSAGE_SENDER(MemberName)                                                  \
-  {                                                                                    \
-#    MemberName, wdGetStaticRTTI < WD_MEMBER_TYPE(OwnType, MemberName)::MessageType>() \
+/// \note A message sender must be derived from nsMessageSenderBase.
+#define NS_MESSAGE_SENDER(MemberName)                                                \
+  {                                                                                  \
+    #MemberName, nsGetStaticRTTI<NS_MEMBER_TYPE(OwnType, MemberName)::MessageType>() \
   }

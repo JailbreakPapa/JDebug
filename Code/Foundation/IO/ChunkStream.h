@@ -8,24 +8,24 @@
 ///
 /// This stream writer allows to subdivide a stream into chunks, where each chunk stores a chunk name,
 /// version and size in bytes.
-class WD_FOUNDATION_DLL wdChunkStreamWriter : public wdStreamWriter
+class NS_FOUNDATION_DLL nsChunkStreamWriter : public nsStreamWriter
 {
 public:
   /// \brief Pass the underlying stream writer to the constructor.
-  wdChunkStreamWriter(wdStreamWriter& inout_stream); // [tested]
+  nsChunkStreamWriter(nsStreamWriter& inout_stream); // [tested]
 
   /// \brief Writes bytes directly to the stream. Only allowed when a chunk is open (between BeginChunk / EndChunk).
-  virtual wdResult WriteBytes(const void* pWriteBuffer, wdUInt64 uiBytesToWrite) override; // [tested]
+  virtual nsResult WriteBytes(const void* pWriteBuffer, nsUInt64 uiBytesToWrite) override; // [tested]
 
   /// \brief Starts writing to the chunk file. Has to be the first thing that is called. The version number is written to the stream and is returned
-  /// by wdChunkStreamReader::BeginStream()
-  virtual void BeginStream(wdUInt16 uiVersion); // [tested]
+  /// by nsChunkStreamReader::BeginStream()
+  virtual void BeginStream(nsUInt16 uiVersion); // [tested]
 
   /// \brief Stops writing to the chunk file. Has to be the last thing that is called.
   virtual void EndStream(); // [tested]
 
   /// \brief Opens the next chunk for writing. Chunks cannot be nested (except by using multiple chunk format writers).
-  virtual void BeginChunk(wdStringView sName, wdUInt32 uiVersion); // [tested]
+  virtual void BeginChunk(nsStringView sName, nsUInt32 uiVersion); // [tested]
 
   /// \brief Closes the current chunk.
   virtual void EndChunk(); // [tested]
@@ -34,37 +34,37 @@ public:
 private:
   bool m_bWritingFile;
   bool m_bWritingChunk;
-  wdString m_sChunkName;
-  wdDeque<wdUInt8> m_Storage;
-  wdStreamWriter& m_Stream;
+  nsString m_sChunkName;
+  nsDeque<nsUInt8> m_Storage;
+  nsStreamWriter& m_Stream;
 };
 
 
-/// \brief Reader for the chunk format that wdChunkStreamWriter writes.
+/// \brief Reader for the chunk format that nsChunkStreamWriter writes.
 ///
 ///
-class WD_FOUNDATION_DLL wdChunkStreamReader : public wdStreamReader
+class NS_FOUNDATION_DLL nsChunkStreamReader : public nsStreamReader
 {
 public:
   /// \brief Pass the underlying stream writer to the constructor.
-  wdChunkStreamReader(wdStreamReader& inout_stream); // [tested]
+  nsChunkStreamReader(nsStreamReader& inout_stream); // [tested]
 
   /// \brief Reads bytes directly from the stream. Only allowed while a valid chunk is available.
   /// Returns 0 bytes when the end of a chunk is reached, even if there are more chunks to come.
-  virtual wdUInt64 ReadBytes(void* pReadBuffer, wdUInt64 uiBytesToRead) override; // [tested]
+  virtual nsUInt64 ReadBytes(void* pReadBuffer, nsUInt64 uiBytesToRead) override; // [tested]
 
   enum class EndChunkFileMode
   {
-    SkipToEnd, ///< Makes sure all data is properly read, so that the stream read position is after the chunk file data. Useful if the chunk file is
-               ///< embedded in another file stream.
-    JustClose  ///< Just stops, leaving the stream at the last read position. This should be used if definitely nothing more needs to be read from all
-               ///< underlying streams.
+    SkipToEnd,                                                                   ///< Makes sure all data is properly read, so that the stream read position is after the chunk file data. Useful if the chunk file is
+                                                                                 ///< embedded in another file stream.
+    JustClose                                                                    ///< Just stops, leaving the stream at the last read position. This should be used if definitely nothing more needs to be read from all
+                                                                                 ///< underlying streams.
   };
 
   void SetEndChunkFileMode(EndChunkFileMode mode) { m_EndChunkFileMode = mode; } // [tested]
 
-  /// \brief Starts reading from the chunk file. Returns the version number that was passed to wdChunkStreamWriter::BeginStream().
-  virtual wdUInt16 BeginStream(); // [tested]
+  /// \brief Starts reading from the chunk file. Returns the version number that was passed to nsChunkStreamWriter::BeginStream().
+  virtual nsUInt16 BeginStream(); // [tested]
 
   /// \brief Stops reading from the chunk file. Optionally skips the remaining bytes, so that the underlying streams read position is after the chunk
   /// file content.
@@ -82,10 +82,10 @@ public:
     }
 
     bool m_bValid;                 ///< If this is false, the end of the chunk file has been reached and no further chunk is available.
-    wdString m_sChunkName;         ///< The name of the chunk.
-    wdUInt32 m_uiChunkVersion;     ///< The version number of the chunk.
-    wdUInt32 m_uiChunkBytes;       ///< The total size of the chunk.
-    wdUInt32 m_uiUnreadChunkBytes; ///< The number of bytes in the chunk that have not yet been read.
+    nsString m_sChunkName;         ///< The name of the chunk.
+    nsUInt32 m_uiChunkVersion;     ///< The version number of the chunk.
+    nsUInt32 m_uiChunkBytes;       ///< The total size of the chunk.
+    nsUInt32 m_uiUnreadChunkBytes; ///< The number of bytes in the chunk that have not yet been read.
   };
 
   /// \brief Returns information about the current chunk.
@@ -100,5 +100,5 @@ private:
   EndChunkFileMode m_EndChunkFileMode;
   ChunkInfo m_ChunkInfo;
 
-  wdStreamReader& m_Stream;
+  nsStreamReader& m_Stream;
 };

@@ -11,13 +11,13 @@
 
 
 /// \todo document and test (and finish)
-class WD_FOUNDATION_DLL wdTelemetry
+class NS_FOUNDATION_DLL nsTelemetry
 {
 public:
-  /// \brief The port over which wdTelemetry will connect.
-  static wdUInt16 s_uiPort /* = 1040*/;
+  /// \brief The port over which nsTelemetry will connect.
+  static nsUInt16 s_uiPort /* = 1040*/;
 
-  /// \brief Defines how the wdTelemetry system was configured.
+  /// \brief Defines how the nsTelemetry system was configured.
   enum ConnectionMode
   {
     None,   ///< Not configured yet, at all.
@@ -43,8 +43,8 @@ public:
   /// \note Connections to invalid host names often succeed, because the underlying network API will fall back to 'localhost'.
   /// Connections to invalid IP addresses will however always fail.
   ///
-  /// This function will set the wdTelemetry connection mode to 'Client'. This is mutually exclusive with CreateServer().
-  static wdResult ConnectToServer(const char* szConnectTo = nullptr);
+  /// This function will set the nsTelemetry connection mode to 'Client'. This is mutually exclusive with CreateServer().
+  static nsResult ConnectToServer(nsStringView sConnectTo = {});
 
   /// \brief Opens a connection as a server.
   ///
@@ -63,13 +63,13 @@ public:
   /// \name Sending Data
   /// @{
 
-  static void Broadcast(TransmitMode tm, wdUInt32 uiSystemID, wdUInt32 uiMsgID, const void* pData, wdUInt32 uiDataBytes);
-  static void Broadcast(TransmitMode tm, wdUInt32 uiSystemID, wdUInt32 uiMsgID, wdStreamReader& inout_stream, wdInt32 iDataBytes = -1);
-  static void Broadcast(TransmitMode tm, wdTelemetryMessage& ref_msg);
+  static void Broadcast(TransmitMode tm, nsUInt32 uiSystemID, nsUInt32 uiMsgID, const void* pData, nsUInt32 uiDataBytes);
+  static void Broadcast(TransmitMode tm, nsUInt32 uiSystemID, nsUInt32 uiMsgID, nsStreamReader& inout_stream, nsInt32 iDataBytes = -1);
+  static void Broadcast(TransmitMode tm, nsTelemetryMessage& ref_msg);
 
-  static void SendToServer(wdUInt32 uiSystemID, wdUInt32 uiMsgID, const void* pData = nullptr, wdUInt32 uiDataBytes = 0);
-  static void SendToServer(wdUInt32 uiSystemID, wdUInt32 uiMsgID, wdStreamReader& inout_stream, wdInt32 iDataBytes = -1);
-  static void SendToServer(wdTelemetryMessage& ref_msg);
+  static void SendToServer(nsUInt32 uiSystemID, nsUInt32 uiMsgID, const void* pData = nullptr, nsUInt32 uiDataBytes = 0);
+  static void SendToServer(nsUInt32 uiSystemID, nsUInt32 uiMsgID, nsStreamReader& inout_stream, nsInt32 iDataBytes = -1);
+  static void SendToServer(nsTelemetryMessage& ref_msg);
 
   /// @}
 
@@ -89,22 +89,22 @@ public:
   static bool IsConnectedToOther();
 
   /// \brief Returns the last round trip time ('Ping') to the Server. Only meaningful if there is an active connection (see IsConnectedToServer() ).
-  static wdTime GetPingToServer() { return s_PingToServer; }
+  static nsTime GetPingToServer() { return s_PingToServer; }
 
   /// \brief Returns the name of the machine on which the Server is running. Only meaningful if there is an active connection (see
   /// IsConnectedToServer() ).
-  static const char* GetServerName() { return s_sServerName; }
+  static nsStringView GetServerName() { return s_sServerName; }
 
   /// \brief Sets the name of the telemetry server. This is broadcast to connected clients, which can display this string for usability.
   ///
   /// Usually this would be used to send the application name, to make it easier to see to which app the tool is connected,
   /// but setting a custom name can be used to add important details, e.g. whether the app is running in single-player or multi-player mode etc.
   /// The server name can be changed at any time.
-  static void SetServerName(const char* szName);
+  static void SetServerName(nsStringView sName);
 
   /// \brief Returns the IP address of the machine on which the Server is running. Only meaningful if there is an active connection (see
   /// IsConnectedToServer() ).
-  static const char* GetServerIP() { return s_sServerIP.GetData(); }
+  static nsStringView GetServerIP() { return s_sServerIP; }
 
   /// \brief Returns a 'unique' ID for the application instance to which this Client is connected.
   ///
@@ -112,14 +112,14 @@ public:
   /// This can be used when a connection got lost and a Client had to reconnect to the Server, to check whether the instance that the Client connected
   /// to is still the same as before. If it did not change, the application can simply continue gathering data. Otherwise it should clear its state
   /// and start from scratch.
-  static wdUInt32 GetServerID() { return s_uiServerID; }
+  static nsUInt32 GetServerID() { return s_uiServerID; }
 
   /// \brief Returns the internal mutex used to synchronize all telemetry data access.
   ///
   /// This can be used to block all threads from accessing telemetry data, thus stopping the application.
   /// This can be useful when you want to implement some operation that is fully synchronous with some external tool and you want to
   /// wait for its response and prevent all other actions while you wait for that.
-  static wdMutex& GetTelemetryMutex();
+  static nsMutex& GetTelemetryMutex();
 
   /// @}
 
@@ -128,13 +128,13 @@ public:
 
   /// \brief Checks whether any message for the system with the given ID exists and returns that.
   ///
-  /// If no message for the given system is available, WD_FAILURE is returned.
+  /// If no message for the given system is available, NS_FAILURE is returned.
   /// This function will not poll the network to check whether new messages arrived.
   /// Use UpdateNetwork() and RetrieveMessage() in a loop, if you are waiting for a specific message,
   /// to continuously update the network state and check whether the desired message has arrived.
   /// However, if you do so, you will be able to deadlock your application, if such a message never arrives.
   /// Also it might fill up other message queues which might lead to messages getting discarded.
-  static wdResult RetrieveMessage(wdUInt32 uiSystemID, wdTelemetryMessage& out_message);
+  static nsResult RetrieveMessage(nsUInt32 uiSystemID, nsTelemetryMessage& out_message);
 
   /// \brief Polls the network for new incoming messages and ensures outgoing messages are sent.
   ///
@@ -144,9 +144,9 @@ public:
   /// In that case it might also make sense to use GetTelemetryMutex() to lock the entire section while waiting for the message.
   static void UpdateNetwork();
 
-  typedef void (*ProcessMessagesCallback)(void* pPassThrough);
+  using ProcessMessagesCallback = void (*)(void*);
 
-  static void AcceptMessagesForSystem(wdUInt32 uiSystemID, bool bAccept, ProcessMessagesCallback callback = nullptr, void* pPassThrough = nullptr);
+  static void AcceptMessagesForSystem(nsUInt32 uiSystemID, bool bAccept, ProcessMessagesCallback callback = nullptr, void* pPassThrough = nullptr);
 
   /// \brief Call this once per frame to process queued messages and to send the PerFrameUpdate event.
   static void PerFrameUpdate();
@@ -158,11 +158,11 @@ public:
   ///        a proper recipient is available. Set this to zero to discard all messages from a system, when no recipient is available.
   ///
   /// The default queue size is 1000. When a connection to a suitable recipient is made, all queued messages are delivered in one burst.
-  static void SetOutgoingQueueSize(wdUInt32 uiSystemID, wdUInt16 uiMaxQueued);
+  static void SetOutgoingQueueSize(nsUInt32 uiSystemID, nsUInt16 uiMaxQueued);
 
   /// @}
 
-  /// \name wdTelemetry Events
+  /// \name nsTelemetry Events
   /// @{
 
   struct TelemetryEventData
@@ -179,52 +179,52 @@ public:
     EventType m_EventType;
   };
 
-  typedef wdEvent<const TelemetryEventData&, wdMutex> wdEventTelemetry;
+  using nsEventTelemetry = nsEvent<const TelemetryEventData&, nsMutex>;
 
-  /// \brief Adds an event handler that is called for every wdTelemetry event.
-  static void AddEventHandler(wdEventTelemetry::Handler handler) { s_TelemetryEvents.AddEventHandler(handler); }
+  /// \brief Adds an event handler that is called for every nsTelemetry event.
+  static void AddEventHandler(nsEventTelemetry::Handler handler) { s_TelemetryEvents.AddEventHandler(handler); }
 
   /// \brief Removes a previously added event handler.
-  static void RemoveEventHandler(wdEventTelemetry::Handler handler) { s_TelemetryEvents.RemoveEventHandler(handler); }
+  static void RemoveEventHandler(nsEventTelemetry::Handler handler) { s_TelemetryEvents.RemoveEventHandler(handler); }
 
   /// @}
 
 private:
   static void UpdateServerPing();
 
-  static wdResult OpenConnection(ConnectionMode Mode, const char* szConnectTo = nullptr);
+  static nsResult OpenConnection(ConnectionMode Mode, nsStringView sConnectTo = {});
 
-  static void Transmit(TransmitMode tm, const void* pData, wdUInt32 uiDataBytes);
+  static void Transmit(TransmitMode tm, const void* pData, nsUInt32 uiDataBytes);
 
-  static void Send(TransmitMode tm, wdUInt32 uiSystemID, wdUInt32 uiMsgID, const void* pData, wdUInt32 uiDataBytes);
-  static void Send(TransmitMode tm, wdUInt32 uiSystemID, wdUInt32 uiMsgID, wdStreamReader& Stream, wdInt32 iDataBytes = -1);
-  static void Send(TransmitMode tm, wdTelemetryMessage& msg);
+  static void Send(TransmitMode tm, nsUInt32 uiSystemID, nsUInt32 uiMsgID, const void* pData, nsUInt32 uiDataBytes);
+  static void Send(TransmitMode tm, nsUInt32 uiSystemID, nsUInt32 uiMsgID, nsStreamReader& Stream, nsInt32 iDataBytes = -1);
+  static void Send(TransmitMode tm, nsTelemetryMessage& msg);
 
-  friend class wdTelemetryThread;
+  friend class nsTelemetryThread;
 
   static void FlushOutgoingQueues();
 
   static void InitializeAsServer();
-  static wdResult InitializeAsClient(const char* szConnectTo);
+  static nsResult InitializeAsClient(nsStringView sConnectTo);
   static ConnectionMode s_ConnectionMode;
 
-  static wdUInt32 s_uiApplicationID;
-  static wdUInt32 s_uiServerID;
+  static nsUInt32 s_uiApplicationID;
+  static nsUInt32 s_uiServerID;
 
-  static wdString s_sServerName;
-  static wdString s_sServerIP;
+  static nsString s_sServerName;
+  static nsString s_sServerIP;
 
   static bool s_bConnectedToServer;
   static bool s_bConnectedToClient;
   static bool s_bAllowNetworkUpdate;
 
-  static void QueueOutgoingMessage(TransmitMode tm, wdUInt32 uiSystemID, wdUInt32 uiMsgID, const void* pData, wdUInt32 uiDataBytes);
+  static void QueueOutgoingMessage(TransmitMode tm, nsUInt32 uiSystemID, nsUInt32 uiMsgID, const void* pData, nsUInt32 uiDataBytes);
 
   static void SendServerName();
 
-  static wdTime s_PingToServer;
+  static nsTime s_PingToServer;
 
-  typedef wdDeque<wdTelemetryMessage> MessageDeque;
+  using MessageDeque = nsDeque<nsTelemetryMessage>;
 
   struct MessageQueue
   {
@@ -239,18 +239,18 @@ private:
     bool m_bAcceptMessages;
     ProcessMessagesCallback m_Callback;
     void* m_pPassThrough;
-    wdUInt32 m_uiMaxQueuedOutgoing;
+    nsUInt32 m_uiMaxQueuedOutgoing;
 
     MessageDeque m_IncomingQueue;
     MessageDeque m_OutgoingQueue;
   };
 
-  static wdMap<wdUInt64, MessageQueue> s_SystemMessages;
+  static nsMap<nsUInt64, MessageQueue> s_SystemMessages;
 
-  static wdEventTelemetry s_TelemetryEvents;
+  static nsEventTelemetry s_TelemetryEvents;
 
 private:
-  static wdMutex s_TelemetryMutex;
+  static nsMutex s_TelemetryMutex;
   static void StartTelemetryThread();
   static void StopTelemetryThread();
 };

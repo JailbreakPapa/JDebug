@@ -4,54 +4,54 @@
 #include <Foundation/Logging/Log.h>
 #include <Foundation/Reflection/Reflection.h>
 
-static const wdTypeVersion s_uiTypeVersionContextVersion = 1;
+static constexpr nsTypeVersion s_uiTypeVersionContextVersion = 1;
 
-WD_IMPLEMENT_SERIALIZATION_CONTEXT(wdTypeVersionWriteContext)
+NS_IMPLEMENT_SERIALIZATION_CONTEXT(nsTypeVersionWriteContext)
 
-wdTypeVersionWriteContext::wdTypeVersionWriteContext() = default;
-wdTypeVersionWriteContext::~wdTypeVersionWriteContext() = default;
+nsTypeVersionWriteContext::nsTypeVersionWriteContext() = default;
+nsTypeVersionWriteContext::~nsTypeVersionWriteContext() = default;
 
-wdStreamWriter& wdTypeVersionWriteContext::Begin(wdStreamWriter& ref_originalStream)
+nsStreamWriter& nsTypeVersionWriteContext::Begin(nsStreamWriter& ref_originalStream)
 {
   m_pOriginalStream = &ref_originalStream;
 
-  WD_ASSERT_DEV(m_TempStreamStorage.GetStorageSize64() == 0, "Begin() can only be called once on a type version context.");
+  NS_ASSERT_DEV(m_TempStreamStorage.GetStorageSize64() == 0, "Begin() can only be called once on a type version context.");
   m_TempStreamWriter.SetStorage(&m_TempStreamStorage);
 
   return m_TempStreamWriter;
 }
 
-wdResult wdTypeVersionWriteContext::End()
+nsResult nsTypeVersionWriteContext::End()
 {
-  WD_ASSERT_DEV(m_pOriginalStream != nullptr, "End() called before Begin()");
+  NS_ASSERT_DEV(m_pOriginalStream != nullptr, "End() called before Begin()");
 
   WriteTypeVersions(*m_pOriginalStream);
 
   // Now append the original stream
-  WD_SUCCEED_OR_RETURN(m_TempStreamStorage.CopyToStream(*m_pOriginalStream));
+  NS_SUCCEED_OR_RETURN(m_TempStreamStorage.CopyToStream(*m_pOriginalStream));
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
-void wdTypeVersionWriteContext::AddType(const wdRTTI* pRtti)
+void nsTypeVersionWriteContext::AddType(const nsRTTI* pRtti)
 {
   if (m_KnownTypes.Insert(pRtti) == false)
   {
-    if (const wdRTTI* pParentRtti = pRtti->GetParentType())
+    if (const nsRTTI* pParentRtti = pRtti->GetParentType())
     {
       AddType(pParentRtti);
     }
   }
 }
 
-void wdTypeVersionWriteContext::WriteTypeVersions(wdStreamWriter& inout_stream) const
+void nsTypeVersionWriteContext::WriteTypeVersions(nsStreamWriter& inout_stream) const
 {
   inout_stream.WriteVersion(s_uiTypeVersionContextVersion);
 
-  const wdUInt32 uiNumTypes = m_KnownTypes.GetCount();
+  const nsUInt32 uiNumTypes = m_KnownTypes.GetCount();
   inout_stream << uiNumTypes;
 
-  wdMap<wdString, const wdRTTI*> sortedTypes;
+  nsMap<nsString, const nsRTTI*> sortedTypes;
   for (auto pType : m_KnownTypes)
   {
     sortedTypes.Insert(pType->GetTypeName(), pType);
@@ -66,43 +66,41 @@ void wdTypeVersionWriteContext::WriteTypeVersions(wdStreamWriter& inout_stream) 
 
 //////////////////////////////////////////////////////////////////////////
 
-WD_IMPLEMENT_SERIALIZATION_CONTEXT(wdTypeVersionReadContext)
+NS_IMPLEMENT_SERIALIZATION_CONTEXT(nsTypeVersionReadContext)
 
-wdTypeVersionReadContext::wdTypeVersionReadContext(wdStreamReader& inout_stream)
+nsTypeVersionReadContext::nsTypeVersionReadContext(nsStreamReader& inout_stream)
 {
   auto version = inout_stream.ReadVersion(s_uiTypeVersionContextVersion);
+  NS_IGNORE_UNUSED(version);
 
-  wdUInt32 uiNumTypes = 0;
+  nsUInt32 uiNumTypes = 0;
   inout_stream >> uiNumTypes;
 
-  wdStringBuilder sTypeName;
-  wdUInt32 uiTypeVersion;
+  nsStringBuilder sTypeName;
+  nsUInt32 uiTypeVersion;
 
-  for (wdUInt32 i = 0; i < uiNumTypes; ++i)
+  for (nsUInt32 i = 0; i < uiNumTypes; ++i)
   {
     inout_stream >> sTypeName;
     inout_stream >> uiTypeVersion;
 
-    if (const wdRTTI* pType = wdRTTI::FindTypeByName(sTypeName))
+    if (const nsRTTI* pType = nsRTTI::FindTypeByName(sTypeName))
     {
       m_TypeVersions.Insert(pType, uiTypeVersion);
     }
     else
     {
-      wdLog::Warning("Ignoring unknown type '{}'", sTypeName);
+      nsLog::Warning("Ignoring unknown type '{}'", sTypeName);
     }
   }
 }
 
-wdTypeVersionReadContext::~wdTypeVersionReadContext() = default;
+nsTypeVersionReadContext::~nsTypeVersionReadContext() = default;
 
-wdUInt32 wdTypeVersionReadContext::GetTypeVersion(const wdRTTI* pRtti) const
+nsUInt32 nsTypeVersionReadContext::GetTypeVersion(const nsRTTI* pRtti) const
 {
-  wdUInt32 uiVersion = wdInvalidIndex;
+  nsUInt32 uiVersion = nsInvalidIndex;
   m_TypeVersions.TryGetValue(pRtti, uiVersion);
 
   return uiVersion;
 }
-
-
-WD_STATICLINK_FILE(Foundation, Foundation_IO_Implementation_TypeVersionContext);

@@ -1,4 +1,4 @@
-struct wdJniModifiers
+struct nsJniModifiers
 {
   enum Enum
   {
@@ -17,36 +17,36 @@ struct wdJniModifiers
   };
 };
 
-wdJniObject::wdJniObject(jobject object, wdJniOwnerShip ownerShip)
+nsJniObject::nsJniObject(jobject object, nsJniOwnerShip ownerShip)
   : m_class(nullptr)
 {
   switch (ownerShip)
   {
-    case wdJniOwnerShip::OWN:
+    case nsJniOwnerShip::OWN:
       m_object = object;
       m_own = true;
       break;
 
-    case wdJniOwnerShip::COPY:
-      m_object = wdJniAttachment::GetEnv()->NewLocalRef(object);
+    case nsJniOwnerShip::COPY:
+      m_object = nsJniAttachment::GetEnv()->NewLocalRef(object);
       m_own = true;
       break;
 
-    case wdJniOwnerShip::BORROW:
+    case nsJniOwnerShip::BORROW:
       m_object = object;
       m_own = false;
       break;
   }
 }
 
-wdJniObject::wdJniObject(const wdJniObject& other)
+nsJniObject::nsJniObject(const nsJniObject& other)
   : m_class(nullptr)
 {
-  m_object = wdJniAttachment::GetEnv()->NewLocalRef(other.m_object);
+  m_object = nsJniAttachment::GetEnv()->NewLocalRef(other.m_object);
   m_own = true;
 }
 
-wdJniObject::wdJniObject(wdJniObject&& other)
+nsJniObject::nsJniObject(nsJniObject&& other)
 {
   m_object = other.m_object;
   m_class = other.m_class;
@@ -57,18 +57,18 @@ wdJniObject::wdJniObject(wdJniObject&& other)
   other.m_own = false;
 }
 
-wdJniObject& wdJniObject::operator=(const wdJniObject& other)
+nsJniObject& nsJniObject::operator=(const nsJniObject& other)
 {
   if (this == &other)
     return *this;
 
   Reset();
-  m_object = wdJniAttachment::GetEnv()->NewLocalRef(other.m_object);
+  m_object = nsJniAttachment::GetEnv()->NewLocalRef(other.m_object);
   m_own = true;
   return *this;
 }
 
-wdJniObject& wdJniObject::operator=(wdJniObject&& other)
+nsJniObject& nsJniObject::operator=(nsJniObject&& other)
 {
   if (this == &other)
     return *this;
@@ -86,55 +86,55 @@ wdJniObject& wdJniObject::operator=(wdJniObject&& other)
   return *this;
 }
 
-wdJniObject::~wdJniObject()
+nsJniObject::~nsJniObject()
 {
   Reset();
 }
 
-void wdJniObject::Reset()
+void nsJniObject::Reset()
 {
   if (m_object && m_own)
   {
-    wdJniAttachment::GetEnv()->DeleteLocalRef(m_object);
+    nsJniAttachment::GetEnv()->DeleteLocalRef(m_object);
     m_object = nullptr;
     m_own = false;
   }
   if (m_class)
   {
-    wdJniAttachment::GetEnv()->DeleteLocalRef(m_class);
+    nsJniAttachment::GetEnv()->DeleteLocalRef(m_class);
     m_class = nullptr;
   }
 }
 
-jobject wdJniObject::GetJObject() const
+jobject nsJniObject::GetJObject() const
 {
   return m_object;
 }
 
-bool wdJniObject::operator==(const wdJniObject& other) const
+bool nsJniObject::operator==(const nsJniObject& other) const
 {
-  return wdJniAttachment::GetEnv()->IsSameObject(m_object, other.m_object) == JNI_TRUE;
+  return nsJniAttachment::GetEnv()->IsSameObject(m_object, other.m_object) == JNI_TRUE;
 }
 
-bool wdJniObject::operator!=(const wdJniObject& other) const
+bool nsJniObject::operator!=(const nsJniObject& other) const
 {
   return !operator==(other);
 }
 
 // Template specializations to dispatch to the correct JNI method for each C++ type.
 template <typename T, bool unused = false>
-struct wdJniTraits
+struct nsJniTraits
 {
-  static_assert(unused, "The passed C++ type is not supported by the JNI wrapper. Arguments and returns types must be one of bool, signed char/jbyte, unsigned short/jchar, short/jshort, int/jint, long long/jlong, float/jfloat, double/jdouble, wdJniObject, wdJniString or wdJniClass.");
+  static_assert(unused, "The passed C++ type is not supported by the JNI wrapper. Arguments and returns types must be one of bool, signed char/jbyte, unsigned short/jchar, short/jshort, int/jint, long long/jlong, float/jfloat, double/jdouble, nsJniObject, nsJniString or nsJniClass.");
 
   // Places the argument inside a jvalue union.
   static jvalue ToValue(T);
 
   // Retrieves the Java class static type of the argument. For primitives, this is not the boxed type, but the primitive type.
-  static wdJniClass GetStaticType();
+  static nsJniClass GetStaticType();
 
   // Retrieves the Java class dynamic type of the argument. For primitives, this is not the boxed type, but the primitive type.
-  static wdJniClass GetRuntimeType(T);
+  static nsJniClass GetRuntimeType(T);
 
   // Creates an invalid/null object to return in case of errors.
   static T GetEmptyObject();
@@ -156,18 +156,18 @@ struct wdJniTraits
   static T GetStaticField(jclass clazz, jfieldID field);
 
   // Appends the JNI type signature of this type to the string buf
-  static bool AppendSignature(const T& obj, wdStringBuilder& str);
+  static bool AppendSignature(const T& obj, nsStringBuilder& str);
   static const char* GetSignatureStatic();
 };
 
 template <>
-struct wdJniTraits<bool>
+struct nsJniTraits<bool>
 {
   static inline jvalue ToValue(bool value);
 
-  static inline wdJniClass GetStaticType();
+  static inline nsJniClass GetStaticType();
 
-  static inline wdJniClass GetRuntimeType(bool);
+  static inline nsJniClass GetRuntimeType(bool);
 
   static inline bool GetEmptyObject();
 
@@ -183,18 +183,18 @@ struct wdJniTraits<bool>
   static inline void SetStaticField(jclass clazz, jfieldID field, bool arg);
   static inline bool GetStaticField(jclass clazz, jfieldID field);
 
-  static inline bool AppendSignature(bool, wdStringBuilder& str);
+  static inline bool AppendSignature(bool, nsStringBuilder& str);
   static inline const char* GetSignatureStatic();
 };
 
 template <>
-struct wdJniTraits<jbyte>
+struct nsJniTraits<jbyte>
 {
   static inline jvalue ToValue(jbyte value);
 
-  static inline wdJniClass GetStaticType();
+  static inline nsJniClass GetStaticType();
 
-  static inline wdJniClass GetRuntimeType(jbyte);
+  static inline nsJniClass GetRuntimeType(jbyte);
 
   static inline jbyte GetEmptyObject();
 
@@ -210,18 +210,18 @@ struct wdJniTraits<jbyte>
   static inline void SetStaticField(jclass clazz, jfieldID field, jbyte arg);
   static inline jbyte GetStaticField(jclass clazz, jfieldID field);
 
-  static inline bool AppendSignature(jbyte, wdStringBuilder& str);
+  static inline bool AppendSignature(jbyte, nsStringBuilder& str);
   static inline const char* GetSignatureStatic();
 };
 
 template <>
-struct wdJniTraits<jchar>
+struct nsJniTraits<jchar>
 {
   static inline jvalue ToValue(jchar value);
 
-  static inline wdJniClass GetStaticType();
+  static inline nsJniClass GetStaticType();
 
-  static inline wdJniClass GetRuntimeType(jchar);
+  static inline nsJniClass GetRuntimeType(jchar);
 
   static inline jchar GetEmptyObject();
 
@@ -237,18 +237,18 @@ struct wdJniTraits<jchar>
   static inline void SetStaticField(jclass clazz, jfieldID field, jchar arg);
   static inline jchar GetStaticField(jclass clazz, jfieldID field);
 
-  static inline bool AppendSignature(jchar, wdStringBuilder& str);
+  static inline bool AppendSignature(jchar, nsStringBuilder& str);
   static inline const char* GetSignatureStatic();
 };
 
 template <>
-struct wdJniTraits<jshort>
+struct nsJniTraits<jshort>
 {
   static inline jvalue ToValue(jshort value);
 
-  static inline wdJniClass GetStaticType();
+  static inline nsJniClass GetStaticType();
 
-  static inline wdJniClass GetRuntimeType(jshort);
+  static inline nsJniClass GetRuntimeType(jshort);
 
   static inline jshort GetEmptyObject();
 
@@ -264,18 +264,18 @@ struct wdJniTraits<jshort>
   static inline void SetStaticField(jclass clazz, jfieldID field, jshort arg);
   static inline jshort GetStaticField(jclass clazz, jfieldID field);
 
-  static inline bool AppendSignature(jshort, wdStringBuilder& str);
+  static inline bool AppendSignature(jshort, nsStringBuilder& str);
   static inline const char* GetSignatureStatic();
 };
 
 template <>
-struct wdJniTraits<jint>
+struct nsJniTraits<jint>
 {
   static inline jvalue ToValue(jint value);
 
-  static inline wdJniClass GetStaticType();
+  static inline nsJniClass GetStaticType();
 
-  static inline wdJniClass GetRuntimeType(jint);
+  static inline nsJniClass GetRuntimeType(jint);
 
   static inline jint GetEmptyObject();
 
@@ -291,18 +291,18 @@ struct wdJniTraits<jint>
   static inline void SetStaticField(jclass clazz, jfieldID field, jint arg);
   static inline jint GetStaticField(jclass clazz, jfieldID field);
 
-  static inline bool AppendSignature(jint, wdStringBuilder& str);
+  static inline bool AppendSignature(jint, nsStringBuilder& str);
   static inline const char* GetSignatureStatic();
 };
 
 template <>
-struct wdJniTraits<jlong>
+struct nsJniTraits<jlong>
 {
   static inline jvalue ToValue(jlong value);
 
-  static inline wdJniClass GetStaticType();
+  static inline nsJniClass GetStaticType();
 
-  static inline wdJniClass GetRuntimeType(jlong);
+  static inline nsJniClass GetRuntimeType(jlong);
 
   static inline jlong GetEmptyObject();
 
@@ -318,18 +318,18 @@ struct wdJniTraits<jlong>
   static inline void SetStaticField(jclass clazz, jfieldID field, jlong arg);
   static inline jlong GetStaticField(jclass clazz, jfieldID field);
 
-  static inline bool AppendSignature(jlong, wdStringBuilder& str);
+  static inline bool AppendSignature(jlong, nsStringBuilder& str);
   static inline const char* GetSignatureStatic();
 };
 
 template <>
-struct wdJniTraits<jfloat>
+struct nsJniTraits<jfloat>
 {
   static inline jvalue ToValue(jfloat value);
 
-  static inline wdJniClass GetStaticType();
+  static inline nsJniClass GetStaticType();
 
-  static inline wdJniClass GetRuntimeType(jfloat);
+  static inline nsJniClass GetRuntimeType(jfloat);
 
   static inline jfloat GetEmptyObject();
 
@@ -345,18 +345,18 @@ struct wdJniTraits<jfloat>
   static inline void SetStaticField(jclass clazz, jfieldID field, jfloat arg);
   static inline jfloat GetStaticField(jclass clazz, jfieldID field);
 
-  static inline bool AppendSignature(jfloat, wdStringBuilder& str);
+  static inline bool AppendSignature(jfloat, nsStringBuilder& str);
   static inline const char* GetSignatureStatic();
 };
 
 template <>
-struct wdJniTraits<jdouble>
+struct nsJniTraits<jdouble>
 {
   static inline jvalue ToValue(jdouble value);
 
-  static inline wdJniClass GetStaticType();
+  static inline nsJniClass GetStaticType();
 
-  static inline wdJniClass GetRuntimeType(jdouble);
+  static inline nsJniClass GetRuntimeType(jdouble);
 
   static inline jdouble GetEmptyObject();
 
@@ -372,95 +372,95 @@ struct wdJniTraits<jdouble>
   static inline void SetStaticField(jclass clazz, jfieldID field, jdouble arg);
   static inline jdouble GetStaticField(jclass clazz, jfieldID field);
 
-  static inline bool AppendSignature(jdouble, wdStringBuilder& str);
+  static inline bool AppendSignature(jdouble, nsStringBuilder& str);
   static inline const char* GetSignatureStatic();
 };
 
 template <>
-struct wdJniTraits<wdJniObject>
+struct nsJniTraits<nsJniObject>
 {
-  static inline jvalue ToValue(const wdJniObject& object);
+  static inline jvalue ToValue(const nsJniObject& object);
 
-  static inline wdJniClass GetStaticType();
+  static inline nsJniClass GetStaticType();
 
-  static inline wdJniClass GetRuntimeType(const wdJniObject& object);
+  static inline nsJniClass GetRuntimeType(const nsJniObject& object);
 
-  static inline wdJniObject GetEmptyObject();
-
-  template <typename... Args>
-  static wdJniObject CallInstanceMethod(jobject self, jmethodID method, const Args&... args);
+  static inline nsJniObject GetEmptyObject();
 
   template <typename... Args>
-  static wdJniObject CallStaticMethod(jclass clazz, jmethodID method, const Args&... args);
+  static nsJniObject CallInstanceMethod(jobject self, jmethodID method, const Args&... args);
 
-  static inline void SetField(jobject self, jfieldID field, const wdJniObject& arg);
-  static inline wdJniObject GetField(jobject self, jfieldID field);
+  template <typename... Args>
+  static nsJniObject CallStaticMethod(jclass clazz, jmethodID method, const Args&... args);
 
-  static inline void SetStaticField(jclass clazz, jfieldID field, const wdJniObject& arg);
-  static inline wdJniObject GetStaticField(jclass clazz, jfieldID field);
+  static inline void SetField(jobject self, jfieldID field, const nsJniObject& arg);
+  static inline nsJniObject GetField(jobject self, jfieldID field);
 
-  static inline bool AppendSignature(const wdJniObject& obj, wdStringBuilder& str);
+  static inline void SetStaticField(jclass clazz, jfieldID field, const nsJniObject& arg);
+  static inline nsJniObject GetStaticField(jclass clazz, jfieldID field);
+
+  static inline bool AppendSignature(const nsJniObject& obj, nsStringBuilder& str);
   static inline const char* GetSignatureStatic();
 };
 
 template <>
-struct wdJniTraits<wdJniClass>
+struct nsJniTraits<nsJniClass>
 {
-  static inline jvalue ToValue(const wdJniClass& object);
+  static inline jvalue ToValue(const nsJniClass& object);
 
-  static inline wdJniClass GetStaticType();
+  static inline nsJniClass GetStaticType();
 
-  static inline wdJniClass GetRuntimeType(const wdJniClass& object);
+  static inline nsJniClass GetRuntimeType(const nsJniClass& object);
 
-  static inline wdJniClass GetEmptyObject();
-
-  template <typename... Args>
-  static wdJniClass CallInstanceMethod(jobject self, jmethodID method, const Args&... args);
+  static inline nsJniClass GetEmptyObject();
 
   template <typename... Args>
-  static wdJniClass CallStaticMethod(jclass clazz, jmethodID method, const Args&... args);
+  static nsJniClass CallInstanceMethod(jobject self, jmethodID method, const Args&... args);
 
-  static inline void SetField(jobject self, jfieldID field, const wdJniClass& arg);
-  static inline wdJniClass GetField(jobject self, jfieldID field);
+  template <typename... Args>
+  static nsJniClass CallStaticMethod(jclass clazz, jmethodID method, const Args&... args);
 
-  static inline void SetStaticField(jclass clazz, jfieldID field, const wdJniClass& arg);
-  static inline wdJniClass GetStaticField(jclass clazz, jfieldID field);
+  static inline void SetField(jobject self, jfieldID field, const nsJniClass& arg);
+  static inline nsJniClass GetField(jobject self, jfieldID field);
 
-  static inline bool AppendSignature(const wdJniClass& obj, wdStringBuilder& str);
+  static inline void SetStaticField(jclass clazz, jfieldID field, const nsJniClass& arg);
+  static inline nsJniClass GetStaticField(jclass clazz, jfieldID field);
+
+  static inline bool AppendSignature(const nsJniClass& obj, nsStringBuilder& str);
   static inline const char* GetSignatureStatic();
 };
 
 template <>
-struct wdJniTraits<wdJniString>
+struct nsJniTraits<nsJniString>
 {
-  static inline jvalue ToValue(const wdJniString& object);
+  static inline jvalue ToValue(const nsJniString& object);
 
-  static inline wdJniClass GetStaticType();
+  static inline nsJniClass GetStaticType();
 
-  static inline wdJniClass GetRuntimeType(const wdJniString& object);
+  static inline nsJniClass GetRuntimeType(const nsJniString& object);
 
-  static inline wdJniString GetEmptyObject();
-
-  template <typename... Args>
-  static wdJniString CallInstanceMethod(jobject self, jmethodID method, const Args&... args);
+  static inline nsJniString GetEmptyObject();
 
   template <typename... Args>
-  static wdJniString CallStaticMethod(jclass clazz, jmethodID method, const Args&... args);
+  static nsJniString CallInstanceMethod(jobject self, jmethodID method, const Args&... args);
 
-  static inline void SetField(jobject self, jfieldID field, const wdJniString& arg);
-  static inline wdJniString GetField(jobject self, jfieldID field);
+  template <typename... Args>
+  static nsJniString CallStaticMethod(jclass clazz, jmethodID method, const Args&... args);
 
-  static inline void SetStaticField(jclass clazz, jfieldID field, const wdJniString& arg);
-  static inline wdJniString GetStaticField(jclass clazz, jfieldID field);
+  static inline void SetField(jobject self, jfieldID field, const nsJniString& arg);
+  static inline nsJniString GetField(jobject self, jfieldID field);
 
-  static inline bool AppendSignature(const wdJniString& obj, wdStringBuilder& str);
+  static inline void SetStaticField(jclass clazz, jfieldID field, const nsJniString& arg);
+  static inline nsJniString GetStaticField(jclass clazz, jfieldID field);
+
+  static inline bool AppendSignature(const nsJniString& obj, nsStringBuilder& str);
   static inline const char* GetSignatureStatic();
 };
 
 template <>
-struct wdJniTraits<void>
+struct nsJniTraits<void>
 {
-  static inline wdJniClass GetStaticType();
+  static inline nsJniClass GetStaticType();
 
   static inline void GetEmptyObject();
 
@@ -474,17 +474,17 @@ struct wdJniTraits<void>
 };
 
 // Helpers to unpack variadic templates.
-struct wdJniImpl
+struct nsJniImpl
 {
-  static void CollectArgumentTypes(wdJniClass* target)
+  static void CollectArgumentTypes(nsJniClass* target)
   {
   }
 
   template <typename T, typename... Tail>
-  static void CollectArgumentTypes(wdJniClass* target, const T& arg, const Tail&... tail)
+  static void CollectArgumentTypes(nsJniClass* target, const T& arg, const Tail&... tail)
   {
-    *target = wdJniTraits<T>::GetRuntimeType(arg);
-    return wdJniImpl::CollectArgumentTypes(target + 1, tail...);
+    *target = nsJniTraits<T>::GetRuntimeType(arg);
+    return nsJniImpl::CollectArgumentTypes(target + 1, tail...);
   }
 
   static void UnpackArgs(jvalue* target)
@@ -494,646 +494,646 @@ struct wdJniImpl
   template <typename T, typename... Tail>
   static void UnpackArgs(jvalue* target, const T& arg, const Tail&... tail)
   {
-    *target = wdJniTraits<T>::ToValue(arg);
+    *target = nsJniTraits<T>::ToValue(arg);
     return UnpackArgs(target + 1, tail...);
   }
 
   template <typename Ret, typename... Args>
-  static bool BuildMethodSignature(wdStringBuilder& signature, const Args&... args)
+  static bool BuildMethodSignature(nsStringBuilder& signature, const Args&... args)
   {
     signature.Append("(");
-    if (!wdJniImpl::AppendSignature(signature, args...))
+    if (!nsJniImpl::AppendSignature(signature, args...))
     {
       return false;
     }
     signature.Append(")");
-    signature.Append(wdJniTraits<Ret>::GetSignatureStatic());
+    signature.Append(nsJniTraits<Ret>::GetSignatureStatic());
     return true;
   }
 
-  static bool AppendSignature(wdStringBuilder& signature)
+  static bool AppendSignature(nsStringBuilder& signature)
   {
     return true;
   }
 
   template <typename T, typename... Tail>
-  static bool AppendSignature(wdStringBuilder& str, const T& arg, const Tail&... tail)
+  static bool AppendSignature(nsStringBuilder& str, const T& arg, const Tail&... tail)
   {
-    return wdJniTraits<T>::AppendSignature(arg, str) && AppendSignature(str, tail...);
+    return nsJniTraits<T>::AppendSignature(arg, str) && AppendSignature(str, tail...);
   }
 };
 
-jvalue wdJniTraits<bool>::ToValue(bool value)
+jvalue nsJniTraits<bool>::ToValue(bool value)
 {
   jvalue result;
   result.z = value ? JNI_TRUE : JNI_FALSE;
   return result;
 }
 
-wdJniClass wdJniTraits<bool>::GetStaticType()
+nsJniClass nsJniTraits<bool>::GetStaticType()
 {
-  return wdJniClass("java/lang/Boolean").UnsafeGetStaticField<wdJniClass>("TYPE", "Ljava/lang/Class;");
+  return nsJniClass("java/lang/Boolean").UnsafeGetStaticField<nsJniClass>("TYPE", "Ljava/lang/Class;");
 }
 
-wdJniClass wdJniTraits<bool>::GetRuntimeType(bool)
+nsJniClass nsJniTraits<bool>::GetRuntimeType(bool)
 {
   return GetStaticType();
 }
 
-bool wdJniTraits<bool>::GetEmptyObject()
+bool nsJniTraits<bool>::GetEmptyObject()
 {
   return false;
 }
 
 template <typename... Args>
-bool wdJniTraits<bool>::CallInstanceMethod(jobject self, jmethodID method, const Args&... args)
+bool nsJniTraits<bool>::CallInstanceMethod(jobject self, jmethodID method, const Args&... args)
 {
   jvalue array[sizeof...(args)];
-  wdJniImpl::UnpackArgs(array, args...);
-  return wdJniAttachment::GetEnv()->CallBooleanMethodA(self, method, array) == JNI_TRUE;
+  nsJniImpl::UnpackArgs(array, args...);
+  return nsJniAttachment::GetEnv()->CallBooleanMethodA(self, method, array) == JNI_TRUE;
 }
 
 template <typename... Args>
-bool wdJniTraits<bool>::CallStaticMethod(jclass clazz, jmethodID method, const Args&... args)
+bool nsJniTraits<bool>::CallStaticMethod(jclass clazz, jmethodID method, const Args&... args)
 {
   jvalue array[sizeof...(args)];
-  wdJniImpl::UnpackArgs(array, args...);
-  return wdJniAttachment::GetEnv()->CallStaticBooleanMethodA(clazz, method, array) == JNI_TRUE;
+  nsJniImpl::UnpackArgs(array, args...);
+  return nsJniAttachment::GetEnv()->CallStaticBooleanMethodA(clazz, method, array) == JNI_TRUE;
 }
 
-void wdJniTraits<bool>::SetField(jobject self, jfieldID field, bool arg)
+void nsJniTraits<bool>::SetField(jobject self, jfieldID field, bool arg)
 {
-  return wdJniAttachment::GetEnv()->SetBooleanField(self, field, arg ? JNI_TRUE : JNI_FALSE);
+  return nsJniAttachment::GetEnv()->SetBooleanField(self, field, arg ? JNI_TRUE : JNI_FALSE);
 }
 
-bool wdJniTraits<bool>::GetField(jobject self, jfieldID field)
+bool nsJniTraits<bool>::GetField(jobject self, jfieldID field)
 {
-  return wdJniAttachment::GetEnv()->GetBooleanField(self, field) == JNI_TRUE;
+  return nsJniAttachment::GetEnv()->GetBooleanField(self, field) == JNI_TRUE;
 }
 
-void wdJniTraits<bool>::SetStaticField(jclass clazz, jfieldID field, bool arg)
+void nsJniTraits<bool>::SetStaticField(jclass clazz, jfieldID field, bool arg)
 {
-  return wdJniAttachment::GetEnv()->SetStaticBooleanField(clazz, field, arg ? JNI_TRUE : JNI_FALSE);
+  return nsJniAttachment::GetEnv()->SetStaticBooleanField(clazz, field, arg ? JNI_TRUE : JNI_FALSE);
 }
 
-bool wdJniTraits<bool>::GetStaticField(jclass clazz, jfieldID field)
+bool nsJniTraits<bool>::GetStaticField(jclass clazz, jfieldID field)
 {
-  return wdJniAttachment::GetEnv()->GetStaticBooleanField(clazz, field) == JNI_TRUE;
+  return nsJniAttachment::GetEnv()->GetStaticBooleanField(clazz, field) == JNI_TRUE;
 }
 
-bool wdJniTraits<bool>::AppendSignature(bool, wdStringBuilder& str)
+bool nsJniTraits<bool>::AppendSignature(bool, nsStringBuilder& str)
 {
   str.Append("Z");
   return true;
 }
 
-const char* wdJniTraits<bool>::GetSignatureStatic()
+const char* nsJniTraits<bool>::GetSignatureStatic()
 {
   return "Z";
 }
 
-jvalue wdJniTraits<jbyte>::ToValue(jbyte value)
+jvalue nsJniTraits<jbyte>::ToValue(jbyte value)
 {
   jvalue result;
   result.b = value;
   return result;
 }
 
-wdJniClass wdJniTraits<jbyte>::GetStaticType()
+nsJniClass nsJniTraits<jbyte>::GetStaticType()
 {
-  return wdJniClass("java/lang/Byte").UnsafeGetStaticField<wdJniClass>("TYPE", "Ljava/lang/Class;");
+  return nsJniClass("java/lang/Byte").UnsafeGetStaticField<nsJniClass>("TYPE", "Ljava/lang/Class;");
 }
 
-wdJniClass wdJniTraits<jbyte>::GetRuntimeType(jbyte)
+nsJniClass nsJniTraits<jbyte>::GetRuntimeType(jbyte)
 {
   return GetStaticType();
 }
 
-jbyte wdJniTraits<jbyte>::GetEmptyObject()
+jbyte nsJniTraits<jbyte>::GetEmptyObject()
 {
   return 0;
 }
 
 template <typename... Args>
-jbyte wdJniTraits<jbyte>::CallInstanceMethod(jobject self, jmethodID method, const Args&... args)
+jbyte nsJniTraits<jbyte>::CallInstanceMethod(jobject self, jmethodID method, const Args&... args)
 {
   jvalue array[sizeof...(args)];
-  wdJniImpl::UnpackArgs(array, args...);
-  return wdJniAttachment::GetEnv()->CallByteMethodA(self, method, array);
+  nsJniImpl::UnpackArgs(array, args...);
+  return nsJniAttachment::GetEnv()->CallByteMethodA(self, method, array);
 }
 
 template <typename... Args>
-jbyte wdJniTraits<jbyte>::CallStaticMethod(jclass clazz, jmethodID method, const Args&... args)
+jbyte nsJniTraits<jbyte>::CallStaticMethod(jclass clazz, jmethodID method, const Args&... args)
 {
   jvalue array[sizeof...(args)];
-  wdJniImpl::UnpackArgs(array, args...);
-  return wdJniAttachment::GetEnv()->CallStaticByteMethodA(clazz, method, array);
+  nsJniImpl::UnpackArgs(array, args...);
+  return nsJniAttachment::GetEnv()->CallStaticByteMethodA(clazz, method, array);
 }
 
-void wdJniTraits<jbyte>::SetField(jobject self, jfieldID field, jbyte arg)
+void nsJniTraits<jbyte>::SetField(jobject self, jfieldID field, jbyte arg)
 {
-  return wdJniAttachment::GetEnv()->SetByteField(self, field, arg);
+  return nsJniAttachment::GetEnv()->SetByteField(self, field, arg);
 }
 
-jbyte wdJniTraits<jbyte>::GetField(jobject self, jfieldID field)
+jbyte nsJniTraits<jbyte>::GetField(jobject self, jfieldID field)
 {
-  return wdJniAttachment::GetEnv()->GetByteField(self, field);
+  return nsJniAttachment::GetEnv()->GetByteField(self, field);
 }
 
-void wdJniTraits<jbyte>::SetStaticField(jclass clazz, jfieldID field, jbyte arg)
+void nsJniTraits<jbyte>::SetStaticField(jclass clazz, jfieldID field, jbyte arg)
 {
-  return wdJniAttachment::GetEnv()->SetStaticByteField(clazz, field, arg);
+  return nsJniAttachment::GetEnv()->SetStaticByteField(clazz, field, arg);
 }
 
-jbyte wdJniTraits<jbyte>::GetStaticField(jclass clazz, jfieldID field)
+jbyte nsJniTraits<jbyte>::GetStaticField(jclass clazz, jfieldID field)
 {
-  return wdJniAttachment::GetEnv()->GetStaticByteField(clazz, field);
+  return nsJniAttachment::GetEnv()->GetStaticByteField(clazz, field);
 }
 
-bool wdJniTraits<jbyte>::AppendSignature(jbyte, wdStringBuilder& str)
+bool nsJniTraits<jbyte>::AppendSignature(jbyte, nsStringBuilder& str)
 {
   str.Append("B");
   return true;
 }
 
-const char* wdJniTraits<jbyte>::GetSignatureStatic()
+const char* nsJniTraits<jbyte>::GetSignatureStatic()
 {
   return "B";
 }
 
-jvalue wdJniTraits<jchar>::ToValue(jchar value)
+jvalue nsJniTraits<jchar>::ToValue(jchar value)
 {
   jvalue result;
   result.c = value;
   return result;
 }
 
-wdJniClass wdJniTraits<jchar>::GetStaticType()
+nsJniClass nsJniTraits<jchar>::GetStaticType()
 {
-  return wdJniClass("java/lang/Character").UnsafeGetStaticField<wdJniClass>("TYPE", "Ljava/lang/Class;");
+  return nsJniClass("java/lang/Character").UnsafeGetStaticField<nsJniClass>("TYPE", "Ljava/lang/Class;");
 }
 
-wdJniClass wdJniTraits<jchar>::GetRuntimeType(jchar)
+nsJniClass nsJniTraits<jchar>::GetRuntimeType(jchar)
 {
   return GetStaticType();
 }
 
-jchar wdJniTraits<jchar>::GetEmptyObject()
+jchar nsJniTraits<jchar>::GetEmptyObject()
 {
   return 0;
 }
 
 template <typename... Args>
-jchar wdJniTraits<jchar>::CallInstanceMethod(jobject self, jmethodID method, const Args&... args)
+jchar nsJniTraits<jchar>::CallInstanceMethod(jobject self, jmethodID method, const Args&... args)
 {
   jvalue array[sizeof...(args)];
-  wdJniImpl::UnpackArgs(array, args...);
-  return wdJniAttachment::GetEnv()->CallCharMethodA(self, method, array);
+  nsJniImpl::UnpackArgs(array, args...);
+  return nsJniAttachment::GetEnv()->CallCharMethodA(self, method, array);
 }
 
 template <typename... Args>
-jchar wdJniTraits<jchar>::CallStaticMethod(jclass clazz, jmethodID method, const Args&... args)
+jchar nsJniTraits<jchar>::CallStaticMethod(jclass clazz, jmethodID method, const Args&... args)
 {
   jvalue array[sizeof...(args)];
-  wdJniImpl::UnpackArgs(array, args...);
-  return wdJniAttachment::GetEnv()->CallStaticCharMethodA(clazz, method, array);
+  nsJniImpl::UnpackArgs(array, args...);
+  return nsJniAttachment::GetEnv()->CallStaticCharMethodA(clazz, method, array);
 }
 
-void wdJniTraits<jchar>::SetField(jobject self, jfieldID field, jchar arg)
+void nsJniTraits<jchar>::SetField(jobject self, jfieldID field, jchar arg)
 {
-  return wdJniAttachment::GetEnv()->SetCharField(self, field, arg);
+  return nsJniAttachment::GetEnv()->SetCharField(self, field, arg);
 }
 
-jchar wdJniTraits<jchar>::GetField(jobject self, jfieldID field)
+jchar nsJniTraits<jchar>::GetField(jobject self, jfieldID field)
 {
-  return wdJniAttachment::GetEnv()->GetCharField(self, field);
+  return nsJniAttachment::GetEnv()->GetCharField(self, field);
 }
 
-void wdJniTraits<jchar>::SetStaticField(jclass clazz, jfieldID field, jchar arg)
+void nsJniTraits<jchar>::SetStaticField(jclass clazz, jfieldID field, jchar arg)
 {
-  return wdJniAttachment::GetEnv()->SetStaticCharField(clazz, field, arg);
+  return nsJniAttachment::GetEnv()->SetStaticCharField(clazz, field, arg);
 }
 
-jchar wdJniTraits<jchar>::GetStaticField(jclass clazz, jfieldID field)
+jchar nsJniTraits<jchar>::GetStaticField(jclass clazz, jfieldID field)
 {
-  return wdJniAttachment::GetEnv()->GetStaticCharField(clazz, field);
+  return nsJniAttachment::GetEnv()->GetStaticCharField(clazz, field);
 }
 
-bool wdJniTraits<jchar>::AppendSignature(jchar, wdStringBuilder& str)
+bool nsJniTraits<jchar>::AppendSignature(jchar, nsStringBuilder& str)
 {
   str.Append("C");
   return true;
 }
 
-const char* wdJniTraits<jchar>::GetSignatureStatic()
+const char* nsJniTraits<jchar>::GetSignatureStatic()
 {
   return "C";
 }
 
-jvalue wdJniTraits<jshort>::ToValue(jshort value)
+jvalue nsJniTraits<jshort>::ToValue(jshort value)
 {
   jvalue result;
   result.s = value;
   return result;
 }
 
-wdJniClass wdJniTraits<jshort>::GetStaticType()
+nsJniClass nsJniTraits<jshort>::GetStaticType()
 {
-  return wdJniClass("java/lang/Short").UnsafeGetStaticField<wdJniClass>("TYPE", "Ljava/lang/Class;");
+  return nsJniClass("java/lang/Short").UnsafeGetStaticField<nsJniClass>("TYPE", "Ljava/lang/Class;");
 }
 
-wdJniClass wdJniTraits<jshort>::GetRuntimeType(jshort)
+nsJniClass nsJniTraits<jshort>::GetRuntimeType(jshort)
 {
   return GetStaticType();
 }
 
-jshort wdJniTraits<jshort>::GetEmptyObject()
+jshort nsJniTraits<jshort>::GetEmptyObject()
 {
   return 0;
 }
 
 template <typename... Args>
-jshort wdJniTraits<jshort>::CallInstanceMethod(jobject self, jmethodID method, const Args&... args)
+jshort nsJniTraits<jshort>::CallInstanceMethod(jobject self, jmethodID method, const Args&... args)
 {
   jvalue array[sizeof...(args)];
-  wdJniImpl::UnpackArgs(array, args...);
-  return wdJniAttachment::GetEnv()->CallShortMethodA(self, method, array);
+  nsJniImpl::UnpackArgs(array, args...);
+  return nsJniAttachment::GetEnv()->CallShortMethodA(self, method, array);
 }
 
 template <typename... Args>
-jshort wdJniTraits<jshort>::CallStaticMethod(jclass clazz, jmethodID method, const Args&... args)
+jshort nsJniTraits<jshort>::CallStaticMethod(jclass clazz, jmethodID method, const Args&... args)
 {
   jvalue array[sizeof...(args)];
-  wdJniImpl::UnpackArgs(array, args...);
-  return wdJniAttachment::GetEnv()->CallStaticShortMethodA(clazz, method, array);
+  nsJniImpl::UnpackArgs(array, args...);
+  return nsJniAttachment::GetEnv()->CallStaticShortMethodA(clazz, method, array);
 }
 
-void wdJniTraits<jshort>::SetField(jobject self, jfieldID field, jshort arg)
+void nsJniTraits<jshort>::SetField(jobject self, jfieldID field, jshort arg)
 {
-  return wdJniAttachment::GetEnv()->SetShortField(self, field, arg);
+  return nsJniAttachment::GetEnv()->SetShortField(self, field, arg);
 }
 
-jshort wdJniTraits<jshort>::GetField(jobject self, jfieldID field)
+jshort nsJniTraits<jshort>::GetField(jobject self, jfieldID field)
 {
-  return wdJniAttachment::GetEnv()->GetShortField(self, field);
+  return nsJniAttachment::GetEnv()->GetShortField(self, field);
 }
 
-void wdJniTraits<jshort>::SetStaticField(jclass clazz, jfieldID field, jshort arg)
+void nsJniTraits<jshort>::SetStaticField(jclass clazz, jfieldID field, jshort arg)
 {
-  return wdJniAttachment::GetEnv()->SetStaticShortField(clazz, field, arg);
+  return nsJniAttachment::GetEnv()->SetStaticShortField(clazz, field, arg);
 }
 
-jshort wdJniTraits<jshort>::GetStaticField(jclass clazz, jfieldID field)
+jshort nsJniTraits<jshort>::GetStaticField(jclass clazz, jfieldID field)
 {
-  return wdJniAttachment::GetEnv()->GetStaticShortField(clazz, field);
+  return nsJniAttachment::GetEnv()->GetStaticShortField(clazz, field);
 }
 
-bool wdJniTraits<jshort>::AppendSignature(jshort, wdStringBuilder& str)
+bool nsJniTraits<jshort>::AppendSignature(jshort, nsStringBuilder& str)
 {
   str.Append("S");
   return true;
 }
 
-const char* wdJniTraits<jshort>::GetSignatureStatic()
+const char* nsJniTraits<jshort>::GetSignatureStatic()
 {
   return "S";
 }
 
-jvalue wdJniTraits<jint>::ToValue(jint value)
+jvalue nsJniTraits<jint>::ToValue(jint value)
 {
   jvalue result;
   result.i = value;
   return result;
 }
 
-wdJniClass wdJniTraits<jint>::GetStaticType()
+nsJniClass nsJniTraits<jint>::GetStaticType()
 {
-  return wdJniClass("java/lang/Integer").UnsafeGetStaticField<wdJniClass>("TYPE", "Ljava/lang/Class;");
+  return nsJniClass("java/lang/Integer").UnsafeGetStaticField<nsJniClass>("TYPE", "Ljava/lang/Class;");
 }
 
-wdJniClass wdJniTraits<jint>::GetRuntimeType(jint)
+nsJniClass nsJniTraits<jint>::GetRuntimeType(jint)
 {
   return GetStaticType();
 }
 
-jint wdJniTraits<jint>::GetEmptyObject()
+jint nsJniTraits<jint>::GetEmptyObject()
 {
   return 0;
 }
 
 template <typename... Args>
-jint wdJniTraits<jint>::CallInstanceMethod(jobject self, jmethodID method, const Args&... args)
+jint nsJniTraits<jint>::CallInstanceMethod(jobject self, jmethodID method, const Args&... args)
 {
   jvalue array[sizeof...(args)];
-  wdJniImpl::UnpackArgs(array, args...);
-  return wdJniAttachment::GetEnv()->CallIntMethodA(self, method, array);
+  nsJniImpl::UnpackArgs(array, args...);
+  return nsJniAttachment::GetEnv()->CallIntMethodA(self, method, array);
 }
 
 template <typename... Args>
-jint wdJniTraits<jint>::CallStaticMethod(jclass clazz, jmethodID method, const Args&... args)
+jint nsJniTraits<jint>::CallStaticMethod(jclass clazz, jmethodID method, const Args&... args)
 {
   jvalue array[sizeof...(args)];
-  wdJniImpl::UnpackArgs(array, args...);
-  return wdJniAttachment::GetEnv()->CallStaticIntMethodA(clazz, method, array);
+  nsJniImpl::UnpackArgs(array, args...);
+  return nsJniAttachment::GetEnv()->CallStaticIntMethodA(clazz, method, array);
 }
 
-void wdJniTraits<jint>::SetField(jobject self, jfieldID field, jint arg)
+void nsJniTraits<jint>::SetField(jobject self, jfieldID field, jint arg)
 {
-  return wdJniAttachment::GetEnv()->SetIntField(self, field, arg);
+  return nsJniAttachment::GetEnv()->SetIntField(self, field, arg);
 }
 
-jint wdJniTraits<jint>::GetField(jobject self, jfieldID field)
+jint nsJniTraits<jint>::GetField(jobject self, jfieldID field)
 {
-  return wdJniAttachment::GetEnv()->GetIntField(self, field);
+  return nsJniAttachment::GetEnv()->GetIntField(self, field);
 }
 
-void wdJniTraits<jint>::SetStaticField(jclass clazz, jfieldID field, jint arg)
+void nsJniTraits<jint>::SetStaticField(jclass clazz, jfieldID field, jint arg)
 {
-  return wdJniAttachment::GetEnv()->SetStaticIntField(clazz, field, arg);
+  return nsJniAttachment::GetEnv()->SetStaticIntField(clazz, field, arg);
 }
 
-jint wdJniTraits<jint>::GetStaticField(jclass clazz, jfieldID field)
+jint nsJniTraits<jint>::GetStaticField(jclass clazz, jfieldID field)
 {
-  return wdJniAttachment::GetEnv()->GetStaticIntField(clazz, field);
+  return nsJniAttachment::GetEnv()->GetStaticIntField(clazz, field);
 }
 
-bool wdJniTraits<jint>::AppendSignature(jint, wdStringBuilder& str)
+bool nsJniTraits<jint>::AppendSignature(jint, nsStringBuilder& str)
 {
   str.Append("I");
   return true;
 }
 
-const char* wdJniTraits<jint>::GetSignatureStatic()
+const char* nsJniTraits<jint>::GetSignatureStatic()
 {
   return "I";
 }
 
-jvalue wdJniTraits<jlong>::ToValue(jlong value)
+jvalue nsJniTraits<jlong>::ToValue(jlong value)
 {
   jvalue result;
   result.j = value;
   return result;
 }
 
-wdJniClass wdJniTraits<jlong>::GetStaticType()
+nsJniClass nsJniTraits<jlong>::GetStaticType()
 {
-  return wdJniClass("java/lang/Long").UnsafeGetStaticField<wdJniClass>("TYPE", "Ljava/lang/Class;");
+  return nsJniClass("java/lang/Long").UnsafeGetStaticField<nsJniClass>("TYPE", "Ljava/lang/Class;");
 }
 
-wdJniClass wdJniTraits<jlong>::GetRuntimeType(jlong)
+nsJniClass nsJniTraits<jlong>::GetRuntimeType(jlong)
 {
   return GetStaticType();
 }
 
-jlong wdJniTraits<jlong>::GetEmptyObject()
+jlong nsJniTraits<jlong>::GetEmptyObject()
 {
   return 0;
 }
 
 template <typename... Args>
-jlong wdJniTraits<jlong>::CallInstanceMethod(jobject self, jmethodID method, const Args&... args)
+jlong nsJniTraits<jlong>::CallInstanceMethod(jobject self, jmethodID method, const Args&... args)
 {
   jvalue array[sizeof...(args)];
-  wdJniImpl::UnpackArgs(array, args...);
-  return wdJniAttachment::GetEnv()->CallLongMethodA(self, method, array);
+  nsJniImpl::UnpackArgs(array, args...);
+  return nsJniAttachment::GetEnv()->CallLongMethodA(self, method, array);
 }
 
 template <typename... Args>
-jlong wdJniTraits<jlong>::CallStaticMethod(jclass clazz, jmethodID method, const Args&... args)
+jlong nsJniTraits<jlong>::CallStaticMethod(jclass clazz, jmethodID method, const Args&... args)
 {
   jvalue array[sizeof...(args)];
-  wdJniImpl::UnpackArgs(array, args...);
-  return wdJniAttachment::GetEnv()->CallStaticLongMethodA(clazz, method, array);
+  nsJniImpl::UnpackArgs(array, args...);
+  return nsJniAttachment::GetEnv()->CallStaticLongMethodA(clazz, method, array);
 }
 
-void wdJniTraits<jlong>::SetField(jobject self, jfieldID field, jlong arg)
+void nsJniTraits<jlong>::SetField(jobject self, jfieldID field, jlong arg)
 {
-  return wdJniAttachment::GetEnv()->SetLongField(self, field, arg);
+  return nsJniAttachment::GetEnv()->SetLongField(self, field, arg);
 }
 
-jlong wdJniTraits<jlong>::GetField(jobject self, jfieldID field)
+jlong nsJniTraits<jlong>::GetField(jobject self, jfieldID field)
 {
-  return wdJniAttachment::GetEnv()->GetLongField(self, field);
+  return nsJniAttachment::GetEnv()->GetLongField(self, field);
 }
 
-void wdJniTraits<jlong>::SetStaticField(jclass clazz, jfieldID field, jlong arg)
+void nsJniTraits<jlong>::SetStaticField(jclass clazz, jfieldID field, jlong arg)
 {
-  return wdJniAttachment::GetEnv()->SetStaticLongField(clazz, field, arg);
+  return nsJniAttachment::GetEnv()->SetStaticLongField(clazz, field, arg);
 }
 
-jlong wdJniTraits<jlong>::GetStaticField(jclass clazz, jfieldID field)
+jlong nsJniTraits<jlong>::GetStaticField(jclass clazz, jfieldID field)
 {
-  return wdJniAttachment::GetEnv()->GetStaticLongField(clazz, field);
+  return nsJniAttachment::GetEnv()->GetStaticLongField(clazz, field);
 }
 
-bool wdJniTraits<jlong>::AppendSignature(jlong, wdStringBuilder& str)
+bool nsJniTraits<jlong>::AppendSignature(jlong, nsStringBuilder& str)
 {
   str.Append("J");
   return true;
 }
 
-const char* wdJniTraits<jlong>::GetSignatureStatic()
+const char* nsJniTraits<jlong>::GetSignatureStatic()
 {
   return "J";
 }
 
-jvalue wdJniTraits<jfloat>::ToValue(jfloat value)
+jvalue nsJniTraits<jfloat>::ToValue(jfloat value)
 {
   jvalue result;
   result.f = value;
   return result;
 }
 
-wdJniClass wdJniTraits<jfloat>::GetStaticType()
+nsJniClass nsJniTraits<jfloat>::GetStaticType()
 {
-  return wdJniClass("java/lang/Float").UnsafeGetStaticField<wdJniClass>("TYPE", "Ljava/lang/Class;");
+  return nsJniClass("java/lang/Float").UnsafeGetStaticField<nsJniClass>("TYPE", "Ljava/lang/Class;");
 }
 
-wdJniClass wdJniTraits<jfloat>::GetRuntimeType(jfloat)
+nsJniClass nsJniTraits<jfloat>::GetRuntimeType(jfloat)
 {
   return GetStaticType();
 }
 
-jfloat wdJniTraits<jfloat>::GetEmptyObject()
+jfloat nsJniTraits<jfloat>::GetEmptyObject()
 {
   return nanf("");
 }
 
 template <typename... Args>
-jfloat wdJniTraits<jfloat>::CallInstanceMethod(jobject self, jmethodID method, const Args&... args)
+jfloat nsJniTraits<jfloat>::CallInstanceMethod(jobject self, jmethodID method, const Args&... args)
 {
   jvalue array[sizeof...(args)];
-  wdJniImpl::UnpackArgs(array, args...);
-  return wdJniAttachment::GetEnv()->CallFloatMethodA(self, method, array);
+  nsJniImpl::UnpackArgs(array, args...);
+  return nsJniAttachment::GetEnv()->CallFloatMethodA(self, method, array);
 }
 
 template <typename... Args>
-jfloat wdJniTraits<jfloat>::CallStaticMethod(jclass clazz, jmethodID method, const Args&... args)
+jfloat nsJniTraits<jfloat>::CallStaticMethod(jclass clazz, jmethodID method, const Args&... args)
 {
   jvalue array[sizeof...(args)];
-  wdJniImpl::UnpackArgs(array, args...);
-  return wdJniAttachment::GetEnv()->CallStaticFloatMethodA(clazz, method, array);
+  nsJniImpl::UnpackArgs(array, args...);
+  return nsJniAttachment::GetEnv()->CallStaticFloatMethodA(clazz, method, array);
 }
 
-void wdJniTraits<jfloat>::SetField(jobject self, jfieldID field, jfloat arg)
+void nsJniTraits<jfloat>::SetField(jobject self, jfieldID field, jfloat arg)
 {
-  return wdJniAttachment::GetEnv()->SetFloatField(self, field, arg);
+  return nsJniAttachment::GetEnv()->SetFloatField(self, field, arg);
 }
 
-jfloat wdJniTraits<jfloat>::GetField(jobject self, jfieldID field)
+jfloat nsJniTraits<jfloat>::GetField(jobject self, jfieldID field)
 {
-  return wdJniAttachment::GetEnv()->GetFloatField(self, field);
+  return nsJniAttachment::GetEnv()->GetFloatField(self, field);
 }
 
-void wdJniTraits<jfloat>::SetStaticField(jclass clazz, jfieldID field, jfloat arg)
+void nsJniTraits<jfloat>::SetStaticField(jclass clazz, jfieldID field, jfloat arg)
 {
-  return wdJniAttachment::GetEnv()->SetStaticFloatField(clazz, field, arg);
+  return nsJniAttachment::GetEnv()->SetStaticFloatField(clazz, field, arg);
 }
 
-jfloat wdJniTraits<jfloat>::GetStaticField(jclass clazz, jfieldID field)
+jfloat nsJniTraits<jfloat>::GetStaticField(jclass clazz, jfieldID field)
 {
-  return wdJniAttachment::GetEnv()->GetStaticFloatField(clazz, field);
+  return nsJniAttachment::GetEnv()->GetStaticFloatField(clazz, field);
 }
 
-bool wdJniTraits<jfloat>::AppendSignature(jfloat, wdStringBuilder& str)
+bool nsJniTraits<jfloat>::AppendSignature(jfloat, nsStringBuilder& str)
 {
   str.Append("F");
   return true;
 }
 
-const char* wdJniTraits<jfloat>::GetSignatureStatic()
+const char* nsJniTraits<jfloat>::GetSignatureStatic()
 {
   return "F";
 }
 
-jvalue wdJniTraits<jdouble>::ToValue(jdouble value)
+jvalue nsJniTraits<jdouble>::ToValue(jdouble value)
 {
   jvalue result;
   result.d = value;
   return result;
 }
 
-wdJniClass wdJniTraits<jdouble>::GetStaticType()
+nsJniClass nsJniTraits<jdouble>::GetStaticType()
 {
-  return wdJniClass("java/lang/Double").UnsafeGetStaticField<wdJniClass>("TYPE", "Ljava/lang/Class;");
+  return nsJniClass("java/lang/Double").UnsafeGetStaticField<nsJniClass>("TYPE", "Ljava/lang/Class;");
 }
 
-wdJniClass wdJniTraits<jdouble>::GetRuntimeType(jdouble)
+nsJniClass nsJniTraits<jdouble>::GetRuntimeType(jdouble)
 {
   return GetStaticType();
 }
 
-jdouble wdJniTraits<jdouble>::GetEmptyObject()
+jdouble nsJniTraits<jdouble>::GetEmptyObject()
 {
   return nan("");
 }
 
 template <typename... Args>
-jdouble wdJniTraits<jdouble>::CallInstanceMethod(jobject self, jmethodID method, const Args&... args)
+jdouble nsJniTraits<jdouble>::CallInstanceMethod(jobject self, jmethodID method, const Args&... args)
 {
   jvalue array[sizeof...(args)];
-  wdJniImpl::UnpackArgs(array, args...);
-  return wdJniAttachment::GetEnv()->CallDoubleMethodA(self, method, array);
+  nsJniImpl::UnpackArgs(array, args...);
+  return nsJniAttachment::GetEnv()->CallDoubleMethodA(self, method, array);
 }
 
 template <typename... Args>
-jdouble wdJniTraits<jdouble>::CallStaticMethod(jclass clazz, jmethodID method, const Args&... args)
+jdouble nsJniTraits<jdouble>::CallStaticMethod(jclass clazz, jmethodID method, const Args&... args)
 {
   jvalue array[sizeof...(args)];
-  wdJniImpl::UnpackArgs(array, args...);
-  return wdJniAttachment::GetEnv()->CallStaticDoubleMethodA(clazz, method, array);
+  nsJniImpl::UnpackArgs(array, args...);
+  return nsJniAttachment::GetEnv()->CallStaticDoubleMethodA(clazz, method, array);
 }
 
-void wdJniTraits<jdouble>::SetField(jobject self, jfieldID field, jdouble arg)
+void nsJniTraits<jdouble>::SetField(jobject self, jfieldID field, jdouble arg)
 {
-  return wdJniAttachment::GetEnv()->SetDoubleField(self, field, arg);
+  return nsJniAttachment::GetEnv()->SetDoubleField(self, field, arg);
 }
 
-jdouble wdJniTraits<jdouble>::GetField(jobject self, jfieldID field)
+jdouble nsJniTraits<jdouble>::GetField(jobject self, jfieldID field)
 {
-  return wdJniAttachment::GetEnv()->GetDoubleField(self, field);
+  return nsJniAttachment::GetEnv()->GetDoubleField(self, field);
 }
 
-void wdJniTraits<jdouble>::SetStaticField(jclass clazz, jfieldID field, jdouble arg)
+void nsJniTraits<jdouble>::SetStaticField(jclass clazz, jfieldID field, jdouble arg)
 {
-  return wdJniAttachment::GetEnv()->SetStaticDoubleField(clazz, field, arg);
+  return nsJniAttachment::GetEnv()->SetStaticDoubleField(clazz, field, arg);
 }
 
-jdouble wdJniTraits<jdouble>::GetStaticField(jclass clazz, jfieldID field)
+jdouble nsJniTraits<jdouble>::GetStaticField(jclass clazz, jfieldID field)
 {
-  return wdJniAttachment::GetEnv()->GetStaticDoubleField(clazz, field);
+  return nsJniAttachment::GetEnv()->GetStaticDoubleField(clazz, field);
 }
 
-bool wdJniTraits<jdouble>::AppendSignature(jdouble, wdStringBuilder& str)
+bool nsJniTraits<jdouble>::AppendSignature(jdouble, nsStringBuilder& str)
 {
   str.Append("D");
   return true;
 }
 
-const char* wdJniTraits<jdouble>::GetSignatureStatic()
+const char* nsJniTraits<jdouble>::GetSignatureStatic()
 {
   return "D";
 }
 
-jvalue wdJniTraits<wdJniObject>::ToValue(const wdJniObject& value)
+jvalue nsJniTraits<nsJniObject>::ToValue(const nsJniObject& value)
 {
   jvalue result;
   result.l = value.GetHandle();
   return result;
 }
 
-wdJniClass wdJniTraits<wdJniObject>::GetStaticType()
+nsJniClass nsJniTraits<nsJniObject>::GetStaticType()
 {
-  return wdJniClass("java/lang/Object");
+  return nsJniClass("java/lang/Object");
 }
 
-wdJniClass wdJniTraits<wdJniObject>::GetRuntimeType(const wdJniObject& arg)
+nsJniClass nsJniTraits<nsJniObject>::GetRuntimeType(const nsJniObject& arg)
 {
   return arg.GetClass();
 }
 
-wdJniObject wdJniTraits<wdJniObject>::GetEmptyObject()
+nsJniObject nsJniTraits<nsJniObject>::GetEmptyObject()
 {
-  return wdJniObject();
+  return nsJniObject();
 }
 
 template <typename... Args>
-wdJniObject wdJniTraits<wdJniObject>::CallInstanceMethod(jobject self, jmethodID method, const Args&... args)
+nsJniObject nsJniTraits<nsJniObject>::CallInstanceMethod(jobject self, jmethodID method, const Args&... args)
 {
   jvalue array[sizeof...(args)];
-  wdJniImpl::UnpackArgs(array, args...);
-  return wdJniObject(wdJniAttachment::GetEnv()->CallObjectMethodA(self, method, array), wdJniOwnerShip::OWN);
+  nsJniImpl::UnpackArgs(array, args...);
+  return nsJniObject(nsJniAttachment::GetEnv()->CallObjectMethodA(self, method, array), nsJniOwnerShip::OWN);
 }
 
 template <typename... Args>
-wdJniObject wdJniTraits<wdJniObject>::CallStaticMethod(jclass clazz, jmethodID method, const Args&... args)
+nsJniObject nsJniTraits<nsJniObject>::CallStaticMethod(jclass clazz, jmethodID method, const Args&... args)
 {
   jvalue array[sizeof...(args)];
-  wdJniImpl::UnpackArgs(array, args...);
-  return wdJniObject(wdJniAttachment::GetEnv()->CallStaticObjectMethodA(clazz, method, array), wdJniOwnerShip::OWN);
+  nsJniImpl::UnpackArgs(array, args...);
+  return nsJniObject(nsJniAttachment::GetEnv()->CallStaticObjectMethodA(clazz, method, array), nsJniOwnerShip::OWN);
 }
 
-void wdJniTraits<wdJniObject>::SetField(jobject self, jfieldID field, const wdJniObject& arg)
+void nsJniTraits<nsJniObject>::SetField(jobject self, jfieldID field, const nsJniObject& arg)
 {
-  return wdJniAttachment::GetEnv()->SetObjectField(self, field, arg.GetHandle());
+  return nsJniAttachment::GetEnv()->SetObjectField(self, field, arg.GetHandle());
 }
 
-wdJniObject wdJniTraits<wdJniObject>::GetField(jobject self, jfieldID field)
+nsJniObject nsJniTraits<nsJniObject>::GetField(jobject self, jfieldID field)
 {
-  return wdJniObject(wdJniAttachment::GetEnv()->GetObjectField(self, field), wdJniOwnerShip::OWN);
+  return nsJniObject(nsJniAttachment::GetEnv()->GetObjectField(self, field), nsJniOwnerShip::OWN);
 }
 
-void wdJniTraits<wdJniObject>::SetStaticField(jclass clazz, jfieldID field, const wdJniObject& arg)
+void nsJniTraits<nsJniObject>::SetStaticField(jclass clazz, jfieldID field, const nsJniObject& arg)
 {
-  return wdJniAttachment::GetEnv()->SetStaticObjectField(clazz, field, arg.GetHandle());
+  return nsJniAttachment::GetEnv()->SetStaticObjectField(clazz, field, arg.GetHandle());
 }
 
-wdJniObject wdJniTraits<wdJniObject>::GetStaticField(jclass clazz, jfieldID field)
+nsJniObject nsJniTraits<nsJniObject>::GetStaticField(jclass clazz, jfieldID field)
 {
-  return wdJniObject(wdJniAttachment::GetEnv()->GetStaticObjectField(clazz, field), wdJniOwnerShip::OWN);
+  return nsJniObject(nsJniAttachment::GetEnv()->GetStaticObjectField(clazz, field), nsJniOwnerShip::OWN);
 }
 
-bool wdJniTraits<wdJniObject>::AppendSignature(const wdJniObject& obj, wdStringBuilder& str)
+bool nsJniTraits<nsJniObject>::AppendSignature(const nsJniObject& obj, nsStringBuilder& str)
 {
   if (obj.IsNull())
   {
@@ -1143,423 +1143,423 @@ bool wdJniTraits<wdJniObject>::AppendSignature(const wdJniObject& obj, wdStringB
   else
   {
     str.Append("L");
-    str.Append(obj.GetClass().UnsafeCall<wdJniString>("getName", "()Ljava/lang/String;").GetData());
+    str.Append(obj.GetClass().UnsafeCall<nsJniString>("getName", "()Ljava/lang/String;").GetData());
     str.ReplaceAll(".", "/");
     str.Append(";");
     return true;
   }
 }
 
-const char* wdJniTraits<wdJniObject>::GetSignatureStatic()
+const char* nsJniTraits<nsJniObject>::GetSignatureStatic()
 {
   return "Ljava/lang/Object;";
 }
 
-jvalue wdJniTraits<wdJniClass>::ToValue(const wdJniClass& value)
+jvalue nsJniTraits<nsJniClass>::ToValue(const nsJniClass& value)
 {
   jvalue result;
   result.l = value.GetHandle();
   return result;
 }
 
-wdJniClass wdJniTraits<wdJniClass>::GetStaticType()
+nsJniClass nsJniTraits<nsJniClass>::GetStaticType()
 {
-  return wdJniClass("java/lang/Class");
+  return nsJniClass("java/lang/Class");
 }
 
-wdJniClass wdJniTraits<wdJniClass>::GetRuntimeType(const wdJniClass& arg)
+nsJniClass nsJniTraits<nsJniClass>::GetRuntimeType(const nsJniClass& arg)
 {
   // Assume there are no types derived from Class
   return GetStaticType();
 }
 
-wdJniClass wdJniTraits<wdJniClass>::GetEmptyObject()
+nsJniClass nsJniTraits<nsJniClass>::GetEmptyObject()
 {
-  return wdJniClass();
+  return nsJniClass();
 }
 
 template <typename... Args>
-wdJniClass wdJniTraits<wdJniClass>::CallInstanceMethod(jobject self, jmethodID method, const Args&... args)
+nsJniClass nsJniTraits<nsJniClass>::CallInstanceMethod(jobject self, jmethodID method, const Args&... args)
 {
   jvalue array[sizeof...(args)];
-  wdJniImpl::UnpackArgs(array, args...);
-  return wdJniClass(jclass(wdJniAttachment::GetEnv()->CallObjectMethodA(self, method, array)), wdJniOwnerShip::OWN);
+  nsJniImpl::UnpackArgs(array, args...);
+  return nsJniClass(jclass(nsJniAttachment::GetEnv()->CallObjectMethodA(self, method, array)), nsJniOwnerShip::OWN);
 }
 
 template <typename... Args>
-wdJniClass wdJniTraits<wdJniClass>::CallStaticMethod(jclass clazz, jmethodID method, const Args&... args)
+nsJniClass nsJniTraits<nsJniClass>::CallStaticMethod(jclass clazz, jmethodID method, const Args&... args)
 {
   jvalue array[sizeof...(args)];
-  wdJniImpl::UnpackArgs(array, args...);
-  return wdJniClass(jclass(wdJniAttachment::GetEnv()->CallStaticObjectMethodA(clazz, method, array)), wdJniOwnerShip::OWN);
+  nsJniImpl::UnpackArgs(array, args...);
+  return nsJniClass(jclass(nsJniAttachment::GetEnv()->CallStaticObjectMethodA(clazz, method, array)), nsJniOwnerShip::OWN);
 }
 
-void wdJniTraits<wdJniClass>::SetField(jobject self, jfieldID field, const wdJniClass& arg)
+void nsJniTraits<nsJniClass>::SetField(jobject self, jfieldID field, const nsJniClass& arg)
 {
-  return wdJniAttachment::GetEnv()->SetObjectField(self, field, arg.GetHandle());
+  return nsJniAttachment::GetEnv()->SetObjectField(self, field, arg.GetHandle());
 }
 
-wdJniClass wdJniTraits<wdJniClass>::GetField(jobject self, jfieldID field)
+nsJniClass nsJniTraits<nsJniClass>::GetField(jobject self, jfieldID field)
 {
-  return wdJniClass(jclass(wdJniAttachment::GetEnv()->GetObjectField(self, field)), wdJniOwnerShip::OWN);
+  return nsJniClass(jclass(nsJniAttachment::GetEnv()->GetObjectField(self, field)), nsJniOwnerShip::OWN);
 }
 
-void wdJniTraits<wdJniClass>::SetStaticField(jclass clazz, jfieldID field, const wdJniClass& arg)
+void nsJniTraits<nsJniClass>::SetStaticField(jclass clazz, jfieldID field, const nsJniClass& arg)
 {
-  return wdJniAttachment::GetEnv()->SetStaticObjectField(clazz, field, arg.GetHandle());
+  return nsJniAttachment::GetEnv()->SetStaticObjectField(clazz, field, arg.GetHandle());
 }
 
-wdJniClass wdJniTraits<wdJniClass>::GetStaticField(jclass clazz, jfieldID field)
+nsJniClass nsJniTraits<nsJniClass>::GetStaticField(jclass clazz, jfieldID field)
 {
-  return wdJniClass(jclass(wdJniAttachment::GetEnv()->GetStaticObjectField(clazz, field)), wdJniOwnerShip::OWN);
+  return nsJniClass(jclass(nsJniAttachment::GetEnv()->GetStaticObjectField(clazz, field)), nsJniOwnerShip::OWN);
 }
 
-bool wdJniTraits<wdJniClass>::AppendSignature(const wdJniClass& obj, wdStringBuilder& str)
+bool nsJniTraits<nsJniClass>::AppendSignature(const nsJniClass& obj, nsStringBuilder& str)
 {
   str.Append("Ljava/lang/Class;");
   return true;
 }
 
-const char* wdJniTraits<wdJniClass>::GetSignatureStatic()
+const char* nsJniTraits<nsJniClass>::GetSignatureStatic()
 {
   return "Ljava/lang/Class;";
 }
 
-jvalue wdJniTraits<wdJniString>::ToValue(const wdJniString& value)
+jvalue nsJniTraits<nsJniString>::ToValue(const nsJniString& value)
 {
   jvalue result;
   result.l = value.GetHandle();
   return result;
 }
 
-wdJniClass wdJniTraits<wdJniString>::GetStaticType()
+nsJniClass nsJniTraits<nsJniString>::GetStaticType()
 {
-  return wdJniClass("java/lang/String");
+  return nsJniClass("java/lang/String");
 }
 
-wdJniClass wdJniTraits<wdJniString>::GetRuntimeType(const wdJniString& arg)
+nsJniClass nsJniTraits<nsJniString>::GetRuntimeType(const nsJniString& arg)
 {
   // Assume there are no types derived from String
   return GetStaticType();
 }
 
-wdJniString wdJniTraits<wdJniString>::GetEmptyObject()
+nsJniString nsJniTraits<nsJniString>::GetEmptyObject()
 {
-  return wdJniString();
+  return nsJniString();
 }
 
 template <typename... Args>
-wdJniString wdJniTraits<wdJniString>::CallInstanceMethod(jobject self, jmethodID method, const Args&... args)
+nsJniString nsJniTraits<nsJniString>::CallInstanceMethod(jobject self, jmethodID method, const Args&... args)
 {
   jvalue array[sizeof...(args)];
-  wdJniImpl::UnpackArgs(array, args...);
-  return wdJniString(jstring(wdJniAttachment::GetEnv()->CallObjectMethodA(self, method, array)), wdJniOwnerShip::OWN);
+  nsJniImpl::UnpackArgs(array, args...);
+  return nsJniString(jstring(nsJniAttachment::GetEnv()->CallObjectMethodA(self, method, array)), nsJniOwnerShip::OWN);
 }
 
 template <typename... Args>
-wdJniString wdJniTraits<wdJniString>::CallStaticMethod(jclass clazz, jmethodID method, const Args&... args)
+nsJniString nsJniTraits<nsJniString>::CallStaticMethod(jclass clazz, jmethodID method, const Args&... args)
 {
   jvalue array[sizeof...(args)];
-  wdJniImpl::UnpackArgs(array, args...);
-  return wdJniString(jstring(wdJniAttachment::GetEnv()->CallStaticObjectMethodA(clazz, method, array)), wdJniOwnerShip::OWN);
+  nsJniImpl::UnpackArgs(array, args...);
+  return nsJniString(jstring(nsJniAttachment::GetEnv()->CallStaticObjectMethodA(clazz, method, array)), nsJniOwnerShip::OWN);
 }
 
-void wdJniTraits<wdJniString>::SetField(jobject self, jfieldID field, const wdJniString& arg)
+void nsJniTraits<nsJniString>::SetField(jobject self, jfieldID field, const nsJniString& arg)
 {
-  return wdJniAttachment::GetEnv()->SetObjectField(self, field, arg.GetHandle());
+  return nsJniAttachment::GetEnv()->SetObjectField(self, field, arg.GetHandle());
 }
 
-wdJniString wdJniTraits<wdJniString>::GetField(jobject self, jfieldID field)
+nsJniString nsJniTraits<nsJniString>::GetField(jobject self, jfieldID field)
 {
-  return wdJniString(jstring(wdJniAttachment::GetEnv()->GetObjectField(self, field)), wdJniOwnerShip::OWN);
+  return nsJniString(jstring(nsJniAttachment::GetEnv()->GetObjectField(self, field)), nsJniOwnerShip::OWN);
 }
 
-void wdJniTraits<wdJniString>::SetStaticField(jclass clazz, jfieldID field, const wdJniString& arg)
+void nsJniTraits<nsJniString>::SetStaticField(jclass clazz, jfieldID field, const nsJniString& arg)
 {
-  return wdJniAttachment::GetEnv()->SetStaticObjectField(clazz, field, arg.GetHandle());
+  return nsJniAttachment::GetEnv()->SetStaticObjectField(clazz, field, arg.GetHandle());
 }
 
-wdJniString wdJniTraits<wdJniString>::GetStaticField(jclass clazz, jfieldID field)
+nsJniString nsJniTraits<nsJniString>::GetStaticField(jclass clazz, jfieldID field)
 {
-  return wdJniString(jstring(wdJniAttachment::GetEnv()->GetStaticObjectField(clazz, field)), wdJniOwnerShip::OWN);
+  return nsJniString(jstring(nsJniAttachment::GetEnv()->GetStaticObjectField(clazz, field)), nsJniOwnerShip::OWN);
 }
 
-bool wdJniTraits<wdJniString>::AppendSignature(const wdJniString& obj, wdStringBuilder& str)
+bool nsJniTraits<nsJniString>::AppendSignature(const nsJniString& obj, nsStringBuilder& str)
 {
   str.Append("Ljava/lang/String;");
   return true;
 }
 
-const char* wdJniTraits<wdJniString>::GetSignatureStatic()
+const char* nsJniTraits<nsJniString>::GetSignatureStatic()
 {
   return "Ljava/lang/String;";
 }
 
-wdJniClass wdJniTraits<void>::GetStaticType()
+nsJniClass nsJniTraits<void>::GetStaticType()
 {
-  return wdJniClass("java/lang/Void").UnsafeGetStaticField<wdJniClass>("TYPE", "Ljava/lang/Class;");
+  return nsJniClass("java/lang/Void").UnsafeGetStaticField<nsJniClass>("TYPE", "Ljava/lang/Class;");
 }
 
-void wdJniTraits<void>::GetEmptyObject()
+void nsJniTraits<void>::GetEmptyObject()
 {
   return;
 }
 
 template <typename... Args>
-void wdJniTraits<void>::CallInstanceMethod(jobject self, jmethodID method, const Args&... args)
+void nsJniTraits<void>::CallInstanceMethod(jobject self, jmethodID method, const Args&... args)
 {
   jvalue array[sizeof...(args)];
-  wdJniImpl::UnpackArgs(array, args...);
-  return wdJniAttachment::GetEnv()->CallVoidMethodA(self, method, array);
+  nsJniImpl::UnpackArgs(array, args...);
+  return nsJniAttachment::GetEnv()->CallVoidMethodA(self, method, array);
 }
 
 template <typename... Args>
-void wdJniTraits<void>::CallStaticMethod(jclass clazz, jmethodID method, const Args&... args)
+void nsJniTraits<void>::CallStaticMethod(jclass clazz, jmethodID method, const Args&... args)
 {
   jvalue array[sizeof...(args)];
-  wdJniImpl::UnpackArgs(array, args...);
-  return wdJniAttachment::GetEnv()->CallStaticVoidMethodA(clazz, method, array);
+  nsJniImpl::UnpackArgs(array, args...);
+  return nsJniAttachment::GetEnv()->CallStaticVoidMethodA(clazz, method, array);
 }
 
-const char* wdJniTraits<void>::GetSignatureStatic()
+const char* nsJniTraits<void>::GetSignatureStatic()
 {
   return "V";
 }
 
 template <typename... Args>
-wdJniObject wdJniClass::CreateInstance(const Args&... args) const
+nsJniObject nsJniClass::CreateInstance(const Args&... args) const
 {
-  if (wdJniAttachment::FailOnPendingErrorOrException())
+  if (nsJniAttachment::FailOnPendingErrorOrException())
   {
-    return wdJniObject();
+    return nsJniObject();
   }
 
   const size_t N = sizeof...(args);
 
-  wdJniClass inputTypes[N];
-  wdJniImpl::CollectArgumentTypes(inputTypes, args...);
+  nsJniClass inputTypes[N];
+  nsJniImpl::CollectArgumentTypes(inputTypes, args...);
 
-  wdJniObject foundMethod = FindConstructor(*this, inputTypes, N);
+  nsJniObject foundMethod = FindConstructor(*this, inputTypes, N);
 
   if (foundMethod.IsNull())
   {
-    return wdJniObject();
+    return nsJniObject();
   }
 
-  jmethodID method = wdJniAttachment::GetEnv()->FromReflectedMethod(foundMethod.GetHandle());
+  jmethodID method = nsJniAttachment::GetEnv()->FromReflectedMethod(foundMethod.GetHandle());
 
   jvalue array[sizeof...(args)];
-  wdJniImpl::UnpackArgs(array, args...);
-  return wdJniObject(wdJniAttachment::GetEnv()->NewObjectA(GetHandle(), method, array), wdJniOwnerShip::OWN);
+  nsJniImpl::UnpackArgs(array, args...);
+  return nsJniObject(nsJniAttachment::GetEnv()->NewObjectA(GetHandle(), method, array), nsJniOwnerShip::OWN);
 }
 
 template <typename Ret, typename... Args>
-Ret wdJniClass::CallStatic(const char* name, const Args&... args) const
+Ret nsJniClass::CallStatic(const char* name, const Args&... args) const
 {
-  if (wdJniAttachment::FailOnPendingErrorOrException())
+  if (nsJniAttachment::FailOnPendingErrorOrException())
   {
-    return wdJniTraits<Ret>::GetEmptyObject();
+    return nsJniTraits<Ret>::GetEmptyObject();
   }
 
   if (!GetJObject())
   {
-    wdLog::Error("Attempting to call static method '{}' on null class.", name);
-    wdJniAttachment::SetLastError(wdJniErrorState::CALL_ON_NULL_OBJECT);
-    return wdJniTraits<Ret>::GetEmptyObject();
+    nsLog::Error("Attempting to call static method '{}' on null class.", name);
+    nsJniAttachment::SetLastError(nsJniErrorState::CALL_ON_NULL_OBJECT);
+    return nsJniTraits<Ret>::GetEmptyObject();
   }
 
-  wdStringBuilder signature;
-  if (wdJniImpl::BuildMethodSignature<Ret>(signature, args...))
+  nsStringBuilder signature;
+  if (nsJniImpl::BuildMethodSignature<Ret>(signature, args...))
   {
-    jmethodID method = wdJniAttachment::GetEnv()->GetStaticMethodID(GetHandle(), name, signature.GetData());
+    jmethodID method = nsJniAttachment::GetEnv()->GetStaticMethodID(GetHandle(), name, signature.GetData());
 
     if (method)
     {
-      return wdJniTraits<Ret>::CallStaticMethod(GetHandle(), method, args...);
+      return nsJniTraits<Ret>::CallStaticMethod(GetHandle(), method, args...);
     }
     else
     {
-      wdJniAttachment::GetEnv()->ExceptionClear();
+      nsJniAttachment::GetEnv()->ExceptionClear();
     }
   }
 
   const size_t N = sizeof...(args);
 
-  wdJniClass returnType = wdJniTraits<Ret>::GetStaticType();
+  nsJniClass returnType = nsJniTraits<Ret>::GetStaticType();
 
-  wdJniClass inputTypes[N];
-  wdJniImpl::CollectArgumentTypes(inputTypes, args...);
+  nsJniClass inputTypes[N];
+  nsJniImpl::CollectArgumentTypes(inputTypes, args...);
 
-  wdJniObject foundMethod = FindMethod(true, name, *this, returnType, inputTypes, N);
+  nsJniObject foundMethod = FindMethod(true, name, *this, returnType, inputTypes, N);
 
   if (foundMethod.IsNull())
   {
-    return wdJniTraits<Ret>::GetEmptyObject();
+    return nsJniTraits<Ret>::GetEmptyObject();
   }
 
-  jmethodID method = wdJniAttachment::GetEnv()->FromReflectedMethod(foundMethod.GetHandle());
-  return wdJniTraits<Ret>::CallStaticMethod(GetHandle(), method, args...);
+  jmethodID method = nsJniAttachment::GetEnv()->FromReflectedMethod(foundMethod.GetHandle());
+  return nsJniTraits<Ret>::CallStaticMethod(GetHandle(), method, args...);
 }
 
 template <typename Ret, typename... Args>
-Ret wdJniClass::UnsafeCallStatic(const char* name, const char* signature, const Args&... args) const
+Ret nsJniClass::UnsafeCallStatic(const char* name, const char* signature, const Args&... args) const
 {
   if (!GetJObject())
   {
-    wdLog::Error("Attempting to call static method '{}' on null class.", name);
-    wdLog::Error("Attempting to call static method '{}' on null class.", name);
-    wdJniAttachment::SetLastError(wdJniErrorState::CALL_ON_NULL_OBJECT);
-    return wdJniTraits<Ret>::GetEmptyObject();
+    nsLog::Error("Attempting to call static method '{}' on null class.", name);
+    nsLog::Error("Attempting to call static method '{}' on null class.", name);
+    nsJniAttachment::SetLastError(nsJniErrorState::CALL_ON_NULL_OBJECT);
+    return nsJniTraits<Ret>::GetEmptyObject();
   }
 
-  jmethodID method = wdJniAttachment::GetEnv()->GetStaticMethodID(GetHandle(), name, signature);
+  jmethodID method = nsJniAttachment::GetEnv()->GetStaticMethodID(GetHandle(), name, signature);
   if (!method)
   {
-    wdLog::Error("No such static method: '{}' with signature '{}' in class '{}'.", name, signature, ToString().GetData());
-    wdJniAttachment::SetLastError(wdJniErrorState::NO_MATCHING_METHOD);
-    return wdJniTraits<Ret>::GetEmptyObject();
+    nsLog::Error("No such static method: '{}' with signature '{}' in class '{}'.", name, signature, ToString().GetData());
+    nsJniAttachment::SetLastError(nsJniErrorState::NO_MATCHING_METHOD);
+    return nsJniTraits<Ret>::GetEmptyObject();
   }
   else
   {
-    return wdJniTraits<Ret>::CallStaticMethod(GetHandle(), method, args...);
+    return nsJniTraits<Ret>::CallStaticMethod(GetHandle(), method, args...);
   }
 }
 
 template <typename Ret>
-Ret wdJniClass::GetStaticField(const char* name) const
+Ret nsJniClass::GetStaticField(const char* name) const
 {
-  if (wdJniAttachment::FailOnPendingErrorOrException())
+  if (nsJniAttachment::FailOnPendingErrorOrException())
   {
-    return wdJniTraits<Ret>::GetEmptyObject();
+    return nsJniTraits<Ret>::GetEmptyObject();
   }
 
   if (!GetJObject())
   {
-    wdLog::Error("Attempting to get static field '{}' on null class.", name);
-    wdJniAttachment::SetLastError(wdJniErrorState::CALL_ON_NULL_OBJECT);
-    return wdJniTraits<Ret>::GetEmptyObject();
+    nsLog::Error("Attempting to get static field '{}' on null class.", name);
+    nsJniAttachment::SetLastError(nsJniErrorState::CALL_ON_NULL_OBJECT);
+    return nsJniTraits<Ret>::GetEmptyObject();
   }
 
-  jfieldID fieldID = wdJniAttachment::GetEnv()->GetStaticFieldID(GetHandle(), name, wdJniTraits<Ret>::GetSignatureStatic());
+  jfieldID fieldID = nsJniAttachment::GetEnv()->GetStaticFieldID(GetHandle(), name, nsJniTraits<Ret>::GetSignatureStatic());
   if (fieldID)
   {
-    return wdJniTraits<Ret>::GetStaticField(GetHandle(), fieldID);
+    return nsJniTraits<Ret>::GetStaticField(GetHandle(), fieldID);
   }
   else
   {
-    wdJniAttachment::GetEnv()->ExceptionClear();
+    nsJniAttachment::GetEnv()->ExceptionClear();
   }
 
-  wdJniObject field = UnsafeCall<wdJniObject>("getField", "(Ljava/lang/String;)Ljava/lang/reflect/Field;", wdJniString(name));
+  nsJniObject field = UnsafeCall<nsJniObject>("getField", "(Ljava/lang/String;)Ljava/lang/reflect/Field;", nsJniString(name));
 
-  if (wdJniAttachment::GetEnv()->ExceptionOccurred())
+  if (nsJniAttachment::GetEnv()->ExceptionOccurred())
   {
-    wdJniAttachment::GetEnv()->ExceptionClear();
+    nsJniAttachment::GetEnv()->ExceptionClear();
 
-    wdLog::Error("No field named '{}' found in class '{}'.", name, ToString().GetData());
-    wdJniAttachment::SetLastError(wdJniErrorState::NO_MATCHING_FIELD);
+    nsLog::Error("No field named '{}' found in class '{}'.", name, ToString().GetData());
+    nsJniAttachment::SetLastError(nsJniErrorState::NO_MATCHING_FIELD);
 
-    return wdJniTraits<Ret>::GetEmptyObject();
+    return nsJniTraits<Ret>::GetEmptyObject();
   }
 
-  if ((field.UnsafeCall<jint>("getModifiers", "()I") & wdJniModifiers::STATIC) == 0)
+  if ((field.UnsafeCall<jint>("getModifiers", "()I") & nsJniModifiers::STATIC) == 0)
   {
-    wdLog::Error("Field named '{}' in class '{}' isn't static.", name, ToString().GetData());
-    wdJniAttachment::SetLastError(wdJniErrorState::NO_MATCHING_FIELD);
-    return wdJniTraits<Ret>::GetEmptyObject();
+    nsLog::Error("Field named '{}' in class '{}' isn't static.", name, ToString().GetData());
+    nsJniAttachment::SetLastError(nsJniErrorState::NO_MATCHING_FIELD);
+    return nsJniTraits<Ret>::GetEmptyObject();
   }
 
-  wdJniClass fieldType = field.UnsafeCall<wdJniClass>("getType", "()Ljava/lang/Class;");
+  nsJniClass fieldType = field.UnsafeCall<nsJniClass>("getType", "()Ljava/lang/Class;");
 
-  wdJniClass returnType = wdJniTraits<Ret>::GetStaticType();
+  nsJniClass returnType = nsJniTraits<Ret>::GetStaticType();
 
   if (!returnType.IsAssignableFrom(fieldType))
   {
-    wdLog::Error("Field '{}' of type '{}' in class '{}' can't be assigned to return type '{}'.", name, fieldType.ToString().GetData(), ToString().GetData(), returnType.ToString().GetData());
-    wdJniAttachment::SetLastError(wdJniErrorState::NO_MATCHING_FIELD);
-    return wdJniTraits<Ret>::GetEmptyObject();
+    nsLog::Error("Field '{}' of type '{}' in class '{}' can't be assigned to return type '{}'.", name, fieldType.ToString().GetData(), ToString().GetData(), returnType.ToString().GetData());
+    nsJniAttachment::SetLastError(nsJniErrorState::NO_MATCHING_FIELD);
+    return nsJniTraits<Ret>::GetEmptyObject();
   }
 
-  return wdJniTraits<Ret>::GetStaticField(GetHandle(), wdJniAttachment::GetEnv()->FromReflectedField(field.GetHandle()));
+  return nsJniTraits<Ret>::GetStaticField(GetHandle(), nsJniAttachment::GetEnv()->FromReflectedField(field.GetHandle()));
 }
 
 template <typename Ret>
-Ret wdJniClass::UnsafeGetStaticField(const char* name, const char* signature) const
+Ret nsJniClass::UnsafeGetStaticField(const char* name, const char* signature) const
 {
   if (!GetJObject())
   {
-    wdLog::Error("Attempting to get static field '{}' on null class.", name);
-    wdJniAttachment::SetLastError(wdJniErrorState::CALL_ON_NULL_OBJECT);
-    return wdJniTraits<Ret>::GetEmptyObject();
+    nsLog::Error("Attempting to get static field '{}' on null class.", name);
+    nsJniAttachment::SetLastError(nsJniErrorState::CALL_ON_NULL_OBJECT);
+    return nsJniTraits<Ret>::GetEmptyObject();
   }
 
-  jfieldID field = wdJniAttachment::GetEnv()->GetStaticFieldID(GetHandle(), name, signature);
+  jfieldID field = nsJniAttachment::GetEnv()->GetStaticFieldID(GetHandle(), name, signature);
   if (!field)
   {
-    wdLog::Error("No such field: '{}' with signature '{}'.", name, signature);
-    wdJniAttachment::SetLastError(wdJniErrorState::NO_MATCHING_FIELD);
-    return wdJniTraits<Ret>::GetEmptyObject();
+    nsLog::Error("No such field: '{}' with signature '{}'.", name, signature);
+    nsJniAttachment::SetLastError(nsJniErrorState::NO_MATCHING_FIELD);
+    return nsJniTraits<Ret>::GetEmptyObject();
   }
   else
   {
-    return wdJniTraits<Ret>::GetStaticField(GetHandle(), field);
+    return nsJniTraits<Ret>::GetStaticField(GetHandle(), field);
   }
 }
 
 template <typename T>
-void wdJniClass::SetStaticField(const char* name, const T& arg) const
+void nsJniClass::SetStaticField(const char* name, const T& arg) const
 {
-  if (wdJniAttachment::FailOnPendingErrorOrException())
+  if (nsJniAttachment::FailOnPendingErrorOrException())
   {
     return;
   }
 
   if (!GetJObject())
   {
-    wdLog::Error("Attempting to set static field '{}' on null class.", name);
-    wdJniAttachment::SetLastError(wdJniErrorState::CALL_ON_NULL_OBJECT);
+    nsLog::Error("Attempting to set static field '{}' on null class.", name);
+    nsJniAttachment::SetLastError(nsJniErrorState::CALL_ON_NULL_OBJECT);
     return;
   }
 
-  wdJniObject field = UnsafeCall<wdJniObject>("getField", "(Ljava/lang/String;)Ljava/lang/reflect/Field;", wdJniString(name));
+  nsJniObject field = UnsafeCall<nsJniObject>("getField", "(Ljava/lang/String;)Ljava/lang/reflect/Field;", nsJniString(name));
 
-  if (wdJniAttachment::GetEnv()->ExceptionOccurred())
+  if (nsJniAttachment::GetEnv()->ExceptionOccurred())
   {
-    wdJniAttachment::GetEnv()->ExceptionClear();
+    nsJniAttachment::GetEnv()->ExceptionClear();
 
-    wdLog::Error("No field named '{}' found in class '{}'.", name, ToString().GetData());
-    wdJniAttachment::SetLastError(wdJniErrorState::NO_MATCHING_FIELD);
+    nsLog::Error("No field named '{}' found in class '{}'.", name, ToString().GetData());
+    nsJniAttachment::SetLastError(nsJniErrorState::NO_MATCHING_FIELD);
 
     return;
   }
 
-  wdJniClass modifierClass("java/lang/reflect/Modifier");
+  nsJniClass modifierClass("java/lang/reflect/Modifier");
   jint modifiers = field.UnsafeCall<jint>("getModifiers", "()I");
 
-  if ((modifiers & wdJniModifiers::STATIC) == 0)
+  if ((modifiers & nsJniModifiers::STATIC) == 0)
   {
-    wdLog::Error("Field named '{}' in class '{}' isn't static.", name, ToString().GetData());
-    wdJniAttachment::SetLastError(wdJniErrorState::NO_MATCHING_FIELD);
+    nsLog::Error("Field named '{}' in class '{}' isn't static.", name, ToString().GetData());
+    nsJniAttachment::SetLastError(nsJniErrorState::NO_MATCHING_FIELD);
     return;
   }
 
-  if ((modifiers & wdJniModifiers::FINAL) != 0)
+  if ((modifiers & nsJniModifiers::FINAL) != 0)
   {
-    wdLog::Error("Field named '{}' in class '{}' is final.", name, ToString().GetData());
-    wdJniAttachment::SetLastError(wdJniErrorState::NO_MATCHING_FIELD);
+    nsLog::Error("Field named '{}' in class '{}' is final.", name, ToString().GetData());
+    nsJniAttachment::SetLastError(nsJniErrorState::NO_MATCHING_FIELD);
     return;
   }
 
-  wdJniClass fieldType = field.UnsafeCall<wdJniClass>("getType", "()Ljava/lang/Class;");
+  nsJniClass fieldType = field.UnsafeCall<nsJniClass>("getType", "()Ljava/lang/Class;");
 
-  wdJniClass argType = wdJniTraits<T>::GetRuntimeType(arg);
+  nsJniClass argType = nsJniTraits<T>::GetRuntimeType(arg);
 
   if (argType.IsNull())
   {
     if (fieldType.IsPrimitive())
     {
-      wdLog::Error("Field '{}' of type '{}' can't be assigned null because it is a primitive type.", name, fieldType.ToString().GetData());
-      wdJniAttachment::SetLastError(wdJniErrorState::NO_MATCHING_FIELD);
+      nsLog::Error("Field '{}' of type '{}' can't be assigned null because it is a primitive type.", name, fieldType.ToString().GetData());
+      nsJniAttachment::SetLastError(nsJniErrorState::NO_MATCHING_FIELD);
       return;
     }
   }
@@ -1567,169 +1567,169 @@ void wdJniClass::SetStaticField(const char* name, const T& arg) const
   {
     if (!fieldType.IsAssignableFrom(argType))
     {
-      wdLog::Error("Field '{}' of type '{}' can't be assigned from type '{}'.", name, fieldType.ToString().GetData(), argType.ToString().GetData());
-      wdJniAttachment::SetLastError(wdJniErrorState::NO_MATCHING_FIELD);
+      nsLog::Error("Field '{}' of type '{}' can't be assigned from type '{}'.", name, fieldType.ToString().GetData(), argType.ToString().GetData());
+      nsJniAttachment::SetLastError(nsJniErrorState::NO_MATCHING_FIELD);
       return;
     }
   }
 
-  return wdJniTraits<T>::SetStaticField(GetHandle(), wdJniAttachment::GetEnv()->FromReflectedField(field.GetHandle()), arg);
+  return nsJniTraits<T>::SetStaticField(GetHandle(), nsJniAttachment::GetEnv()->FromReflectedField(field.GetHandle()), arg);
 }
 
 template <typename T>
-void wdJniClass::UnsafeSetStaticField(const char* name, const char* signature, const T& arg) const
+void nsJniClass::UnsafeSetStaticField(const char* name, const char* signature, const T& arg) const
 {
   if (!GetJObject())
   {
-    wdLog::Error("Attempting to set static field '{}' on null class.", name);
-    wdJniAttachment::SetLastError(wdJniErrorState::CALL_ON_NULL_OBJECT);
+    nsLog::Error("Attempting to set static field '{}' on null class.", name);
+    nsJniAttachment::SetLastError(nsJniErrorState::CALL_ON_NULL_OBJECT);
     return;
   }
 
-  jfieldID field = wdJniAttachment::GetEnv()->GetStaticFieldID(GetHandle(), name, signature);
+  jfieldID field = nsJniAttachment::GetEnv()->GetStaticFieldID(GetHandle(), name, signature);
   if (!field)
   {
-    wdLog::Error("No such field: '{}' with signature '{}'.", name, signature);
-    wdJniAttachment::SetLastError(wdJniErrorState::NO_MATCHING_FIELD);
+    nsLog::Error("No such field: '{}' with signature '{}'.", name, signature);
+    nsJniAttachment::SetLastError(nsJniErrorState::NO_MATCHING_FIELD);
     return;
   }
   else
   {
-    return wdJniTraits<T>::SetStaticField(GetHandle(), field, arg);
+    return nsJniTraits<T>::SetStaticField(GetHandle(), field, arg);
   }
 }
 
 template <typename Ret, typename... Args>
-Ret wdJniObject::Call(const char* name, const Args&... args) const
+Ret nsJniObject::Call(const char* name, const Args&... args) const
 {
-  if (wdJniAttachment::FailOnPendingErrorOrException())
+  if (nsJniAttachment::FailOnPendingErrorOrException())
   {
-    return wdJniTraits<Ret>::GetEmptyObject();
+    return nsJniTraits<Ret>::GetEmptyObject();
   }
 
   if (!m_object)
   {
-    wdLog::Error("Attempting to call method '{}' on null object.", name);
-    wdJniAttachment::SetLastError(wdJniErrorState::CALL_ON_NULL_OBJECT);
-    return wdJniTraits<Ret>::GetEmptyObject();
+    nsLog::Error("Attempting to call method '{}' on null object.", name);
+    nsJniAttachment::SetLastError(nsJniErrorState::CALL_ON_NULL_OBJECT);
+    return nsJniTraits<Ret>::GetEmptyObject();
   }
 
   // Fast path: Lookup method via signature built from parameters.
   // This only works for exact matches, but is roughly 50 times faster.
-  wdStringBuilder signature;
-  if (wdJniImpl::BuildMethodSignature<Ret>(signature, args...))
+  nsStringBuilder signature;
+  if (nsJniImpl::BuildMethodSignature<Ret>(signature, args...))
   {
-    jmethodID method = wdJniAttachment::GetEnv()->GetMethodID(reinterpret_cast<jclass>(GetClass().GetHandle()), name, signature.GetData());
+    jmethodID method = nsJniAttachment::GetEnv()->GetMethodID(reinterpret_cast<jclass>(GetClass().GetHandle()), name, signature.GetData());
 
     if (method)
     {
-      return wdJniTraits<Ret>::CallInstanceMethod(m_object, method, args...);
+      return nsJniTraits<Ret>::CallInstanceMethod(m_object, method, args...);
     }
     else
     {
-      wdJniAttachment::GetEnv()->ExceptionClear();
+      nsJniAttachment::GetEnv()->ExceptionClear();
     }
   }
 
   // Fallback to slow path using reflection
   const size_t N = sizeof...(args);
 
-  wdJniClass returnType = wdJniTraits<Ret>::GetStaticType();
+  nsJniClass returnType = nsJniTraits<Ret>::GetStaticType();
 
-  wdJniClass inputTypes[N];
-  wdJniImpl::CollectArgumentTypes(inputTypes, args...);
+  nsJniClass inputTypes[N];
+  nsJniImpl::CollectArgumentTypes(inputTypes, args...);
 
-  wdJniObject foundMethod = FindMethod(false, name, GetClass(), returnType, inputTypes, N);
+  nsJniObject foundMethod = FindMethod(false, name, GetClass(), returnType, inputTypes, N);
 
   if (foundMethod.IsNull())
   {
-    return wdJniTraits<Ret>::GetEmptyObject();
+    return nsJniTraits<Ret>::GetEmptyObject();
   }
 
-  jmethodID method = wdJniAttachment::GetEnv()->FromReflectedMethod(foundMethod.m_object);
-  return wdJniTraits<Ret>::CallInstanceMethod(m_object, method, args...);
+  jmethodID method = nsJniAttachment::GetEnv()->FromReflectedMethod(foundMethod.m_object);
+  return nsJniTraits<Ret>::CallInstanceMethod(m_object, method, args...);
 }
 
 template <typename Ret, typename... Args>
-Ret wdJniObject::UnsafeCall(const char* name, const char* signature, const Args&... args) const
+Ret nsJniObject::UnsafeCall(const char* name, const char* signature, const Args&... args) const
 {
   if (!m_object)
   {
-    wdLog::Error("Attempting to call method '{}' on null object.", name);
-    wdJniAttachment::SetLastError(wdJniErrorState::CALL_ON_NULL_OBJECT);
-    return wdJniTraits<Ret>::GetEmptyObject();
+    nsLog::Error("Attempting to call method '{}' on null object.", name);
+    nsJniAttachment::SetLastError(nsJniErrorState::CALL_ON_NULL_OBJECT);
+    return nsJniTraits<Ret>::GetEmptyObject();
   }
 
-  jmethodID method = wdJniAttachment::GetEnv()->GetMethodID(jclass(GetClass().m_object), name, signature);
+  jmethodID method = nsJniAttachment::GetEnv()->GetMethodID(jclass(GetClass().m_object), name, signature);
   if (!method)
   {
-    wdLog::Error("No such method: '{}' with signature '{}' in class '{}'.", name, signature, GetClass().ToString().GetData());
-    wdJniAttachment::SetLastError(wdJniErrorState::NO_MATCHING_METHOD);
-    return wdJniTraits<Ret>::GetEmptyObject();
+    nsLog::Error("No such method: '{}' with signature '{}' in class '{}'.", name, signature, GetClass().ToString().GetData());
+    nsJniAttachment::SetLastError(nsJniErrorState::NO_MATCHING_METHOD);
+    return nsJniTraits<Ret>::GetEmptyObject();
   }
   else
   {
-    return wdJniTraits<Ret>::CallInstanceMethod(m_object, method, args...);
+    return nsJniTraits<Ret>::CallInstanceMethod(m_object, method, args...);
   }
 }
 
 template <typename T>
-void wdJniObject::SetField(const char* name, const T& arg) const
+void nsJniObject::SetField(const char* name, const T& arg) const
 {
-  if (wdJniAttachment::FailOnPendingErrorOrException())
+  if (nsJniAttachment::FailOnPendingErrorOrException())
   {
     return;
   }
 
   if (!m_object)
   {
-    wdLog::Error("Attempting to set field '{}' on null object.", name);
-    wdJniAttachment::SetLastError(wdJniErrorState::CALL_ON_NULL_OBJECT);
+    nsLog::Error("Attempting to set field '{}' on null object.", name);
+    nsJniAttachment::SetLastError(nsJniErrorState::CALL_ON_NULL_OBJECT);
     return;
   }
 
   // No fast path here since we need to be able to report failures when attempting
   // to set final fields, which we can only do using reflection.
 
-  wdJniObject field = GetClass().UnsafeCall<wdJniObject>("getField", "(Ljava/lang/String;)Ljava/lang/reflect/Field;", wdJniString(name));
+  nsJniObject field = GetClass().UnsafeCall<nsJniObject>("getField", "(Ljava/lang/String;)Ljava/lang/reflect/Field;", nsJniString(name));
 
-  if (wdJniAttachment::GetEnv()->ExceptionOccurred())
+  if (nsJniAttachment::GetEnv()->ExceptionOccurred())
   {
-    wdJniAttachment::GetEnv()->ExceptionClear();
+    nsJniAttachment::GetEnv()->ExceptionClear();
 
-    wdLog::Error("No field named '{}' found.", name);
-    wdJniAttachment::SetLastError(wdJniErrorState::NO_MATCHING_FIELD);
+    nsLog::Error("No field named '{}' found.", name);
+    nsJniAttachment::SetLastError(nsJniErrorState::NO_MATCHING_FIELD);
 
     return;
   }
 
-  wdJniClass modifierClass("java/lang/reflect/Modifier");
+  nsJniClass modifierClass("java/lang/reflect/Modifier");
   jint modifiers = field.UnsafeCall<jint>("getModifiers", "()I");
 
-  if ((modifiers & wdJniModifiers::STATIC) != 0)
+  if ((modifiers & nsJniModifiers::STATIC) != 0)
   {
-    wdLog::Error("Field named '{}' in class '{}' is static.", name, GetClass().ToString().GetData());
-    wdJniAttachment::SetLastError(wdJniErrorState::NO_MATCHING_FIELD);
+    nsLog::Error("Field named '{}' in class '{}' is static.", name, GetClass().ToString().GetData());
+    nsJniAttachment::SetLastError(nsJniErrorState::NO_MATCHING_FIELD);
     return;
   }
 
-  if ((modifiers & wdJniModifiers::FINAL) != 0)
+  if ((modifiers & nsJniModifiers::FINAL) != 0)
   {
-    wdLog::Error("Field named '{}' in class '{}' is final.", name, GetClass().ToString().GetData());
-    wdJniAttachment::SetLastError(wdJniErrorState::NO_MATCHING_FIELD);
+    nsLog::Error("Field named '{}' in class '{}' is final.", name, GetClass().ToString().GetData());
+    nsJniAttachment::SetLastError(nsJniErrorState::NO_MATCHING_FIELD);
     return;
   }
 
-  wdJniClass fieldType = field.UnsafeCall<wdJniClass>("getType", "()Ljava/lang/Class;");
+  nsJniClass fieldType = field.UnsafeCall<nsJniClass>("getType", "()Ljava/lang/Class;");
 
-  wdJniClass argType = wdJniTraits<T>::GetRuntimeType(arg);
+  nsJniClass argType = nsJniTraits<T>::GetRuntimeType(arg);
 
   if (argType.IsNull())
   {
     if (fieldType.IsPrimitive())
     {
-      wdLog::Error("Field '{}' of type '{}'  in class '{}' can't be assigned null because it is a primitive type.", name, fieldType.ToString().GetData(), GetClass().ToString().GetData());
-      wdJniAttachment::SetLastError(wdJniErrorState::NO_MATCHING_FIELD);
+      nsLog::Error("Field '{}' of type '{}'  in class '{}' can't be assigned null because it is a primitive type.", name, fieldType.ToString().GetData(), GetClass().ToString().GetData());
+      nsJniAttachment::SetLastError(nsJniErrorState::NO_MATCHING_FIELD);
       return;
     }
   }
@@ -1737,115 +1737,115 @@ void wdJniObject::SetField(const char* name, const T& arg) const
   {
     if (!fieldType.IsAssignableFrom(argType))
     {
-      wdLog::Error("Field '{}' of type '{}' in class '{}' can't be assigned from type '{}'.", name, fieldType.ToString().GetData(), GetClass().ToString().GetData(), argType.ToString().GetData());
-      wdJniAttachment::SetLastError(wdJniErrorState::NO_MATCHING_FIELD);
+      nsLog::Error("Field '{}' of type '{}' in class '{}' can't be assigned from type '{}'.", name, fieldType.ToString().GetData(), GetClass().ToString().GetData(), argType.ToString().GetData());
+      nsJniAttachment::SetLastError(nsJniErrorState::NO_MATCHING_FIELD);
       return;
     }
   }
 
-  return wdJniTraits<T>::SetField(m_object, wdJniAttachment::GetEnv()->FromReflectedField(field.GetHandle()), arg);
+  return nsJniTraits<T>::SetField(m_object, nsJniAttachment::GetEnv()->FromReflectedField(field.GetHandle()), arg);
 }
 
 template <typename T>
-void wdJniObject::UnsafeSetField(const char* name, const char* signature, const T& arg) const
+void nsJniObject::UnsafeSetField(const char* name, const char* signature, const T& arg) const
 {
   if (!m_object)
   {
-    wdLog::Error("Attempting to set field '{}' on null class.", name);
-    wdJniAttachment::SetLastError(wdJniErrorState::CALL_ON_NULL_OBJECT);
+    nsLog::Error("Attempting to set field '{}' on null class.", name);
+    nsJniAttachment::SetLastError(nsJniErrorState::CALL_ON_NULL_OBJECT);
     return;
   }
 
-  jfieldID field = wdJniAttachment::GetEnv()->GetFieldID(jclass(GetClass().GetHandle()), name, signature);
+  jfieldID field = nsJniAttachment::GetEnv()->GetFieldID(jclass(GetClass().GetHandle()), name, signature);
   if (!field)
   {
-    wdLog::Error("No such field: '{}' with signature '{}'.", name, signature);
-    wdJniAttachment::SetLastError(wdJniErrorState::NO_MATCHING_FIELD);
+    nsLog::Error("No such field: '{}' with signature '{}'.", name, signature);
+    nsJniAttachment::SetLastError(nsJniErrorState::NO_MATCHING_FIELD);
     return;
   }
   else
   {
-    return wdJniTraits<T>::SetField(m_object, field, arg);
+    return nsJniTraits<T>::SetField(m_object, field, arg);
   }
 }
 
 template <typename Ret>
-Ret wdJniObject::GetField(const char* name) const
+Ret nsJniObject::GetField(const char* name) const
 {
-  if (wdJniAttachment::FailOnPendingErrorOrException())
+  if (nsJniAttachment::FailOnPendingErrorOrException())
   {
-    return wdJniTraits<Ret>::GetEmptyObject();
+    return nsJniTraits<Ret>::GetEmptyObject();
   }
 
   if (!m_object)
   {
-    wdLog::Error("Attempting to get field '{}' on null object.", name);
-    wdJniAttachment::SetLastError(wdJniErrorState::CALL_ON_NULL_OBJECT);
-    return wdJniTraits<Ret>::GetEmptyObject();
+    nsLog::Error("Attempting to get field '{}' on null object.", name);
+    nsJniAttachment::SetLastError(nsJniErrorState::CALL_ON_NULL_OBJECT);
+    return nsJniTraits<Ret>::GetEmptyObject();
   }
 
-  jfieldID fieldID = wdJniAttachment::GetEnv()->GetFieldID(GetClass().GetHandle(), name, wdJniTraits<Ret>::GetSignatureStatic());
+  jfieldID fieldID = nsJniAttachment::GetEnv()->GetFieldID(GetClass().GetHandle(), name, nsJniTraits<Ret>::GetSignatureStatic());
   if (fieldID)
   {
-    return wdJniTraits<Ret>::GetField(m_object, fieldID);
+    return nsJniTraits<Ret>::GetField(m_object, fieldID);
   }
   else
   {
-    wdJniAttachment::GetEnv()->ExceptionClear();
+    nsJniAttachment::GetEnv()->ExceptionClear();
   }
 
-  wdJniObject field = GetClass().UnsafeCall<wdJniObject>("getField", "(Ljava/lang/String;)Ljava/lang/reflect/Field;", wdJniString(name));
+  nsJniObject field = GetClass().UnsafeCall<nsJniObject>("getField", "(Ljava/lang/String;)Ljava/lang/reflect/Field;", nsJniString(name));
 
-  if (wdJniAttachment::GetEnv()->ExceptionOccurred())
+  if (nsJniAttachment::GetEnv()->ExceptionOccurred())
   {
-    wdJniAttachment::GetEnv()->ExceptionClear();
+    nsJniAttachment::GetEnv()->ExceptionClear();
 
-    wdLog::Error("No field named '{}' found in class '{}'.", name, GetClass().ToString().GetData());
-    wdJniAttachment::SetLastError(wdJniErrorState::NO_MATCHING_FIELD);
+    nsLog::Error("No field named '{}' found in class '{}'.", name, GetClass().ToString().GetData());
+    nsJniAttachment::SetLastError(nsJniErrorState::NO_MATCHING_FIELD);
 
-    return wdJniTraits<Ret>::GetEmptyObject();
+    return nsJniTraits<Ret>::GetEmptyObject();
   }
 
-  if ((field.UnsafeCall<jint>("getModifiers", "()I") & wdJniModifiers::STATIC) != 0)
+  if ((field.UnsafeCall<jint>("getModifiers", "()I") & nsJniModifiers::STATIC) != 0)
   {
-    wdLog::Error("Field named '{}' in class '{}' is static.", name, GetClass().ToString().GetData());
-    wdJniAttachment::SetLastError(wdJniErrorState::NO_MATCHING_FIELD);
-    return wdJniTraits<Ret>::GetEmptyObject();
+    nsLog::Error("Field named '{}' in class '{}' is static.", name, GetClass().ToString().GetData());
+    nsJniAttachment::SetLastError(nsJniErrorState::NO_MATCHING_FIELD);
+    return nsJniTraits<Ret>::GetEmptyObject();
   }
 
-  wdJniClass fieldType = field.UnsafeCall<wdJniClass>("getType", "()Ljava/lang/Class;");
+  nsJniClass fieldType = field.UnsafeCall<nsJniClass>("getType", "()Ljava/lang/Class;");
 
-  wdJniClass returnType = wdJniTraits<Ret>::GetStaticType();
+  nsJniClass returnType = nsJniTraits<Ret>::GetStaticType();
 
   if (!returnType.IsAssignableFrom(fieldType))
   {
-    wdLog::Error("Field '{}' of type '{}' in class '{}' can't be assigned to return type '{}'.", name, fieldType.ToString().GetData(), GetClass().ToString().GetData(), returnType.ToString().GetData());
-    wdJniAttachment::SetLastError(wdJniErrorState::NO_MATCHING_FIELD);
-    return wdJniTraits<Ret>::GetEmptyObject();
+    nsLog::Error("Field '{}' of type '{}' in class '{}' can't be assigned to return type '{}'.", name, fieldType.ToString().GetData(), GetClass().ToString().GetData(), returnType.ToString().GetData());
+    nsJniAttachment::SetLastError(nsJniErrorState::NO_MATCHING_FIELD);
+    return nsJniTraits<Ret>::GetEmptyObject();
   }
 
-  return wdJniTraits<Ret>::GetField(m_object, wdJniAttachment::GetEnv()->FromReflectedField(field.GetHandle()));
+  return nsJniTraits<Ret>::GetField(m_object, nsJniAttachment::GetEnv()->FromReflectedField(field.GetHandle()));
 }
 
 template <typename Ret>
-Ret wdJniObject::UnsafeGetField(const char* name, const char* signature) const
+Ret nsJniObject::UnsafeGetField(const char* name, const char* signature) const
 {
   if (!m_object)
   {
-    wdLog::Error("Attempting to get field '{}' on null class.", name);
-    wdJniAttachment::SetLastError(wdJniErrorState::CALL_ON_NULL_OBJECT);
+    nsLog::Error("Attempting to get field '{}' on null class.", name);
+    nsJniAttachment::SetLastError(nsJniErrorState::CALL_ON_NULL_OBJECT);
     return;
   }
 
-  jfieldID field = wdJniAttachment::GetEnv()->GetFieldID(GetClass().GetHandle(), name, signature);
+  jfieldID field = nsJniAttachment::GetEnv()->GetFieldID(GetClass().GetHandle(), name, signature);
   if (!field)
   {
-    wdLog::Error("No such field: '{}' with signature '{}'.", name, signature);
-    wdJniAttachment::SetLastError(wdJniErrorState::NO_MATCHING_FIELD);
+    nsLog::Error("No such field: '{}' with signature '{}'.", name, signature);
+    nsJniAttachment::SetLastError(nsJniErrorState::NO_MATCHING_FIELD);
     return;
   }
   else
   {
-    return wdJniTraits<Ret>::GetField(m_object, field);
+    return nsJniTraits<Ret>::GetField(m_object, field);
   }
 }

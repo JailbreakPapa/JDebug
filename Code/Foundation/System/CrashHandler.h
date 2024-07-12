@@ -13,43 +13,43 @@
 
 /// \brief This class allows to hook into the OS top-level exception handler to handle application crashes
 ///
-/// Derive from this class to implement custom behavior. Call wdCrashHandler::SetCrashHandler() to
+/// Derive from this class to implement custom behavior. Call nsCrashHandler::SetCrashHandler() to
 /// register which instance to use.
 ///
-/// For typical use-cases use wdCrashHandler_WriteMiniDump::g_Instance.
-class WD_FOUNDATION_DLL wdCrashHandler
+/// For typical use-cases use nsCrashHandler_WriteMiniDump::g_Instance.
+class NS_FOUNDATION_DLL nsCrashHandler
 {
 public:
-  wdCrashHandler();
-  virtual ~wdCrashHandler();
+  nsCrashHandler();
+  virtual ~nsCrashHandler();
 
-  static void SetCrashHandler(wdCrashHandler* pHandler);
-  static wdCrashHandler* GetCrashHandler();
+  static void SetCrashHandler(nsCrashHandler* pHandler);
+  static nsCrashHandler* GetCrashHandler();
 
   virtual void HandleCrash(void* pOsSpecificData) = 0;
 
 private:
-  static wdCrashHandler* s_pActiveHandler;
+  static nsCrashHandler* s_pActiveHandler;
 };
 
-/// \brief A default implementation of wdCrashHandler that tries to write a mini-dump and prints the callstack.
+/// \brief A default implementation of nsCrashHandler that tries to write a mini-dump and prints the callstack.
 ///
-/// To use it, call wdCrashHandler::SetCrashHandler(&wdCrashHandler_WriteMiniDump::g_Instance);
+/// To use it, call nsCrashHandler::SetCrashHandler(&nsCrashHandler_WriteMiniDump::g_Instance);
 /// Do not forget to also specify the dump-file path, otherwise writing dump-files is skipped.
-class WD_FOUNDATION_DLL wdCrashHandler_WriteMiniDump : public wdCrashHandler
+class NS_FOUNDATION_DLL nsCrashHandler_WriteMiniDump : public nsCrashHandler
 {
 public:
-  static wdCrashHandler_WriteMiniDump g_Instance;
+  static nsCrashHandler_WriteMiniDump g_Instance;
 
   struct PathFlags
   {
-    typedef wdUInt8 StorageType;
+    using StorageType = nsUInt8;
 
     enum Enum
     {
-      AppendDate = WD_BIT(0),      ///< Whether to append the current date to the crash-dump file (YYYY-MM-DD_HH-MM-SS)
-      AppendSubFolder = WD_BIT(1), ///< Whether to append "CrashDump" as a sub-folder
-      AppendPID = WD_BIT(2),       ///< Whether to append the process ID to the crash-dump file
+      AppendDate = NS_BIT(0),      ///< Whether to append the current date to the crash-dump file (YYYY-MM-DD_HH-MM-SS)
+      AppendSubFolder = NS_BIT(1), ///< Whether to append "CrashDump" as a sub-folder
+      AppendPID = NS_BIT(2),       ///< Whether to append the process ID to the crash-dump file
 
       Default = AppendDate | AppendSubFolder | AppendPID
     };
@@ -63,16 +63,16 @@ public:
   };
 
 public:
-  wdCrashHandler_WriteMiniDump();
+  nsCrashHandler_WriteMiniDump();
 
   /// \brief Sets the raw path for the dump-file to write
-  void SetFullDumpFilePath(wdStringView sFullAbsDumpFilePath);
+  void SetFullDumpFilePath(nsStringView sFullAbsDumpFilePath);
 
   /// \brief Sets the dump-file path to "{szAbsDirectoryPath}/{szAppName}_{cur-date}.tmp"
-  void SetDumpFilePath(wdStringView sAbsDirectoryPath, wdStringView sAppName, wdBitflags<PathFlags> flags = PathFlags::Default);
+  void SetDumpFilePath(nsStringView sAbsDirectoryPath, nsStringView sAppName, nsBitflags<PathFlags> flags = PathFlags::Default);
 
-  /// \brief Sets the dump-file path to "{wdOSFile::GetApplicationDirectory()}/{szAppName}_{cur-date}.tmp"
-  void SetDumpFilePath(wdStringView sAppName, wdBitflags<PathFlags> flags = PathFlags::Default);
+  /// \brief Sets the dump-file path to "{nsOSFile::GetApplicationDirectory()}/{szAppName}_{cur-date}.tmp"
+  void SetDumpFilePath(nsStringView sAppName, nsBitflags<PathFlags> flags = PathFlags::Default);
 
   virtual void HandleCrash(void* pOsSpecificData) override;
 
@@ -80,7 +80,7 @@ protected:
   virtual bool WriteOwnProcessMiniDump(void* pOsSpecificData);
   virtual void PrintStackTrace(void* pOsSpecificData);
 
-  wdString m_sDumpFilePath;
+  nsString m_sDumpFilePath;
 };
 
-WD_DECLARE_FLAGS_OPERATORS(wdCrashHandler_WriteMiniDump::PathFlags);
+NS_DECLARE_FLAGS_OPERATORS(nsCrashHandler_WriteMiniDump::PathFlags);

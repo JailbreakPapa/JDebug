@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="ERROR_ICON">
+    <file>bxs-error-alt.svg</file>
+  </qresource>
+</RCC>

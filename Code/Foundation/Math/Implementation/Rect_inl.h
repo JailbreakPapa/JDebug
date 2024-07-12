@@ -1,12 +1,10 @@
 #pragma once
 
 template <typename Type>
-WD_ALWAYS_INLINE wdRectTemplate<Type>::wdRectTemplate()
-{
-}
+NS_ALWAYS_INLINE nsRectTemplate<Type>::nsRectTemplate() = default;
 
 template <typename Type>
-WD_ALWAYS_INLINE wdRectTemplate<Type>::wdRectTemplate(Type x, Type y, Type width, Type height)
+NS_ALWAYS_INLINE nsRectTemplate<Type>::nsRectTemplate(Type x, Type y, Type width, Type height)
   : x(x)
   , y(y)
   , width(width)
@@ -15,7 +13,7 @@ WD_ALWAYS_INLINE wdRectTemplate<Type>::wdRectTemplate(Type x, Type y, Type width
 }
 
 template <typename Type>
-WD_ALWAYS_INLINE wdRectTemplate<Type>::wdRectTemplate(Type width, Type height)
+NS_ALWAYS_INLINE nsRectTemplate<Type>::nsRectTemplate(Type width, Type height)
   : x(0)
   , y(0)
   , width(width)
@@ -24,25 +22,90 @@ WD_ALWAYS_INLINE wdRectTemplate<Type>::wdRectTemplate(Type width, Type height)
 }
 
 template <typename Type>
-WD_ALWAYS_INLINE bool wdRectTemplate<Type>::operator==(const wdRectTemplate<Type>& rhs) const
+NS_ALWAYS_INLINE nsRectTemplate<Type>::nsRectTemplate(const nsVec2Template<Type>& vTopLeftPosition, const nsVec2Template<Type>& vSize)
+{
+  x = vTopLeftPosition.x;
+  y = vTopLeftPosition.y;
+  width = vSize.x;
+  height = vSize.y;
+}
+
+template <typename Type>
+nsRectTemplate<Type> nsRectTemplate<Type>::MakeInvalid()
+{
+  /// \test This is new
+
+  nsRectTemplate<Type> res;
+
+  const Type fLargeValue = nsMath::MaxValue<Type>() / 2;
+  res.x = fLargeValue;
+  res.y = fLargeValue;
+  res.width = -fLargeValue;
+  res.height = -fLargeValue;
+
+  return res;
+}
+
+template <typename Type>
+nsRectTemplate<Type> nsRectTemplate<Type>::MakeIntersection(const nsRectTemplate<Type>& r0, const nsRectTemplate<Type>& r1)
+{
+  /// \test This is new
+
+  nsRectTemplate<Type> res;
+
+  Type x1 = nsMath::Max(r0.GetX1(), r1.GetX1());
+  Type y1 = nsMath::Max(r0.GetY1(), r1.GetY1());
+  Type x2 = nsMath::Min(r0.GetX2(), r1.GetX2());
+  Type y2 = nsMath::Min(r0.GetY2(), r1.GetY2());
+
+  res.x = x1;
+  res.y = y1;
+  res.width = x2 - x1;
+  res.height = y2 - y1;
+
+  return res;
+}
+
+template <typename Type>
+nsRectTemplate<Type> nsRectTemplate<Type>::MakeUnion(const nsRectTemplate<Type>& r0, const nsRectTemplate<Type>& r1)
+{
+  /// \test This is new
+
+  nsRectTemplate<Type> res;
+
+  Type x1 = nsMath::Min(r0.GetX1(), r1.GetX1());
+  Type y1 = nsMath::Min(r0.GetY1(), r1.GetY1());
+  Type x2 = nsMath::Max(r0.GetX2(), r1.GetX2());
+  Type y2 = nsMath::Max(r0.GetY2(), r1.GetY2());
+
+  res.x = x1;
+  res.y = y1;
+  res.width = x2 - x1;
+  res.height = y2 - y1;
+
+  return res;
+}
+
+template <typename Type>
+NS_ALWAYS_INLINE bool nsRectTemplate<Type>::operator==(const nsRectTemplate<Type>& rhs) const
 {
   return x == rhs.x && y == rhs.y && width == rhs.width && height == rhs.height;
 }
 
 template <typename Type>
-WD_ALWAYS_INLINE bool wdRectTemplate<Type>::operator!=(const wdRectTemplate<Type>& rhs) const
+NS_ALWAYS_INLINE bool nsRectTemplate<Type>::operator!=(const nsRectTemplate<Type>& rhs) const
 {
   return !(*this == rhs);
 }
 
 template <typename Type>
-WD_ALWAYS_INLINE bool wdRectTemplate<Type>::HasNonZeroArea() const
+NS_ALWAYS_INLINE bool nsRectTemplate<Type>::HasNonZeroArea() const
 {
   return (width > 0) && (height > 0);
 }
 
 template <typename Type>
-WD_ALWAYS_INLINE bool wdRectTemplate<Type>::Contains(const wdVec2Template<Type>& vPoint) const
+NS_ALWAYS_INLINE bool nsRectTemplate<Type>::Contains(const nsVec2Template<Type>& vPoint) const
 {
   if (vPoint.x >= x && vPoint.x <= Right())
   {
@@ -54,7 +117,13 @@ WD_ALWAYS_INLINE bool wdRectTemplate<Type>::Contains(const wdVec2Template<Type>&
 }
 
 template <typename Type>
-WD_ALWAYS_INLINE bool wdRectTemplate<Type>::Overlaps(const wdRectTemplate<Type>& other) const
+NS_ALWAYS_INLINE bool nsRectTemplate<Type>::Contains(const nsRectTemplate<Type>& r) const
+{
+  return r.x >= x && r.y >= y && r.Right() <= Right() && r.Bottom() <= Bottom();
+}
+
+template <typename Type>
+NS_ALWAYS_INLINE bool nsRectTemplate<Type>::Overlaps(const nsRectTemplate<Type>& other) const
 {
   if (x < other.Right() && Right() > other.x && y < other.Bottom() && Bottom() > other.y)
     return true;
@@ -63,7 +132,7 @@ WD_ALWAYS_INLINE bool wdRectTemplate<Type>::Overlaps(const wdRectTemplate<Type>&
 }
 
 template <typename Type>
-void wdRectTemplate<Type>::ExpandToInclude(const wdRectTemplate<Type>& other)
+void nsRectTemplate<Type>::ExpandToInclude(const nsRectTemplate<Type>& other)
 {
   Type thisRight = Right();
   Type thisBottom = Bottom();
@@ -86,13 +155,45 @@ void wdRectTemplate<Type>::ExpandToInclude(const wdRectTemplate<Type>& other)
 }
 
 template <typename Type>
-WD_ALWAYS_INLINE void wdRectTemplate<Type>::Clip(const wdRectTemplate<Type>& clipRect)
+void nsRectTemplate<Type>::ExpandToInclude(const nsVec2Template<Type>& other)
 {
-  Type newLeft = wdMath::Max<Type>(x, clipRect.x);
-  Type newTop = wdMath::Max<Type>(y, clipRect.y);
+  Type thisRight = Right();
+  Type thisBottom = Bottom();
 
-  Type newRight = wdMath::Min<Type>(Right(), clipRect.Right());
-  Type newBottom = wdMath::Min<Type>(Bottom(), clipRect.Bottom());
+  if (other.x < x)
+    x = other.x;
+
+  if (other.y < y)
+    y = other.y;
+
+  if (other.x > thisRight)
+    width = other.x - x;
+  else
+    width = thisRight - x;
+
+  if (other.y > thisBottom)
+    height = other.y - y;
+  else
+    height = thisBottom - y;
+}
+
+template <typename Type>
+void nsRectTemplate<Type>::Grow(Type xy)
+{
+  x -= xy;
+  y -= xy;
+  width += xy * 2;
+  height += xy * 2;
+}
+
+template <typename Type>
+NS_ALWAYS_INLINE void nsRectTemplate<Type>::Clip(const nsRectTemplate<Type>& clipRect)
+{
+  Type newLeft = nsMath::Max<Type>(x, clipRect.x);
+  Type newTop = nsMath::Max<Type>(y, clipRect.y);
+
+  Type newRight = nsMath::Min<Type>(Right(), clipRect.Right());
+  Type newBottom = nsMath::Min<Type>(Bottom(), clipRect.Bottom());
 
   x = newLeft;
   y = newTop;
@@ -101,19 +202,7 @@ WD_ALWAYS_INLINE void wdRectTemplate<Type>::Clip(const wdRectTemplate<Type>& cli
 }
 
 template <typename Type>
-WD_ALWAYS_INLINE void wdRectTemplate<Type>::SetInvalid()
-{
-  /// \test This is new
-
-  const Type fLargeValue = wdMath::MaxValue<Type>() / 2;
-  x = fLargeValue;
-  y = fLargeValue;
-  width = -fLargeValue;
-  height = -fLargeValue;
-}
-
-template <typename Type>
-WD_ALWAYS_INLINE bool wdRectTemplate<Type>::IsValid() const
+NS_ALWAYS_INLINE bool nsRectTemplate<Type>::IsValid() const
 {
   /// \test This is new
 
@@ -121,47 +210,24 @@ WD_ALWAYS_INLINE bool wdRectTemplate<Type>::IsValid() const
 }
 
 template <typename Type>
-WD_ALWAYS_INLINE const wdVec2Template<Type> wdRectTemplate<Type>::GetClampedPoint(const wdVec2Template<Type>& vPoint) const
+NS_ALWAYS_INLINE const nsVec2Template<Type> nsRectTemplate<Type>::GetClampedPoint(const nsVec2Template<Type>& vPoint) const
 {
   /// \test This is new
 
-  return wdVec2Template<Type>(wdMath::Clamp(vPoint.x, Left(), Right()), wdMath::Clamp(vPoint.y, Top(), Bottom()));
+  return nsVec2Template<Type>(nsMath::Clamp(vPoint.x, Left(), Right()), nsMath::Clamp(vPoint.y, Top(), Bottom()));
 }
 
 template <typename Type>
-void wdRectTemplate<Type>::SetIntersection(const wdRectTemplate<Type>& r0, const wdRectTemplate<Type>& r1)
+void nsRectTemplate<Type>::SetCenter(Type tX, Type tY)
 {
   /// \test This is new
 
-  Type x1 = wdMath::Max(r0.GetX1(), r1.GetX1());
-  Type y1 = wdMath::Max(r0.GetY1(), r1.GetY1());
-  Type x2 = wdMath::Min(r0.GetX2(), r1.GetX2());
-  Type y2 = wdMath::Min(r0.GetY2(), r1.GetY2());
-
-  x = x1;
-  y = y1;
-  width = x2 - x1;
-  height = y2 - y1;
+  x = tX - width / 2;
+  y = tY - height / 2;
 }
 
 template <typename Type>
-void wdRectTemplate<Type>::SetUnion(const wdRectTemplate<Type>& r0, const wdRectTemplate<Type>& r1)
-{
-  /// \test This is new
-
-  Type x1 = wdMath::Min(r0.GetX1(), r1.GetX1());
-  Type y1 = wdMath::Min(r0.GetY1(), r1.GetY1());
-  Type x2 = wdMath::Max(r0.GetX2(), r1.GetX2());
-  Type y2 = wdMath::Max(r0.GetY2(), r1.GetY2());
-
-  x = x1;
-  y = y1;
-  width = x2 - x1;
-  height = y2 - y1;
-}
-
-template <typename Type>
-void wdRectTemplate<Type>::Translate(Type tX, Type tY)
+void nsRectTemplate<Type>::Translate(Type tX, Type tY)
 {
   /// \test This is new
 
@@ -170,7 +236,7 @@ void wdRectTemplate<Type>::Translate(Type tX, Type tY)
 }
 
 template <typename Type>
-void wdRectTemplate<Type>::Scale(Type sX, Type sY)
+void nsRectTemplate<Type>::Scale(Type sX, Type sY)
 {
   /// \test This is new
 

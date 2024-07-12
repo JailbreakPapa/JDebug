@@ -4,30 +4,43 @@
 #include <Foundation/IO/JSONParser.h>
 #include <Foundation/Types/Variant.h>
 
-/// \brief This JSON reader will read an entire JSON document into a hierarchical structure of wdVariants.
+/// \brief This JSON reader will read an entire JSON document into a hierarchical structure of nsVariants.
 ///
-/// The reader will parse the entire document and create a data structure of wdVariants, which can then be traversed easily.
+/// The reader will parse the entire document and create a data structure of nsVariants, which can then be traversed easily.
 /// Note that this class is much less efficient at reading large JSON documents, as it will dynamically allocate and copy objects around
 /// quite a bit. For small to medium sized documents that might be good enough, for large files one should prefer to write a dedicated
-/// class derived from wdJSONParser.
-class WD_FOUNDATION_DLL wdJSONReader : public wdJSONParser
+/// class derived from nsJSONParser.
+class NS_FOUNDATION_DLL nsJSONReader : public nsJSONParser
 {
 public:
-  wdJSONReader();
+  enum class ElementType : nsInt8
+  {
+    None,       ///< The JSON document is entirely empty (not even containing an empty object or array)
+    Dictionary, ///< The top level element in the JSON document is an object
+    Array,      ///< The top level element in the JSON document is an array
+  };
 
-  /// \brief Reads the entire stream and creates the internal data structure that represents the JSON document. Returns WD_FAILURE if any parsing
+  nsJSONReader();
+
+  /// \brief Reads the entire stream and creates the internal data structure that represents the JSON document. Returns NS_FAILURE if any parsing
   /// error occurred.
-  wdResult Parse(wdStreamReader& ref_input, wdUInt32 uiFirstLineOffset = 0);
+  nsResult Parse(nsStreamReader& ref_input, nsUInt32 uiFirstLineOffset = 0);
 
   /// \brief Returns the top-level object of the JSON document.
-  const wdVariantDictionary& GetTopLevelObject() const { return m_Stack.PeekBack().m_Dictionary; }
+  const nsVariantDictionary& GetTopLevelObject() const { return m_Stack.PeekBack().m_Dictionary; }
+
+  /// \brief Returns the top-level array of the JSON document.
+  const nsVariantArray& GetTopLevelArray() const { return m_Stack.PeekBack().m_Array; }
+
+  /// \brief Returns whether the top level element is an array or an object.
+  ElementType GetTopLevelElementType() const { return m_Stack.PeekBack().m_Mode; }
 
 private:
   /// \brief This function can be overridden to skip certain variables, however the overriding function must still call this.
-  virtual bool OnVariable(const char* szVarName) override;
+  virtual bool OnVariable(nsStringView sVarName) override;
 
   /// \brief [internal] Do not override further.
-  virtual void OnReadValue(const char* szValue) override;
+  virtual void OnReadValue(nsStringView sValue) override;
 
   /// \brief [internal] Do not override further.
   virtual void OnReadValue(double fValue) override;
@@ -50,25 +63,19 @@ private:
   /// \brief [internal] Do not override further.
   virtual void OnEndArray() override;
 
-  virtual void OnParsingError(const char* szMessage, bool bFatal, wdUInt32 uiLine, wdUInt32 uiColumn) override;
+  virtual void OnParsingError(nsStringView sMessage, bool bFatal, nsUInt32 uiLine, nsUInt32 uiColumn) override;
 
 protected:
-  enum class ElementMode : wdInt8
-  {
-    Array,
-    Dictionary
-  };
-
   struct Element
   {
-    wdString m_sName;
-    ElementMode m_Mode;
-    wdVariantArray m_Array;
-    wdVariantDictionary m_Dictionary;
+    nsString m_sName;
+    ElementType m_Mode = ElementType::None;
+    nsVariantArray m_Array;
+    nsVariantDictionary m_Dictionary;
   };
 
-  wdHybridArray<Element, 32> m_Stack;
+  nsHybridArray<Element, 32> m_Stack;
 
-  bool m_bParsingError;
-  wdString m_sLastName;
+  bool m_bParsingError = false;
+  nsString m_sLastName;
 };

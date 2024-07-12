@@ -1,176 +1,202 @@
 #pragma once
 
-WD_ALWAYS_INLINE wdSimdBBox::wdSimdBBox() {}
+NS_ALWAYS_INLINE nsSimdBBox::nsSimdBBox() = default;
 
-WD_ALWAYS_INLINE wdSimdBBox::wdSimdBBox(const wdSimdVec4f& vMin, const wdSimdVec4f& vMax)
+NS_ALWAYS_INLINE nsSimdBBox::nsSimdBBox(const nsSimdVec4f& vMin, const nsSimdVec4f& vMax)
+  : m_Min(vMin)
+  , m_Max(vMax)
 {
-  m_Min = vMin;
-  m_Max = vMax;
 }
 
-WD_ALWAYS_INLINE void wdSimdBBox::SetInvalid()
+NS_ALWAYS_INLINE nsSimdBBox nsSimdBBox::MakeZero()
 {
-  m_Min.Set(wdMath::MaxValue<float>());
-  m_Max.Set(-wdMath::MaxValue<float>());
+  return nsSimdBBox(nsSimdVec4f::MakeZero(), nsSimdVec4f::MakeZero());
 }
 
-WD_ALWAYS_INLINE void wdSimdBBox::SetCenterAndHalfExtents(const wdSimdVec4f& vCenter, const wdSimdVec4f& vHalfExtents)
+NS_ALWAYS_INLINE nsSimdBBox nsSimdBBox::MakeInvalid()
+{
+  return nsSimdBBox(nsSimdVec4f(nsMath::MaxValue<float>()), nsSimdVec4f(-nsMath::MaxValue<float>()));
+}
+
+NS_ALWAYS_INLINE nsSimdBBox nsSimdBBox::MakeFromCenterAndHalfExtents(const nsSimdVec4f& vCenter, const nsSimdVec4f& vHalfExtents)
+{
+  return nsSimdBBox(vCenter - vHalfExtents, vCenter + vHalfExtents);
+}
+
+NS_ALWAYS_INLINE nsSimdBBox nsSimdBBox::MakeFromMinMax(const nsSimdVec4f& vMin, const nsSimdVec4f& vMax)
+{
+  return nsSimdBBox(vMin, vMax);
+}
+
+NS_ALWAYS_INLINE nsSimdBBox nsSimdBBox::MakeFromPoints(const nsSimdVec4f* pPoints, nsUInt32 uiNumPoints, nsUInt32 uiStride /*= sizeof(nsSimdVec4f)*/)
+{
+  nsSimdBBox box = nsSimdBBox::MakeInvalid();
+  box.ExpandToInclude(pPoints, uiNumPoints, uiStride);
+  return box;
+}
+
+NS_ALWAYS_INLINE void nsSimdBBox::SetInvalid()
+{
+  m_Min.Set(nsMath::MaxValue<float>());
+  m_Max.Set(-nsMath::MaxValue<float>());
+}
+
+NS_ALWAYS_INLINE void nsSimdBBox::SetCenterAndHalfExtents(const nsSimdVec4f& vCenter, const nsSimdVec4f& vHalfExtents)
 {
   m_Min = vCenter - vHalfExtents;
   m_Max = vCenter + vHalfExtents;
 }
 
-WD_ALWAYS_INLINE void wdSimdBBox::SetFromPoints(const wdSimdVec4f* pPoints, wdUInt32 uiNumPoints, wdUInt32 uiStride)
+NS_ALWAYS_INLINE void nsSimdBBox::SetFromPoints(const nsSimdVec4f* pPoints, nsUInt32 uiNumPoints, nsUInt32 uiStride)
 {
-  SetInvalid();
+  *this = MakeInvalid();
   ExpandToInclude(pPoints, uiNumPoints, uiStride);
 }
 
-WD_ALWAYS_INLINE bool wdSimdBBox::IsValid() const
+NS_ALWAYS_INLINE bool nsSimdBBox::IsValid() const
 {
   return m_Min.IsValid<3>() && m_Max.IsValid<3>() && (m_Min <= m_Max).AllSet<3>();
 }
 
-WD_ALWAYS_INLINE bool wdSimdBBox::IsNaN() const
+NS_ALWAYS_INLINE bool nsSimdBBox::IsNaN() const
 {
   return m_Min.IsNaN<3>() || m_Max.IsNaN<3>();
 }
 
-WD_ALWAYS_INLINE wdSimdVec4f wdSimdBBox::GetCenter() const
+NS_ALWAYS_INLINE nsSimdVec4f nsSimdBBox::GetCenter() const
 {
-  return (m_Min + m_Max) * wdSimdFloat(0.5f);
+  return (m_Min + m_Max) * nsSimdFloat(0.5f);
 }
 
-WD_ALWAYS_INLINE wdSimdVec4f wdSimdBBox::GetExtents() const
+NS_ALWAYS_INLINE nsSimdVec4f nsSimdBBox::GetExtents() const
 {
   return m_Max - m_Min;
 }
 
-WD_ALWAYS_INLINE wdSimdVec4f wdSimdBBox::GetHalfExtents() const
+NS_ALWAYS_INLINE nsSimdVec4f nsSimdBBox::GetHalfExtents() const
 {
-  return (m_Max - m_Min) * wdSimdFloat(0.5f);
+  return (m_Max - m_Min) * nsSimdFloat(0.5f);
 }
 
-WD_ALWAYS_INLINE void wdSimdBBox::ExpandToInclude(const wdSimdVec4f& vPoint)
+NS_ALWAYS_INLINE void nsSimdBBox::ExpandToInclude(const nsSimdVec4f& vPoint)
 {
   m_Min = m_Min.CompMin(vPoint);
   m_Max = m_Max.CompMax(vPoint);
 }
 
-inline void wdSimdBBox::ExpandToInclude(const wdSimdVec4f* pPoints, wdUInt32 uiNumPoints, wdUInt32 uiStride)
+inline void nsSimdBBox::ExpandToInclude(const nsSimdVec4f* pPoints, nsUInt32 uiNumPoints, nsUInt32 uiStride)
 {
-  WD_ASSERT_DEBUG(pPoints != nullptr, "Array may not be nullptr.");
-  WD_ASSERT_DEBUG(uiStride >= sizeof(wdSimdVec4f), "Data may not overlap.");
+  NS_ASSERT_DEBUG(pPoints != nullptr, "Array may not be nullptr.");
+  NS_ASSERT_DEBUG(uiStride >= sizeof(nsSimdVec4f), "Data may not overlap.");
 
-  const wdSimdVec4f* pCur = pPoints;
+  const nsSimdVec4f* pCur = pPoints;
 
-  for (wdUInt32 i = 0; i < uiNumPoints; ++i)
+  for (nsUInt32 i = 0; i < uiNumPoints; ++i)
   {
     ExpandToInclude(*pCur);
 
-    pCur = wdMemoryUtils::AddByteOffset(pCur, uiStride);
+    pCur = nsMemoryUtils::AddByteOffset(pCur, uiStride);
   }
 }
 
-WD_ALWAYS_INLINE void wdSimdBBox::ExpandToInclude(const wdSimdBBox& rhs)
+NS_ALWAYS_INLINE void nsSimdBBox::ExpandToInclude(const nsSimdBBox& rhs)
 {
   m_Min = m_Min.CompMin(rhs.m_Min);
   m_Max = m_Max.CompMax(rhs.m_Max);
 }
 
-inline void wdSimdBBox::ExpandToCube()
+inline void nsSimdBBox::ExpandToCube()
 {
-  const wdSimdVec4f center = GetCenter();
-  const wdSimdVec4f halfExtents = center - m_Min;
+  const nsSimdVec4f center = GetCenter();
+  const nsSimdVec4f halfExtents = center - m_Min;
 
-  SetCenterAndHalfExtents(center, wdSimdVec4f(halfExtents.HorizontalMax<3>()));
+  *this = nsSimdBBox::MakeFromCenterAndHalfExtents(center, nsSimdVec4f(halfExtents.HorizontalMax<3>()));
 }
 
-WD_ALWAYS_INLINE bool wdSimdBBox::Contains(const wdSimdVec4f& vPoint) const
+NS_ALWAYS_INLINE bool nsSimdBBox::Contains(const nsSimdVec4f& vPoint) const
 {
   return ((vPoint >= m_Min) && (vPoint <= m_Max)).AllSet<3>();
 }
 
-WD_ALWAYS_INLINE bool wdSimdBBox::Contains(const wdSimdBBox& rhs) const
+NS_ALWAYS_INLINE bool nsSimdBBox::Contains(const nsSimdBBox& rhs) const
 {
   return Contains(rhs.m_Min) && Contains(rhs.m_Max);
 }
 
-inline bool wdSimdBBox::Contains(const wdSimdBSphere& rhs) const
+inline bool nsSimdBBox::Contains(const nsSimdBSphere& rhs) const
 {
-  wdSimdBBox otherBox;
-  otherBox.SetCenterAndHalfExtents(rhs.GetCenter(), wdSimdVec4f(rhs.GetRadius()));
+  const nsSimdBBox otherBox = nsSimdBBox::MakeFromCenterAndHalfExtents(rhs.GetCenter(), nsSimdVec4f(rhs.GetRadius()));
 
   return Contains(otherBox);
 }
 
-WD_ALWAYS_INLINE bool wdSimdBBox::Overlaps(const wdSimdBBox& rhs) const
+NS_ALWAYS_INLINE bool nsSimdBBox::Overlaps(const nsSimdBBox& rhs) const
 {
   return ((m_Max > rhs.m_Min) && (m_Min < rhs.m_Max)).AllSet<3>();
 }
 
-inline bool wdSimdBBox::Overlaps(const wdSimdBSphere& rhs) const
+inline bool nsSimdBBox::Overlaps(const nsSimdBSphere& rhs) const
 {
   // check whether the closest point between box and sphere is inside the sphere (it is definitely inside the box)
   return rhs.Contains(GetClampedPoint(rhs.GetCenter()));
 }
 
-WD_ALWAYS_INLINE void wdSimdBBox::Grow(const wdSimdVec4f& vDiff)
+NS_ALWAYS_INLINE void nsSimdBBox::Grow(const nsSimdVec4f& vDiff)
 {
   m_Max += vDiff;
   m_Min -= vDiff;
 }
 
-WD_ALWAYS_INLINE void wdSimdBBox::Translate(const wdSimdVec4f& vDiff)
+NS_ALWAYS_INLINE void nsSimdBBox::Translate(const nsSimdVec4f& vDiff)
 {
   m_Min += vDiff;
   m_Max += vDiff;
 }
 
-WD_ALWAYS_INLINE void wdSimdBBox::Transform(const wdSimdTransform& t)
+NS_ALWAYS_INLINE void nsSimdBBox::Transform(const nsSimdTransform& t)
 {
   Transform(t.GetAsMat4());
 }
 
-WD_ALWAYS_INLINE void wdSimdBBox::Transform(const wdSimdMat4f& mMat)
+NS_ALWAYS_INLINE void nsSimdBBox::Transform(const nsSimdMat4f& mMat)
 {
-  const wdSimdVec4f center = GetCenter();
-  const wdSimdVec4f halfExtents = center - m_Min;
+  const nsSimdVec4f center = GetCenter();
+  const nsSimdVec4f halfExtents = center - m_Min;
 
-  const wdSimdVec4f newCenter = mMat.TransformPosition(center);
+  const nsSimdVec4f newCenter = mMat.TransformPosition(center);
 
-  wdSimdVec4f newHalfExtents = mMat.m_col0.Abs() * halfExtents.x();
+  nsSimdVec4f newHalfExtents = mMat.m_col0.Abs() * halfExtents.x();
   newHalfExtents += mMat.m_col1.Abs() * halfExtents.y();
   newHalfExtents += mMat.m_col2.Abs() * halfExtents.z();
 
-  SetCenterAndHalfExtents(newCenter, newHalfExtents);
+  *this = nsSimdBBox::MakeFromCenterAndHalfExtents(newCenter, newHalfExtents);
 }
 
-WD_ALWAYS_INLINE wdSimdVec4f wdSimdBBox::GetClampedPoint(const wdSimdVec4f& vPoint) const
+NS_ALWAYS_INLINE nsSimdVec4f nsSimdBBox::GetClampedPoint(const nsSimdVec4f& vPoint) const
 {
   return vPoint.CompMin(m_Max).CompMax(m_Min);
 }
 
-inline wdSimdFloat wdSimdBBox::GetDistanceSquaredTo(const wdSimdVec4f& vPoint) const
+inline nsSimdFloat nsSimdBBox::GetDistanceSquaredTo(const nsSimdVec4f& vPoint) const
 {
-  const wdSimdVec4f vClamped = GetClampedPoint(vPoint);
+  const nsSimdVec4f vClamped = GetClampedPoint(vPoint);
 
   return (vPoint - vClamped).GetLengthSquared<3>();
 }
 
-inline wdSimdFloat wdSimdBBox::GetDistanceTo(const wdSimdVec4f& vPoint) const
+inline nsSimdFloat nsSimdBBox::GetDistanceTo(const nsSimdVec4f& vPoint) const
 {
-  const wdSimdVec4f vClamped = GetClampedPoint(vPoint);
+  const nsSimdVec4f vClamped = GetClampedPoint(vPoint);
 
   return (vPoint - vClamped).GetLength<3>();
 }
 
-WD_ALWAYS_INLINE bool wdSimdBBox::operator==(const wdSimdBBox& rhs) const
+NS_ALWAYS_INLINE bool nsSimdBBox::operator==(const nsSimdBBox& rhs) const
 {
   return ((m_Min == rhs.m_Min) && (m_Max == rhs.m_Max)).AllSet<3>();
 }
 
-WD_ALWAYS_INLINE bool wdSimdBBox::operator!=(const wdSimdBBox& rhs) const
+NS_ALWAYS_INLINE bool nsSimdBBox::operator!=(const nsSimdBBox& rhs) const
 {
   return ((m_Min != rhs.m_Min) || (m_Max != rhs.m_Max)).AnySet<3>();
 }

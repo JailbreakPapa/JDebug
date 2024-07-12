@@ -3,10 +3,10 @@
 /// \brief Manages a lock (e.g. a mutex) and ensures that it is properly released as the lock object goes out of scope. The lock/unlock will
 /// only be done if the boolean condition is satisfied at scope creation time.
 template <typename T>
-class wdConditionalLock
+class nsConditionalLock
 {
 public:
-  WD_ALWAYS_INLINE explicit wdConditionalLock(T& lock, bool bCondition)
+  NS_ALWAYS_INLINE explicit nsConditionalLock(T& lock, bool bCondition)
     : m_lock(lock)
     , m_bCondition(bCondition)
   {
@@ -16,7 +16,7 @@ public:
     }
   }
 
-  WD_ALWAYS_INLINE ~wdConditionalLock()
+  NS_ALWAYS_INLINE ~nsConditionalLock()
   {
     if (m_bCondition)
     {
@@ -25,9 +25,9 @@ public:
   }
 
 private:
-  wdConditionalLock();
-  wdConditionalLock(const wdConditionalLock<T>& rhs);
-  void operator=(const wdConditionalLock<T>& rhs);
+  nsConditionalLock();
+  nsConditionalLock(const nsConditionalLock<T>& rhs);
+  void operator=(const nsConditionalLock<T>& rhs);
 
   T& m_lock;
   bool m_bCondition;

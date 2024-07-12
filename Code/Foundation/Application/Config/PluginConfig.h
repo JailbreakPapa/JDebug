@@ -5,33 +5,33 @@
 #include <Foundation/Reflection/Reflection.h>
 #include <Foundation/Strings/String.h>
 
-class WD_FOUNDATION_DLL wdApplicationPluginConfig
+class NS_FOUNDATION_DLL nsApplicationPluginConfig
 {
 public:
-  wdApplicationPluginConfig();
+  nsApplicationPluginConfig();
 
-  static constexpr const wdStringView s_sConfigFile = ":project/RuntimeConfigs/Plugins.ddl"_wdsv;
+  static constexpr const nsStringView s_sConfigFile = ":project/RuntimeConfigs/Plugins.ddl"_nssv;
 
-  wdResult Save(wdStringView sConfigPath = s_sConfigFile) const;
-  void Load(wdStringView sConfigPath = s_sConfigFile);
+  nsResult Save(nsStringView sConfigPath = s_sConfigFile) const;
+  void Load(nsStringView sConfigPath = s_sConfigFile);
   void Apply();
 
-  struct WD_FOUNDATION_DLL PluginConfig
+  struct NS_FOUNDATION_DLL PluginConfig
   {
     bool operator<(const PluginConfig& rhs) const;
 
-    wdString m_sAppDirRelativePath;
+    nsString m_sAppDirRelativePath;
     bool m_bLoadCopy = false;
   };
 
   bool AddPlugin(const PluginConfig& cfg);
   bool RemovePlugin(const PluginConfig& cfg);
 
-  mutable wdHybridArray<PluginConfig, 8> m_Plugins;
+  mutable nsHybridArray<PluginConfig, 8> m_Plugins;
 };
 
 
-using wdApplicationPluginConfig_PluginConfig = wdApplicationPluginConfig::PluginConfig;
+using nsApplicationPluginConfig_PluginConfig = nsApplicationPluginConfig::PluginConfig;
 
-WD_DECLARE_REFLECTABLE_TYPE(WD_FOUNDATION_DLL, wdApplicationPluginConfig);
-WD_DECLARE_REFLECTABLE_TYPE(WD_FOUNDATION_DLL, wdApplicationPluginConfig_PluginConfig);
+NS_DECLARE_REFLECTABLE_TYPE(NS_FOUNDATION_DLL, nsApplicationPluginConfig);
+NS_DECLARE_REFLECTABLE_TYPE(NS_FOUNDATION_DLL, nsApplicationPluginConfig_PluginConfig);

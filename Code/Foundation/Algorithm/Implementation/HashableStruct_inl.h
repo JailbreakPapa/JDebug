@@ -2,28 +2,28 @@
 #include <Foundation/Memory/MemoryUtils.h>
 
 template <typename T>
-WD_ALWAYS_INLINE wdHashableStruct<T>::wdHashableStruct()
+NS_ALWAYS_INLINE nsHashableStruct<T>::nsHashableStruct()
 {
-  wdMemoryUtils::ZeroFill<T>(static_cast<T*>(this), 1);
+  nsMemoryUtils::ZeroFill<T>(static_cast<T*>(this), 1);
 }
 
 template <typename T>
-WD_ALWAYS_INLINE wdHashableStruct<T>::wdHashableStruct(const wdHashableStruct<T>& other)
+NS_ALWAYS_INLINE nsHashableStruct<T>::nsHashableStruct(const nsHashableStruct<T>& other)
 {
-  wdMemoryUtils::RawByteCopy(this, &other, sizeof(T));
+  nsMemoryUtils::RawByteCopy(this, &other, sizeof(T));
 }
 
 template <typename T>
-WD_ALWAYS_INLINE void wdHashableStruct<T>::operator=(const wdHashableStruct<T>& other)
+NS_ALWAYS_INLINE void nsHashableStruct<T>::operator=(const nsHashableStruct<T>& other)
 {
   if (this != &other)
   {
-    wdMemoryUtils::RawByteCopy(this, &other, sizeof(T));
+    nsMemoryUtils::RawByteCopy(this, &other, sizeof(T));
   }
 }
 
 template <typename T>
-WD_ALWAYS_INLINE wdUInt32 wdHashableStruct<T>::CalculateHash() const
+NS_ALWAYS_INLINE nsUInt32 nsHashableStruct<T>::CalculateHash() const
 {
-  return wdHashingUtils::xxHash32(this, sizeof(T));
+  return nsHashingUtils::xxHash32(this, sizeof(T));
 }

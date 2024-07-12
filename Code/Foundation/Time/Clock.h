@@ -4,22 +4,22 @@
 
 #include <Foundation/Basics.h>
 #include <Foundation/Communication/Event.h>
-#include <Foundation/Containers/DynamicArray.h>
 #include <Foundation/IO/Stream.h>
+#include <Foundation/Reflection/Reflection.h>
 #include <Foundation/Time/Time.h>
 
-class wdTimeStepSmoothing;
+class nsTimeStepSmoothing;
 
 /// \brief A clock that can be speed up, slowed down, paused, etc. Useful for updating game logic, rendering, etc.
-class WD_FOUNDATION_DLL wdClock
+class NS_FOUNDATION_DLL nsClock
 {
 public:
   /// \brief Returns the global clock.
-  static wdClock* GetGlobalClock() { return s_pGlobalClock; }
+  static nsClock* GetGlobalClock() { return s_pGlobalClock; }
 
 public:
   /// \brief Constructor.
-  wdClock(const char* szName); // [tested]
+  nsClock(nsStringView sName); // [tested]
 
   /// \brief Resets all values to their default. E.g. call this after a new level has loaded to start fresh.
   ///
@@ -36,11 +36,11 @@ public:
 
   /// \brief Sets a time step smoother for this clock. Pass nullptr to deactivate time step smoothing.
   ///
-  /// Also calls wdTimeStepSmoothing::Reset() on any non-nullptr pSmoother.
-  void SetTimeStepSmoothing(wdTimeStepSmoothing* pSmoother);
+  /// Also calls nsTimeStepSmoothing::Reset() on any non-nullptr pSmoother.
+  void SetTimeStepSmoothing(nsTimeStepSmoothing* pSmoother);
 
   /// \brief Returns the object used for time step smoothing (if any).
-  wdTimeStepSmoothing* GetTimeStepSmoothing() const; // [tested]
+  nsTimeStepSmoothing* GetTimeStepSmoothing() const; // [tested]
 
   /// \brief Sets the clock to be paused or running.
   void SetPaused(bool bPaused); // [tested]
@@ -54,10 +54,10 @@ public:
   /// Fixed time stepping allows to run the simulation at a constant rate, which is useful
   /// for recording videos or to step subsystems that require constant steps.
   /// Clock speed, pause and min/max time step are still being applied even when the time step is fixed.
-  void SetFixedTimeStep(wdTime diff = wdTime()); // [tested]
+  void SetFixedTimeStep(nsTime diff = nsTime()); // [tested]
 
   /// \brief Returns the value for the fixed time step (zero if it is disabled).
-  wdTime GetFixedTimeStep() const; // [tested]
+  nsTime GetFixedTimeStep() const; // [tested]
 
   /// \brief Allows to replace the current accumulated time.
   ///
@@ -65,20 +65,20 @@ public:
   /// one should also reset the time to the time that was used when the game state was saved, to ensure
   /// that game objects that stored the accumulated time for reference, will continue to work.
   /// However, prefer to use Save() and Load() as those functions will store and restore the entire clock state.
-  void SetAccumulatedTime(wdTime t); // [tested]
+  void SetAccumulatedTime(nsTime t); // [tested]
 
   /// \brief Returns the accumulated time since the last call to Reset().
   ///
   /// The accumulated time is basically the 'absolute' time in the game world.
   /// Since this is the accumulation of all scaled, paused and clamped time steps,
   /// it will most likely have no relation to the real time that has passed.
-  wdTime GetAccumulatedTime() const; // [tested]
+  nsTime GetAccumulatedTime() const; // [tested]
 
   /// \brief Returns the time difference between the last two calls to Update().
   ///
   /// This is the main function to use to query how much to advance some simulation.
   /// The time step is already scaled, clamped, etc.
-  wdTime GetTimeDiff() const; // [tested]
+  nsTime GetTimeDiff() const; // [tested]
 
   /// \brief The factor with which to scale the time step during calls to Update().
   void SetSpeed(double fFactor); // [tested]
@@ -93,7 +93,7 @@ public:
   /// When a custom time step smoother is set, that class needs to apply the clock speed AND also clamp
   /// the value to the min/max time step (which means it can ignore or override that feature).
   /// When the clock is paused, it will always return a time step of zero.
-  void SetMinimumTimeStep(wdTime min); // [tested]
+  void SetMinimumTimeStep(nsTime min); // [tested]
 
   /// \brief Sets the maximum time that may pass between clock updates.
   ///
@@ -102,41 +102,41 @@ public:
   /// When a custom time step smoother is set, that class needs to apply the clock speed AND also clamp
   /// the value to the min/max time step (which means it can ignore or override that feature).
   /// \sa SetMinimumTimeStep
-  void SetMaximumTimeStep(wdTime max); // [tested]
+  void SetMaximumTimeStep(nsTime max); // [tested]
 
   /// \brief Returns the value for the minimum time step.
   /// \sa SetMinimumTimeStep
-  wdTime GetMinimumTimeStep() const; // [tested]
+  nsTime GetMinimumTimeStep() const; // [tested]
 
   /// \brief Returns the value for the maximum time step.
   /// \sa SetMaximumTimeStep
-  wdTime GetMaximumTimeStep() const; // [tested]
+  nsTime GetMaximumTimeStep() const; // [tested]
 
   /// \brief Serializes the current clock state to a stream.
-  void Save(wdStreamWriter& inout_stream) const;
+  void Save(nsStreamWriter& inout_stream) const;
 
   /// \brief Deserializes the current clock state from a stream.
-  void Load(wdStreamReader& inout_stream);
+  void Load(nsStreamReader& inout_stream);
 
-  /// \brief Sets the name of the clock. Useful to identify the clock in tools such as wdInspector.
-  void SetClockName(const char* szName);
+  /// \brief Sets the name of the clock. Useful to identify the clock in tools such as nsInspector.
+  void SetClockName(nsStringView sName);
 
   /// \brief Returns the name of the clock. All clocks get default names 'Clock N', unless the user specifies another name with
   /// SetClockName.
-  const char* GetClockName() const;
+  nsStringView GetClockName() const;
 
 
 public:
   /// \brief The data that is sent through the event interface.
   struct EventData
   {
-    const char* m_szClockName;
+    nsStringView m_sClockName;
 
-    wdTime m_RawTimeStep;
-    wdTime m_SmoothedTimeStep;
+    nsTime m_RawTimeStep;
+    nsTime m_SmoothedTimeStep;
   };
 
-  typedef wdEvent<const EventData&, wdMutex> Event;
+  using Event = nsEvent<const EventData&, nsMutex>;
 
   /// \brief Allows to register a function as an event receiver. All receivers will be notified in the order that they registered.
   static void AddEventHandler(Event::Handler handler) { s_TimeEvents.AddEventHandler(handler); }
@@ -146,24 +146,24 @@ public:
 
 
 private:
-  WD_MAKE_SUBSYSTEM_STARTUP_FRIEND(Foundation, Clock);
+  NS_MAKE_SUBSYSTEM_STARTUP_FRIEND(Foundation, Clock);
 
   static Event s_TimeEvents;
-  static wdClock* s_pGlobalClock;
+  static nsClock* s_pGlobalClock;
 
-  wdString m_sName;
+  nsString m_sName;
 
-  wdTime m_AccumulatedTime;
-  wdTime m_LastTimeDiff;
-  wdTime m_FixedTimeStep;
-  wdTime m_LastTimeUpdate;
-  wdTime m_MinTimeStep;
-  wdTime m_MaxTimeStep;
+  nsTime m_AccumulatedTime;
+  nsTime m_LastTimeDiff;
+  nsTime m_FixedTimeStep;
+  nsTime m_LastTimeUpdate;
+  nsTime m_MinTimeStep;
+  nsTime m_MaxTimeStep;
 
   double m_fSpeed;
   bool m_bPaused;
 
-  wdTimeStepSmoothing* m_pTimeStepSmoother;
+  nsTimeStepSmoothing* m_pTimeStepSmoother;
 };
 
 
@@ -171,10 +171,10 @@ private:
 ///
 /// By deriving from this class you can implement your own algorithms for time step smoothing.
 /// Then just set an instance of that class on one of the clocks and it will be applied to the time step.
-class WD_FOUNDATION_DLL wdTimeStepSmoothing
+class NS_FOUNDATION_DLL nsTimeStepSmoothing
 {
 public:
-  virtual ~wdTimeStepSmoothing() {}
+  virtual ~nsTimeStepSmoothing() = default;
 
   /// \brief The function to override to implement time step smoothing.
   ///
@@ -184,18 +184,18 @@ public:
   ///   The clock that calls this time step smoother.
   ///   Can be used to look up the clock speed and min/max time step.
   ///
-  /// \note It is the responsibility of each wdTimeStepSmoothing class to implement
+  /// \note It is the responsibility of each nsTimeStepSmoothing class to implement
   /// clock speed and also to clamp the time step to the min/max values.
   /// This allows the smoothing algorithm to override these values, if necessary.
-  virtual wdTime GetSmoothedTimeStep(wdTime rawTimeStep, const wdClock* pClock) = 0;
+  virtual nsTime GetSmoothedTimeStep(nsTime rawTimeStep, const nsClock* pClock) = 0;
 
-  /// \brief Called when wdClock::Reset(), wdClock::Load() or wdClock::SetPaused(true) was called.
+  /// \brief Called when nsClock::Reset(), nsClock::Load() or nsClock::SetPaused(true) was called.
   ///
   /// \param pClock
   ///   The clock that is calling this function.
-  virtual void Reset(const wdClock* pClock) = 0;
+  virtual void Reset(const nsClock* pClock) = 0;
 };
 
-
+NS_DECLARE_REFLECTABLE_TYPE(NS_FOUNDATION_DLL, nsClock);
 
 #include <Foundation/Time/Implementation/Clock_inl.h>

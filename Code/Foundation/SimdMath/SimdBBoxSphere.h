@@ -2,29 +2,51 @@
 
 #include <Foundation/SimdMath/SimdBBox.h>
 
-class WD_FOUNDATION_DLL wdSimdBBoxSphere
+class NS_FOUNDATION_DLL nsSimdBBoxSphere
 {
 public:
-  WD_DECLARE_POD_TYPE();
+  NS_DECLARE_POD_TYPE();
 
   /// \brief Default constructor does not initialize anything.
-  wdSimdBBoxSphere(); // [tested]
+  nsSimdBBoxSphere(); // [tested]
 
   /// \brief Constructs the bounds from the center position, the box half extends and the sphere radius.
-  wdSimdBBoxSphere(const wdSimdVec4f& vCenter, const wdSimdVec4f& vBoxHalfExtents, const wdSimdFloat& fSphereRadius); // [tested]
+  [[deprecated("Use MakeFromCenterExtents() instead.")]] nsSimdBBoxSphere(const nsSimdVec4f& vCenter, const nsSimdVec4f& vBoxHalfExtents, const nsSimdFloat& fSphereRadius); // [tested]
 
   /// \brief Constructs the bounds from the given box and sphere.
-  wdSimdBBoxSphere(const wdSimdBBox& box, const wdSimdBSphere& sphere); // [tested]
+  [[deprecated("Use MakeFromBoxAndSphere() instead.")]] nsSimdBBoxSphere(const nsSimdBBox& box, const nsSimdBSphere& sphere); // [tested]
 
   /// \brief Constructs the bounds from the given box. The sphere radius is calculated from the box extends.
-  wdSimdBBoxSphere(const wdSimdBBox& box); // [tested]
+  nsSimdBBoxSphere(const nsSimdBBox& box); // [tested]
 
   /// \brief Constructs the bounds from the given sphere. The box extends are calculated from the sphere radius.
-  wdSimdBBoxSphere(const wdSimdBSphere& sphere); // [tested]
+  nsSimdBBoxSphere(const nsSimdBSphere& sphere); // [tested]
+
+  /// \brief Creates an object with all zero values. These are valid bounds around the origin with no volume.
+  [[nodiscard]] static nsSimdBBoxSphere MakeZero();
+
+  /// \brief Creates an 'invalid' object, ie one with negative extents/radius. Invalid objects can be made valid through ExpandToInclude().
+  [[nodiscard]] static nsSimdBBoxSphere MakeInvalid(); // [tested]
+
+  /// \brief Creates an object from the given center point and extents.
+  [[nodiscard]] static nsSimdBBoxSphere MakeFromCenterExtents(const nsSimdVec4f& vCenter, const nsSimdVec4f& vBoxHalfExtents, const nsSimdFloat& fSphereRadius);
+
+  /// \brief Creates an object that contains all the provided points.
+  [[nodiscard]] static nsSimdBBoxSphere MakeFromPoints(const nsSimdVec4f* pPoints, nsUInt32 uiNumPoints, nsUInt32 uiStride = sizeof(nsSimdVec4f));
+
+  /// \brief Creates an object from another bounding box.
+  [[nodiscard]] static nsSimdBBoxSphere MakeFromBox(const nsSimdBBox& box);
+
+  /// \brief Creates an object from another bounding sphere.
+  [[nodiscard]] static nsSimdBBoxSphere MakeFromSphere(const nsSimdBSphere& sphere);
+
+  /// \brief Creates an object from another bounding box and a sphere.
+  [[nodiscard]] static nsSimdBBoxSphere MakeFromBoxAndSphere(const nsSimdBBox& box, const nsSimdBSphere& sphere);
+
 
 public:
   /// \brief Resets the bounds to an invalid state.
-  void SetInvalid(); // [tested]
+  [[deprecated("Use MakeInvalid() instead.")]] void SetInvalid(); // [tested]
 
   /// \brief Checks whether the bounds is in an invalid state.
   bool IsValid() const; // [tested]
@@ -33,30 +55,29 @@ public:
   bool IsNaN() const; // [tested]
 
   /// \brief Calculates the bounds from given set of points.
-  void SetFromPoints(const wdSimdVec4f* pPoints, wdUInt32 uiNumPoints, wdUInt32 uiStride = sizeof(wdSimdVec4f)); // [tested]
+  [[deprecated("Use MakeFromPoints() instead.")]] void SetFromPoints(const nsSimdVec4f* pPoints, nsUInt32 uiNumPoints, nsUInt32 uiStride = sizeof(nsSimdVec4f)); // [tested]
 
   /// \brief Returns the bounding box.
-  wdSimdBBox GetBox() const; // [tested]
+  nsSimdBBox GetBox() const; // [tested]
 
   /// \brief Returns the bounding sphere.
-  wdSimdBSphere GetSphere() const; // [tested]
+  nsSimdBSphere GetSphere() const; // [tested]
 
   /// \brief Expands the bounds such that the given bounds are inside it.
-  void ExpandToInclude(const wdSimdBBoxSphere& rhs); // [tested]
+  void ExpandToInclude(const nsSimdBBoxSphere& rhs); // [tested]
 
   /// \brief Transforms the bounds in its local space.
-  void Transform(const wdSimdTransform& t); // [tested]
+  void Transform(const nsSimdTransform& t); // [tested]
 
   /// \brief Transforms the bounds in its local space.
-  void Transform(const wdSimdMat4f& mMat); // [tested]
+  void Transform(const nsSimdMat4f& mMat);                          // [tested]
 
-
-  bool operator==(const wdSimdBBoxSphere& rhs) const; // [tested]
-  bool operator!=(const wdSimdBBoxSphere& rhs) const; // [tested]
+  [[nodiscard]] bool operator==(const nsSimdBBoxSphere& rhs) const; // [tested]
+  [[nodiscard]] bool operator!=(const nsSimdBBoxSphere& rhs) const; // [tested]
 
 public:
-  wdSimdVec4f m_CenterAndRadius;
-  wdSimdVec4f m_BoxHalfExtents;
+  nsSimdVec4f m_CenterAndRadius;
+  nsSimdVec4f m_BoxHalfExtents;
 };
 
 #include <Foundation/SimdMath/Implementation/SimdBBoxSphere_inl.h>

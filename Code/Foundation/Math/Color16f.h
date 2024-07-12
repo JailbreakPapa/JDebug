@@ -5,44 +5,44 @@
 
 /// \brief A 16bit per channel float color storage format.
 ///
-/// For any calculations or conversions use wdColor.
-/// \see wdColor
-class WD_FOUNDATION_DLL wdColorLinear16f
+/// For any calculations or conversions use nsColor.
+/// \see nsColor
+class NS_FOUNDATION_DLL nsColorLinear16f
 {
 public:
   // Means that colors can be copied using memcpy instead of copy construction.
-  WD_DECLARE_POD_TYPE();
+  NS_DECLARE_POD_TYPE();
 
   // *** Data ***
 public:
-  wdFloat16 r;
-  wdFloat16 g;
-  wdFloat16 b;
-  wdFloat16 a;
+  nsFloat16 r;
+  nsFloat16 g;
+  nsFloat16 b;
+  nsFloat16 a;
 
   // *** Constructors ***
 public:
   /// \brief default-constructed color is uninitialized (for speed)
-  wdColorLinear16f(); // [tested]
+  nsColorLinear16f(); // [tested]
 
   /// \brief Initializes the color with r, g, b, a
-  wdColorLinear16f(wdFloat16 r, wdFloat16 g, wdFloat16 b, wdFloat16 a); // [tested]
+  nsColorLinear16f(nsFloat16 r, nsFloat16 g, nsFloat16 b, nsFloat16 a); // [tested]
 
-  /// \brief Initializes the color with wdColor
-  wdColorLinear16f(const wdColor& color); // [tested]
+  /// \brief Initializes the color with nsColor
+  nsColorLinear16f(const nsColor& color); // [tested]
 
   // no copy-constructor and operator= since the default-generated ones will be faster
 
   // *** Functions ***
 public:
-  /// \brief Conversion to wdColor.
-  wdColor ToLinearFloat() const; // [tested]
+  /// \brief Conversion to nsColor.
+  nsColor ToLinearFloat() const; // [tested]
 
-  /// \brief Conversion to const wdFloat16*.
-  const wdFloat16* GetData() const { return &r; }
+  /// \brief Conversion to const nsFloat16*.
+  const nsFloat16* GetData() const { return &r; }
 
-  /// \brief Conversion to wdFloat16* - use with care!
-  wdFloat16* GetData() { return &r; }
+  /// \brief Conversion to nsFloat16* - use with care!
+  nsFloat16* GetData() { return &r; }
 };
 
 #include <Foundation/Math/Implementation/Color16f_inl.h>

@@ -3,7 +3,7 @@ HeaderV2
 o
 {
 	Uuid %id{u4{9665356321961261185,4634109498707889522}}
-	s %t{"wdAssetDocumentInfo"}
+	s %t{"nsAssetDocumentInfo"}
 	u3 %v{2}
 	s %n{"Header"}
 	p
@@ -28,7 +28,7 @@ o
 o
 {
 	Uuid %id{u4{15243807966819032755,4665964312049003461}}
-	s %t{"wdExposedParameter"}
+	s %t{"nsExposedParameter"}
 	u3 %v{2}
 	p
 	{
@@ -41,7 +41,7 @@ o
 o
 {
 	Uuid %id{u4{12960756980667939713,9587361796579175665}}
-	s %t{"wdExposedParameters"}
+	s %t{"nsExposedParameters"}
 	u3 %v{3}
 	p
 	{
@@ -57,7 +57,7 @@ Objects
 o
 {
 	Uuid %id{u4{11274596233262214831,4721726836595720333}}
-	s %t{"wdParticleInitializerFactory_RandomColor"}
+	s %t{"nsParticleInitializerFactory_RandomColor"}
 	u3 %v{1}
 	p
 	{
@@ -69,7 +69,7 @@ o
 o
 {
 	Uuid %id{u4{17860101724787714708,5069910932480068491}}
-	s %t{"wdParticleInitializerFactory_SpherePosition"}
+	s %t{"nsParticleInitializerFactory_SpherePosition"}
 	u3 %v{2}
 	p
 	{
@@ -78,7 +78,7 @@ o
 		f %Radius{0x0000E040}
 		s %ScaleRadiusParam{""}
 		b %SetVelocity{1}
-		wdVarianceTypeFloat %Speed
+		nsVarianceTypeFloat %Speed
 		{
 			f %Variance{0}
 			f %Value{0x000000C0}
@@ -88,7 +88,7 @@ o
 o
 {
 	Uuid %id{u4{13562287322980197302,5286726265374158256}}
-	s %t{"wdParticleBehaviorFactory_SizeCurve"}
+	s %t{"nsParticleBehaviorFactory_SizeCurve"}
 	u3 %v{1}
 	p
 	{
@@ -100,7 +100,7 @@ o
 o
 {
 	Uuid %id{u4{8636262465772784280,5507343862534606278}}
-	s %t{"wdParticleEffectDescriptor"}
+	s %t{"nsParticleEffectDescriptor"}
 	u3 %v{2}
 	p
 	{
@@ -118,13 +118,13 @@ o
 		}
 		Time %PreSimulateDuration{d{0x0000000000000040}}
 		b %SimulateInLocalSpace{0}
-		s %WhenInvisible{"wdEffectInvisibleUpdateRate::Max10fps"}
+		s %WhenInvisible{"nsEffectInvisibleUpdateRate::Max10fps"}
 	}
 }
 o
 {
 	Uuid %id{u4{429994398006388633,5526447122681359612}}
-	s %t{"wdParticleTypeMeshFactory"}
+	s %t{"nsParticleTypeMeshFactory"}
 	u3 %v{1}
 	p
 	{
@@ -136,7 +136,7 @@ o
 o
 {
 	Uuid %id{u4{13256213580748091023,5593729422526791042}}
-	s %t{"wdParticleEmitterFactory_Continuous"}
+	s %t{"nsParticleEmitterFactory_Continuous"}
 	u3 %v{1}
 	p
 	{
@@ -151,7 +151,7 @@ o
 o
 {
 	Uuid %id{u4{10058364434640923317,5721415533216603827}}
-	s %t{"wdParticleSystemDescriptor"}
+	s %t{"nsParticleSystemDescriptor"}
 	u3 %v{2}
 	p
 	{
@@ -169,7 +169,7 @@ o
 			Uuid{u4{11274596233262214831,4721726836595720333}}
 		}
 		s %LifeScaleParam{""}
-		wdVarianceTypeTime %LifeTime
+		nsVarianceTypeTime %LifeTime
 		{
 			f %Variance{0}
 			Time %Value{d{0x0000000000000840}}
@@ -186,7 +186,7 @@ o
 o
 {
 	Uuid %id{u4{18096612296587978288,6449934965513159559}}
-	s %t{"wdDocumentRoot"}
+	s %t{"nsDocumentRoot"}
 	u3 %v{1}
 	s %n{"ObjectTree"}
 	p
@@ -203,17 +203,17 @@ Types
 o
 {
 	Uuid %id{u4{13170601159833207654,494181374349467794}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdParticleInitializerFactory"}
-		s %PluginName{"wdEditorPluginParticle"}
+		s %ParentTypeName{"nsParticleInitializerFactory"}
+		s %PluginName{"nsEditorPluginParticle"}
 		VarArray %Properties{}
-		s %TypeName{"wdParticleInitializerFactory_RandomColor"}
+		s %TypeName{"nsParticleInitializerFactory_RandomColor"}
 		u3 %TypeSize{48}
 		u3 %TypeVersion{1}
 	}
@@ -221,17 +221,17 @@ o
 o
 {
 	Uuid %id{u4{15360679658590108246,3534558875950442382}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdParticleEmitterFactory"}
-		s %PluginName{"wdEditorPluginParticle"}
+		s %ParentTypeName{"nsParticleEmitterFactory"}
+		s %PluginName{"nsEditorPluginParticle"}
 		VarArray %Properties{}
-		s %TypeName{"wdParticleEmitterFactory_Continuous"}
+		s %TypeName{"nsParticleEmitterFactory_Continuous"}
 		u3 %TypeSize{104}
 		u3 %TypeVersion{1}
 	}
@@ -239,17 +239,17 @@ o
 o
 {
 	Uuid %id{u4{3168673866823338768,4696335111295142345}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Abstract|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Abstract|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdReflectedClass"}
-		s %PluginName{"wdEditorPluginParticle"}
+		s %ParentTypeName{"nsReflectedClass"}
+		s %PluginName{"nsEditorPluginParticle"}
 		VarArray %Properties{}
-		s %TypeName{"wdParticleBehaviorFactory"}
+		s %TypeName{"nsParticleBehaviorFactory"}
 		u3 %TypeSize{8}
 		u3 %TypeVersion{1}
 	}
@@ -257,17 +257,17 @@ o
 o
 {
 	Uuid %id{u4{14006718927935415587,6034394683520582586}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdVarianceTypeBase"}
+		s %ParentTypeName{"nsVarianceTypeBase"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdVarianceTypeTime"}
+		s %TypeName{"nsVarianceTypeTime"}
 		u3 %TypeSize{16}
 		u3 %TypeVersion{1}
 	}
@@ -275,17 +275,17 @@ o
 o
 {
 	Uuid %id{u4{17853239083303459813,6311346648076434393}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
 		s %ParentTypeName{""}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdVarianceTypeBase"}
+		s %TypeName{"nsVarianceTypeBase"}
 		u3 %TypeSize{4}
 		u3 %TypeVersion{1}
 	}
@@ -293,17 +293,17 @@ o
 o
 {
 	Uuid %id{u4{6089094783765586323,8705960867921430659}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdReflectedClass"}
+		s %ParentTypeName{"nsReflectedClass"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdDocumentRoot"}
+		s %TypeName{"nsDocumentRoot"}
 		u3 %TypeSize{72}
 		u3 %TypeVersion{1}
 	}
@@ -311,17 +311,17 @@ o
 o
 {
 	Uuid %id{u4{13880744943763730395,10489507546417127904}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdReflectedClass"}
-		s %PluginName{"wdEditorPluginParticle"}
+		s %ParentTypeName{"nsReflectedClass"}
+		s %PluginName{"nsEditorPluginParticle"}
 		VarArray %Properties{}
-		s %TypeName{"wdParticleSystemDescriptor"}
+		s %TypeName{"nsParticleSystemDescriptor"}
 		u3 %TypeSize{448}
 		u3 %TypeVersion{2}
 	}
@@ -329,17 +329,17 @@ o
 o
 {
 	Uuid %id{u4{6115203881165562340,10872357301425200906}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdParticleBehaviorFactory"}
-		s %PluginName{"wdEditorPluginParticle"}
+		s %ParentTypeName{"nsParticleBehaviorFactory"}
+		s %PluginName{"nsEditorPluginParticle"}
 		VarArray %Properties{}
-		s %TypeName{"wdParticleBehaviorFactory_SizeCurve"}
+		s %TypeName{"nsParticleBehaviorFactory_SizeCurve"}
 		u3 %TypeSize{24}
 		u3 %TypeVersion{1}
 	}
@@ -347,17 +347,17 @@ o
 o
 {
 	Uuid %id{u4{1070262090948389858,12253486614951860342}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdParticleTypeFactory"}
-		s %PluginName{"wdEditorPluginParticle"}
+		s %ParentTypeName{"nsParticleTypeFactory"}
+		s %PluginName{"nsEditorPluginParticle"}
 		VarArray %Properties{}
-		s %TypeName{"wdParticleTypeMeshFactory"}
+		s %TypeName{"nsParticleTypeMeshFactory"}
 		u3 %TypeSize{200}
 		u3 %TypeVersion{1}
 	}
@@ -365,17 +365,17 @@ o
 o
 {
 	Uuid %id{u4{7645929985005038759,12736932236042017252}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Abstract|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Abstract|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdReflectedClass"}
-		s %PluginName{"wdEditorPluginParticle"}
+		s %ParentTypeName{"nsReflectedClass"}
+		s %PluginName{"nsEditorPluginParticle"}
 		VarArray %Properties{}
-		s %TypeName{"wdParticleEventReactionFactory"}
+		s %TypeName{"nsParticleEventReactionFactory"}
 		u3 %TypeSize{80}
 		u3 %TypeVersion{1}
 	}
@@ -383,17 +383,17 @@ o
 o
 {
 	Uuid %id{u4{7290268724788430682,13976679973837627887}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Abstract|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Abstract|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdReflectedClass"}
-		s %PluginName{"wdEditorPluginParticle"}
+		s %ParentTypeName{"nsReflectedClass"}
+		s %PluginName{"nsEditorPluginParticle"}
 		VarArray %Properties{}
-		s %TypeName{"wdParticleEmitterFactory"}
+		s %TypeName{"nsParticleEmitterFactory"}
 		u3 %TypeSize{8}
 		u3 %TypeVersion{1}
 	}
@@ -401,17 +401,17 @@ o
 o
 {
 	Uuid %id{u4{2947336711354777548,15013008608905564043}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
 		s %ParentTypeName{""}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdEnumBase"}
+		s %TypeName{"nsEnumBase"}
 		u3 %TypeSize{1}
 		u3 %TypeVersion{1}
 	}
@@ -419,17 +419,17 @@ o
 o
 {
 	Uuid %id{u4{16364962939148342792,15354168731974951378}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdReflectedClass"}
-		s %PluginName{"wdEditorPluginParticle"}
+		s %ParentTypeName{"nsReflectedClass"}
+		s %PluginName{"nsEditorPluginParticle"}
 		VarArray %Properties{}
-		s %TypeName{"wdParticleEffectDescriptor"}
+		s %TypeName{"nsParticleEffectDescriptor"}
 		u3 %TypeSize{344}
 		u3 %TypeVersion{2}
 	}
@@ -437,17 +437,17 @@ o
 o
 {
 	Uuid %id{u4{10442177899906164197,15426190023256028560}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Abstract|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Abstract|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdReflectedClass"}
-		s %PluginName{"wdEditorPluginParticle"}
+		s %ParentTypeName{"nsReflectedClass"}
+		s %PluginName{"nsEditorPluginParticle"}
 		VarArray %Properties{}
-		s %TypeName{"wdParticleTypeFactory"}
+		s %TypeName{"nsParticleTypeFactory"}
 		u3 %TypeSize{8}
 		u3 %TypeVersion{1}
 	}
@@ -455,17 +455,17 @@ o
 o
 {
 	Uuid %id{u4{2423790887198428227,15828538667194303030}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdParticleInitializerFactory"}
-		s %PluginName{"wdEditorPluginParticle"}
+		s %ParentTypeName{"nsParticleInitializerFactory"}
+		s %PluginName{"nsEditorPluginParticle"}
 		VarArray %Properties{}
-		s %TypeName{"wdParticleInitializerFactory_SpherePosition"}
+		s %TypeName{"nsParticleInitializerFactory_SpherePosition"}
 		u3 %TypeSize{104}
 		u3 %TypeVersion{2}
 	}
@@ -473,17 +473,17 @@ o
 o
 {
 	Uuid %id{u4{14844053051207064143,16008871343450362328}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdVarianceTypeBase"}
+		s %ParentTypeName{"nsVarianceTypeBase"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdVarianceTypeFloat"}
+		s %TypeName{"nsVarianceTypeFloat"}
 		u3 %TypeSize{8}
 		u3 %TypeVersion{1}
 	}
@@ -491,17 +491,17 @@ o
 o
 {
 	Uuid %id{u4{6121878669319425493,17675545937103933914}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Abstract|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Abstract|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdReflectedClass"}
-		s %PluginName{"wdEditorPluginParticle"}
+		s %ParentTypeName{"nsReflectedClass"}
+		s %PluginName{"nsEditorPluginParticle"}
 		VarArray %Properties{}
-		s %TypeName{"wdParticleInitializerFactory"}
+		s %TypeName{"nsParticleInitializerFactory"}
 		u3 %TypeSize{8}
 		u3 %TypeVersion{1}
 	}
@@ -509,17 +509,17 @@ o
 o
 {
 	Uuid %id{u4{983387834180907111,17935407260904399048}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
 		s %ParentTypeName{""}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdReflectedClass"}
+		s %TypeName{"nsReflectedClass"}
 		u3 %TypeSize{8}
 		u3 %TypeVersion{1}
 	}
@@ -527,17 +527,17 @@ o
 o
 {
 	Uuid %id{u4{15851140878563963282,17985324240662489411}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::IsEnum|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::IsEnum|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdEnumBase"}
-		s %PluginName{"wdEditorPluginParticle"}
+		s %ParentTypeName{"nsEnumBase"}
+		s %PluginName{"nsEditorPluginParticle"}
 		VarArray %Properties{}
-		s %TypeName{"wdEffectInvisibleUpdateRate"}
+		s %TypeName{"nsEffectInvisibleUpdateRate"}
 		u3 %TypeSize{1}
 		u3 %TypeVersion{1}
 	}

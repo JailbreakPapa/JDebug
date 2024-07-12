@@ -9,7 +9,7 @@
 /// Insertion/erasure/lookup in sets is quite fast (O (log n)).
 /// This container is implemented with a red-black tree, so it will always be a balanced tree.
 template <typename KeyType, typename Comparer>
-class wdSetBase
+class nsSetBase
 {
 private:
   struct Node;
@@ -17,11 +17,9 @@ private:
   /// \brief Only used by the sentinel node.
   struct NilNode
   {
-    NilNode();
-
-    wdUInt16 m_uiLevel;
-    Node* m_pParent;
-    Node* m_pLink[2];
+    nsUInt16 m_uiLevel = 0;
+    Node* m_pParent = nullptr;
+    Node* m_pLink[2] = {nullptr, nullptr};
   };
 
   /// \brief A node storing the key
@@ -32,40 +30,39 @@ private:
 
 public:
   /// \brief Base class for all iterators.
-  struct Iterator
+  template <bool REVERSE>
+  struct IteratorBase
   {
     using iterator_category = std::forward_iterator_tag;
-    using value_type = Iterator;
-    using difference_type = ptrdiff_t;
-    using pointer = Iterator*;
-    using reference = Iterator&;
+    using value_type = IteratorBase<REVERSE>;
+    using difference_type = std::ptrdiff_t;
+    using pointer = IteratorBase<REVERSE>*;
+    using reference = IteratorBase<REVERSE>&;
 
-    WD_DECLARE_POD_TYPE();
+    NS_DECLARE_POD_TYPE();
 
     /// \brief Constructs an invalid iterator.
-    WD_ALWAYS_INLINE Iterator()
+    NS_ALWAYS_INLINE IteratorBase()
       : m_pElement(nullptr)
     {
     } // [tested]
 
     /// \brief Checks whether this iterator points to a valid element.
-    WD_ALWAYS_INLINE bool IsValid() const { return (m_pElement != nullptr); } // [tested]
+    NS_ALWAYS_INLINE bool IsValid() const { return (m_pElement != nullptr); } // [tested]
 
     /// \brief Checks whether the two iterators point to the same element.
-    WD_ALWAYS_INLINE bool operator==(const typename wdSetBase<KeyType, Comparer>::Iterator& it2) const { return (m_pElement == it2.m_pElement); }
-
-    /// \brief Checks whether the two iterators point to the same element.
-    WD_ALWAYS_INLINE bool operator!=(const typename wdSetBase<KeyType, Comparer>::Iterator& it2) const { return (m_pElement != it2.m_pElement); }
+    NS_ALWAYS_INLINE bool operator==(const typename nsSetBase<KeyType, Comparer>::IteratorBase<REVERSE>& it2) const { return (m_pElement == it2.m_pElement); }
+    NS_ADD_DEFAULT_OPERATOR_NOTEQUAL(const typename nsSetBase<KeyType, Comparer>::IteratorBase<REVERSE>&);
 
     /// \brief Returns the 'key' of the element that this iterator points to.
-    WD_FORCE_INLINE const KeyType& Key() const
+    NS_FORCE_INLINE const KeyType& Key() const
     {
-      WD_ASSERT_DEBUG(IsValid(), "Cannot access the 'key' of an invalid iterator.");
+      NS_ASSERT_DEBUG(IsValid(), "Cannot access the 'key' of an invalid iterator.");
       return m_pElement->m_Key;
     } // [tested]
 
     /// \brief Returns the 'key' of the element that this iterator points to.
-    WD_ALWAYS_INLINE const KeyType& operator*() { return Key(); }
+    NS_ALWAYS_INLINE const KeyType& operator*() const { return Key(); }
 
     /// \brief Advances the iterator to the next element in the set. The iterator will not be valid anymore, if the end is reached.
     void Next(); // [tested]
@@ -74,15 +71,17 @@ public:
     void Prev(); // [tested]
 
     /// \brief Shorthand for 'Next'
-    WD_ALWAYS_INLINE void operator++() { Next(); } // [tested]
+    NS_ALWAYS_INLINE void operator++() { Next(); } // [tested]
 
     /// \brief Shorthand for 'Prev'
-    WD_ALWAYS_INLINE void operator--() { Prev(); } // [tested]
+    NS_ALWAYS_INLINE void operator--() { Prev(); } // [tested]
 
   protected:
-    friend class wdSetBase<KeyType, Comparer>;
+    void Advance(nsInt32 dir0, nsInt32 dir1);
 
-    WD_ALWAYS_INLINE explicit Iterator(Node* pInit)
+    friend class nsSetBase<KeyType, Comparer>;
+
+    NS_ALWAYS_INLINE explicit IteratorBase(Node* pInit)
       : m_pElement(pInit)
     {
     }
@@ -90,25 +89,28 @@ public:
     Node* m_pElement;
   };
 
+  using Iterator = IteratorBase<false>;
+  using ReverseIterator = IteratorBase<true>;
+
 protected:
   /// \brief Initializes the set to be empty.
-  wdSetBase(const Comparer& comparer, wdAllocatorBase* pAllocator); // [tested]
+  nsSetBase(const Comparer& comparer, nsAllocator* pAllocator); // [tested]
 
   /// \brief Copies all keys from the given set into this one.
-  wdSetBase(const wdSetBase<KeyType, Comparer>& cc, wdAllocatorBase* pAllocator); // [tested]
+  nsSetBase(const nsSetBase<KeyType, Comparer>& cc, nsAllocator* pAllocator); // [tested]
 
   /// \brief Destroys all elements in the set.
-  ~wdSetBase(); // [tested]
+  ~nsSetBase(); // [tested]
 
   /// \brief Copies all keys from the given set into this one.
-  void operator=(const wdSetBase<KeyType, Comparer>& rhs); // [tested]
+  void operator=(const nsSetBase<KeyType, Comparer>& rhs); // [tested]
 
 public:
   /// \brief Returns whether there are no elements in the set. O(1) operation.
   bool IsEmpty() const; // [tested]
 
   /// \brief Returns the number of elements currently stored in the set. O(1) operation.
-  wdUInt32 GetCount() const; // [tested]
+  nsUInt32 GetCount() const; // [tested]
 
   /// \brief Destroys all elements in the set and resets its size to zero.
   void Clear(); // [tested]
@@ -116,8 +118,8 @@ public:
   /// \brief Returns a constant Iterator to the very first element.
   Iterator GetIterator() const; // [tested]
 
-  /// \brief Returns a constant Iterator to the very last element. For reverse traversal.
-  Iterator GetLastIterator() const; // [tested]
+  /// \brief Returns a constant ReverseIterator to the very last element.
+  ReverseIterator GetReverseIterator() const; // [tested]
 
   /// \brief Inserts the key into the tree and returns an Iterator to it. O(log n) operation.
   template <typename CompatibleKeyType>
@@ -139,7 +141,7 @@ public:
   bool Contains(const CompatibleKeyType& key) const; // [tested]
 
   /// \brief Checks whether all keys of the given set are in the container.
-  bool ContainsSet(const wdSetBase<KeyType, Comparer>& operand) const; // [tested]
+  bool ContainsSet(const nsSetBase<KeyType, Comparer>& operand) const; // [tested]
 
   /// \brief Returns an Iterator to the element with a key equal or larger than the given key. Returns an invalid iterator, if there is no such
   /// element.
@@ -152,28 +154,26 @@ public:
   Iterator UpperBound(const CompatibleKeyType& key) const; // [tested]
 
   /// \brief Makes this set the union of itself and the operand.
-  void Union(const wdSetBase<KeyType, Comparer>& operand); // [tested]
+  void Union(const nsSetBase<KeyType, Comparer>& operand); // [tested]
 
   /// \brief Makes this set the difference of itself and the operand, i.e. subtracts operand.
-  void Difference(const wdSetBase<KeyType, Comparer>& operand); // [tested]
+  void Difference(const nsSetBase<KeyType, Comparer>& operand); // [tested]
 
   /// \brief Makes this set the intersection of itself and the operand.
-  void Intersection(const wdSetBase<KeyType, Comparer>& operand); // [tested]
+  void Intersection(const nsSetBase<KeyType, Comparer>& operand); // [tested]
 
   /// \brief Returns the allocator that is used by this instance.
-  wdAllocatorBase* GetAllocator() const { return m_Elements.GetAllocator(); }
+  nsAllocator* GetAllocator() const { return m_Elements.GetAllocator(); }
 
   /// \brief Comparison operator
-  bool operator==(const wdSetBase<KeyType, Comparer>& rhs) const; // [tested]
-
-  /// \brief Comparison operator
-  bool operator!=(const wdSetBase<KeyType, Comparer>& rhs) const; // [tested]
+  bool operator==(const nsSetBase<KeyType, Comparer>& rhs) const; // [tested]
+  NS_ADD_DEFAULT_OPERATOR_NOTEQUAL(const nsSetBase<KeyType, Comparer>&);
 
   /// \brief Returns the amount of bytes that are currently allocated on the heap.
-  wdUInt64 GetHeapMemoryUsage() const { return m_Elements.GetHeapMemoryUsage(); } // [tested]
+  nsUInt64 GetHeapMemoryUsage() const { return m_Elements.GetHeapMemoryUsage(); } // [tested]
 
   /// \brief Swaps this map with the other one.
-  void Swap(wdSetBase<KeyType, Comparer>& other); // [tested]
+  void Swap(nsSetBase<KeyType, Comparer>& other); // [tested]
 
 private:
   template <typename CompatibleKeyType>
@@ -188,7 +188,7 @@ private:
 
   /// \brief Creates one new node and initializes it.
   template <typename CompatibleKeyType>
-  Node* AcquireNode(CompatibleKeyType&& key, wdUInt16 uiLevel, Node* pParent);
+  Node* AcquireNode(CompatibleKeyType&& key, nsUInt16 uiLevel, Node* pParent);
 
   /// \brief Destroys the given node.
   void ReleaseNode(Node* pNode);
@@ -220,10 +220,10 @@ private:
   NilNode m_NilNode;
 
   /// \brief Number of active nodes in the tree.
-  wdUInt32 m_uiCount;
+  nsUInt32 m_uiCount;
 
   /// \brief Data store. Keeps all the nodes.
-  wdDeque<Node, wdNullAllocatorWrapper, false> m_Elements;
+  nsDeque<Node, nsNullAllocatorWrapper, false> m_Elements;
 
   /// \brief Stack of recently discarded nodes to quickly acquire new nodes.
   Node* m_pFreeElementStack;
@@ -232,57 +232,57 @@ private:
   Comparer m_Comparer;
 };
 
-/// \brief \see wdSetBase
-template <typename KeyType, typename Comparer = wdCompareHelper<KeyType>, typename AllocatorWrapper = wdDefaultAllocatorWrapper>
-class wdSet : public wdSetBase<KeyType, Comparer>
+/// \brief \see nsSetBase
+template <typename KeyType, typename Comparer = nsCompareHelper<KeyType>, typename AllocatorWrapper = nsDefaultAllocatorWrapper>
+class nsSet : public nsSetBase<KeyType, Comparer>
 {
 public:
-  wdSet();
-  explicit wdSet(wdAllocatorBase* pAllocator);
-  wdSet(const Comparer& comparer, wdAllocatorBase* pAllocator);
+  nsSet();
+  explicit nsSet(nsAllocator* pAllocator);
+  nsSet(const Comparer& comparer, nsAllocator* pAllocator);
 
-  wdSet(const wdSet<KeyType, Comparer, AllocatorWrapper>& other);
-  wdSet(const wdSetBase<KeyType, Comparer>& other);
+  nsSet(const nsSet<KeyType, Comparer, AllocatorWrapper>& other);
+  nsSet(const nsSetBase<KeyType, Comparer>& other);
 
-  void operator=(const wdSet<KeyType, Comparer, AllocatorWrapper>& rhs);
-  void operator=(const wdSetBase<KeyType, Comparer>& rhs);
+  void operator=(const nsSet<KeyType, Comparer, AllocatorWrapper>& rhs);
+  void operator=(const nsSetBase<KeyType, Comparer>& rhs);
 };
 
 
 template <typename KeyType, typename Comparer>
-typename wdSetBase<KeyType, Comparer>::Iterator begin(wdSetBase<KeyType, Comparer>& ref_container)
+typename nsSetBase<KeyType, Comparer>::Iterator begin(nsSetBase<KeyType, Comparer>& ref_container)
 {
   return ref_container.GetIterator();
 }
 
 template <typename KeyType, typename Comparer>
-typename wdSetBase<KeyType, Comparer>::Iterator begin(const wdSetBase<KeyType, Comparer>& container)
+typename nsSetBase<KeyType, Comparer>::Iterator begin(const nsSetBase<KeyType, Comparer>& container)
 {
   return container.GetIterator();
 }
 
 template <typename KeyType, typename Comparer>
-typename wdSetBase<KeyType, Comparer>::Iterator cbegin(const wdSetBase<KeyType, Comparer>& container)
+typename nsSetBase<KeyType, Comparer>::Iterator cbegin(const nsSetBase<KeyType, Comparer>& container)
 {
   return container.GetIterator();
 }
 
 template <typename KeyType, typename Comparer>
-typename wdSetBase<KeyType, Comparer>::Iterator end(wdSetBase<KeyType, Comparer>& ref_container)
+typename nsSetBase<KeyType, Comparer>::Iterator end(nsSetBase<KeyType, Comparer>& ref_container)
 {
-  return typename wdSetBase<KeyType, Comparer>::Iterator();
+  return typename nsSetBase<KeyType, Comparer>::Iterator();
 }
 
 template <typename KeyType, typename Comparer>
-typename wdSetBase<KeyType, Comparer>::Iterator end(const wdSetBase<KeyType, Comparer>& container)
+typename nsSetBase<KeyType, Comparer>::Iterator end(const nsSetBase<KeyType, Comparer>& container)
 {
-  return typename wdSetBase<KeyType, Comparer>::Iterator();
+  return typename nsSetBase<KeyType, Comparer>::Iterator();
 }
 
 template <typename KeyType, typename Comparer>
-typename wdSetBase<KeyType, Comparer>::Iterator cend(const wdSetBase<KeyType, Comparer>& container)
+typename nsSetBase<KeyType, Comparer>::Iterator cend(const nsSetBase<KeyType, Comparer>& container)
 {
-  return typename wdSetBase<KeyType, Comparer>::Iterator();
+  return typename nsSetBase<KeyType, Comparer>::Iterator();
 }
 
 

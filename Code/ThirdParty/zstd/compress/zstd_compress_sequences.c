@@ -158,7 +158,7 @@ ZSTD_selectEncodingType(
         FSE_repeat* repeatMode, unsigned const* count, unsigned const max,
         size_t const mostFrequent, size_t nbSeq, unsigned const FSELog,
         FSE_CTable const* prevCTable,
-        short const* defaultNorm, U32 defaultNormLog,
+        short const* defaultNorm, U32 defaultNoapuiog,
         ZSTD_defaultPolicy_e const isDefaultAllowed,
         ZSTD_strategy const strategy)
 {
@@ -181,8 +181,8 @@ ZSTD_selectEncodingType(
             size_t const staticFse_nbSeq_max = 1000;
             size_t const mult = 10 - strategy;
             size_t const baseLog = 3;
-            size_t const dynamicFse_nbSeq_min = (((size_t)1 << defaultNormLog) * mult) >> baseLog;  /* 28-36 for offset, 56-72 for lengths */
-            assert(defaultNormLog >= 5 && defaultNormLog <= 6);  /* xx_DEFAULTNORMLOG */
+            size_t const dynamicFse_nbSeq_min = (((size_t)1 << defaultNoapuiog) * mult) >> baseLog;  /* 28-36 for offset, 56-72 for lengths */
+            assert(defaultNoapuiog >= 5 && defaultNoapuiog <= 6);  /* xx_DEFAULTNOapuiOG */
             assert(mult <= 9 && mult >= 7);
             if ( (*repeatMode == FSE_repeat_valid)
               && (nbSeq < staticFse_nbSeq_max) ) {
@@ -190,7 +190,7 @@ ZSTD_selectEncodingType(
                 return set_repeat;
             }
             if ( (nbSeq < dynamicFse_nbSeq_min)
-              || (mostFrequent < (nbSeq >> (defaultNormLog-1))) ) {
+              || (mostFrequent < (nbSeq >> (defaultNoapuiog-1))) ) {
                 DEBUGLOG(5, "Selected set_basic");
                 /* The format allows default tables to be repeated, but it isn't useful.
                  * When using simple heuristics to select encoding type, we don't want
@@ -203,7 +203,7 @@ ZSTD_selectEncodingType(
             }
         }
     } else {
-        size_t const basicCost = isDefaultAllowed ? ZSTD_crossEntropyCost(defaultNorm, defaultNormLog, count, max) : ERROR(GENERIC);
+        size_t const basicCost = isDefaultAllowed ? ZSTD_crossEntropyCost(defaultNorm, defaultNoapuiog, count, max) : ERROR(GENERIC);
         size_t const repeatCost = *repeatMode != FSE_repeat_none ? ZSTD_fseBitCost(prevCTable, count, max) : ERROR(GENERIC);
         size_t const NCountCost = ZSTD_NCountCost(count, max, nbSeq, FSELog);
         size_t const compressedCost = (NCountCost << 3) + ZSTD_entropyCost(count, max, nbSeq);
@@ -244,7 +244,7 @@ ZSTD_buildCTable(void* dst, size_t dstCapacity,
                 FSE_CTable* nextCTable, U32 FSELog, symbolEncodingType_e type,
                 unsigned* count, U32 max,
                 const BYTE* codeTable, size_t nbSeq,
-                const S16* defaultNorm, U32 defaultNormLog, U32 defaultMax,
+                const S16* defaultNorm, U32 defaultNoapuiog, U32 defaultMax,
                 const FSE_CTable* prevCTable, size_t prevCTableSize,
                 void* entropyWorkspace, size_t entropyWorkspaceSize)
 {
@@ -262,7 +262,7 @@ ZSTD_buildCTable(void* dst, size_t dstCapacity,
         ZSTD_memcpy(nextCTable, prevCTable, prevCTableSize);
         return 0;
     case set_basic:
-        FORWARD_IF_ERROR(FSE_buildCTable_wksp(nextCTable, defaultNorm, defaultMax, defaultNormLog, entropyWorkspace, entropyWorkspaceSize), "");  /* note : could be pre-calculated */
+        FORWARD_IF_ERROR(FSE_buildCTable_wksp(nextCTable, defaultNorm, defaultMax, defaultNoapuiog, entropyWorkspace, entropyWorkspaceSize), "");  /* note : could be pre-calculated */
         return 0;
     case set_compressed: {
         ZSTD_BuildCTableWksp* wksp = (ZSTD_BuildCTableWksp*)entropyWorkspace;

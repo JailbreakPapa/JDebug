@@ -8,7 +8,7 @@
 #include <Foundation/Logging/Log.h>
 
 // clang-format off
-WD_BEGIN_SUBSYSTEM_DECLARATION(Foundation, ArchiveDataDirectory)
+NS_BEGIN_SUBSYSTEM_DECLARATION(Foundation, ArchiveDataDirectory)
 
   BEGIN_SUBSYSTEM_DEPENDENCIES
     "FileSystem", "FolderDataDirectory"
@@ -16,47 +16,48 @@ WD_BEGIN_SUBSYSTEM_DECLARATION(Foundation, ArchiveDataDirectory)
 
   ON_CORESYSTEMS_STARTUP
   {
-  wdFileSystem::RegisterDataDirectoryFactory(wdDataDirectory::ArchiveType::Factory);
+  nsFileSystem::RegisterDataDirectoryFactory(nsDataDirectory::ArchiveType::Factory);
   }
 
-WD_END_SUBSYSTEM_DECLARATION;
+NS_END_SUBSYSTEM_DECLARATION;
 // clang-format on
 
-wdDataDirectory::ArchiveType::ArchiveType() = default;
-wdDataDirectory::ArchiveType::~ArchiveType() = default;
+nsDataDirectory::ArchiveType::ArchiveType() = default;
+nsDataDirectory::ArchiveType::~ArchiveType() = default;
 
-wdDataDirectoryType* wdDataDirectory::ArchiveType::Factory(wdStringView sDataDirectory, wdStringView sGroup, wdStringView sRootName, wdFileSystem::DataDirUsage usage)
+nsDataDirectoryType* nsDataDirectory::ArchiveType::Factory(nsStringView sDataDirectory, nsStringView sGroup, nsStringView sRootName, nsFileSystem::DataDirUsage usage)
 {
-  ArchiveType* pDataDir = WD_DEFAULT_NEW(ArchiveType);
+  ArchiveType* pDataDir = NS_DEFAULT_NEW(ArchiveType);
 
-  if (pDataDir->InitializeDataDirectory(sDataDirectory) == WD_SUCCESS)
+  if (pDataDir->InitializeDataDirectory(sDataDirectory) == NS_SUCCESS)
     return pDataDir;
 
-  WD_DEFAULT_DELETE(pDataDir);
+  NS_DEFAULT_DELETE(pDataDir);
   return nullptr;
 }
 
-wdDataDirectoryReader* wdDataDirectory::ArchiveType::OpenFileToRead(wdStringView sFile, wdFileShareMode::Enum FileShareMode, bool bSpecificallyThisDataDir)
+nsDataDirectoryReader* nsDataDirectory::ArchiveType::OpenFileToRead(nsStringView sFile, nsFileShareMode::Enum FileShareMode, bool bSpecificallyThisDataDir)
 {
-  const wdArchiveTOC& toc = m_ArchiveReader.GetArchiveTOC();
-  wdStringBuilder sArchivePath = m_sArchiveSubFolder;
+  const nsArchiveTOC& toc = m_ArchiveReader.GetArchiveTOC();
+  nsStringBuilder sArchivePath = m_sArchiveSubFolder;
   sArchivePath.AppendPath(sFile);
+  sArchivePath.MakeCleanPath();
 
-  const wdUInt32 uiEntryIndex = toc.FindEntry(sArchivePath);
+  const nsUInt32 uiEntryIndex = toc.FindEntry(sArchivePath);
 
-  if (uiEntryIndex == wdInvalidIndex)
+  if (uiEntryIndex == nsInvalidIndex)
     return nullptr;
 
-  const wdArchiveEntry* pEntry = &toc.m_Entries[uiEntryIndex];
+  const nsArchiveEntry* pEntry = &toc.m_Entries[uiEntryIndex];
 
-  ArchiveReaderUncompressed* pReader = nullptr;
+  ArchiveReaderCommon* pReader = nullptr;
 
   {
-    WD_LOCK(m_ReaderMutex);
+    NS_LOCK(m_ReaderMutex);
 
     switch (pEntry->m_CompressionMode)
     {
-      case wdArchiveCompressionMode::Uncompressed:
+      case nsArchiveCompressionMode::Uncompressed:
       {
         if (!m_FreeReadersUncompressed.IsEmpty())
         {
@@ -65,14 +66,14 @@ wdDataDirectoryReader* wdDataDirectory::ArchiveType::OpenFileToRead(wdStringView
         }
         else
         {
-          m_ReadersUncompressed.PushBack(WD_DEFAULT_NEW(ArchiveReaderUncompressed, 0));
+          m_ReadersUncompressed.PushBack(NS_DEFAULT_NEW(ArchiveReaderUncompressed, 0));
           pReader = m_ReadersUncompressed.PeekBack().Borrow();
         }
         break;
       }
 
 #ifdef BUILDSYSTEM_ENABLE_ZSTD_SUPPORT
-      case wdArchiveCompressionMode::Compressed_zstd:
+      case nsArchiveCompressionMode::Compressed_zstd:
       {
         if (!m_FreeReadersZstd.IsEmpty())
         {
@@ -81,15 +82,31 @@ wdDataDirectoryReader* wdDataDirectory::ArchiveType::OpenFileToRead(wdStringView
         }
         else
         {
-          m_ReadersZstd.PushBack(WD_DEFAULT_NEW(ArchiveReaderZstd, 1));
+          m_ReadersZstd.PushBack(NS_DEFAULT_NEW(ArchiveReaderZstd, 1));
           pReader = m_ReadersZstd.PeekBack().Borrow();
+        }
+        break;
+      }
+#endif
+#ifdef BUILDSYSTEM_ENABLE_ZLIB_SUPPORT
+      case nsArchiveCompressionMode::Compressed_zip:
+      {
+        if (!m_FreeReadersZip.IsEmpty())
+        {
+          pReader = m_FreeReadersZip.PeekBack();
+          m_FreeReadersZip.PopBack();
+        }
+        else
+        {
+          m_ReadersZip.PushBack(NS_DEFAULT_NEW(ArchiveReaderZip, 2));
+          pReader = m_ReadersZip.PeekBack().Borrow();
         }
         break;
       }
 #endif
 
       default:
-        WD_REPORT_FAILURE("Compression mode {} is unknown (or not compiled in)", (wdUInt8)pEntry->m_CompressionMode);
+        NS_REPORT_FAILURE("Compression mode {} is unknown (or not compiled in)", (nsUInt8)pEntry->m_CompressionMode);
         return nullptr;
     }
   }
@@ -101,54 +118,57 @@ wdDataDirectoryReader* wdDataDirectory::ArchiveType::OpenFileToRead(wdStringView
 
   if (pReader->Open(sArchivePath, this, FileShareMode).Failed())
   {
-    WD_DEFAULT_DELETE(pReader);
+    NS_DEFAULT_DELETE(pReader);
     return nullptr;
   }
 
   return pReader;
 }
 
-void wdDataDirectory::ArchiveType::RemoveDataDirectory()
+void nsDataDirectory::ArchiveType::RemoveDataDirectory()
 {
   ArchiveType* pThis = this;
-  WD_DEFAULT_DELETE(pThis);
+  NS_DEFAULT_DELETE(pThis);
 }
 
-bool wdDataDirectory::ArchiveType::ExistsFile(wdStringView sFile, bool bOneSpecificDataDir)
+bool nsDataDirectory::ArchiveType::ExistsFile(nsStringView sFile, bool bOneSpecificDataDir)
 {
-  wdStringBuilder sArchivePath = m_sArchiveSubFolder;
+  nsStringBuilder sArchivePath = m_sArchiveSubFolder;
   sArchivePath.AppendPath(sFile);
-  return m_ArchiveReader.GetArchiveTOC().FindEntry(sArchivePath) != wdInvalidIndex;
+  sArchivePath.MakeCleanPath();
+  return m_ArchiveReader.GetArchiveTOC().FindEntry(sArchivePath) != nsInvalidIndex;
 }
 
-wdResult wdDataDirectory::ArchiveType::GetFileStats(wdStringView sFileOrFolder, bool bOneSpecificDataDir, wdFileStats& out_Stats)
+nsResult nsDataDirectory::ArchiveType::GetFileStats(nsStringView sFileOrFolder, bool bOneSpecificDataDir, nsFileStats& out_Stats)
 {
-  const wdArchiveTOC& toc = m_ArchiveReader.GetArchiveTOC();
-  wdStringBuilder sArchivePath = m_sArchiveSubFolder;
+  const nsArchiveTOC& toc = m_ArchiveReader.GetArchiveTOC();
+  nsStringBuilder sArchivePath = m_sArchiveSubFolder;
   sArchivePath.AppendPath(sFileOrFolder);
-  const wdUInt32 uiEntryIndex = toc.FindEntry(sArchivePath);
+  // We might be called with paths like AAA/../BBB which we won't find in the toc unless we clean the path first.
+  sArchivePath.MakeCleanPath();
+  const nsUInt32 uiEntryIndex = toc.FindEntry(sArchivePath);
 
-  if (uiEntryIndex == wdInvalidIndex)
-    return WD_FAILURE;
+  if (uiEntryIndex == nsInvalidIndex)
+    return NS_FAILURE;
 
-  const wdArchiveEntry* pEntry = &toc.m_Entries[uiEntryIndex];
+  const nsArchiveEntry* pEntry = &toc.m_Entries[uiEntryIndex];
 
-  const char* szPath = toc.GetEntryPathString(uiEntryIndex);
+  const nsStringView sPath = toc.GetEntryPathString(uiEntryIndex);
 
   out_Stats.m_bIsDirectory = false;
   out_Stats.m_LastModificationTime = m_LastModificationTime;
   out_Stats.m_uiFileSize = pEntry->m_uiUncompressedDataSize;
-  out_Stats.m_sParentPath = szPath;
+  out_Stats.m_sParentPath = sPath;
   out_Stats.m_sParentPath.PathParentDirectory();
-  out_Stats.m_sName = wdPathUtils::GetFileNameAndExtension(szPath);
+  out_Stats.m_sName = nsPathUtils::GetFileNameAndExtension(sPath);
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
-wdResult wdDataDirectory::ArchiveType::InternalInitializeDataDirectory(wdStringView sDirectory)
+nsResult nsDataDirectory::ArchiveType::InternalInitializeDataDirectory(nsStringView sDirectory)
 {
-  wdStringBuilder sRedirected;
-  WD_SUCCEED_OR_RETURN(wdFileSystem::ResolveSpecialDirectory(sDirectory, sRedirected));
+  nsStringBuilder sRedirected;
+  NS_SUCCEED_OR_RETURN(nsFileSystem::ResolveSpecialDirectory(sDirectory, sRedirected));
 
   sRedirected.MakeCleanPath();
   // remove trailing slashes
@@ -156,14 +176,18 @@ wdResult wdDataDirectory::ArchiveType::InternalInitializeDataDirectory(wdStringV
   m_sRedirectedDataDirPath = sRedirected;
 
   bool bSupported = false;
-  wdStringBuilder sArchivePath;
+  nsStringBuilder sArchivePath;
 
-  wdHybridArray<wdString, 4, wdStaticAllocatorWrapper> extensions = wdArchiveUtils::GetAcceptedArchiveFileExtensions();
+  nsHybridArray<nsString, 4, nsStaticsAllocatorWrapper> extensions = nsArchiveUtils::GetAcceptedArchiveFileExtensions();
 
+#ifdef BUILDSYSTEM_ENABLE_ZLIB_SUPPORT
+  extensions.PushBack("zip");
+  extensions.PushBack("apk");
+#endif
 
   for (const auto& ext : extensions)
   {
-    const wdUInt32 uiLength = ext.GetElementCount();
+    const nsUInt32 uiLength = ext.GetElementCount();
     if (sRedirected.HasExtension(ext))
     {
       sArchivePath = sRedirected;
@@ -177,7 +201,7 @@ wdResult wdDataDirectory::ArchiveType::InternalInitializeDataDirectory(wdStringV
       szFound = sRedirected.FindLastSubString_NoCase(ext, szFound);
       if (szFound != nullptr && szFound[uiLength] == '/')
       {
-        sArchivePath = wdStringView(sRedirected.GetData(), szFound + uiLength);
+        sArchivePath = nsStringView(sRedirected.GetData(), szFound + uiLength);
         m_sArchiveSubFolder = szFound + uiLength + 1;
         bSupported = true;
         goto endloop;
@@ -187,26 +211,27 @@ wdResult wdDataDirectory::ArchiveType::InternalInitializeDataDirectory(wdStringV
   }
 endloop:
   if (!bSupported)
-    return WD_FAILURE;
+    return NS_FAILURE;
 
-  wdFileStats stats;
-  if (wdOSFile::GetFileStats(sArchivePath, stats).Failed())
-    return WD_FAILURE;
-
-  WD_LOG_BLOCK("wdArchiveDataDir", sDirectory);
-
+#if NS_ENABLED(NS_SUPPORTS_FILE_STATS)
+  nsFileStats stats;
+  if (nsOSFile::GetFileStats(sArchivePath, stats).Failed())
+    return NS_FAILURE;
   m_LastModificationTime = stats.m_LastModificationTime;
+#endif
 
-  WD_SUCCEED_OR_RETURN(m_ArchiveReader.OpenArchive(sArchivePath));
+  NS_LOG_BLOCK("nsArchiveDataDir", sDirectory);
+
+  NS_SUCCEED_OR_RETURN(m_ArchiveReader.OpenArchive(sArchivePath));
 
   ReloadExternalConfigs();
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
-void wdDataDirectory::ArchiveType::OnReaderWriterClose(wdDataDirectoryReaderWriterBase* pClosed)
+void nsDataDirectory::ArchiveType::OnReaderWriterClose(nsDataDirectoryReaderWriterBase* pClosed)
 {
-  WD_LOCK(m_ReaderMutex);
+  NS_LOCK(m_ReaderMutex);
 
   if (pClosed->GetDataDirUserData() == 0)
   {
@@ -222,38 +247,55 @@ void wdDataDirectory::ArchiveType::OnReaderWriterClose(wdDataDirectoryReaderWrit
   }
 #endif
 
+#ifdef BUILDSYSTEM_ENABLE_ZLIB_SUPPORT
+  if (pClosed->GetDataDirUserData() == 2)
+  {
+    m_FreeReadersZip.PushBack(static_cast<ArchiveReaderZip*>(pClosed));
+    return;
+  }
+#endif
 
-  WD_ASSERT_NOT_IMPLEMENTED;
+  NS_ASSERT_NOT_IMPLEMENTED;
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-wdDataDirectory::ArchiveReaderUncompressed::ArchiveReaderUncompressed(wdInt32 iDataDirUserData)
-  : wdDataDirectoryReader(iDataDirUserData)
+nsDataDirectory::ArchiveReaderCommon::ArchiveReaderCommon(nsInt32 iDataDirUserData)
+  : nsDataDirectoryReader(iDataDirUserData)
 {
 }
 
-wdDataDirectory::ArchiveReaderUncompressed::~ArchiveReaderUncompressed() = default;
-
-wdUInt64 wdDataDirectory::ArchiveReaderUncompressed::Read(void* pBuffer, wdUInt64 uiBytes)
-{
-  return m_MemStreamReader.ReadBytes(pBuffer, uiBytes);
-}
-
-wdUInt64 wdDataDirectory::ArchiveReaderUncompressed::GetFileSize() const
+nsUInt64 nsDataDirectory::ArchiveReaderCommon::GetFileSize() const
 {
   return m_uiUncompressedSize;
 }
 
-wdResult wdDataDirectory::ArchiveReaderUncompressed::InternalOpen(wdFileShareMode::Enum FileShareMode)
-{
-  WD_ASSERT_DEBUG(FileShareMode != wdFileShareMode::Exclusive, "Archives only support shared reading of files. Exclusive access cannot be guaranteed.");
+//////////////////////////////////////////////////////////////////////////
 
-  // nothing to do
-  return WD_SUCCESS;
+nsDataDirectory::ArchiveReaderUncompressed::ArchiveReaderUncompressed(nsInt32 iDataDirUserData)
+  : ArchiveReaderCommon(iDataDirUserData)
+{
 }
 
-void wdDataDirectory::ArchiveReaderUncompressed::InternalClose()
+nsUInt64 nsDataDirectory::ArchiveReaderUncompressed::Skip(nsUInt64 uiBytes)
+{
+  return m_MemStreamReader.SkipBytes(uiBytes);
+}
+
+nsUInt64 nsDataDirectory::ArchiveReaderUncompressed::Read(void* pBuffer, nsUInt64 uiBytes)
+{
+  return m_MemStreamReader.ReadBytes(pBuffer, uiBytes);
+}
+
+nsResult nsDataDirectory::ArchiveReaderUncompressed::InternalOpen(nsFileShareMode::Enum FileShareMode)
+{
+  NS_ASSERT_DEBUG(FileShareMode != nsFileShareMode::Exclusive, "Archives only support shared reading of files. Exclusive access cannot be guaranteed.");
+
+  // nothing to do
+  return NS_SUCCESS;
+}
+
+void nsDataDirectory::ArchiveReaderUncompressed::InternalClose()
 {
   // nothing to do
 }
@@ -262,30 +304,54 @@ void wdDataDirectory::ArchiveReaderUncompressed::InternalClose()
 
 #ifdef BUILDSYSTEM_ENABLE_ZSTD_SUPPORT
 
-wdDataDirectory::ArchiveReaderZstd::ArchiveReaderZstd(wdInt32 iDataDirUserData)
-  : ArchiveReaderUncompressed(iDataDirUserData)
+nsDataDirectory::ArchiveReaderZstd::ArchiveReaderZstd(nsInt32 iDataDirUserData)
+  : ArchiveReaderCommon(iDataDirUserData)
 {
 }
 
-wdDataDirectory::ArchiveReaderZstd::~ArchiveReaderZstd() = default;
-
-wdUInt64 wdDataDirectory::ArchiveReaderZstd::Read(void* pBuffer, wdUInt64 uiBytes)
+nsUInt64 nsDataDirectory::ArchiveReaderZstd::Read(void* pBuffer, nsUInt64 uiBytes)
 {
   return m_CompressedStreamReader.ReadBytes(pBuffer, uiBytes);
 }
 
-wdResult wdDataDirectory::ArchiveReaderZstd::InternalOpen(wdFileShareMode::Enum FileShareMode)
+nsResult nsDataDirectory::ArchiveReaderZstd::InternalOpen(nsFileShareMode::Enum FileShareMode)
 {
-  WD_ASSERT_DEBUG(FileShareMode != wdFileShareMode::Exclusive, "Archives only support shared reading of files. Exclusive access cannot be guaranteed.");
+  NS_ASSERT_DEBUG(FileShareMode != nsFileShareMode::Exclusive, "Archives only support shared reading of files. Exclusive access cannot be guaranteed.");
 
   m_CompressedStreamReader.SetInputStream(&m_MemStreamReader);
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
+void nsDataDirectory::ArchiveReaderZstd::InternalClose()
+{
+  // nothing to do
+}
 #endif
 
 //////////////////////////////////////////////////////////////////////////
 
+#ifdef BUILDSYSTEM_ENABLE_ZLIB_SUPPORT
 
+nsDataDirectory::ArchiveReaderZip::ArchiveReaderZip(nsInt32 iDataDirUserData)
+  : ArchiveReaderUncompressed(iDataDirUserData)
+{
+}
 
-WD_STATICLINK_FILE(Foundation, Foundation_IO_Archive_Implementation_DataDirTypeArchive);
+nsDataDirectory::ArchiveReaderZip::~ArchiveReaderZip() = default;
+
+nsUInt64 nsDataDirectory::ArchiveReaderZip::Read(void* pBuffer, nsUInt64 uiBytes)
+{
+  return m_CompressedStreamReader.ReadBytes(pBuffer, uiBytes);
+}
+
+nsResult nsDataDirectory::ArchiveReaderZip::InternalOpen(nsFileShareMode::Enum FileShareMode)
+{
+  NS_ASSERT_DEBUG(FileShareMode != nsFileShareMode::Exclusive, "Archives only support shared reading of files. Exclusive access cannot be guaranteed.");
+
+  m_CompressedStreamReader.SetInputStream(&m_MemStreamReader, m_uiCompressedSize);
+  return NS_SUCCESS;
+}
+
+#endif
+
+NS_STATICLINK_FILE(Foundation, Foundation_IO_Archive_Implementation_DataDirTypeArchive);

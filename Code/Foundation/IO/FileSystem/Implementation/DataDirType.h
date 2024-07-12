@@ -4,46 +4,46 @@
 #include <Foundation/IO/FileEnums.h>
 #include <Foundation/Strings/String.h>
 
-class wdDataDirectoryReaderWriterBase;
-class wdDataDirectoryReader;
-class wdDataDirectoryWriter;
-struct wdFileStats;
+class nsDataDirectoryReaderWriterBase;
+class nsDataDirectoryReader;
+class nsDataDirectoryWriter;
+struct nsFileStats;
 
 /// \brief The base class for all data directory types.
 ///
 /// There are different data directory types, such as a simple folder, a ZIP file or some kind of library
 /// (e.g. image files from procedural data). Even a HTTP server that actually transmits files over a network
 /// can provided by implementing it as a data directory type.
-/// Data directories are added through wdFileSystem, which uses factories to decide which wdDataDirectoryType
+/// Data directories are added through nsFileSystem, which uses factories to decide which nsDataDirectoryType
 /// to use for handling which data directory.
-class WD_FOUNDATION_DLL wdDataDirectoryType
+class NS_FOUNDATION_DLL nsDataDirectoryType
 {
-  WD_DISALLOW_COPY_AND_ASSIGN(wdDataDirectoryType);
+  NS_DISALLOW_COPY_AND_ASSIGN(nsDataDirectoryType);
 
 public:
-  wdDataDirectoryType() = default;
-  virtual ~wdDataDirectoryType() = default;
+  nsDataDirectoryType() = default;
+  virtual ~nsDataDirectoryType() = default;
 
   /// \brief Returns the absolute path to the data directory.
-  const wdString128& GetDataDirectoryPath() const { return m_sDataDirectoryPath; }
+  const nsString128& GetDataDirectoryPath() const { return m_sDataDirectoryPath; }
 
   /// \brief By default this is the same as GetDataDirectoryPath(), but derived implementations may use a different location where they
   /// actually get the files from.
-  virtual const wdString128& GetRedirectedDataDirectoryPath() const { return GetDataDirectoryPath(); }
+  virtual const nsString128& GetRedirectedDataDirectoryPath() const { return GetDataDirectoryPath(); }
 
   /// \brief Some data directory types may use external configuration files (e.g. asset lookup tables)
   ///        that may get updated, while the directory is mounted. This function allows each directory type to implement
   ///        reloading and reapplying of configurations, without dismounting and remounting the data directory.
-  virtual void ReloadExternalConfigs(){};
+  virtual void ReloadExternalConfigs() {};
 
 protected:
-  friend class wdFileSystem;
+  friend class nsFileSystem;
 
   /// \brief Tries to setup the data directory. Can fail, if the type is incorrect (e.g. a ZIP file data directory type cannot handle a
   /// simple folder and vice versa)
-  wdResult InitializeDataDirectory(wdStringView sDataDirPath);
+  nsResult InitializeDataDirectory(nsStringView sDataDirPath);
 
-  /// \brief Must be implemented to create a wdDataDirectoryReader for accessing the given file. Returns nullptr if the file could not be
+  /// \brief Must be implemented to create a nsDataDirectoryReader for accessing the given file. Returns nullptr if the file could not be
   /// opened.
   ///
   /// \param szFile is given as a path relative to the data directory's path.
@@ -53,13 +53,13 @@ protected:
   /// by using a rooted path.
   /// If an absolute path is used, which incidentally matches the prefix of this data directory, bSpecificallyThisDataDir is NOT set to
   /// true, as there might be other data directories that also match.
-  virtual wdDataDirectoryReader* OpenFileToRead(wdStringView sFile, wdFileShareMode::Enum FileShareMode, bool bSpecificallyThisDataDir) = 0;
+  virtual nsDataDirectoryReader* OpenFileToRead(nsStringView sFile, nsFileShareMode::Enum FileShareMode, bool bSpecificallyThisDataDir) = 0;
 
-  /// \brief Must be implemented to create a wdDataDirectoryWriter for accessing the given file. Returns nullptr if the file could not be
+  /// \brief Must be implemented to create a nsDataDirectoryWriter for accessing the given file. Returns nullptr if the file could not be
   /// opened.
   ///
   /// If it always returns nullptr (default) the data directory is read-only (at least through this type).
-  virtual wdDataDirectoryWriter* OpenFileToWrite(wdStringView sFile, wdFileShareMode::Enum FileShareMode) { return nullptr; }
+  virtual nsDataDirectoryWriter* OpenFileToWrite(nsStringView sFile, nsFileShareMode::Enum FileShareMode) { return nullptr; }
 
   /// \brief This function is called by the filesystem when a data directory is removed.
   ///
@@ -67,38 +67,38 @@ protected:
   virtual void RemoveDataDirectory() = 0;
 
   /// \brief If a Data Directory Type supports it, this function will remove the given file from it.
-  virtual void DeleteFile(wdStringView sFile) {}
+  virtual void DeleteFile(nsStringView sFile) {}
 
   /// \brief This function checks whether the given file exists in this data directory.
   ///
-  /// The default implementation simply calls wdOSFile::ExistsFile
+  /// The default implementation simply calls nsOSFile::ExistsFile
   /// An optimized implementation might look this information up in some hash-map.
-  virtual bool ExistsFile(wdStringView sFile, bool bOneSpecificDataDir);
+  virtual bool ExistsFile(nsStringView sFile, bool bOneSpecificDataDir);
 
-  /// \brief Upon success returns the wdFileStats for a file in this data directory.
-  virtual wdResult GetFileStats(wdStringView sFileOrFolder, bool bOneSpecificDataDir, wdFileStats& out_Stats) = 0;
+  /// \brief Upon success returns the nsFileStats for a file in this data directory.
+  virtual nsResult GetFileStats(nsStringView sFileOrFolder, bool bOneSpecificDataDir, nsFileStats& out_Stats) = 0;
 
   /// \brief If this data directory knows how to redirect the given path, it should do so and return true.
-  /// Called by wdFileSystem::ResolveAssetRedirection
-  virtual bool ResolveAssetRedirection(wdStringView sPathOrAssetGuid, wdStringBuilder& out_sRedirection) { return false; }
+  /// Called by nsFileSystem::ResolveAssetRedirection
+  virtual bool ResolveAssetRedirection(nsStringView sPathOrAssetGuid, nsStringBuilder& out_sRedirection) { return false; }
 
 protected:
-  friend class wdDataDirectoryReaderWriterBase;
+  friend class nsDataDirectoryReaderWriterBase;
 
-  /// \brief This is automatically called whenever a wdDataDirectoryReaderWriterBase that was opened by this type is being closed.
+  /// \brief This is automatically called whenever a nsDataDirectoryReaderWriterBase that was opened by this type is being closed.
   ///
-  /// It allows the wdDataDirectoryType to return the reader/writer to a pool of reusable objects, or to destroy it
+  /// It allows the nsDataDirectoryType to return the reader/writer to a pool of reusable objects, or to destroy it
   /// using the proper allocator.
-  virtual void OnReaderWriterClose(wdDataDirectoryReaderWriterBase* pClosed) {}
+  virtual void OnReaderWriterClose(nsDataDirectoryReaderWriterBase* pClosed) {}
 
-  /// \brief This function should only be used by a Factory (which should be a static function in the respective wdDataDirectoryType).
+  /// \brief This function should only be used by a Factory (which should be a static function in the respective nsDataDirectoryType).
   ///
-  /// It is used to initialize the data directory. If this wdDataDirectoryType cannot handle the given type,
-  /// it must return WD_FAILURE and the Factory needs to clean it up properly.
-  virtual wdResult InternalInitializeDataDirectory(wdStringView sDirectory) = 0;
+  /// It is used to initialize the data directory. If this nsDataDirectoryType cannot handle the given type,
+  /// it must return NS_FAILURE and the Factory needs to clean it up properly.
+  virtual nsResult InternalInitializeDataDirectory(nsStringView sDirectory) = 0;
 
   /// \brief Derived classes can use 'GetDataDirectoryPath' to access this data.
-  wdString128 m_sDataDirectoryPath;
+  nsString128 m_sDataDirectoryPath;
 };
 
 
@@ -106,79 +106,102 @@ protected:
 /// \brief This is the base class for all data directory readers/writers.
 ///
 /// Different data directory types (ZIP file, simple folder, etc.) use different reader/writer types.
-class WD_FOUNDATION_DLL wdDataDirectoryReaderWriterBase
+class NS_FOUNDATION_DLL nsDataDirectoryReaderWriterBase
 {
-  WD_DISALLOW_COPY_AND_ASSIGN(wdDataDirectoryReaderWriterBase);
+  NS_DISALLOW_COPY_AND_ASSIGN(nsDataDirectoryReaderWriterBase);
 
 public:
   /// \brief The derived class should pass along whether it is a reader or writer.
-  wdDataDirectoryReaderWriterBase(wdInt32 iDataDirUserData, bool bIsReader);
+  nsDataDirectoryReaderWriterBase(nsInt32 iDataDirUserData, bool bIsReader);
 
-  virtual ~wdDataDirectoryReaderWriterBase() = default;
+  virtual ~nsDataDirectoryReaderWriterBase() = default;
 
-  /// \brief Used by wdDataDirectoryType's to try to open the given file. They need to pass along their own pointer.
-  wdResult Open(wdStringView sFile, wdDataDirectoryType* pOwnerDataDirectory, wdFileShareMode::Enum fileShareMode);
+  /// \brief Used by nsDataDirectoryType's to try to open the given file. They need to pass along their own pointer.
+  nsResult Open(nsStringView sFile, nsDataDirectoryType* pOwnerDataDirectory, nsFileShareMode::Enum fileShareMode);
 
   /// \brief Closes this data stream.
   void Close();
 
   /// \brief Returns the relative path of this file within the owner data directory.
-  const wdString128& GetFilePath() const;
+  const nsString128& GetFilePath() const;
 
   /// \brief Returns the pointer to the data directory, which created this reader/writer.
-  wdDataDirectoryType* GetDataDirectory() const;
+  nsDataDirectoryType* GetDataDirectory() const;
 
   /// \brief Returns true if this is a reader stream, false if it is a writer stream.
   bool IsReader() const { return m_bIsReader; }
 
   /// \brief Returns the current total size of the file.
-  virtual wdUInt64 GetFileSize() const = 0;
+  virtual nsUInt64 GetFileSize() const = 0;
 
-  wdInt32 GetDataDirUserData() const { return m_iDataDirUserData; }
+  nsInt32 GetDataDirUserData() const { return m_iDataDirUserData; }
 
 protected:
   /// \brief This function must be implemented by the derived class.
-  virtual wdResult InternalOpen(wdFileShareMode::Enum FileShareMode) = 0;
+  virtual nsResult InternalOpen(nsFileShareMode::Enum FileShareMode) = 0;
 
   /// \brief This function must be implemented by the derived class.
   virtual void InternalClose() = 0;
 
   bool m_bIsReader;
-  wdInt32 m_iDataDirUserData = 0;
-  wdDataDirectoryType* m_pDataDirectory;
-  wdString128 m_sFilePath;
+  nsInt32 m_iDataDirUserData = 0;
+  nsDataDirectoryType* m_pDataDirectory;
+  nsString128 m_sFilePath;
 };
 
 /// \brief A base class for readers that handle reading from a (virtual) file inside a data directory.
 ///
 /// Different data directory types (ZIP file, simple folder, etc.) use different reader/writer types.
-class WD_FOUNDATION_DLL wdDataDirectoryReader : public wdDataDirectoryReaderWriterBase
+class NS_FOUNDATION_DLL nsDataDirectoryReader : public nsDataDirectoryReaderWriterBase
 {
-  WD_DISALLOW_COPY_AND_ASSIGN(wdDataDirectoryReader);
+  NS_DISALLOW_COPY_AND_ASSIGN(nsDataDirectoryReader);
 
 public:
-  wdDataDirectoryReader(wdInt32 iDataDirUserData)
-    : wdDataDirectoryReaderWriterBase(iDataDirUserData, true)
+  nsDataDirectoryReader(nsInt32 iDataDirUserData)
+    : nsDataDirectoryReaderWriterBase(iDataDirUserData, true)
   {
   }
 
-  virtual wdUInt64 Read(void* pBuffer, wdUInt64 uiBytes) = 0;
+  virtual nsUInt64 Read(void* pBuffer, nsUInt64 uiBytes) = 0;
+
+  /// \brief Helper method to skip a number of bytes (implementations of the directory reader may implement this more efficiently for example)
+  virtual nsUInt64 Skip(nsUInt64 uiBytes)
+  {
+    nsUInt8 uiTempBuffer[1024];
+
+    nsUInt64 uiBytesSkipped = 0;
+
+    while (uiBytesSkipped < uiBytes)
+    {
+      nsUInt64 uiBytesToRead = nsMath::Min<nsUInt64>(uiBytes - uiBytesSkipped, 1024);
+
+      nsUInt64 uiBytesRead = Read(uiTempBuffer, uiBytesToRead);
+
+      uiBytesSkipped += uiBytesRead;
+
+      // Terminate early if the stream didn't read as many bytes as we requested (EOF for example)
+      if (uiBytesRead < uiBytesToRead)
+        break;
+    }
+
+    return uiBytesSkipped;
+  }
 };
 
 /// \brief A base class for writers that handle writing to a (virtual) file inside a data directory.
 ///
 /// Different data directory types (ZIP file, simple folder, etc.) use different reader/writer types.
-class WD_FOUNDATION_DLL wdDataDirectoryWriter : public wdDataDirectoryReaderWriterBase
+class NS_FOUNDATION_DLL nsDataDirectoryWriter : public nsDataDirectoryReaderWriterBase
 {
-  WD_DISALLOW_COPY_AND_ASSIGN(wdDataDirectoryWriter);
+  NS_DISALLOW_COPY_AND_ASSIGN(nsDataDirectoryWriter);
 
 public:
-  wdDataDirectoryWriter(wdInt32 iDataDirUserData)
-    : wdDataDirectoryReaderWriterBase(iDataDirUserData, false)
+  nsDataDirectoryWriter(nsInt32 iDataDirUserData)
+    : nsDataDirectoryReaderWriterBase(iDataDirUserData, false)
   {
   }
 
-  virtual wdResult Write(const void* pBuffer, wdUInt64 uiBytes) = 0;
+  virtual nsResult Write(const void* pBuffer, nsUInt64 uiBytes) = 0;
 };
 
 

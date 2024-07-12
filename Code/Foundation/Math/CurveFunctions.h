@@ -1,19 +1,21 @@
 #pragma once
 
-#include <Foundation/Basics.h>
 #include <Foundation/Math/Declarations.h>
+#include <Foundation/Reflection/Reflection.h>
 
-namespace wdMath
+/// \brief Available procedural curve generators.
+///
+/// The easing function types are adapted from https://easings.net. Visit that page for a preview.
+///
+/// Types:
+/// - EaseIn: Indicates a slow transition from the zero strength to full strength.
+/// - EaseOut: Indicates a fast transition from the zero strength to full strength.
+/// - EaseInOut: A transition from zero to one that starts out slow, continues fast in the middle and finishes slow again.
+struct nsCurveFunction
 {
-  /// \brief Available procedural curve generators.
-  ///
-  /// The easing function types are adapted from https://easings.net. Visit that page for a preview.
-  ///
-  /// Types:
-  /// - EaseIn: Indicates a slow transition from the zero strength to full strength.
-  /// - EaseOut: Indicates a fast transition from the zero strength to full strength.
-  /// - EaseInOut: A transition from zero to one that starts out slow, continues fast in the middle and finishes slow again.
-  enum wdCurveFunction
+  using StorageType = nsUInt8;
+
+  enum Enum
   {
     Linear,
 
@@ -48,9 +50,9 @@ namespace wdMath
     EaseOutCirc,
     EaseInOutCirc,
 
-    EaseInBack,    ///< Values exceed the 0-1 range briefly
-    EaseOutBack,   ///< Values exceed the 0-1 range briefly
-    EaseInOutBack, ///< Values exceed the 0-1 range briefly
+    EaseInBack,       ///< Values exceed the 0-1 range briefly
+    EaseOutBack,      ///< Values exceed the 0-1 range briefly
+    EaseInOutBack,    ///< Values exceed the 0-1 range briefly
 
     EaseInElastic,    ///< Values exceed the 0-1 range briefly
     EaseOutElastic,   ///< Values exceed the 0-1 range briefly
@@ -66,16 +68,23 @@ namespace wdMath
     Bell,
 
     ENUM_COUNT, // All easing function types must be stated before this.
+
+    Default = Linear
   };
 
   /// \brief Helper function that returns the function value at the given x coordinate.
-  double GetCurveValue(wdCurveFunction function, double x);
+  static double GetValue(Enum function, double x);
 
   /// \brief Helper function that returns the function value at the given x coordinate.
   ///
   /// If \a inverse is true, the value (1-Y) is returned.
-  double GetCurveValue(wdCurveFunction function, double x, bool bInverse);
+  static double GetValue(Enum function, double x, bool bInverse);
+};
 
+NS_DECLARE_REFLECTABLE_TYPE(NS_FOUNDATION_DLL, nsCurveFunction);
+
+namespace nsMath
+{
   double GetCurveValue_Linear(double t);
   double GetCurveValue_ConstantZero(double t);
   double GetCurveValue_ConstantOne(double t);
@@ -114,6 +123,6 @@ namespace wdMath
   double GetCurveValue_FadeInFadeOut(double t);
   double GetCurveValue_Bell(double t);
 
-} // namespace wdMath
+} // namespace nsMath
 
 #include <Foundation/Math/Implementation/CurveFunctions_inl.h>

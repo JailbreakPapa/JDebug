@@ -1,89 +1,89 @@
 
 template <typename MetaDataType>
-wdMessageQueueBase<MetaDataType>::wdMessageQueueBase(wdAllocatorBase* pAllocator)
+nsMessageQueueBase<MetaDataType>::nsMessageQueueBase(nsAllocator* pAllocator)
   : m_Queue(pAllocator)
 {
 }
 
 template <typename MetaDataType>
-wdMessageQueueBase<MetaDataType>::wdMessageQueueBase(const wdMessageQueueBase& rhs, wdAllocatorBase* pAllocator)
+nsMessageQueueBase<MetaDataType>::nsMessageQueueBase(const nsMessageQueueBase& rhs, nsAllocator* pAllocator)
   : m_Queue(pAllocator)
 {
   m_Queue = rhs.m_Queue;
 }
 
 template <typename MetaDataType>
-wdMessageQueueBase<MetaDataType>::~wdMessageQueueBase()
+nsMessageQueueBase<MetaDataType>::~nsMessageQueueBase()
 {
   Clear();
 }
 
 template <typename MetaDataType>
-void wdMessageQueueBase<MetaDataType>::operator=(const wdMessageQueueBase& rhs)
+void nsMessageQueueBase<MetaDataType>::operator=(const nsMessageQueueBase& rhs)
 {
   m_Queue = rhs.m_Queue;
 }
 
 template <typename MetaDataType>
-WD_ALWAYS_INLINE typename wdMessageQueueBase<MetaDataType>::Entry& wdMessageQueueBase<MetaDataType>::operator[](wdUInt32 uiIndex)
+NS_ALWAYS_INLINE typename nsMessageQueueBase<MetaDataType>::Entry& nsMessageQueueBase<MetaDataType>::operator[](nsUInt32 uiIndex)
 {
   return m_Queue[uiIndex];
 }
 
 template <typename MetaDataType>
-WD_ALWAYS_INLINE const typename wdMessageQueueBase<MetaDataType>::Entry& wdMessageQueueBase<MetaDataType>::operator[](wdUInt32 uiIndex) const
+NS_ALWAYS_INLINE const typename nsMessageQueueBase<MetaDataType>::Entry& nsMessageQueueBase<MetaDataType>::operator[](nsUInt32 uiIndex) const
 {
   return m_Queue[uiIndex];
 }
 
 template <typename MetaDataType>
-WD_ALWAYS_INLINE wdUInt32 wdMessageQueueBase<MetaDataType>::GetCount() const
+NS_ALWAYS_INLINE nsUInt32 nsMessageQueueBase<MetaDataType>::GetCount() const
 {
   return m_Queue.GetCount();
 }
 
 template <typename MetaDataType>
-WD_ALWAYS_INLINE bool wdMessageQueueBase<MetaDataType>::IsEmpty() const
+NS_ALWAYS_INLINE bool nsMessageQueueBase<MetaDataType>::IsEmpty() const
 {
   return m_Queue.IsEmpty();
 }
 
 template <typename MetaDataType>
-void wdMessageQueueBase<MetaDataType>::Clear()
+void nsMessageQueueBase<MetaDataType>::Clear()
 {
   m_Queue.Clear();
 }
 
 template <typename MetaDataType>
-WD_ALWAYS_INLINE void wdMessageQueueBase<MetaDataType>::Reserve(wdUInt32 uiCount)
+NS_ALWAYS_INLINE void nsMessageQueueBase<MetaDataType>::Reserve(nsUInt32 uiCount)
 {
   m_Queue.Reserve(uiCount);
 }
 
 template <typename MetaDataType>
-WD_ALWAYS_INLINE void wdMessageQueueBase<MetaDataType>::Compact()
+NS_ALWAYS_INLINE void nsMessageQueueBase<MetaDataType>::Compact()
 {
   m_Queue.Compact();
 }
 
 template <typename MetaDataType>
-void wdMessageQueueBase<MetaDataType>::Enqueue(wdMessage* pMessage, const MetaDataType& metaData)
+void nsMessageQueueBase<MetaDataType>::Enqueue(nsMessage* pMessage, const MetaDataType& metaData)
 {
   Entry entry;
   entry.m_pMessage = pMessage;
   entry.m_MetaData = metaData;
 
   {
-    WD_LOCK(m_Mutex);
+    NS_LOCK(m_Mutex);
 
     m_Queue.PushBack(entry);
   }
 }
 
 template <typename MetaDataType>
-bool wdMessageQueueBase<MetaDataType>::TryDequeue(wdMessage*& out_pMessage, MetaDataType& out_metaData)
+bool nsMessageQueueBase<MetaDataType>::TryDequeue(nsMessage*& out_pMessage, MetaDataType& out_metaData)
 {
-  WD_LOCK(m_Mutex);
+  NS_LOCK(m_Mutex);
 
   if (!m_Queue.IsEmpty())
   {
@@ -99,9 +99,9 @@ bool wdMessageQueueBase<MetaDataType>::TryDequeue(wdMessage*& out_pMessage, Meta
 }
 
 template <typename MetaDataType>
-bool wdMessageQueueBase<MetaDataType>::TryPeek(wdMessage*& out_pMessage, MetaDataType& out_metaData)
+bool nsMessageQueueBase<MetaDataType>::TryPeek(nsMessage*& out_pMessage, MetaDataType& out_metaData)
 {
-  WD_LOCK(m_Mutex);
+  NS_LOCK(m_Mutex);
 
   if (!m_Queue.IsEmpty())
   {
@@ -116,69 +116,69 @@ bool wdMessageQueueBase<MetaDataType>::TryPeek(wdMessage*& out_pMessage, MetaDat
 }
 
 template <typename MetaDataType>
-WD_ALWAYS_INLINE typename wdMessageQueueBase<MetaDataType>::Entry& wdMessageQueueBase<MetaDataType>::Peek()
+NS_ALWAYS_INLINE typename nsMessageQueueBase<MetaDataType>::Entry& nsMessageQueueBase<MetaDataType>::Peek()
 {
   return m_Queue.PeekFront();
 }
 
 template <typename MetaDataType>
-WD_ALWAYS_INLINE void wdMessageQueueBase<MetaDataType>::Dequeue()
+NS_ALWAYS_INLINE void nsMessageQueueBase<MetaDataType>::Dequeue()
 {
   m_Queue.PopFront();
 }
 
 template <typename MetaDataType>
 template <typename Comparer>
-WD_ALWAYS_INLINE void wdMessageQueueBase<MetaDataType>::Sort(const Comparer& comparer)
+NS_ALWAYS_INLINE void nsMessageQueueBase<MetaDataType>::Sort(const Comparer& comparer)
 {
   m_Queue.Sort(comparer);
 }
 
 template <typename MetaDataType>
-void wdMessageQueueBase<MetaDataType>::Lock()
+void nsMessageQueueBase<MetaDataType>::Lock()
 {
   m_Mutex.Lock();
 }
 
 template <typename MetaDataType>
-void wdMessageQueueBase<MetaDataType>::Unlock()
+void nsMessageQueueBase<MetaDataType>::Unlock()
 {
   m_Mutex.Unlock();
 }
 
 
 template <typename MD, typename A>
-wdMessageQueue<MD, A>::wdMessageQueue()
-  : wdMessageQueueBase<MD>(A::GetAllocator())
+nsMessageQueue<MD, A>::nsMessageQueue()
+  : nsMessageQueueBase<MD>(A::GetAllocator())
 {
 }
 
 template <typename MD, typename A>
-wdMessageQueue<MD, A>::wdMessageQueue(wdAllocatorBase* pQueueAllocator)
-  : wdMessageQueueBase<MD>(pQueueAllocator)
+nsMessageQueue<MD, A>::nsMessageQueue(nsAllocator* pQueueAllocator)
+  : nsMessageQueueBase<MD>(pQueueAllocator)
 {
 }
 
 template <typename MD, typename A>
-wdMessageQueue<MD, A>::wdMessageQueue(const wdMessageQueue<MD, A>& rhs)
-  : wdMessageQueueBase<MD>(rhs, A::GetAllocator())
+nsMessageQueue<MD, A>::nsMessageQueue(const nsMessageQueue<MD, A>& rhs)
+  : nsMessageQueueBase<MD>(rhs, A::GetAllocator())
 {
 }
 
 template <typename MD, typename A>
-wdMessageQueue<MD, A>::wdMessageQueue(const wdMessageQueueBase<MD>& rhs)
-  : wdMessageQueueBase<MD>(rhs, A::GetAllocator())
+nsMessageQueue<MD, A>::nsMessageQueue(const nsMessageQueueBase<MD>& rhs)
+  : nsMessageQueueBase<MD>(rhs, A::GetAllocator())
 {
 }
 
 template <typename MD, typename A>
-void wdMessageQueue<MD, A>::operator=(const wdMessageQueue<MD, A>& rhs)
+void nsMessageQueue<MD, A>::operator=(const nsMessageQueue<MD, A>& rhs)
 {
-  wdMessageQueueBase<MD>::operator=(rhs);
+  nsMessageQueueBase<MD>::operator=(rhs);
 }
 
 template <typename MD, typename A>
-void wdMessageQueue<MD, A>::operator=(const wdMessageQueueBase<MD>& rhs)
+void nsMessageQueue<MD, A>::operator=(const nsMessageQueueBase<MD>& rhs)
 {
-  wdMessageQueueBase<MD>::operator=(rhs);
+  nsMessageQueueBase<MD>::operator=(rhs);
 }

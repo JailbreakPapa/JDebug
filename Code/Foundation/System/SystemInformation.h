@@ -3,9 +3,9 @@
 /// \brief Flags that tell you which SIMD features are available on this processor / OS
 ///
 /// Heavily 'inspired' by https://github.com/Mysticial/FeatureDetector
-struct wdCpuFeatures
+struct nsCpuFeatures
 {
-#if WD_ENABLED(WD_PLATFORM_ARCH_X86)
+#if NS_ENABLED(NS_PLATFORM_ARCH_X86)
   //  Vendor
   bool Vendor_AMD = false;
   bool Vendor_Intel = false;
@@ -91,22 +91,22 @@ struct wdCpuFeatures
 
 /// \brief The system configuration class encapsulates information about the system the application is running on.
 ///
-/// Retrieve the system configuration by using wdSystemInformation::Get(). If you use the system configuration in startup code
+/// Retrieve the system configuration by using nsSystemInformation::Get(). If you use the system configuration in startup code
 /// make sure to add the correct dependency to the system "SystemInformation" in "Foundation".
-class WD_FOUNDATION_DLL wdSystemInformation
+class NS_FOUNDATION_DLL nsSystemInformation
 {
 public:
   /// \brief Returns the installed physical memory in bytes
-  wdUInt64 GetInstalledMainMemory() const { return m_uiInstalledMainMemory; }
+  nsUInt64 GetInstalledMainMemory() const { return m_uiInstalledMainMemory; }
 
   /// \brief Returns the currently available physical memory
-  wdUInt64 GetAvailableMainMemory() const;
+  nsUInt64 GetAvailableMainMemory() const;
 
   /// \brief Returns the size of a memory page in bytes
-  wdUInt32 GetMemoryPageSize() const { return m_uiMemoryPageSize; }
+  nsUInt32 GetMemoryPageSize() const { return m_uiMemoryPageSize; }
 
   /// \brief Returns the CPU core count of the system.
-  wdUInt32 GetCPUCoreCount() const { return m_uiCPUCoreCount; }
+  nsUInt32 GetCPUCoreCount() const { return m_uiCPUCoreCount; }
 
   /// \brief Returns the total utilization of the CPU core in percent
   float GetCPUUtilization() const;
@@ -121,14 +121,14 @@ public:
   const char* GetBuildConfiguration() const { return m_szBuildConfiguration; }
 
   /// \brief Returns a struct that contains detailed information about the available CPU features (SIMD support).
-  const wdCpuFeatures& GetCpuFeatures() const { return m_CpuFeatures; }
+  const nsCpuFeatures& GetCpuFeatures() const { return m_CpuFeatures; }
 
 public:
   /// \brief Returns whether a debugger is currently attached to this process.
   static bool IsDebuggerAttached();
 
   /// \brief Allows access to the current system configuration.
-  static const wdSystemInformation& Get()
+  static const nsSystemInformation& Get()
   {
     if (!s_SystemInformation.m_bIsInitialized)
       Initialize();
@@ -137,17 +137,17 @@ public:
   }
 
 private:
-  wdUInt64 m_uiInstalledMainMemory;
-  wdUInt32 m_uiMemoryPageSize;
-  wdUInt32 m_uiCPUCoreCount;
-  const char* m_szPlatformName;
-  const char* m_szBuildConfiguration;
+  nsUInt64 m_uiInstalledMainMemory;
+  nsUInt32 m_uiMemoryPageSize;
+  nsUInt32 m_uiCPUCoreCount;
+  const char* m_szPlatformName = nullptr;
+  const char* m_szBuildConfiguration = nullptr;
   char m_sHostName[256];
   bool m_bB64BitOS;
   bool m_bIsInitialized;
-  wdCpuFeatures m_CpuFeatures;
+  nsCpuFeatures m_CpuFeatures;
 
   static void Initialize();
 
-  static wdSystemInformation s_SystemInformation;
+  static nsSystemInformation s_SystemInformation;
 };

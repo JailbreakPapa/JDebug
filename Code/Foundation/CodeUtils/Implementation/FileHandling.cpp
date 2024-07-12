@@ -5,74 +5,81 @@
 #include <Foundation/IO/OSFile.h>
 #include <Foundation/Utilities/ConversionUtils.h>
 
-using namespace wdTokenParseUtils;
+using namespace nsTokenParseUtils;
 
-wdMap<wdString, wdTokenizedFileCache::FileData>::ConstIterator wdTokenizedFileCache::Lookup(const wdString& sFileName) const
+nsMap<nsString, nsTokenizedFileCache::FileData>::ConstIterator nsTokenizedFileCache::Lookup(const nsString& sFileName) const
 {
-  WD_LOCK(m_Mutex);
+  NS_LOCK(m_Mutex);
   auto it = m_Cache.Find(sFileName);
   return it;
 }
 
-void wdTokenizedFileCache::Remove(const wdString& sFileName)
+void nsTokenizedFileCache::Remove(const nsString& sFileName)
 {
-  WD_LOCK(m_Mutex);
+  NS_LOCK(m_Mutex);
   m_Cache.Remove(sFileName);
 }
 
-void wdTokenizedFileCache::Clear()
+void nsTokenizedFileCache::Clear()
 {
-  WD_LOCK(m_Mutex);
+  NS_LOCK(m_Mutex);
   m_Cache.Clear();
 }
 
-void wdTokenizedFileCache::SkipWhitespace(wdDeque<wdToken>& Tokens, wdUInt32& uiCurToken)
+void nsTokenizedFileCache::SkipWhitespace(nsDeque<nsToken>& Tokens, nsUInt32& uiCurToken)
 {
-  while (uiCurToken < Tokens.GetCount() && (Tokens[uiCurToken].m_iType == wdTokenType::BlockComment || Tokens[uiCurToken].m_iType == wdTokenType::LineComment || Tokens[uiCurToken].m_iType == wdTokenType::Newline || Tokens[uiCurToken].m_iType == wdTokenType::Whitespace))
+  while (uiCurToken < Tokens.GetCount() && (Tokens[uiCurToken].m_iType == nsTokenType::BlockComment || Tokens[uiCurToken].m_iType == nsTokenType::LineComment || Tokens[uiCurToken].m_iType == nsTokenType::Newline || Tokens[uiCurToken].m_iType == nsTokenType::Whitespace))
     ++uiCurToken;
 }
 
-const wdTokenizer* wdTokenizedFileCache::Tokenize(const wdString& sFileName, wdArrayPtr<const wdUInt8> fileContent, const wdTimestamp& fileTimeStamp, wdLogInterface* pLog)
+const nsTokenizer* nsTokenizedFileCache::Tokenize(const nsString& sFileName, nsArrayPtr<const nsUInt8> fileContent, const nsTimestamp& fileTimeStamp, nsLogInterface* pLog)
 {
-  WD_LOCK(m_Mutex);
+  NS_LOCK(m_Mutex);
 
-  auto& data = m_Cache[sFileName];
+  bool bExisted = false;
+  auto it = m_Cache.FindOrAdd(sFileName, &bExisted);
+  if (bExisted)
+  {
+    return &it.Value().m_Tokens;
+  }
+
+  auto& data = it.Value();
 
   data.m_Timestamp = fileTimeStamp;
-  wdTokenizer* pTokenizer = &data.m_Tokens;
+  nsTokenizer* pTokenizer = &data.m_Tokens;
   pTokenizer->Tokenize(fileContent, pLog);
 
-  wdDeque<wdToken>& Tokens = pTokenizer->GetTokens();
+  nsDeque<nsToken>& Tokens = pTokenizer->GetTokens();
 
-  wdHashedString sFile;
+  nsHashedString sFile;
   sFile.Assign(sFileName);
 
-  wdInt32 iLineOffset = 0;
+  nsInt32 iLineOffset = 0;
 
-  for (wdUInt32 i = 0; i + 1 < Tokens.GetCount(); ++i)
+  for (nsUInt32 i = 0; i + 1 < Tokens.GetCount(); ++i)
   {
-    const wdUInt32 uiCurLine = Tokens[i].m_uiLine;
+    const nsUInt32 uiCurLine = Tokens[i].m_uiLine;
 
     Tokens[i].m_File = sFile;
     Tokens[i].m_uiLine += iLineOffset;
 
-    if (Tokens[i].m_iType == wdTokenType::NonIdentifier && Tokens[i].m_DataView.IsEqual("#"))
+    if (Tokens[i].m_iType == nsTokenType::NonIdentifier && Tokens[i].m_DataView.IsEqual("#"))
     {
-      wdUInt32 uiNext = i + 1;
+      nsUInt32 uiNext = i + 1;
 
       SkipWhitespace(Tokens, uiNext);
 
-      if (uiNext < Tokens.GetCount() && Tokens[uiNext].m_iType == wdTokenType::Identifier && Tokens[uiNext].m_DataView.IsEqual("line"))
+      if (uiNext < Tokens.GetCount() && Tokens[uiNext].m_iType == nsTokenType::Identifier && Tokens[uiNext].m_DataView.IsEqual("line"))
       {
         ++uiNext;
         SkipWhitespace(Tokens, uiNext);
 
-        if (uiNext < Tokens.GetCount() && Tokens[uiNext].m_iType == wdTokenType::Integer)
+        if (uiNext < Tokens.GetCount() && Tokens[uiNext].m_iType == nsTokenType::Integer)
         {
-          wdInt32 iNextLine = 0;
+          nsInt32 iNextLine = 0;
 
-          const wdString sNumber = Tokens[uiNext].m_DataView;
-          if (wdConversionUtils::StringToInt(sNumber, iNextLine).Succeeded())
+          const nsString sNumber = Tokens[uiNext].m_DataView;
+          if (nsConversionUtils::StringToInt(sNumber, iNextLine).Succeeded())
           {
             iLineOffset = (iNextLine - uiCurLine) - 1;
 
@@ -81,9 +88,9 @@ const wdTokenizer* wdTokenizedFileCache::Tokenize(const wdString& sFileName, wdA
 
             if (uiNext < Tokens.GetCount())
             {
-              if (Tokens[uiNext].m_iType == wdTokenType::String1)
+              if (Tokens[uiNext].m_iType == nsTokenType::String1)
               {
-                wdStringBuilder sFileName2 = Tokens[uiNext].m_DataView;
+                nsStringBuilder sFileName2 = Tokens[uiNext].m_DataView;
                 sFileName2.Shrink(1, 1); // remove surrounding "
 
                 sFile.Assign(sFileName2);
@@ -99,88 +106,88 @@ const wdTokenizer* wdTokenizedFileCache::Tokenize(const wdString& sFileName, wdA
 }
 
 
-void wdPreprocessor::SetLogInterface(wdLogInterface* pLog)
+void nsPreprocessor::SetLogInterface(nsLogInterface* pLog)
 {
   m_pLog = pLog;
 }
 
-void wdPreprocessor::SetFileOpenFunction(FileOpenCB openAbsFileCB)
+void nsPreprocessor::SetFileOpenFunction(FileOpenCB openAbsFileCB)
 {
   m_FileOpenCallback = openAbsFileCB;
 }
 
-void wdPreprocessor::SetFileLocatorFunction(FileLocatorCB locateAbsFileCB)
+void nsPreprocessor::SetFileLocatorFunction(FileLocatorCB locateAbsFileCB)
 {
   m_FileLocatorCallback = locateAbsFileCB;
 }
 
-wdResult wdPreprocessor::DefaultFileLocator(const char* szCurAbsoluteFile, const char* szIncludeFile, wdPreprocessor::IncludeType incType, wdStringBuilder& out_sAbsoluteFilePath)
+nsResult nsPreprocessor::DefaultFileLocator(nsStringView sCurAbsoluteFile, nsStringView sIncludeFile, nsPreprocessor::IncludeType incType, nsStringBuilder& out_sAbsoluteFilePath)
 {
-  wdStringBuilder& s = out_sAbsoluteFilePath;
+  nsStringBuilder& s = out_sAbsoluteFilePath;
 
-  if (incType == wdPreprocessor::RelativeInclude)
+  if (incType == nsPreprocessor::RelativeInclude)
   {
-    s = szCurAbsoluteFile;
+    s = sCurAbsoluteFile;
     s.PathParentDirectory();
-    s.AppendPath(szIncludeFile);
+    s.AppendPath(sIncludeFile);
     s.MakeCleanPath();
   }
   else
   {
-    s = szIncludeFile;
+    s = sIncludeFile;
     s.MakeCleanPath();
   }
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
-wdResult wdPreprocessor::DefaultFileOpen(const char* szAbsoluteFile, wdDynamicArray<wdUInt8>& ref_fileContent, wdTimestamp& out_fileModification)
+nsResult nsPreprocessor::DefaultFileOpen(nsStringView sAbsoluteFile, nsDynamicArray<nsUInt8>& ref_fileContent, nsTimestamp& out_fileModification)
 {
-  wdFileReader r;
-  if (r.Open(szAbsoluteFile).Failed())
-    return WD_FAILURE;
+  nsFileReader r;
+  if (r.Open(sAbsoluteFile).Failed())
+    return NS_FAILURE;
 
-#if WD_ENABLED(WD_SUPPORTS_FILE_STATS)
-  wdFileStats stats;
-  if (wdFileSystem::GetFileStats(szAbsoluteFile, stats).Succeeded())
+#if NS_ENABLED(NS_SUPPORTS_FILE_STATS)
+  nsFileStats stats;
+  if (nsFileSystem::GetFileStats(sAbsoluteFile, stats).Succeeded())
     out_fileModification = stats.m_LastModificationTime;
 #endif
 
-  wdUInt8 Temp[4096];
+  nsUInt8 Temp[4096];
 
-  while (wdUInt64 uiRead = r.ReadBytes(Temp, 4096))
+  while (nsUInt64 uiRead = r.ReadBytes(Temp, 4096))
   {
-    ref_fileContent.PushBackRange(wdArrayPtr<wdUInt8>(Temp, (wdUInt32)uiRead));
+    ref_fileContent.PushBackRange(nsArrayPtr<nsUInt8>(Temp, (nsUInt32)uiRead));
   }
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
-wdResult wdPreprocessor::OpenFile(const char* szFile, const wdTokenizer** pTokenizer)
+nsResult nsPreprocessor::OpenFile(nsStringView sFile, const nsTokenizer** pTokenizer)
 {
-  WD_ASSERT_DEV(m_FileOpenCallback.IsValid(), "OpenFile callback has not been set");
-  WD_ASSERT_DEV(m_FileLocatorCallback.IsValid(), "File locator callback has not been set");
+  NS_ASSERT_DEV(m_FileOpenCallback.IsValid(), "OpenFile callback has not been set");
+  NS_ASSERT_DEV(m_FileLocatorCallback.IsValid(), "File locator callback has not been set");
 
   *pTokenizer = nullptr;
 
-  auto it = m_pUsedFileCache->Lookup(szFile);
+  auto it = m_pUsedFileCache->Lookup(sFile);
 
   if (it.IsValid())
   {
     *pTokenizer = &it.Value().m_Tokens;
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
 
-  wdTimestamp stamp;
+  nsTimestamp stamp;
 
-  wdDynamicArray<wdUInt8> Content;
-  if (m_FileOpenCallback(szFile, Content, stamp).Failed())
+  nsDynamicArray<nsUInt8> Content;
+  if (m_FileOpenCallback(sFile, Content, stamp).Failed())
   {
-    wdLog::Error(m_pLog, "Could not open file '{0}'", szFile);
-    return WD_FAILURE;
+    nsLog::Error(m_pLog, "Could not open file '{0}'", sFile);
+    return NS_FAILURE;
   }
 
-  wdArrayPtr<const wdUInt8> ContentView = Content;
+  nsArrayPtr<const nsUInt8> ContentView = Content;
 
   // the file open callback gives us raw data for the opened file
   // the tokenizer doesn't like the Utf8 BOM, so skip it here, if we detect it
@@ -188,35 +195,35 @@ wdResult wdPreprocessor::OpenFile(const char* szFile, const wdTokenizer** pToken
   {
     const char* dataStart = reinterpret_cast<const char*>(ContentView.GetPtr());
 
-    if (wdUnicodeUtils::SkipUtf8Bom(dataStart))
+    if (nsUnicodeUtils::SkipUtf8Bom(dataStart))
     {
-      ContentView = wdArrayPtr<const wdUInt8>((const wdUInt8*)dataStart, Content.GetCount() - 3);
+      ContentView = nsArrayPtr<const nsUInt8>((const nsUInt8*)dataStart, Content.GetCount() - 3);
     }
   }
 
-  *pTokenizer = m_pUsedFileCache->Tokenize(szFile, ContentView, stamp, m_pLog);
+  *pTokenizer = m_pUsedFileCache->Tokenize(sFile, ContentView, stamp, m_pLog);
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
 
-wdResult wdPreprocessor::HandleInclude(const TokenStream& Tokens0, wdUInt32 uiCurToken, wdUInt32 uiDirectiveToken, TokenStream& TokenOutput)
+nsResult nsPreprocessor::HandleInclude(const TokenStream& Tokens0, nsUInt32 uiCurToken, nsUInt32 uiDirectiveToken, TokenStream& TokenOutput)
 {
-  WD_ASSERT_DEV(m_FileLocatorCallback.IsValid(), "File locator callback has not been set");
+  NS_ASSERT_DEV(m_FileLocatorCallback.IsValid(), "File locator callback has not been set");
 
   TokenStream Tokens;
   if (Expand(Tokens0, Tokens).Failed())
-    return WD_FAILURE;
+    return NS_FAILURE;
 
   SkipWhitespace(Tokens, uiCurToken);
 
-  wdStringBuilder sPath;
+  nsStringBuilder sPath;
 
   IncludeType IncType = IncludeType::GlobalInclude;
 
 
-  wdUInt32 uiAccepted;
-  if (Accept(Tokens, uiCurToken, wdTokenType::String1, &uiAccepted))
+  nsUInt32 uiAccepted;
+  if (Accept(Tokens, uiCurToken, nsTokenType::String1, &uiAccepted))
   {
     IncType = IncludeType::RelativeInclude;
     sPath = Tokens[uiAccepted]->m_DataView;
@@ -229,13 +236,13 @@ wdResult wdPreprocessor::HandleInclude(const TokenStream& Tokens0, wdUInt32 uiCu
     // so we concatenate just everything and then make sure it ends with a >
 
     if (Expect(Tokens, uiCurToken, "<", &uiAccepted).Failed())
-      return WD_FAILURE;
+      return NS_FAILURE;
 
     TokenStream PathTokens;
 
     while (uiCurToken < Tokens.GetCount())
     {
-      if (Tokens[uiCurToken]->m_iType == wdTokenType::Newline)
+      if (Tokens[uiCurToken]->m_iType == nsTokenType::Newline)
       {
         break;
       }
@@ -257,41 +264,37 @@ wdResult wdPreprocessor::HandleInclude(const TokenStream& Tokens0, wdUInt32 uiCu
     else
     {
       PP_LOG(Error, "Invalid include path '{0}'", Tokens[uiAccepted], sPath);
-      return WD_FAILURE;
+      return NS_FAILURE;
     }
   }
 
   if (ExpectEndOfLine(Tokens, uiCurToken).Failed())
   {
     PP_LOG0(Error, "Expected end-of-line", Tokens[uiCurToken]);
-    return WD_FAILURE;
+    return NS_FAILURE;
   }
 
-  WD_ASSERT_DEV(!m_CurrentFileStack.IsEmpty(), "Implementation error.");
+  NS_ASSERT_DEV(!m_CurrentFileStack.IsEmpty(), "Implementation error.");
 
-  wdStringBuilder sOtherFile;
+  nsStringBuilder sOtherFile;
 
   if (m_FileLocatorCallback(m_CurrentFileStack.PeekBack().m_sFileName.GetData(), sPath, IncType, sOtherFile).Failed())
   {
     PP_LOG(Error, "#include file '{0}' could not be located", Tokens[uiAccepted], sPath);
-    return WD_FAILURE;
+    return NS_FAILURE;
   }
 
-  const wdTempHashedString sOtherFileHashed(sOtherFile);
+  const nsTempHashedString sOtherFileHashed(sOtherFile);
 
   // if this has been included before, and contains a #pragma once, do not include it again
   if (m_PragmaOnce.Find(sOtherFileHashed).IsValid())
-    return WD_SUCCESS;
+    return NS_SUCCESS;
 
   if (ProcessFile(sOtherFile, TokenOutput).Failed())
-    return WD_FAILURE;
+    return NS_FAILURE;
 
-  if (uiCurToken < Tokens.GetCount() && (Tokens[uiCurToken]->m_iType == wdTokenType::Newline || Tokens[uiCurToken]->m_iType == wdTokenType::EndOfFile))
+  if (uiCurToken < Tokens.GetCount() && (Tokens[uiCurToken]->m_iType == nsTokenType::Newline || Tokens[uiCurToken]->m_iType == nsTokenType::EndOfFile))
     TokenOutput.PushBack(Tokens[uiCurToken]);
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
-
-
-
-WD_STATICLINK_FILE(Foundation, Foundation_CodeUtils_Implementation_FileHandling);

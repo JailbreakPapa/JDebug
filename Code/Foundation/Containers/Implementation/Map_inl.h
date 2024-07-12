@@ -6,15 +6,12 @@
 
 #define STACK_SIZE 64
 
-template <typename KeyType, typename ValueType, typename Comparer>
-void wdMapBase<KeyType, ValueType, Comparer>::ConstIterator::Next()
+template <typename KeyType, typename ValueType, typename Comparer, bool REVERSE>
+void nsMapBaseConstIteratorBase<KeyType, ValueType, Comparer, REVERSE>::Advance(const nsInt32 dir0, const nsInt32 dir1)
 {
-  const wdInt32 dir0 = 0;
-  const wdInt32 dir1 = 1;
-
   if (m_pElement == nullptr)
   {
-    WD_ASSERT_DEV(m_pElement != nullptr, "The Iterator is invalid (end).");
+    NS_ASSERT_DEBUG(m_pElement != nullptr, "The Iterator is invalid (end).");
     return;
   }
 
@@ -57,61 +54,79 @@ void wdMapBase<KeyType, ValueType, Comparer>::ConstIterator::Next()
   return;
 }
 
-template <typename KeyType, typename ValueType, typename Comparer>
-void wdMapBase<KeyType, ValueType, Comparer>::ConstIterator::Prev()
+template <typename KeyType, typename ValueType, typename Comparer, bool REVERSE>
+void nsMapBaseConstIteratorBase<KeyType, ValueType, Comparer, REVERSE>::Next()
 {
-  const wdInt32 dir0 = 1;
-  const wdInt32 dir1 = 0;
-
-  if (m_pElement == nullptr)
+  if constexpr (REVERSE)
   {
-    WD_ASSERT_DEV(m_pElement != nullptr, "The Iterator is invalid (end).");
-    return;
+    Advance(1, 0);
   }
-
-  // if this element has a right child, go there and then search for the left most child of that
-  if (m_pElement->m_pLink[dir1] != m_pElement->m_pLink[dir1]->m_pLink[dir1])
+  else
   {
-    m_pElement = m_pElement->m_pLink[dir1];
-
-    while (m_pElement->m_pLink[dir0] != m_pElement->m_pLink[dir0]->m_pLink[dir0])
-      m_pElement = m_pElement->m_pLink[dir0];
-
-    return;
+    Advance(0, 1);
   }
-
-  // if this element has a parent and this element is that parents left child, go directly to the parent
-  if ((m_pElement->m_pParent != m_pElement->m_pParent->m_pParent) && (m_pElement->m_pParent->m_pLink[dir0] == m_pElement))
-  {
-    m_pElement = m_pElement->m_pParent;
-    return;
-  }
-
-  // if this element has a parent and this element is that parents right child, search for the next parent, whose left child this is
-  if ((m_pElement->m_pParent != m_pElement->m_pParent->m_pParent) && (m_pElement->m_pParent->m_pLink[dir1] == m_pElement))
-  {
-    while (m_pElement->m_pParent->m_pLink[dir1] == m_pElement)
-      m_pElement = m_pElement->m_pParent;
-
-    // if we are at the root node..
-    if ((m_pElement->m_pParent == nullptr) || (m_pElement->m_pParent == m_pElement->m_pParent->m_pParent))
-    {
-      m_pElement = nullptr;
-      return;
-    }
-
-    m_pElement = m_pElement->m_pParent;
-    return;
-  }
-
-  m_pElement = nullptr;
-  return;
 }
 
-// ***** wdMapBase *****
+template <typename KeyType, typename ValueType, typename Comparer, bool REVERSE>
+void nsMapBaseConstIteratorBase<KeyType, ValueType, Comparer, REVERSE>::Prev()
+{
+  if constexpr (REVERSE)
+  {
+    Advance(0, 1);
+  }
+  else
+  {
+    Advance(1, 0);
+  }
+}
+
+#if NS_ENABLED(NS_USE_CPP20_OPERATORS)
+
+// These functions are used for structured bindings.
+// They describe how many elements can be accessed in the binding and which type they are.
+namespace std
+{
+  template <typename KeyType, typename ValueType, typename Comparer, bool REVERSE>
+  struct tuple_size<nsMapBaseConstIteratorBase<KeyType, ValueType, Comparer, REVERSE>> : integral_constant<size_t, 2>
+  {
+  };
+
+  template <typename KeyType, typename ValueType, typename Comparer, bool REVERSE>
+  struct tuple_element<0, nsMapBaseConstIteratorBase<KeyType, ValueType, Comparer, REVERSE>>
+  {
+    using type = const KeyType&;
+  };
+
+  template <typename KeyType, typename ValueType, typename Comparer, bool REVERSE>
+  struct tuple_element<1, nsMapBaseConstIteratorBase<KeyType, ValueType, Comparer, REVERSE>>
+  {
+    using type = const ValueType&;
+  };
+
+
+  template <typename KeyType, typename ValueType, typename Comparer, bool REVERSE>
+  struct tuple_size<nsMapBaseIteratorBase<KeyType, ValueType, Comparer, REVERSE>> : integral_constant<size_t, 2>
+  {
+  };
+
+  template <typename KeyType, typename ValueType, typename Comparer, bool REVERSE>
+  struct tuple_element<0, nsMapBaseIteratorBase<KeyType, ValueType, Comparer, REVERSE>>
+  {
+    using type = const KeyType&;
+  };
+
+  template <typename KeyType, typename ValueType, typename Comparer, bool REVERSE>
+  struct tuple_element<1, nsMapBaseIteratorBase<KeyType, ValueType, Comparer, REVERSE>>
+  {
+    using type = ValueType&;
+  };
+} // namespace std
+#endif
+
+// ***** nsMapBase *****
 
 template <typename KeyType, typename ValueType, typename Comparer>
-void wdMapBase<KeyType, ValueType, Comparer>::Constructor()
+void nsMapBase<KeyType, ValueType, Comparer>::Constructor()
 {
   m_uiCount = 0;
 
@@ -125,7 +140,7 @@ void wdMapBase<KeyType, ValueType, Comparer>::Constructor()
 }
 
 template <typename KeyType, typename ValueType, typename Comparer>
-wdMapBase<KeyType, ValueType, Comparer>::wdMapBase(const Comparer& comparer, wdAllocatorBase* pAllocator)
+nsMapBase<KeyType, ValueType, Comparer>::nsMapBase(const Comparer& comparer, nsAllocator* pAllocator)
   : m_Elements(pAllocator)
   , m_Comparer(comparer)
 {
@@ -133,7 +148,7 @@ wdMapBase<KeyType, ValueType, Comparer>::wdMapBase(const Comparer& comparer, wdA
 }
 
 template <typename KeyType, typename ValueType, typename Comparer>
-wdMapBase<KeyType, ValueType, Comparer>::wdMapBase(const wdMapBase<KeyType, ValueType, Comparer>& cc, wdAllocatorBase* pAllocator)
+nsMapBase<KeyType, ValueType, Comparer>::nsMapBase(const nsMapBase<KeyType, ValueType, Comparer>& cc, nsAllocator* pAllocator)
   : m_Elements(pAllocator)
 {
   Constructor();
@@ -142,13 +157,13 @@ wdMapBase<KeyType, ValueType, Comparer>::wdMapBase(const wdMapBase<KeyType, Valu
 }
 
 template <typename KeyType, typename ValueType, typename Comparer>
-wdMapBase<KeyType, ValueType, Comparer>::~wdMapBase()
+nsMapBase<KeyType, ValueType, Comparer>::~nsMapBase()
 {
   Clear();
 }
 
 template <typename KeyType, typename ValueType, typename Comparer>
-void wdMapBase<KeyType, ValueType, Comparer>::operator=(const wdMapBase<KeyType, ValueType, Comparer>& rhs)
+void nsMapBase<KeyType, ValueType, Comparer>::operator=(const nsMapBase<KeyType, ValueType, Comparer>& rhs)
 {
   Clear();
 
@@ -157,10 +172,10 @@ void wdMapBase<KeyType, ValueType, Comparer>::operator=(const wdMapBase<KeyType,
 }
 
 template <typename KeyType, typename ValueType, typename Comparer>
-void wdMapBase<KeyType, ValueType, Comparer>::Clear()
+void nsMapBase<KeyType, ValueType, Comparer>::Clear()
 {
   for (Iterator it = GetIterator(); it.IsValid(); ++it)
-    wdMemoryUtils::Destruct<Node>(it.m_pElement, 1);
+    nsMemoryUtils::Destruct<Node>(it.m_pElement, 1);
 
   m_pFreeElementStack = nullptr;
   m_Elements.Clear();
@@ -176,65 +191,65 @@ void wdMapBase<KeyType, ValueType, Comparer>::Clear()
 }
 
 template <typename KeyType, typename ValueType, typename Comparer>
-WD_ALWAYS_INLINE bool wdMapBase<KeyType, ValueType, Comparer>::IsEmpty() const
+NS_ALWAYS_INLINE bool nsMapBase<KeyType, ValueType, Comparer>::IsEmpty() const
 {
   return (m_uiCount == 0);
 }
 
 template <typename KeyType, typename ValueType, typename Comparer>
-WD_ALWAYS_INLINE wdUInt32 wdMapBase<KeyType, ValueType, Comparer>::GetCount() const
+NS_ALWAYS_INLINE nsUInt32 nsMapBase<KeyType, ValueType, Comparer>::GetCount() const
 {
   return m_uiCount;
 }
 
 
 template <typename KeyType, typename ValueType, typename Comparer>
-WD_ALWAYS_INLINE typename wdMapBase<KeyType, ValueType, Comparer>::Iterator wdMapBase<KeyType, ValueType, Comparer>::GetIterator()
+NS_ALWAYS_INLINE typename nsMapBase<KeyType, ValueType, Comparer>::Iterator nsMapBase<KeyType, ValueType, Comparer>::GetIterator()
 {
   return Iterator(GetLeftMost());
 }
 
 template <typename KeyType, typename ValueType, typename Comparer>
-WD_ALWAYS_INLINE typename wdMapBase<KeyType, ValueType, Comparer>::ConstIterator wdMapBase<KeyType, ValueType, Comparer>::GetIterator() const
+NS_ALWAYS_INLINE typename nsMapBase<KeyType, ValueType, Comparer>::ConstIterator nsMapBase<KeyType, ValueType, Comparer>::GetIterator() const
 {
   return ConstIterator(GetLeftMost());
 }
 
 template <typename KeyType, typename ValueType, typename Comparer>
-WD_ALWAYS_INLINE typename wdMapBase<KeyType, ValueType, Comparer>::Iterator wdMapBase<KeyType, ValueType, Comparer>::GetLastIterator()
+NS_ALWAYS_INLINE typename nsMapBase<KeyType, ValueType, Comparer>::ReverseIterator nsMapBase<KeyType, ValueType, Comparer>::GetReverseIterator()
 {
-  return Iterator(GetRightMost());
+  return ReverseIterator(GetRightMost());
 }
 
 template <typename KeyType, typename ValueType, typename Comparer>
-WD_ALWAYS_INLINE typename wdMapBase<KeyType, ValueType, Comparer>::ConstIterator wdMapBase<KeyType, ValueType, Comparer>::GetLastIterator() const
+NS_ALWAYS_INLINE typename nsMapBase<KeyType, ValueType, Comparer>::ConstReverseIterator nsMapBase<KeyType, ValueType, Comparer>::GetReverseIterator() const
 {
-  return ConstIterator(GetRightMost());
+  return ConstReverseIterator(GetRightMost());
 }
 
 template <typename KeyType, typename ValueType, typename Comparer>
-typename wdMapBase<KeyType, ValueType, Comparer>::Node* wdMapBase<KeyType, ValueType, Comparer>::GetLeftMost() const
+typename nsMapBase<KeyType, ValueType, Comparer>::Node* nsMapBase<KeyType, ValueType, Comparer>::GetLeftMost() const
 {
   if (IsEmpty())
     return nullptr;
 
   Node* pNode = m_pRoot;
 
-  while (pNode->m_pLink[0] != &m_NilNode)
+  while ((const void*)pNode->m_pLink[0] != (const void*)&m_NilNode)
     pNode = pNode->m_pLink[0];
 
   return pNode;
 }
 
 template <typename KeyType, typename ValueType, typename Comparer>
-typename wdMapBase<KeyType, ValueType, Comparer>::Node* wdMapBase<KeyType, ValueType, Comparer>::GetRightMost() const
+typename nsMapBase<KeyType, ValueType, Comparer>::Node* nsMapBase<KeyType, ValueType, Comparer>::GetRightMost() const
 {
   if (IsEmpty())
     return nullptr;
 
   Node* pNode = m_pRoot;
 
-  while (pNode->m_pLink[1] != &m_NilNode)
+  while ((const void*)pNode->m_pLink[1] != (const void*)&m_NilNode)
     pNode = pNode->m_pLink[1];
 
   return pNode;
@@ -242,14 +257,14 @@ typename wdMapBase<KeyType, ValueType, Comparer>::Node* wdMapBase<KeyType, Value
 
 template <typename KeyType, typename ValueType, typename Comparer>
 template <typename CompatibleKeyType>
-typename wdMapBase<KeyType, ValueType, Comparer>::Node* wdMapBase<KeyType, ValueType, Comparer>::Internal_Find(const CompatibleKeyType& key) const
+typename nsMapBase<KeyType, ValueType, Comparer>::Node* nsMapBase<KeyType, ValueType, Comparer>::Internal_Find(const CompatibleKeyType& key) const
 {
   Node* pNode = m_pRoot;
 
-  while (pNode != &m_NilNode)
+  while ((const void*)pNode != (const void*)&m_NilNode)
   {
-    const wdInt32 dir = (wdInt32)m_Comparer.Less(pNode->m_Key, key);
-    const wdInt32 dir2 = (wdInt32)m_Comparer.Less(key, pNode->m_Key);
+    const nsInt32 dir = (nsInt32)m_Comparer.Less(pNode->m_Key, key);
+    const nsInt32 dir2 = (nsInt32)m_Comparer.Less(key, pNode->m_Key);
 
     if (dir == dir2)
       break;
@@ -257,7 +272,7 @@ typename wdMapBase<KeyType, ValueType, Comparer>::Node* wdMapBase<KeyType, Value
     pNode = pNode->m_pLink[dir];
   }
 
-  if (pNode == &m_NilNode)
+  if ((const void*)pNode == (const void*)&m_NilNode)
     return nullptr;
 
   return pNode;
@@ -265,7 +280,7 @@ typename wdMapBase<KeyType, ValueType, Comparer>::Node* wdMapBase<KeyType, Value
 
 template <typename KeyType, typename ValueType, typename Comparer>
 template <typename CompatibleKeyType>
-WD_ALWAYS_INLINE bool wdMapBase<KeyType, ValueType, Comparer>::TryGetValue(const CompatibleKeyType& key, ValueType& out_value) const
+NS_ALWAYS_INLINE bool nsMapBase<KeyType, ValueType, Comparer>::TryGetValue(const CompatibleKeyType& key, ValueType& out_value) const
 {
   Node* pNode = Internal_Find<CompatibleKeyType>(key);
   if (pNode != nullptr)
@@ -279,7 +294,7 @@ WD_ALWAYS_INLINE bool wdMapBase<KeyType, ValueType, Comparer>::TryGetValue(const
 
 template <typename KeyType, typename ValueType, typename Comparer>
 template <typename CompatibleKeyType>
-WD_ALWAYS_INLINE bool wdMapBase<KeyType, ValueType, Comparer>::TryGetValue(const CompatibleKeyType& key, const ValueType*& out_pValue) const
+NS_ALWAYS_INLINE bool nsMapBase<KeyType, ValueType, Comparer>::TryGetValue(const CompatibleKeyType& key, const ValueType*& out_pValue) const
 {
   Node* pNode = Internal_Find<CompatibleKeyType>(key);
   if (pNode != nullptr)
@@ -293,7 +308,7 @@ WD_ALWAYS_INLINE bool wdMapBase<KeyType, ValueType, Comparer>::TryGetValue(const
 
 template <typename KeyType, typename ValueType, typename Comparer>
 template <typename CompatibleKeyType>
-WD_ALWAYS_INLINE bool wdMapBase<KeyType, ValueType, Comparer>::TryGetValue(const CompatibleKeyType& key, ValueType*& out_pValue) const
+NS_ALWAYS_INLINE bool nsMapBase<KeyType, ValueType, Comparer>::TryGetValue(const CompatibleKeyType& key, ValueType*& out_pValue) const
 {
   Node* pNode = Internal_Find<CompatibleKeyType>(key);
   if (pNode != nullptr)
@@ -307,7 +322,7 @@ WD_ALWAYS_INLINE bool wdMapBase<KeyType, ValueType, Comparer>::TryGetValue(const
 
 template <typename KeyType, typename ValueType, typename Comparer>
 template <typename CompatibleKeyType>
-WD_ALWAYS_INLINE const ValueType* wdMapBase<KeyType, ValueType, Comparer>::GetValue(const CompatibleKeyType& key) const
+NS_ALWAYS_INLINE const ValueType* nsMapBase<KeyType, ValueType, Comparer>::GetValue(const CompatibleKeyType& key) const
 {
   Node* pNode = Internal_Find<CompatibleKeyType>(key);
   return pNode ? &pNode->m_Value : nullptr;
@@ -315,7 +330,7 @@ WD_ALWAYS_INLINE const ValueType* wdMapBase<KeyType, ValueType, Comparer>::GetVa
 
 template <typename KeyType, typename ValueType, typename Comparer>
 template <typename CompatibleKeyType>
-WD_ALWAYS_INLINE ValueType* wdMapBase<KeyType, ValueType, Comparer>::GetValue(const CompatibleKeyType& key)
+NS_ALWAYS_INLINE ValueType* nsMapBase<KeyType, ValueType, Comparer>::GetValue(const CompatibleKeyType& key)
 {
   Node* pNode = Internal_Find<CompatibleKeyType>(key);
   return pNode ? &pNode->m_Value : nullptr;
@@ -323,7 +338,7 @@ WD_ALWAYS_INLINE ValueType* wdMapBase<KeyType, ValueType, Comparer>::GetValue(co
 
 template <typename KeyType, typename ValueType, typename Comparer>
 template <typename CompatibleKeyType>
-WD_ALWAYS_INLINE const ValueType& wdMapBase<KeyType, ValueType, Comparer>::GetValueOrDefault(const CompatibleKeyType& key, const ValueType& defaultValue) const
+NS_ALWAYS_INLINE const ValueType& nsMapBase<KeyType, ValueType, Comparer>::GetValueOrDefault(const CompatibleKeyType& key, const ValueType& defaultValue) const
 {
   Node* pNode = Internal_Find<CompatibleKeyType>(key);
   return pNode ? pNode->m_Value : defaultValue;
@@ -331,36 +346,36 @@ WD_ALWAYS_INLINE const ValueType& wdMapBase<KeyType, ValueType, Comparer>::GetVa
 
 template <typename KeyType, typename ValueType, typename Comparer>
 template <typename CompatibleKeyType>
-WD_ALWAYS_INLINE typename wdMapBase<KeyType, ValueType, Comparer>::Iterator wdMapBase<KeyType, ValueType, Comparer>::Find(const CompatibleKeyType& key)
+NS_ALWAYS_INLINE typename nsMapBase<KeyType, ValueType, Comparer>::Iterator nsMapBase<KeyType, ValueType, Comparer>::Find(const CompatibleKeyType& key)
 {
   return Iterator(Internal_Find<CompatibleKeyType>(key));
 }
 
 template <typename KeyType, typename ValueType, typename Comparer>
 template <typename CompatibleKeyType>
-WD_ALWAYS_INLINE typename wdMapBase<KeyType, ValueType, Comparer>::ConstIterator wdMapBase<KeyType, ValueType, Comparer>::Find(const CompatibleKeyType& key) const
+NS_ALWAYS_INLINE typename nsMapBase<KeyType, ValueType, Comparer>::ConstIterator nsMapBase<KeyType, ValueType, Comparer>::Find(const CompatibleKeyType& key) const
 {
   return ConstIterator(Internal_Find<CompatibleKeyType>(key));
 }
 
 template <typename KeyType, typename ValueType, typename Comparer>
 template <typename CompatibleKeyType>
-WD_ALWAYS_INLINE bool wdMapBase<KeyType, ValueType, Comparer>::Contains(const CompatibleKeyType& key) const
+NS_ALWAYS_INLINE bool nsMapBase<KeyType, ValueType, Comparer>::Contains(const CompatibleKeyType& key) const
 {
   return Internal_Find(key) != nullptr;
 }
 
 template <typename KeyType, typename ValueType, typename Comparer>
 template <typename CompatibleKeyType>
-typename wdMapBase<KeyType, ValueType, Comparer>::Node* wdMapBase<KeyType, ValueType, Comparer>::Internal_LowerBound(const CompatibleKeyType& key) const
+typename nsMapBase<KeyType, ValueType, Comparer>::Node* nsMapBase<KeyType, ValueType, Comparer>::Internal_LowerBound(const CompatibleKeyType& key) const
 {
   Node* pNode = m_pRoot;
   Node* pNodeSmaller = nullptr;
 
-  while (pNode != &m_NilNode)
+  while ((const void*)pNode != (const void*)&m_NilNode)
   {
-    const wdInt32 dir = (wdInt32)m_Comparer.Less(pNode->m_Key, key);
-    const wdInt32 dir2 = (wdInt32)m_Comparer.Less(key, pNode->m_Key);
+    const nsInt32 dir = (nsInt32)m_Comparer.Less(pNode->m_Key, key);
+    const nsInt32 dir2 = (nsInt32)m_Comparer.Less(key, pNode->m_Key);
 
     if (dir == dir2)
       return pNode;
@@ -376,29 +391,29 @@ typename wdMapBase<KeyType, ValueType, Comparer>::Node* wdMapBase<KeyType, Value
 
 template <typename KeyType, typename ValueType, typename Comparer>
 template <typename CompatibleKeyType>
-WD_ALWAYS_INLINE typename wdMapBase<KeyType, ValueType, Comparer>::Iterator wdMapBase<KeyType, ValueType, Comparer>::LowerBound(const CompatibleKeyType& key)
+NS_ALWAYS_INLINE typename nsMapBase<KeyType, ValueType, Comparer>::Iterator nsMapBase<KeyType, ValueType, Comparer>::LowerBound(const CompatibleKeyType& key)
 {
   return Iterator(Internal_LowerBound(key));
 }
 
 template <typename KeyType, typename ValueType, typename Comparer>
 template <typename CompatibleKeyType>
-WD_ALWAYS_INLINE typename wdMapBase<KeyType, ValueType, Comparer>::ConstIterator wdMapBase<KeyType, ValueType, Comparer>::LowerBound(const CompatibleKeyType& key) const
+NS_ALWAYS_INLINE typename nsMapBase<KeyType, ValueType, Comparer>::ConstIterator nsMapBase<KeyType, ValueType, Comparer>::LowerBound(const CompatibleKeyType& key) const
 {
   return ConstIterator(Internal_LowerBound(key));
 }
 
 template <typename KeyType, typename ValueType, typename Comparer>
 template <typename CompatibleKeyType>
-typename wdMapBase<KeyType, ValueType, Comparer>::Node* wdMapBase<KeyType, ValueType, Comparer>::Internal_UpperBound(const CompatibleKeyType& key) const
+typename nsMapBase<KeyType, ValueType, Comparer>::Node* nsMapBase<KeyType, ValueType, Comparer>::Internal_UpperBound(const CompatibleKeyType& key) const
 {
   Node* pNode = m_pRoot;
   Node* pNodeSmaller = nullptr;
 
-  while (pNode != &m_NilNode)
+  while ((const void*)pNode != (const void*)&m_NilNode)
   {
-    const wdInt32 dir = (wdInt32)m_Comparer.Less(pNode->m_Key, key);
-    const wdInt32 dir2 = (wdInt32)m_Comparer.Less(key, pNode->m_Key);
+    const nsInt32 dir = (nsInt32)m_Comparer.Less(pNode->m_Key, key);
+    const nsInt32 dir2 = (nsInt32)m_Comparer.Less(key, pNode->m_Key);
 
     if (dir == dir2)
     {
@@ -418,28 +433,28 @@ typename wdMapBase<KeyType, ValueType, Comparer>::Node* wdMapBase<KeyType, Value
 
 template <typename KeyType, typename ValueType, typename Comparer>
 template <typename CompatibleKeyType>
-WD_ALWAYS_INLINE typename wdMapBase<KeyType, ValueType, Comparer>::Iterator wdMapBase<KeyType, ValueType, Comparer>::UpperBound(const CompatibleKeyType& key)
+NS_ALWAYS_INLINE typename nsMapBase<KeyType, ValueType, Comparer>::Iterator nsMapBase<KeyType, ValueType, Comparer>::UpperBound(const CompatibleKeyType& key)
 {
   return Iterator(Internal_UpperBound(key));
 }
 
 template <typename KeyType, typename ValueType, typename Comparer>
 template <typename CompatibleKeyType>
-WD_ALWAYS_INLINE typename wdMapBase<KeyType, ValueType, Comparer>::ConstIterator wdMapBase<KeyType, ValueType, Comparer>::UpperBound(const CompatibleKeyType& key) const
+NS_ALWAYS_INLINE typename nsMapBase<KeyType, ValueType, Comparer>::ConstIterator nsMapBase<KeyType, ValueType, Comparer>::UpperBound(const CompatibleKeyType& key) const
 {
   return ConstIterator(Internal_UpperBound(key));
 }
 
 template <typename KeyType, typename ValueType, typename Comparer>
 template <typename CompatibleKeyType>
-ValueType& wdMapBase<KeyType, ValueType, Comparer>::operator[](const CompatibleKeyType& key)
+ValueType& nsMapBase<KeyType, ValueType, Comparer>::operator[](const CompatibleKeyType& key)
 {
   return FindOrAdd(key).Value();
 }
 
 template <typename KeyType, typename ValueType, typename Comparer>
 template <typename CompatibleKeyType>
-typename wdMapBase<KeyType, ValueType, Comparer>::Iterator wdMapBase<KeyType, ValueType, Comparer>::FindOrAdd(CompatibleKeyType&& key, bool* out_pExisted)
+typename nsMapBase<KeyType, ValueType, Comparer>::Iterator nsMapBase<KeyType, ValueType, Comparer>::FindOrAdd(CompatibleKeyType&& key, bool* out_pExisted)
 {
   Node* pNilNode = reinterpret_cast<Node*>(&m_NilNode);
   Node* pInsertedNode = nullptr;
@@ -452,8 +467,8 @@ typename wdMapBase<KeyType, ValueType, Comparer>::Iterator wdMapBase<KeyType, Va
       Node* it = m_pRoot;
       Node* up[STACK_SIZE];
 
-      wdInt32 top = 0;
-      wdUInt32 dir = 0;
+      nsInt32 top = 0;
+      nsUInt32 dir = 0;
 
       while (true)
       {
@@ -467,7 +482,7 @@ typename wdMapBase<KeyType, ValueType, Comparer>::Iterator wdMapBase<KeyType, Va
 
         dir = m_Comparer.Less(it->m_Key, key) ? 1 : 0;
 
-        WD_ASSERT_DEBUG(top < STACK_SIZE, "wdMapBase's internal stack is not large enough to be able to sort {0} elements.", GetCount());
+        NS_ASSERT_DEBUG(top < STACK_SIZE, "nsMapBase's internal stack is not large enough to be able to sort {0} elements.", GetCount());
         up[top++] = it;
 
         if (it->m_pLink[dir] == pNilNode)
@@ -507,7 +522,7 @@ typename wdMapBase<KeyType, ValueType, Comparer>::Iterator wdMapBase<KeyType, Va
     m_NilNode.m_pParent = pNilNode;
   }
 
-  WD_ASSERT_DEBUG(pInsertedNode != nullptr, "Implementation Error.");
+  NS_ASSERT_DEBUG(pInsertedNode != nullptr, "Implementation Error.");
 
   if (out_pExisted)
     *out_pExisted = false;
@@ -517,7 +532,7 @@ typename wdMapBase<KeyType, ValueType, Comparer>::Iterator wdMapBase<KeyType, Va
 
 template <typename KeyType, typename ValueType, typename Comparer>
 template <typename CompatibleKeyType, typename CompatibleValueType>
-typename wdMapBase<KeyType, ValueType, Comparer>::Iterator wdMapBase<KeyType, ValueType, Comparer>::Insert(CompatibleKeyType&& key, CompatibleValueType&& value)
+typename nsMapBase<KeyType, ValueType, Comparer>::Iterator nsMapBase<KeyType, ValueType, Comparer>::Insert(CompatibleKeyType&& key, CompatibleValueType&& value)
 {
   auto it = FindOrAdd(std::forward<CompatibleKeyType>(key));
   it.Value() = std::forward<CompatibleValueType>(value);
@@ -527,7 +542,7 @@ typename wdMapBase<KeyType, ValueType, Comparer>::Iterator wdMapBase<KeyType, Va
 
 template <typename KeyType, typename ValueType, typename Comparer>
 template <typename CompatibleKeyType>
-bool wdMapBase<KeyType, ValueType, Comparer>::Remove(const CompatibleKeyType& key)
+bool nsMapBase<KeyType, ValueType, Comparer>::Remove(const CompatibleKeyType& key)
 {
   bool bRemoved = true;
   m_pRoot = Remove(m_pRoot, key, bRemoved);
@@ -539,7 +554,7 @@ bool wdMapBase<KeyType, ValueType, Comparer>::Remove(const CompatibleKeyType& ke
 
 template <typename KeyType, typename ValueType, typename Comparer>
 template <typename CompatibleKeyType>
-typename wdMapBase<KeyType, ValueType, Comparer>::Node* wdMapBase<KeyType, ValueType, Comparer>::AcquireNode(CompatibleKeyType&& key, ValueType&& value, wdUInt8 uiLevel, Node* pParent)
+typename nsMapBase<KeyType, ValueType, Comparer>::Node* nsMapBase<KeyType, ValueType, Comparer>::AcquireNode(CompatibleKeyType&& key, ValueType&& value, nsUInt8 uiLevel, Node* pParent)
 {
   Node* pNode;
 
@@ -554,7 +569,7 @@ typename wdMapBase<KeyType, ValueType, Comparer>::Node* wdMapBase<KeyType, Value
     m_pFreeElementStack = m_pFreeElementStack->m_pParent;
   }
 
-  wdMemoryUtils::Construct(pNode, 1);
+  nsMemoryUtils::Construct<SkipTrivialTypes>(pNode, 1);
 
   pNode->m_pParent = pParent;
   pNode->m_Key = std::forward<CompatibleKeyType>(key);
@@ -569,12 +584,11 @@ typename wdMapBase<KeyType, ValueType, Comparer>::Node* wdMapBase<KeyType, Value
 }
 
 template <typename KeyType, typename ValueType, typename Comparer>
-void wdMapBase<KeyType, ValueType, Comparer>::ReleaseNode(Node* pNode)
+void nsMapBase<KeyType, ValueType, Comparer>::ReleaseNode(Node* pNode)
 {
-  WD_ASSERT_DEV(pNode != nullptr, "pNode is invalid.");
-  WD_ASSERT_DEV(pNode != &m_NilNode, "pNode is invalid.");
+  NS_ASSERT_DEBUG(pNode != nullptr && pNode != &m_NilNode, "pNode is invalid.");
 
-  wdMemoryUtils::Destruct<Node>(pNode, 1);
+  nsMemoryUtils::Destruct<Node>(pNode, 1);
 
   // try to reduce the element array, if possible
   if (pNode == &m_Elements.PeekBack())
@@ -595,7 +609,7 @@ void wdMapBase<KeyType, ValueType, Comparer>::ReleaseNode(Node* pNode)
 }
 
 template <typename KeyType, typename ValueType, typename Comparer>
-WD_ALWAYS_INLINE typename wdMapBase<KeyType, ValueType, Comparer>::Node* wdMapBase<KeyType, ValueType, Comparer>::SkewNode(Node* root)
+NS_ALWAYS_INLINE typename nsMapBase<KeyType, ValueType, Comparer>::Node* nsMapBase<KeyType, ValueType, Comparer>::SkewNode(Node* root)
 {
   if ((root->m_pLink[0]->m_uiLevel == root->m_uiLevel) && (root->m_uiLevel != 0))
   {
@@ -611,7 +625,7 @@ WD_ALWAYS_INLINE typename wdMapBase<KeyType, ValueType, Comparer>::Node* wdMapBa
 }
 
 template <typename KeyType, typename ValueType, typename Comparer>
-WD_ALWAYS_INLINE typename wdMapBase<KeyType, ValueType, Comparer>::Node* wdMapBase<KeyType, ValueType, Comparer>::SplitNode(Node* root)
+NS_ALWAYS_INLINE typename nsMapBase<KeyType, ValueType, Comparer>::Node* nsMapBase<KeyType, ValueType, Comparer>::SplitNode(Node* root)
 {
   if ((root->m_pLink[1]->m_pLink[1]->m_uiLevel == root->m_uiLevel) && (root->m_uiLevel != 0))
   {
@@ -629,7 +643,7 @@ WD_ALWAYS_INLINE typename wdMapBase<KeyType, ValueType, Comparer>::Node* wdMapBa
 
 template <typename KeyType, typename ValueType, typename Comparer>
 template <typename CompatibleKeyType>
-typename wdMapBase<KeyType, ValueType, Comparer>::Node* wdMapBase<KeyType, ValueType, Comparer>::Remove(Node* root, const CompatibleKeyType& key, bool& bRemoved)
+typename nsMapBase<KeyType, ValueType, Comparer>::Node* nsMapBase<KeyType, ValueType, Comparer>::Remove(Node* root, const CompatibleKeyType& key, bool& bRemoved)
 {
   bRemoved = false;
 
@@ -640,12 +654,12 @@ typename wdMapBase<KeyType, ValueType, Comparer>::Node* wdMapBase<KeyType, Value
   {
     Node* it = root;
     Node* up[STACK_SIZE];
-    wdInt32 top = 0;
-    wdInt32 dir = 0;
+    nsInt32 top = 0;
+    nsInt32 dir = 0;
 
     while (true)
     {
-      WD_ASSERT_DEBUG(top >= 0 && top < STACK_SIZE, "Implementation error");
+      NS_ASSERT_DEBUG(top >= 0 && top < STACK_SIZE, "Implementation error");
       up[top++] = it;
 
       if (it == &m_NilNode)
@@ -663,11 +677,11 @@ typename wdMapBase<KeyType, ValueType, Comparer>::Node* wdMapBase<KeyType, Value
 
     if ((it->m_pLink[0] == &m_NilNode) || (it->m_pLink[1] == &m_NilNode))
     {
-      wdInt32 dir2 = it->m_pLink[0] == &m_NilNode;
+      nsInt32 dir2 = it->m_pLink[0] == &m_NilNode;
 
       if (--top != 0)
       {
-        WD_ASSERT_DEBUG(top >= 1 && top < STACK_SIZE, "Implementation error");
+        NS_ASSERT_DEBUG(top >= 1 && top < STACK_SIZE, "Implementation error");
         up[top - 1]->m_pLink[dir] = it->m_pLink[dir2];
         up[top - 1]->m_pLink[dir]->m_pParent = up[top - 1];
       }
@@ -681,7 +695,7 @@ typename wdMapBase<KeyType, ValueType, Comparer>::Node* wdMapBase<KeyType, Value
 
       while (heir->m_pLink[0] != &m_NilNode)
       {
-        WD_ASSERT_DEBUG(top >= 0 && top < STACK_SIZE, "Implementation error");
+        NS_ASSERT_DEBUG(top >= 0 && top < STACK_SIZE, "Implementation error");
         up[top++] = prev = heir;
 
         heir = heir->m_pLink[0];
@@ -698,11 +712,11 @@ typename wdMapBase<KeyType, ValueType, Comparer>::Node* wdMapBase<KeyType, Value
     {
       if (top != 0)
       {
-        WD_ASSERT_DEBUG(top >= 1 && top < STACK_SIZE, "Implementation error");
+        NS_ASSERT_DEBUG(top >= 1 && top < STACK_SIZE, "Implementation error");
         dir = up[top - 1]->m_pLink[1] == up[top];
       }
 
-      WD_ASSERT_DEBUG(top >= 0 && top < STACK_SIZE, "Implementation error");
+      NS_ASSERT_DEBUG(top >= 0 && top < STACK_SIZE, "Implementation error");
 
       if ((up[top]->m_pLink[0]->m_uiLevel < up[top]->m_uiLevel - 1) || (up[top]->m_pLink[1]->m_uiLevel < up[top]->m_uiLevel - 1))
       {
@@ -721,14 +735,14 @@ typename wdMapBase<KeyType, ValueType, Comparer>::Node* wdMapBase<KeyType, Value
 
       if (top != 0)
       {
-        WD_ASSERT_DEBUG(top >= 1 && top < STACK_SIZE, "Implementation error");
+        NS_ASSERT_DEBUG(top >= 1 && top < STACK_SIZE, "Implementation error");
 
         up[top - 1]->m_pLink[dir] = up[top];
         up[top - 1]->m_pLink[dir]->m_pParent = up[top - 1];
       }
       else
       {
-        WD_ASSERT_DEBUG(top >= 0 && top < STACK_SIZE, "Implementation error");
+        NS_ASSERT_DEBUG(top >= 0 && top < STACK_SIZE, "Implementation error");
         root = up[top];
       }
     }
@@ -738,7 +752,7 @@ typename wdMapBase<KeyType, ValueType, Comparer>::Node* wdMapBase<KeyType, Value
 
 
   // if necessary, swap nodes
-  if (ToErase != &m_NilNode)
+  if ((ToErase == &m_NilNode) == false)
   {
     Node* parent = ToOverride->m_pParent;
 
@@ -776,9 +790,9 @@ typename wdMapBase<KeyType, ValueType, Comparer>::Node* wdMapBase<KeyType, Value
 }
 
 template <typename KeyType, typename ValueType, typename Comparer>
-typename wdMapBase<KeyType, ValueType, Comparer>::Iterator wdMapBase<KeyType, ValueType, Comparer>::Remove(const Iterator& pos)
+typename nsMapBase<KeyType, ValueType, Comparer>::Iterator nsMapBase<KeyType, ValueType, Comparer>::Remove(const Iterator& pos)
 {
-  WD_ASSERT_DEV(pos.m_pElement != nullptr, "The Iterator(pos) is invalid.");
+  NS_ASSERT_DEBUG(pos.m_pElement != nullptr, "The Iterator(pos) is invalid.");
 
   Iterator temp(pos);
   ++temp;
@@ -787,7 +801,7 @@ typename wdMapBase<KeyType, ValueType, Comparer>::Iterator wdMapBase<KeyType, Va
 }
 
 template <typename KeyType, typename ValueType, typename Comparer>
-bool wdMapBase<KeyType, ValueType, Comparer>::operator==(const wdMapBase<KeyType, ValueType, Comparer>& rhs) const
+bool nsMapBase<KeyType, ValueType, Comparer>::operator==(const nsMapBase<KeyType, ValueType, Comparer>& rhs) const
 {
   if (GetCount() != rhs.GetCount())
     return false;
@@ -810,67 +824,61 @@ bool wdMapBase<KeyType, ValueType, Comparer>::operator==(const wdMapBase<KeyType
   return true;
 }
 
-template <typename KeyType, typename ValueType, typename Comparer>
-bool wdMapBase<KeyType, ValueType, Comparer>::operator!=(const wdMapBase<KeyType, ValueType, Comparer>& rhs) const
-{
-  return !operator==(rhs);
-}
-
 #undef STACK_SIZE
 
 
 template <typename KeyType, typename ValueType, typename Comparer, typename AllocatorWrapper>
-wdMap<KeyType, ValueType, Comparer, AllocatorWrapper>::wdMap()
-  : wdMapBase<KeyType, ValueType, Comparer>(Comparer(), AllocatorWrapper::GetAllocator())
+nsMap<KeyType, ValueType, Comparer, AllocatorWrapper>::nsMap()
+  : nsMapBase<KeyType, ValueType, Comparer>(Comparer(), AllocatorWrapper::GetAllocator())
 {
 }
 
 template <typename KeyType, typename ValueType, typename Comparer, typename AllocatorWrapper>
-wdMap<KeyType, ValueType, Comparer, AllocatorWrapper>::wdMap(wdAllocatorBase* pAllocator)
-  : wdMapBase<KeyType, ValueType, Comparer>(Comparer(), pAllocator)
+nsMap<KeyType, ValueType, Comparer, AllocatorWrapper>::nsMap(nsAllocator* pAllocator)
+  : nsMapBase<KeyType, ValueType, Comparer>(Comparer(), pAllocator)
 {
 }
 
 template <typename KeyType, typename ValueType, typename Comparer, typename AllocatorWrapper>
-wdMap<KeyType, ValueType, Comparer, AllocatorWrapper>::wdMap(const Comparer& comparer, wdAllocatorBase* pAllocator)
-  : wdMapBase<KeyType, ValueType, Comparer>(comparer, pAllocator)
+nsMap<KeyType, ValueType, Comparer, AllocatorWrapper>::nsMap(const Comparer& comparer, nsAllocator* pAllocator)
+  : nsMapBase<KeyType, ValueType, Comparer>(comparer, pAllocator)
 {
 }
 
 template <typename KeyType, typename ValueType, typename Comparer, typename AllocatorWrapper>
-wdMap<KeyType, ValueType, Comparer, AllocatorWrapper>::wdMap(const wdMap<KeyType, ValueType, Comparer, AllocatorWrapper>& other)
-  : wdMapBase<KeyType, ValueType, Comparer>(other, AllocatorWrapper::GetAllocator())
+nsMap<KeyType, ValueType, Comparer, AllocatorWrapper>::nsMap(const nsMap<KeyType, ValueType, Comparer, AllocatorWrapper>& other)
+  : nsMapBase<KeyType, ValueType, Comparer>(other, AllocatorWrapper::GetAllocator())
 {
 }
 
 template <typename KeyType, typename ValueType, typename Comparer, typename AllocatorWrapper>
-wdMap<KeyType, ValueType, Comparer, AllocatorWrapper>::wdMap(const wdMapBase<KeyType, ValueType, Comparer>& other)
-  : wdMapBase<KeyType, ValueType, Comparer>(other, AllocatorWrapper::GetAllocator())
+nsMap<KeyType, ValueType, Comparer, AllocatorWrapper>::nsMap(const nsMapBase<KeyType, ValueType, Comparer>& other)
+  : nsMapBase<KeyType, ValueType, Comparer>(other, AllocatorWrapper::GetAllocator())
 {
 }
 
 template <typename KeyType, typename ValueType, typename Comparer, typename AllocatorWrapper>
-void wdMap<KeyType, ValueType, Comparer, AllocatorWrapper>::operator=(const wdMap<KeyType, ValueType, Comparer, AllocatorWrapper>& rhs)
+void nsMap<KeyType, ValueType, Comparer, AllocatorWrapper>::operator=(const nsMap<KeyType, ValueType, Comparer, AllocatorWrapper>& rhs)
 {
-  wdMapBase<KeyType, ValueType, Comparer>::operator=(rhs);
+  nsMapBase<KeyType, ValueType, Comparer>::operator=(rhs);
 }
 
 template <typename KeyType, typename ValueType, typename Comparer, typename AllocatorWrapper>
-void wdMap<KeyType, ValueType, Comparer, AllocatorWrapper>::operator=(const wdMapBase<KeyType, ValueType, Comparer>& rhs)
+void nsMap<KeyType, ValueType, Comparer, AllocatorWrapper>::operator=(const nsMapBase<KeyType, ValueType, Comparer>& rhs)
 {
-  wdMapBase<KeyType, ValueType, Comparer>::operator=(rhs);
+  nsMapBase<KeyType, ValueType, Comparer>::operator=(rhs);
 }
 
 template <typename KeyType, typename ValueType, typename Comparer>
-void wdMapBase<KeyType, ValueType, Comparer>::Swap(wdMapBase<KeyType, ValueType, Comparer>& other)
+void nsMapBase<KeyType, ValueType, Comparer>::Swap(nsMapBase<KeyType, ValueType, Comparer>& other)
 {
   SwapNilNode(this->m_pRoot, &this->m_NilNode, &other.m_NilNode);
   SwapNilNode(other.m_pRoot, &other.m_NilNode, &this->m_NilNode);
 
-  wdMath::Swap(this->m_pRoot, other.m_pRoot);
-  wdMath::Swap(this->m_uiCount, other.m_uiCount);
-  wdMath::Swap(this->m_pFreeElementStack, other.m_pFreeElementStack);
-  wdMath::Swap(this->m_Comparer, other.m_Comparer);
+  nsMath::Swap(this->m_pRoot, other.m_pRoot);
+  nsMath::Swap(this->m_uiCount, other.m_uiCount);
+  nsMath::Swap(this->m_pFreeElementStack, other.m_pFreeElementStack);
+  nsMath::Swap(this->m_Comparer, other.m_Comparer);
 
   // after we swapped the root nodes, fix up their parent nodes
   this->m_pRoot->m_pParent = reinterpret_cast<Node*>(&this->m_NilNode);
@@ -881,7 +889,7 @@ void wdMapBase<KeyType, ValueType, Comparer>::Swap(wdMapBase<KeyType, ValueType,
 }
 
 template <typename KeyType, typename ValueType, typename Comparer>
-void wdMapBase<KeyType, ValueType, Comparer>::SwapNilNode(Node*& pCurNode, NilNode* pOld, NilNode* pNew)
+void nsMapBase<KeyType, ValueType, Comparer>::SwapNilNode(Node*& pCurNode, NilNode* pOld, NilNode* pNew)
 {
   if (pCurNode == pOld)
   {

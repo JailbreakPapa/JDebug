@@ -3,56 +3,11 @@
 #include <Foundation/Strings/StringView.h>
 #include <Foundation/Utilities/ConversionUtils.h>
 
-#if WD_ENABLED(WD_COMPILE_FOR_DEBUG)
-#  include <Foundation/Logging/Log.h>
-
-wdAtomicInteger32 wdStringUtils::g_MaxUsedStringLength;
-wdAtomicInteger32 wdStringUtils::g_UsedStringLengths[256];
-
-void wdStringUtils::AddUsedStringLength(wdUInt32 uiLength)
-{
-  g_MaxUsedStringLength.Max(uiLength);
-
-  if (uiLength > 255)
-    uiLength = 255;
-
-  g_UsedStringLengths[uiLength].Increment();
-}
-
-void wdStringUtils::PrintStringLengthStatistics()
-{
-  WD_LOG_BLOCK("String Length Statistics");
-
-  wdLog::Info("Max String Length: {0}", (wdInt32)g_MaxUsedStringLength);
-
-  wdUInt32 uiCopiedStrings = 0;
-  for (wdUInt32 i = 0; i < 256; ++i)
-    uiCopiedStrings += g_UsedStringLengths[i];
-
-  wdLog::Info("Number of String Copies: {0}", uiCopiedStrings);
-  wdLog::Info("");
-
-  wdUInt32 uiPercent = 0;
-  wdUInt32 uiStrings = 0;
-  for (wdUInt32 i = 0; i < 256; ++i)
-  {
-    if (100.0f * (uiStrings + g_UsedStringLengths[i]) / (float)uiCopiedStrings >= uiPercent)
-    {
-      wdLog::Info("{0}%% of all Strings are shorter than {1} Elements.", wdArgI(uiPercent, 3), wdArgI(i + 1, 3));
-      uiPercent += 10;
-    }
-
-    uiStrings += g_UsedStringLengths[i];
-  }
-}
-
-#endif
-
 // Unicode ToUpper / ToLower character conversion
 //  License: $(WEB www.boost.org/LICENSE_1_0.txt, Boost License 1.0).
 //  Authors: $(WEB digitalmars.com, Walter Bright), Jonathan M Davis, and Kenji Hara
 //  Source: $(PHOBOSSRC std/_uni.d)
-wdUInt32 wdStringUtils::ToUpperChar(wdUInt32 uiWc)
+nsUInt32 nsStringUtils::ToUpperChar(nsUInt32 uiWc)
 {
   if (uiWc >= 'a' && uiWc <= 'z')
   {
@@ -132,7 +87,7 @@ wdUInt32 wdStringUtils::ToUpperChar(wdUInt32 uiWc)
 //  License: $(WEB www.boost.org/LICENSE_1_0.txt, Boost License 1.0).
 //  Authors: $(WEB digitalmars.com, Walter Bright), Jonathan M Davis, and Kenji Hara
 //  Source: $(PHOBOSSRC std/_uni.d)
-wdUInt32 wdStringUtils::ToLowerChar(wdUInt32 uiWc)
+nsUInt32 nsStringUtils::ToLowerChar(nsUInt32 uiWc)
 {
   if (uiWc >= 'A' && uiWc <= 'Z')
   {
@@ -200,72 +155,72 @@ wdUInt32 wdStringUtils::ToLowerChar(wdUInt32 uiWc)
 }
 
 
-wdUInt32 wdStringUtils::ToUpperString(char* pString, const char* pStringEnd)
+nsUInt32 nsStringUtils::ToUpperString(char* pString, const char* pStringEnd)
 {
   char* pWriteStart = pString;
   const char* pReadStart = pString;
 
-  while (pReadStart < pStringEnd && *pReadStart != '\0')
+  while ((pReadStart < pStringEnd) && (*pReadStart != '\0'))
   {
-    const wdUInt32 uiChar = wdUnicodeUtils::DecodeUtf8ToUtf32(pReadStart);
-    const wdUInt32 uiCharUpper = wdStringUtils::ToUpperChar(uiChar);
+    const nsUInt32 uiChar = nsUnicodeUtils::DecodeUtf8ToUtf32(pReadStart);
+    const nsUInt32 uiCharUpper = nsStringUtils::ToUpperChar(uiChar);
     pWriteStart = utf8::unchecked::utf32to8(&uiCharUpper, &uiCharUpper + 1, pWriteStart);
   }
 
   *pWriteStart = '\0';
 
-  const wdUInt32 uiNewStringLength = (wdUInt32)(pWriteStart - pString);
+  const nsUInt32 uiNewStringLength = (nsUInt32)(pWriteStart - pString);
   return uiNewStringLength;
 }
 
-wdUInt32 wdStringUtils::ToLowerString(char* pString, const char* pStringEnd)
+nsUInt32 nsStringUtils::ToLowerString(char* pString, const char* pStringEnd)
 {
   char* pWriteStart = pString;
   const char* pReadStart = pString;
 
-  while (pReadStart < pStringEnd && *pReadStart != '\0')
+  while ((pReadStart < pStringEnd) && (*pReadStart != '\0'))
   {
-    const wdUInt32 uiChar = wdUnicodeUtils::DecodeUtf8ToUtf32(pReadStart);
-    const wdUInt32 uiCharUpper = wdStringUtils::ToLowerChar(uiChar);
+    const nsUInt32 uiChar = nsUnicodeUtils::DecodeUtf8ToUtf32(pReadStart);
+    const nsUInt32 uiCharUpper = nsStringUtils::ToLowerChar(uiChar);
     pWriteStart = utf8::unchecked::utf32to8(&uiCharUpper, &uiCharUpper + 1, pWriteStart);
   }
 
   *pWriteStart = '\0';
 
-  const wdUInt32 uiNewStringLength = (wdUInt32)(pWriteStart - pString);
+  const nsUInt32 uiNewStringLength = (nsUInt32)(pWriteStart - pString);
   return uiNewStringLength;
 }
 
 // Macro to Handle nullptr-pointer strings
-#define WD_STRINGCOMPARE_HANDLE_NULL_PTRS(szString1, szString2, ret_equal, ret_str2_larger, ret_str1_larger, szString1End, szString2End)   \
-  if (szString1 == szString2) /* Handles the case that both are nullptr and that both are actually the same string */                      \
-  {                                                                                                                                        \
-    if ((szString1 == nullptr) || (szString1End == szString2End)) /* if both are nullptr, ignore the end pointer, otherwise the strings    \
-                                                                     are equal, if both end pointers are also the same */                  \
-      return (ret_equal);                                                                                                                  \
-  }                                                                                                                                        \
-  if (szString1 == nullptr)                                                                                                                \
-  {                                                                                                                                        \
-    if (szString2[0] == '\0') /* if String1 is nullptr, String2 is never nullptr, otherwise the previous IF would have returned already */ \
-      return (ret_equal);                                                                                                                  \
-    else                                                                                                                                   \
-      return (ret_str2_larger);                                                                                                            \
-  }                                                                                                                                        \
-  if (szString2 == nullptr)                                                                                                                \
-  {                                                                                                                                        \
-    if (szString1[0] == '\0') /* if String2 is nullptr, String1 is never nullptr, otherwise the previous IF would have returned already */ \
-      return (ret_equal);                                                                                                                  \
-    else                                                                                                                                   \
-      return (ret_str1_larger);                                                                                                            \
+#define NS_STRINGCOMPARE_HANDLE_NULL_PTRS(szString1, szString2, ret_equal, ret_str2_larger, ret_str1_larger, szString1End, szString2End)                  \
+  if (szString1 == szString2)                                     /* Handles the case that both are nullptr and that both are actually the same string */ \
+  {                                                                                                                                                       \
+    if ((szString1 == nullptr) || (szString1End == szString2End)) /* if both are nullptr, ignore the end pointer, otherwise the strings                   \
+                                                                     are equal, if both end pointers are also the same */                                 \
+      return (ret_equal);                                                                                                                                 \
+  }                                                                                                                                                       \
+  if (szString1 == nullptr)                                                                                                                               \
+  {                                                                                                                                                       \
+    if (szString2[0] == '\0') /* if String1 is nullptr, String2 is never nullptr, otherwise the previous IF would have returned already */                \
+      return (ret_equal);                                                                                                                                 \
+    else                                                                                                                                                  \
+      return (ret_str2_larger);                                                                                                                           \
+  }                                                                                                                                                       \
+  if (szString2 == nullptr)                                                                                                                               \
+  {                                                                                                                                                       \
+    if (szString1[0] == '\0') /* if String2 is nullptr, String1 is never nullptr, otherwise the previous IF would have returned already */                \
+      return (ret_equal);                                                                                                                                 \
+    else                                                                                                                                                  \
+      return (ret_str1_larger);                                                                                                                           \
   }
 
-#define ToSignedInt(c) ((wdInt32)((unsigned char)c))
+#define ToSignedInt(c) ((nsInt32)((unsigned char)c))
 
-wdInt32 wdStringUtils::Compare(const char* pString1, const char* pString2, const char* pString1End, const char* pString2End)
+nsInt32 nsStringUtils::Compare(const char* pString1, const char* pString2, const char* pString1End, const char* pString2End)
 {
-  WD_STRINGCOMPARE_HANDLE_NULL_PTRS(pString1, pString2, 0, -1, 1, pString1End, pString2End);
+  NS_STRINGCOMPARE_HANDLE_NULL_PTRS(pString1, pString2, 0, -1, 1, pString1End, pString2End);
 
-  while ((*pString1 != '\0') && (*pString2 != '\0') && (pString1 < pString1End) && (pString2 < pString2End))
+  while ((pString1 < pString1End) && (pString2 < pString2End) && (*pString1 != '\0') && (*pString2 != '\0'))
   {
     if (*pString1 != *pString2)
       return ToSignedInt(*pString1) - ToSignedInt(*pString2);
@@ -290,20 +245,20 @@ wdInt32 wdStringUtils::Compare(const char* pString1, const char* pString2, const
   }
 }
 
-wdInt32 wdStringUtils::CompareN(
-  const char* pString1, const char* pString2, wdUInt32 uiCharsToCompare, const char* pString1End, const char* pString2End)
+nsInt32 nsStringUtils::CompareN(
+  const char* pString1, const char* pString2, nsUInt32 uiCharsToCompare, const char* pString1End, const char* pString2End)
 {
   if (uiCharsToCompare == 0)
     return 0;
 
-  WD_STRINGCOMPARE_HANDLE_NULL_PTRS(pString1, pString2, 0, -1, 1, pString1End, pString2End);
+  NS_STRINGCOMPARE_HANDLE_NULL_PTRS(pString1, pString2, 0, -1, 1, pString1End, pString2End);
 
-  while ((*pString1 != '\0') && (*pString2 != '\0') && (uiCharsToCompare > 0) && (pString1 < pString1End) && (pString2 < pString2End))
+  while ((uiCharsToCompare > 0) && (pString1 < pString1End) && (pString2 < pString2End) && (*pString1 != '\0') && (*pString2 != '\0'))
   {
     if (*pString1 != *pString2)
       return ToSignedInt(*pString1) - ToSignedInt(*pString2);
 
-    if (!wdUnicodeUtils::IsUtf8ContinuationByte(*pString1))
+    if (!nsUnicodeUtils::IsUtf8ContinuationByte(*pString1))
       --uiCharsToCompare;
 
     ++pString1;
@@ -316,7 +271,7 @@ wdInt32 wdStringUtils::CompareN(
   if (pString1 >= pString1End)
   {
     if (pString2 >= pString2End)
-      return 0; // both reached their end pointer
+      return 0;                     // both reached their end pointer
 
     return -ToSignedInt(*pString2); // either also '\0' (end) or not 0, thus 'smaller' than pString1 (negated)
   }
@@ -329,17 +284,17 @@ wdInt32 wdStringUtils::CompareN(
   }
 }
 
-wdInt32 wdStringUtils::Compare_NoCase(const char* pString1, const char* pString2, const char* pString1End, const char* pString2End)
+nsInt32 nsStringUtils::Compare_NoCase(const char* pString1, const char* pString2, const char* pString1End, const char* pString2End)
 {
-  WD_STRINGCOMPARE_HANDLE_NULL_PTRS(pString1, pString2, 0, -1, 1, pString1End, pString2End);
+  NS_STRINGCOMPARE_HANDLE_NULL_PTRS(pString1, pString2, 0, -1, 1, pString1End, pString2End);
 
-  while ((*pString1 != '\0') && (*pString2 != '\0') && (pString1 < pString1End) && (pString2 < pString2End))
+  while ((pString1 < pString1End) && (pString2 < pString2End) && (*pString1 != '\0') && (*pString2 != '\0'))
   {
     // utf8::next will already advance the iterators
-    const wdUInt32 uiChar1 = wdUnicodeUtils::DecodeUtf8ToUtf32(pString1);
-    const wdUInt32 uiChar2 = wdUnicodeUtils::DecodeUtf8ToUtf32(pString2);
+    const nsUInt32 uiChar1 = nsUnicodeUtils::DecodeUtf8ToUtf32(pString1);
+    const nsUInt32 uiChar2 = nsUnicodeUtils::DecodeUtf8ToUtf32(pString2);
 
-    const wdInt32 iComparison = CompareChars_NoCase(uiChar1, uiChar2);
+    const nsInt32 iComparison = CompareChars_NoCase(uiChar1, uiChar2);
 
     if (iComparison != 0)
       return iComparison;
@@ -349,7 +304,7 @@ wdInt32 wdStringUtils::Compare_NoCase(const char* pString1, const char* pString2
   if (pString1 >= pString1End)
   {
     if (pString2 >= pString2End)
-      return 0; // both reached their end pointer
+      return 0;                     // both reached their end pointer
 
     return -ToSignedInt(*pString2); // either also '\0' (end) or not 0, thus 'smaller' than pString1 (negated)
   }
@@ -363,21 +318,21 @@ wdInt32 wdStringUtils::Compare_NoCase(const char* pString1, const char* pString2
   }
 }
 
-wdInt32 wdStringUtils::CompareN_NoCase(
-  const char* pString1, const char* pString2, wdUInt32 uiCharsToCompare, const char* pString1End, const char* pString2End)
+nsInt32 nsStringUtils::CompareN_NoCase(
+  const char* pString1, const char* pString2, nsUInt32 uiCharsToCompare, const char* pString1End, const char* pString2End)
 {
   if (uiCharsToCompare == 0)
     return 0;
 
-  WD_STRINGCOMPARE_HANDLE_NULL_PTRS(pString1, pString2, 0, -1, 1, pString1End, pString2End);
+  NS_STRINGCOMPARE_HANDLE_NULL_PTRS(pString1, pString2, 0, -1, 1, pString1End, pString2End);
 
-  while ((*pString1 != '\0') && (*pString2 != '\0') && (uiCharsToCompare > 0) && (pString1 < pString1End) && (pString2 < pString2End))
+  while ((uiCharsToCompare > 0) && (pString1 < pString1End) && (pString2 < pString2End) && (*pString1 != '\0') && (*pString2 != '\0'))
   {
     // utf8::next will already advance the iterators
-    const wdUInt32 uiChar1 = wdUnicodeUtils::DecodeUtf8ToUtf32(pString1);
-    const wdUInt32 uiChar2 = wdUnicodeUtils::DecodeUtf8ToUtf32(pString2);
+    const nsUInt32 uiChar1 = nsUnicodeUtils::DecodeUtf8ToUtf32(pString1);
+    const nsUInt32 uiChar2 = nsUnicodeUtils::DecodeUtf8ToUtf32(pString2);
 
-    const wdInt32 iComparison = CompareChars_NoCase(uiChar1, uiChar2);
+    const nsInt32 iComparison = CompareChars_NoCase(uiChar1, uiChar2);
 
     if (iComparison != 0)
       return iComparison;
@@ -391,7 +346,7 @@ wdInt32 wdStringUtils::CompareN_NoCase(
   if (pString1 >= pString1End)
   {
     if (pString2 >= pString2End)
-      return 0; // both reached their end pointer
+      return 0;                     // both reached their end pointer
 
     return -ToSignedInt(*pString2); // either also '\0' (end) or not 0, thus 'smaller' than pString1 (negated)
   }
@@ -405,19 +360,18 @@ wdInt32 wdStringUtils::CompareN_NoCase(
   }
 }
 
-wdUInt32 wdStringUtils::Copy(char* szDest, wdUInt32 uiDstSize, const char* szSource, const char* pSourceEnd)
+nsUInt32 nsStringUtils::Copy(char* szDest, nsUInt32 uiDstSize, const char* szSource, const char* pSourceEnd)
 {
-  WD_ASSERT_DEBUG(szDest != nullptr && uiDstSize > 0, "Invalid output buffer.");
+  NS_ASSERT_DEBUG(szDest != nullptr && uiDstSize > 0, "Invalid output buffer.");
 
   if (IsNullOrEmpty(szSource))
   {
-    wdStringUtils::AddUsedStringLength(0);
     szDest[0] = '\0';
     return 0;
   }
 
-  wdUInt32 uiSourceLen = static_cast<wdUInt32>((pSourceEnd == wdUnicodeUtils::GetMaxStringEnd<char>()) ? strlen(szSource) : pSourceEnd - szSource);
-  wdUInt32 uiBytesToCopy = wdMath::Min(uiDstSize - 1, uiSourceLen);
+  nsUInt32 uiSourceLen = static_cast<nsUInt32>((pSourceEnd == nsUnicodeUtils::GetMaxStringEnd<char>()) ? strlen(szSource) : pSourceEnd - szSource);
+  nsUInt32 uiBytesToCopy = nsMath::Min(uiDstSize - 1, uiSourceLen);
 
   // simply copy all bytes
   memmove(szDest, szSource, uiBytesToCopy);
@@ -425,38 +379,33 @@ wdUInt32 wdStringUtils::Copy(char* szDest, wdUInt32 uiDstSize, const char* szSou
   char* szLastCharacterPos = szDest + uiBytesToCopy;
 
 // Check if we just copied half a UTF-8 character
-#if WD_ENABLED(WD_COMPILE_FOR_DEBUG)
+#if NS_ENABLED(NS_COMPILE_FOR_DEBUG)
   if (uiBytesToCopy > 0)
   {
     char* szUtf8StartByte = szLastCharacterPos - 1;
-    while (!wdUnicodeUtils::IsUtf8StartByte(*szUtf8StartByte) && szUtf8StartByte > szDest)
+    while (!nsUnicodeUtils::IsUtf8StartByte(*szUtf8StartByte) && szUtf8StartByte > szDest)
     {
       szUtf8StartByte--;
     }
-    ptrdiff_t isLength = szLastCharacterPos - szUtf8StartByte;
-    ptrdiff_t expectedLength = wdUnicodeUtils::GetUtf8SequenceLength(*szUtf8StartByte);
-    WD_ASSERT_DEBUG(isLength == expectedLength, "The destination buffer was too small, so a utf-8 byte sequence got cut off. This function "
+    std::ptrdiff_t isLength = szLastCharacterPos - szUtf8StartByte;
+    std::ptrdiff_t expectedLength = nsUnicodeUtils::GetUtf8SequenceLength(*szUtf8StartByte);
+    NS_ASSERT_DEBUG(isLength == expectedLength, "The destination buffer was too small, so a utf-8 byte sequence got cut off. This function "
                                                 "is not designed to copy into buffers that are too small.");
   }
 #endif
 
-
   // make sure the buffer is always terminated
   *szLastCharacterPos = '\0';
 
-  const wdUInt32 uiLength = (wdUInt32)(szLastCharacterPos - szDest);
-
-  wdStringUtils::AddUsedStringLength(uiLength);
-  return uiLength;
+  return uiBytesToCopy;
 }
 
-wdUInt32 wdStringUtils::CopyN(char* szDest, wdUInt32 uiDstSize, const char* szSource, wdUInt32 uiCharsToCopy, const char* pSourceEnd)
+nsUInt32 nsStringUtils::CopyN(char* szDest, nsUInt32 uiDstSize, const char* szSource, nsUInt32 uiCharsToCopy, const char* pSourceEnd)
 {
-  WD_ASSERT_DEBUG(szDest != nullptr && uiDstSize > 0, "Invalid output buffer.");
+  NS_ASSERT_DEBUG(szDest != nullptr && uiDstSize > 0, "Invalid output buffer.");
 
   if (IsNullOrEmpty(szSource))
   {
-    wdStringUtils::AddUsedStringLength(0);
     szDest[0] = '\0';
     return 0;
   }
@@ -465,7 +414,7 @@ wdUInt32 wdStringUtils::CopyN(char* szDest, wdUInt32 uiDstSize, const char* szSo
 
   char* szLastCharacterPos = szDest;
 
-  wdInt32 iCharsCopied = -1;
+  nsInt32 iCharsCopied = -1;
 
   while (uiDstSize > 0)
   {
@@ -475,7 +424,7 @@ wdUInt32 wdStringUtils::CopyN(char* szDest, wdUInt32 uiDstSize, const char* szSo
       break;
     }
 
-    if (!wdUnicodeUtils::IsUtf8ContinuationByte(*szSource))
+    if (!nsUnicodeUtils::IsUtf8ContinuationByte(*szSource))
     {
       // if this is not a continuation byte, we have copied another character into the output buffer
       ++iCharsCopied;
@@ -499,20 +448,17 @@ wdUInt32 wdStringUtils::CopyN(char* szDest, wdUInt32 uiDstSize, const char* szSo
   // this will actually overwrite the last byte that we wrote into the output buffer
   *szLastCharacterPos = '\0';
 
-  const wdUInt32 uiLength = (wdUInt32)(szLastCharacterPos - szStartPos);
-
-  wdStringUtils::AddUsedStringLength(uiLength);
-  return uiLength;
+  return (nsUInt32)(szLastCharacterPos - szStartPos);
 }
 
-bool wdStringUtils::StartsWith(const char* szString, const char* szStartsWith, const char* pStringEnd, const char* szStartsWithEnd)
+bool nsStringUtils::StartsWith(const char* szString, const char* szStartsWith, const char* pStringEnd, const char* szStartsWithEnd)
 {
   if (IsNullOrEmpty(szStartsWith, szStartsWithEnd))
     return true;
   if (IsNullOrEmpty(szString, pStringEnd))
     return false;
 
-  while ((*szString != '\0') && (szString < pStringEnd))
+  while ((szString < pStringEnd) && (*szString != '\0'))
   {
     // if we have reached the end of the StartsWith string, the other string DOES start with it
     if (*szStartsWith == '\0' || szStartsWith == szStartsWithEnd)
@@ -529,39 +475,39 @@ bool wdStringUtils::StartsWith(const char* szString, const char* szStartsWith, c
   return (*szStartsWith == '\0' || szStartsWith == szStartsWithEnd);
 }
 
-bool wdStringUtils::StartsWith_NoCase(const char* szString, const char* szStartsWith, const char* pStringEnd, const char* szStartsWithEnd)
+bool nsStringUtils::StartsWith_NoCase(const char* szString, const char* szStartsWith, const char* pStringEnd, const char* szStartsWithEnd)
 {
   if (IsNullOrEmpty(szStartsWith, szStartsWithEnd))
     return true;
   if (IsNullOrEmpty(szString, pStringEnd))
     return false;
 
-  while ((*szString != '\0') && (szString < pStringEnd))
+  while ((szString < pStringEnd) && (*szString != '\0'))
   {
     // if we have reached the end of the StartsWith string, the other string DOES start with it
     if (*szStartsWith == '\0' || szStartsWith == szStartsWithEnd)
       return true;
 
-    if (wdStringUtils::CompareChars_NoCase(szStartsWith, szString) != 0)
+    if (nsStringUtils::CompareChars_NoCase(szStartsWith, szString) != 0)
       return false;
 
-    wdUnicodeUtils::MoveToNextUtf8(szString, pStringEnd);
-    wdUnicodeUtils::MoveToNextUtf8(szStartsWith, szStartsWithEnd);
+    nsUnicodeUtils::MoveToNextUtf8(szString, pStringEnd).AssertSuccess();
+    nsUnicodeUtils::MoveToNextUtf8(szStartsWith, szStartsWithEnd).AssertSuccess();
   }
 
   // if both are equally long, this comparison will return true
   return (*szStartsWith == '\0' || szStartsWith == szStartsWithEnd);
 }
 
-bool wdStringUtils::EndsWith(const char* szString, const char* szEndsWith, const char* pStringEnd, const char* szEndsWithEnd)
+bool nsStringUtils::EndsWith(const char* szString, const char* szEndsWith, const char* pStringEnd, const char* szEndsWithEnd)
 {
   if (IsNullOrEmpty(szEndsWith, szEndsWithEnd))
     return true;
   if (IsNullOrEmpty(szString, pStringEnd))
     return false;
 
-  const wdUInt32 uiLength1 = wdStringUtils::GetStringElementCount(szString, pStringEnd);
-  const wdUInt32 uiLength2 = wdStringUtils::GetStringElementCount(szEndsWith, szEndsWithEnd);
+  const nsUInt32 uiLength1 = nsStringUtils::GetStringElementCount(szString, pStringEnd);
+  const nsUInt32 uiLength2 = nsStringUtils::GetStringElementCount(szEndsWith, szEndsWithEnd);
 
   if (uiLength1 < uiLength2)
     return false;
@@ -569,15 +515,15 @@ bool wdStringUtils::EndsWith(const char* szString, const char* szEndsWith, const
   return IsEqual(&szString[uiLength1 - uiLength2], szEndsWith, pStringEnd, szEndsWithEnd);
 }
 
-bool wdStringUtils::EndsWith_NoCase(const char* szString, const char* szEndsWith, const char* pStringEnd, const char* szEndsWithEnd)
+bool nsStringUtils::EndsWith_NoCase(const char* szString, const char* szEndsWith, const char* pStringEnd, const char* szEndsWithEnd)
 {
   if (IsNullOrEmpty(szEndsWith, szEndsWithEnd))
     return true;
   if (IsNullOrEmpty(szString, pStringEnd))
     return false;
 
-  const wdUInt32 uiLength1 = wdStringUtils::GetStringElementCount(szString, pStringEnd);
-  const wdUInt32 uiLength2 = wdStringUtils::GetStringElementCount(szEndsWith, szEndsWithEnd);
+  const nsUInt32 uiLength1 = nsStringUtils::GetStringElementCount(szString, pStringEnd);
+  const nsUInt32 uiLength2 = nsStringUtils::GetStringElementCount(szEndsWith, szEndsWithEnd);
 
   const char* pCur1 = szString + uiLength1;   // points to \0
   const char* pCur2 = szEndsWith + uiLength2; // points to \0
@@ -589,10 +535,10 @@ bool wdStringUtils::EndsWith_NoCase(const char* szString, const char* szEndsWith
       return true;
 
     // move to the previous character
-    wdUnicodeUtils::MoveToPriorUtf8(pCur1);
-    wdUnicodeUtils::MoveToPriorUtf8(pCur2);
+    nsUnicodeUtils::MoveToPriorUtf8(pCur1, szString).AssertSuccess();
+    nsUnicodeUtils::MoveToPriorUtf8(pCur2, szEndsWith).AssertSuccess();
 
-    if (wdStringUtils::CompareChars_NoCase(pCur1, pCur2) != 0)
+    if (nsStringUtils::CompareChars_NoCase(pCur1, pCur2) != 0)
       return false;
   }
 
@@ -602,7 +548,7 @@ bool wdStringUtils::EndsWith_NoCase(const char* szString, const char* szEndsWith
   return (pCur2 <= szEndsWith);
 }
 
-const char* wdStringUtils::FindSubString(const char* szSource, const char* szStringToFind, const char* pSourceEnd, const char* szStringToFindEnd)
+const char* nsStringUtils::FindSubString(const char* szSource, const char* szStringToFind, const char* pSourceEnd, const char* szStringToFindEnd)
 {
   // Handle nullptr-pointer strings
   if ((IsNullOrEmpty(szSource)) || (IsNullOrEmpty(szStringToFind)))
@@ -612,16 +558,16 @@ const char* wdStringUtils::FindSubString(const char* szSource, const char* szStr
 
   while ((pCurPos < pSourceEnd) && (*pCurPos != '\0'))
   {
-    if (wdStringUtils::StartsWith(pCurPos, szStringToFind, pSourceEnd, szStringToFindEnd))
+    if (nsStringUtils::StartsWith(pCurPos, szStringToFind, pSourceEnd, szStringToFindEnd))
       return pCurPos;
 
-    wdUnicodeUtils::MoveToNextUtf8(pCurPos, pSourceEnd);
+    nsUnicodeUtils::MoveToNextUtf8(pCurPos, pSourceEnd).AssertSuccess();
   }
 
   return nullptr;
 }
 
-const char* wdStringUtils::FindSubString_NoCase(const char* szSource, const char* szStringToFind, const char* pSourceEnd, const char* szStringToFindEnd)
+const char* nsStringUtils::FindSubString_NoCase(const char* szSource, const char* szStringToFind, const char* pSourceEnd, const char* szStringToFindEnd)
 {
   // Handle nullptr-pointer strings
   if ((IsNullOrEmpty(szSource)) || (IsNullOrEmpty(szStringToFind)))
@@ -629,19 +575,19 @@ const char* wdStringUtils::FindSubString_NoCase(const char* szSource, const char
 
   const char* pCurPos = &szSource[0];
 
-  while ((*pCurPos != '\0') && (pCurPos < pSourceEnd))
+  while ((pCurPos < pSourceEnd) && (*pCurPos != '\0'))
   {
-    if (wdStringUtils::StartsWith_NoCase(pCurPos, szStringToFind, pSourceEnd, szStringToFindEnd))
+    if (nsStringUtils::StartsWith_NoCase(pCurPos, szStringToFind, pSourceEnd, szStringToFindEnd))
       return pCurPos;
 
-    wdUnicodeUtils::MoveToNextUtf8(pCurPos, pSourceEnd);
+    nsUnicodeUtils::MoveToNextUtf8(pCurPos, pSourceEnd).AssertSuccess();
   }
 
   return nullptr;
 }
 
 
-const char* wdStringUtils::FindLastSubString(const char* szSource, const char* szStringToFind, const char* szStartSearchAt, const char* pSourceEnd, const char* szStringToFindEnd)
+const char* nsStringUtils::FindLastSubString(const char* szSource, const char* szStringToFind, const char* szStartSearchAt, const char* pSourceEnd, const char* szStringToFindEnd)
 {
   // Handle nullptr-pointer strings
   if ((IsNullOrEmpty(szSource)) || (IsNullOrEmpty(szStringToFind)))
@@ -649,34 +595,34 @@ const char* wdStringUtils::FindLastSubString(const char* szSource, const char* s
 
   // get the last element (actually the \0 terminator)
   if (szStartSearchAt == nullptr)
-    szStartSearchAt = szSource + wdStringUtils::GetStringElementCount(szSource, pSourceEnd);
+    szStartSearchAt = szSource + nsStringUtils::GetStringElementCount(szSource, pSourceEnd);
 
   // while we haven't reached the stars .. erm, start
   while (szStartSearchAt > szSource)
   {
-    wdUnicodeUtils::MoveToPriorUtf8(szStartSearchAt);
+    nsUnicodeUtils::MoveToPriorUtf8(szStartSearchAt, szSource).AssertSuccess();
 
-    if (wdStringUtils::StartsWith(szStartSearchAt, szStringToFind, pSourceEnd, szStringToFindEnd))
+    if (nsStringUtils::StartsWith(szStartSearchAt, szStringToFind, pSourceEnd, szStringToFindEnd))
       return szStartSearchAt;
   }
 
   return nullptr;
 }
 
-const char* wdStringUtils::FindLastSubString_NoCase(const char* szSource, const char* szStringToFind, const char* szStartSearchAt, const char* pSourceEnd, const char* szStringToFindEnd)
+const char* nsStringUtils::FindLastSubString_NoCase(const char* szSource, const char* szStringToFind, const char* szStartSearchAt, const char* pSourceEnd, const char* szStringToFindEnd)
 {
   // Handle nullptr-pointer strings
   if ((IsNullOrEmpty(szSource)) || (IsNullOrEmpty(szStringToFind)))
     return nullptr;
 
   if (szStartSearchAt == nullptr)
-    szStartSearchAt = szSource + wdStringUtils::GetStringElementCount(szSource, pSourceEnd);
+    szStartSearchAt = szSource + nsStringUtils::GetStringElementCount(szSource, pSourceEnd);
 
   while (szStartSearchAt > szSource)
   {
-    wdUnicodeUtils::MoveToPriorUtf8(szStartSearchAt);
+    nsUnicodeUtils::MoveToPriorUtf8(szStartSearchAt, szSource).AssertSuccess();
 
-    if (wdStringUtils::StartsWith_NoCase(szStartSearchAt, szStringToFind, pSourceEnd, szStringToFindEnd))
+    if (nsStringUtils::StartsWith_NoCase(szStartSearchAt, szStringToFind, pSourceEnd, szStringToFindEnd))
       return szStartSearchAt;
   }
 
@@ -684,70 +630,69 @@ const char* wdStringUtils::FindLastSubString_NoCase(const char* szSource, const 
 }
 
 
-const char* wdStringUtils::FindWholeWord(const char* szString, const char* szSearchFor, WD_CHARACTER_FILTER isDelimiterCB, const char* pStringEnd)
+const char* nsStringUtils::FindWholeWord(const char* szString, const char* szSearchFor, NS_CHARACTER_FILTER isDelimiterCB, const char* pStringEnd)
 {
   // Handle nullptr-pointer strings
   if ((IsNullOrEmpty(szString)) || (IsNullOrEmpty(szSearchFor)))
     return nullptr;
 
-  const wdUInt32 uiSearchedWordLength = GetStringElementCount(szSearchFor);
+  const nsUInt32 uiSearchedWordLength = GetStringElementCount(szSearchFor);
 
   const char* pPrevPos = nullptr;
   const char* pCurPos = szString;
 
-  while ((*pCurPos != '\0') && (pCurPos < pStringEnd))
+  while ((pCurPos < pStringEnd) && (*pCurPos != '\0'))
   {
-    if (StartsWith(pCurPos, szSearchFor, pStringEnd)) // yay, we found a substring, now make sure it is a 'whole word'
+    if (StartsWith(pCurPos, szSearchFor, pStringEnd))                                                        // yay, we found a substring, now make sure it is a 'whole word'
     {
-      if (((szString == pCurPos) || // the start of the string is always a word delimiter
+      if (((szString == pCurPos) ||                                                                          // the start of the string is always a word delimiter
             (isDelimiterCB(
-              wdUnicodeUtils::ConvertUtf8ToUtf32(pPrevPos) /* front */))) &&                                 // make sure the character before this substring is a word delimiter
+              nsUnicodeUtils::ConvertUtf8ToUtf32(pPrevPos) /* front */))) &&                                 // make sure the character before this substring is a word delimiter
           ((pCurPos + uiSearchedWordLength >= pStringEnd) ||                                                 // the end of the string is also always a delimiter
-            (isDelimiterCB(wdUnicodeUtils::ConvertUtf8ToUtf32(pCurPos + uiSearchedWordLength) /* back */)))) // and the character after it, as well
+            (isDelimiterCB(nsUnicodeUtils::ConvertUtf8ToUtf32(pCurPos + uiSearchedWordLength) /* back */)))) // and the character after it, as well
         return pCurPos;
     }
 
     pPrevPos = pCurPos;
-    wdUnicodeUtils::MoveToNextUtf8(pCurPos, pStringEnd);
+    nsUnicodeUtils::MoveToNextUtf8(pCurPos, pStringEnd).AssertSuccess();
   }
 
   return nullptr;
 }
 
-const char* wdStringUtils::FindWholeWord_NoCase(
-  const char* szString, const char* szSearchFor, WD_CHARACTER_FILTER isDelimiterCB, const char* pStringEnd)
+const char* nsStringUtils::FindWholeWord_NoCase(const char* szString, const char* szSearchFor, NS_CHARACTER_FILTER isDelimiterCB, const char* pStringEnd)
 {
   // Handle nullptr-pointer strings
   if ((IsNullOrEmpty(szString)) || (IsNullOrEmpty(szSearchFor)))
     return nullptr;
 
-  const wdUInt32 uiSearchedWordLength = GetStringElementCount(szSearchFor);
+  const nsUInt32 uiSearchedWordLength = GetStringElementCount(szSearchFor);
 
   const char* pPrevPos = nullptr;
   const char* pCurPos = szString;
 
-  while ((*pCurPos != '\0') && (pCurPos < pStringEnd))
+  while ((pCurPos < pStringEnd) && (*pCurPos != '\0'))
   {
-    if (StartsWith_NoCase(pCurPos, szSearchFor, pStringEnd)) // yay, we found a substring, now make sure it is a 'whole word'
+    if (StartsWith_NoCase(pCurPos, szSearchFor, pStringEnd))                                              // yay, we found a substring, now make sure it is a 'whole word'
     {
-      if (((szString == pCurPos) || // the start of the string is always a word delimiter
+      if (((szString == pCurPos) ||                                                                       // the start of the string is always a word delimiter
             (isDelimiterCB(
-              wdUnicodeUtils::ConvertUtf8ToUtf32(pPrevPos) /* front */))) &&                              // make sure the character before this substring is a word delimiter
-          (isDelimiterCB(wdUnicodeUtils::ConvertUtf8ToUtf32(pCurPos + uiSearchedWordLength) /* back */))) // and the character after it, as well
+              nsUnicodeUtils::ConvertUtf8ToUtf32(pPrevPos) /* front */))) &&                              // make sure the character before this substring is a word delimiter
+          (isDelimiterCB(nsUnicodeUtils::ConvertUtf8ToUtf32(pCurPos + uiSearchedWordLength) /* back */))) // and the character after it, as well
         return pCurPos;
     }
 
     pPrevPos = pCurPos;
-    wdUnicodeUtils::MoveToNextUtf8(pCurPos, pStringEnd);
+    nsUnicodeUtils::MoveToNextUtf8(pCurPos, pStringEnd).AssertSuccess();
   }
 
   return nullptr;
 }
 
-wdResult wdStringUtils::FindUIntAtTheEnd(const char* szString, wdUInt32& out_uiValue, wdUInt32* pStringLengthBeforeUInt /*= nullptr*/)
+nsResult nsStringUtils::FindUIntAtTheEnd(const char* szString, nsUInt32& out_uiValue, nsUInt32* pStringLengthBeforeUInt /*= nullptr*/)
 {
-  if (wdStringUtils::IsNullOrEmpty(szString))
-    return WD_FAILURE;
+  if (nsStringUtils::IsNullOrEmpty(szString))
+    return NS_FAILURE;
 
   const char* szWork = szString;
   const char* szNumberStart = nullptr;
@@ -773,66 +718,67 @@ wdResult wdStringUtils::FindUIntAtTheEnd(const char* szString, wdUInt32& out_uiV
 
   if (szNumberStart != nullptr)
   {
-    wdInt64 iResult = 0;
-    if (wdConversionUtils::StringToInt64(szNumberStart, iResult).Failed() || iResult < 0 || iResult > 0xFFFFFFFFu)
+    nsInt64 iResult = 0;
+    if (nsConversionUtils::StringToInt64(szNumberStart, iResult).Failed() || iResult < 0 || iResult > 0xFFFFFFFFu)
     {
-      return WD_FAILURE;
+      return NS_FAILURE;
     }
 
-    out_uiValue = static_cast<wdUInt32>(iResult);
+    out_uiValue = static_cast<nsUInt32>(iResult);
 
     if (pStringLengthBeforeUInt != nullptr)
     {
-      *pStringLengthBeforeUInt = static_cast<wdUInt32>(szNumberStart - szString);
+      *pStringLengthBeforeUInt = static_cast<nsUInt32>(szNumberStart - szString);
     }
 
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
   else
   {
-    return WD_FAILURE;
+    return NS_FAILURE;
   }
 }
 
-const char* wdStringUtils::SkipCharacters(const char* szString, WD_CHARACTER_FILTER skipCharacterCB, bool bAlwaysSkipFirst)
+const char* nsStringUtils::SkipCharacters(const char* szString, NS_CHARACTER_FILTER skipCharacterCB, bool bAlwaysSkipFirst)
 {
-  WD_ASSERT_DEBUG(szString != nullptr, "Invalid string");
+  NS_ASSERT_DEBUG(szString != nullptr, "Invalid string");
 
   while (*szString != '\0')
   {
-    if (!bAlwaysSkipFirst && !skipCharacterCB(wdUnicodeUtils::ConvertUtf8ToUtf32(szString)))
+    if (!bAlwaysSkipFirst && !skipCharacterCB(nsUnicodeUtils::ConvertUtf8ToUtf32(szString)))
       break;
 
     bAlwaysSkipFirst = false;
-    wdUnicodeUtils::MoveToNextUtf8(szString);
+
+    nsUnicodeUtils::MoveToNextUtf8(szString).AssertSuccess();
   }
 
   return szString;
 }
 
-const char* wdStringUtils::FindWordEnd(const char* szString, WD_CHARACTER_FILTER isDelimiterCB, bool bAlwaysSkipFirst)
+const char* nsStringUtils::FindWordEnd(const char* szString, NS_CHARACTER_FILTER isDelimiterCB, bool bAlwaysSkipFirst)
 {
-  WD_ASSERT_DEBUG(szString != nullptr, "Invalid string");
+  NS_ASSERT_DEBUG(szString != nullptr, "Invalid string");
 
   while (*szString != '\0')
   {
-    if (!bAlwaysSkipFirst && isDelimiterCB(wdUnicodeUtils::ConvertUtf8ToUtf32(szString)))
+    if (!bAlwaysSkipFirst && isDelimiterCB(nsUnicodeUtils::ConvertUtf8ToUtf32(szString)))
       break;
 
     bAlwaysSkipFirst = false;
-    wdUnicodeUtils::MoveToNextUtf8(szString);
+    nsUnicodeUtils::MoveToNextUtf8(szString).AssertSuccess();
   }
 
   return szString;
 }
 
-void wdStringUtils::Trim(const char*& ref_pString, const char*& ref_pStringEnd, const char* szTrimCharsStart, const char* szTrimCharsEnd)
+void nsStringUtils::Trim(const char*& ref_pString, const char*& ref_pStringEnd, const char* szTrimCharsStart, const char* szTrimCharsEnd)
 {
   bool bTrimmed = false;
   UpdateStringEnd(ref_pString, ref_pStringEnd);
-  wdStringView view(ref_pString, ref_pStringEnd);
-  wdStringView trimFront(szTrimCharsStart);
-  wdStringView trimEnd(szTrimCharsEnd);
+  nsStringView view(ref_pString, ref_pStringEnd);
+  nsStringView trimFront(szTrimCharsStart);
+  nsStringView trimEnd(szTrimCharsEnd);
 
   // Trim start
   auto itStart = begin(view);
@@ -842,7 +788,7 @@ void wdStringUtils::Trim(const char*& ref_pString, const char*& ref_pStringEnd, 
   do
   {
     bTrimmed = false;
-    for (wdUInt32 needle : trimFront)
+    for (nsUInt32 needle : trimFront)
     {
       while (itStart.GetCharacter() == needle)
       {
@@ -862,7 +808,7 @@ void wdStringUtils::Trim(const char*& ref_pString, const char*& ref_pStringEnd, 
   do
   {
     bTrimmed = false;
-    for (wdUInt32 needle : trimEnd)
+    for (nsUInt32 needle : trimEnd)
     {
       while (itEnd.GetCharacter() == needle)
       {
@@ -875,13 +821,13 @@ void wdStringUtils::Trim(const char*& ref_pString, const char*& ref_pStringEnd, 
 }
 
 
-bool wdStringUtils::IsWhiteSpace(wdUInt32 c)
+bool nsStringUtils::IsWhiteSpace(nsUInt32 c)
 {
   // ASCII range of useless characters (32 is actually SPACE)
   return (c >= 1 && c <= 32);
 }
 
-bool wdStringUtils::IsWordDelimiter_English(wdUInt32 uiChar)
+bool nsStringUtils::IsWordDelimiter_English(nsUInt32 uiChar)
 {
   if ((uiChar >= 'a') && (uiChar <= 'z'))
     return false;
@@ -897,7 +843,7 @@ bool wdStringUtils::IsWordDelimiter_English(wdUInt32 uiChar)
   return true;
 }
 
-bool wdStringUtils::IsIdentifierDelimiter_C_Code(wdUInt32 uiChar)
+bool nsStringUtils::IsIdentifierDelimiter_C_Code(nsUInt32 uiChar)
 {
   if ((uiChar >= 'a') && (uiChar <= 'z'))
     return false;
@@ -911,26 +857,24 @@ bool wdStringUtils::IsIdentifierDelimiter_C_Code(wdUInt32 uiChar)
   return true;
 }
 
-bool wdStringUtils::IsValidIdentifierName(const char* pString, const char* pStringEnd /*= wdMaxStringEnd*/)
+bool nsStringUtils::IsValidIdentifierName(const char* pString, const char* pStringEnd /*= nsMaxStringEnd*/)
 {
   if (IsNullOrEmpty(pString, pStringEnd))
     return false;
 
-  wdUInt32 cur = wdUnicodeUtils::ConvertUtf8ToUtf32(pString);
+  nsUInt32 cur = nsUnicodeUtils::ConvertUtf8ToUtf32(pString);
 
   // digits are not allowed as the first character
   if ((cur >= '0') && (cur <= '9'))
     return false;
 
-  while (*pString != '\0' && pString < pStringEnd)
+  while ((pString < pStringEnd) && (*pString != '\0'))
   {
-    cur = wdUnicodeUtils::DecodeUtf8ToUtf32(pString);
+    cur = nsUnicodeUtils::DecodeUtf8ToUtf32(pString);
 
-    if (wdStringUtils::IsIdentifierDelimiter_C_Code(cur))
+    if (nsStringUtils::IsIdentifierDelimiter_C_Code(cur))
       return false;
   }
 
   return true;
 }
-
-WD_STATICLINK_FILE(Foundation, Foundation_Strings_Implementation_StringUtils);

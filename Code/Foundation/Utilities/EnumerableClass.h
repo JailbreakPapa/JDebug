@@ -12,22 +12,22 @@
 ///
 /// If you have a class A that you want to be enumerable, add this to its header:
 ///
-///   class WD_DLL_IMPORT_EXPORT_STUFF A : public wdEnumerable<A>
+///   class NS_DLL_IMPORT_EXPORT_STUFF A : public nsEnumerable<A>
 ///   {
-///     WD_DECLARE_ENUMERABLE_CLASS(A); // since A is declared as DLL import/export all code embedded in its body will also work properly
+///     NS_DECLARE_ENUMERABLE_CLASS(A); // since A is declared as DLL import/export all code embedded in its body will also work properly
 ///     ...
 ///   };
 ///
 /// Also add this somewhere in its source-file:
 ///
-///   WD_ENUMERABLE_CLASS_IMPLEMENTATION(A);
+///   NS_ENUMERABLE_CLASS_IMPLEMENTATION(A);
 ///
 /// That's it, now the class instances can be enumerated with 'GetFirstInstance' and 'GetNextInstance'
-template <typename Derived, typename Base = wdNoBase>
-class wdEnumerable : public Base
+template <typename Derived, typename Base = nsNoBase>
+class nsEnumerable : public Base
 {
 public:
-  wdEnumerable()
+  nsEnumerable()
   {
     if (Derived::s_pFirstInstance == nullptr)
       Derived::s_pFirstInstance = this;
@@ -39,11 +39,11 @@ public:
     ++Derived::s_uiInstances;
   }
 
-  virtual ~wdEnumerable()
+  virtual ~nsEnumerable()
   {
     --Derived::s_uiInstances;
-    wdEnumerable* pPrev = nullptr;
-    wdEnumerable* pCur = Derived::s_pFirstInstance;
+    nsEnumerable* pPrev = nullptr;
+    nsEnumerable* pCur = Derived::s_pFirstInstance;
 
     while (pCur)
     {
@@ -66,36 +66,45 @@ public:
   }
 
 protected:
-  wdEnumerable* m_pNextInstance;
+  nsEnumerable* m_pNextInstance;
 };
 
 /// \brief Insert this macro in a class that is supposed to be enumerable, and pass the class name as the parameter.
 ///
-/// See class wdEnumerable for more details.
-#define WD_DECLARE_ENUMERABLE_CLASS(self) WD_DECLARE_ENUMERABLE_CLASS_WITH_BASE(self, wdNoBase)
+/// See class nsEnumerable for more details.
+#define NS_DECLARE_ENUMERABLE_CLASS(self) NS_DECLARE_ENUMERABLE_CLASS_WITH_BASE(self, nsNoBase)
 
 /// \brief Insert this macro in a class that is supposed to be enumerable, and pass the class name as the parameter.
 ///
-/// See class wdEnumerable for more details.
-#define WD_DECLARE_ENUMERABLE_CLASS_WITH_BASE(self, base)                      \
-private:                                                                       \
-  typedef base wdEnumerableBase;                                               \
-  friend class wdEnumerable<self, base>;                                       \
-  static wdEnumerable<self, base>* s_pFirstInstance;                           \
-  static wdEnumerable<self, base>* s_pLastInstance;                            \
-  static wdUInt32 s_uiInstances;                                               \
-                                                                               \
-public:                                                                        \
-  static self* GetFirstInstance() { return (self*)s_pFirstInstance; }          \
-  self* GetNextInstance() { return (self*)m_pNextInstance; }                   \
-  const self* GetNextInstance() const { return (const self*)m_pNextInstance; } \
-                                                                               \
+/// See class nsEnumerable for more details.
+#define NS_DECLARE_ENUMERABLE_CLASS_WITH_BASE(self, base) \
+private:                                                  \
+  using nsEnumerableBase = base;                          \
+  friend class nsEnumerable<self, base>;                  \
+  static nsEnumerable<self, base>* s_pFirstInstance;      \
+  static nsEnumerable<self, base>* s_pLastInstance;       \
+  static nsUInt32 s_uiInstances;                          \
+                                                          \
+public:                                                   \
+  static self* GetFirstInstance()                         \
+  {                                                       \
+    return (self*)s_pFirstInstance;                       \
+  }                                                       \
+  self* GetNextInstance()                                 \
+  {                                                       \
+    return (self*)m_pNextInstance;                        \
+  }                                                       \
+  const self* GetNextInstance() const                     \
+  {                                                       \
+    return (const self*)m_pNextInstance;                  \
+  }                                                       \
+                                                          \
 private:
 
 /// \brief Insert this macro in a cpp file and pass the class name of the to-be-enumerable class as the parameter.
 ///
-/// See class wdEnumerable for more details.
-#define WD_ENUMERABLE_CLASS_IMPLEMENTATION(self)                                \
-  wdEnumerable<self, self::wdEnumerableBase>* self::s_pFirstInstance = nullptr; \
-  wdEnumerable<self, self::wdEnumerableBase>* self::s_pLastInstance = nullptr;  \
-  wdUInt32 self::s_uiInstances = 0
+/// See class nsEnumerable for more details.
+#define NS_ENUMERABLE_CLASS_IMPLEMENTATION(self)                                \
+  nsEnumerable<self, self::nsEnumerableBase>* self::s_pFirstInstance = nullptr; \
+  nsEnumerable<self, self::nsEnumerableBase>* self::s_pLastInstance = nullptr;  \
+  nsUInt32 self::s_uiInstances = 0

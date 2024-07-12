@@ -4,11 +4,11 @@
 #include <Foundation/Time/Time.h>
 
 /// \brief A helper class to time the execution of code or other actions.
-class WD_FOUNDATION_DLL wdStopwatch
+class NS_FOUNDATION_DLL nsStopwatch
 {
 public:
   /// \brief The constructor will automatically start the stopwatch.
-  wdStopwatch(); // [tested]
+  nsStopwatch(); // [tested]
 
   /// \brief Stops the stopwatch and resets the running total to zero. Afterwards a new time measure can be started using Resume().
   void StopAndReset();
@@ -29,7 +29,7 @@ public:
   ///
   /// The running total can be frozen by calling Pause(), which allows to read the result back at a later point in time.
   /// It can be reset to zero using StopAndReset().
-  wdTime GetRunningTotal() const; // [tested]
+  nsTime GetRunningTotal() const; // [tested]
 
   /// \brief This function returns the time that has passed since the last call to Checkpoint() or since the construction of the object.
   ///
@@ -38,11 +38,11 @@ public:
   ///
   /// \note Checkpoint() is not affected by calls to Pause(), Resume() or StopAndReset(). It always returns the time difference to the
   /// last call to Checkpoint().
-  wdTime Checkpoint(); // [tested]
+  nsTime Checkpoint(); // [tested]
 
 private:
   bool m_bRunning;
-  mutable wdTime m_LastUpdate;
-  wdTime m_LastCheckpoint;
-  mutable wdTime m_TotalDuration;
+  mutable nsTime m_LastUpdate;
+  nsTime m_LastCheckpoint;
+  mutable nsTime m_TotalDuration;
 };

@@ -4,66 +4,91 @@
 #include <Foundation/Types/Delegate.h>
 #include <Foundation/Types/UniquePtr.h>
 
-class wdStreamReader;
-class wdStreamWriter;
-class wdMemoryMappedFile;
-class wdArchiveTOC;
-class wdArchiveEntry;
-class wdRawMemoryStreamReader;
+class nsStreamReader;
+class nsStreamWriter;
+class nsMemoryMappedFile;
+class nsArchiveTOC;
+class nsArchiveEntry;
+class nsRawMemoryStreamReader;
 
-/// \brief Utilities for working with wdArchive files
-namespace wdArchiveUtils
+/// \brief Utilities for working with nsArchive files
+namespace nsArchiveUtils
 {
-  typedef wdDelegate<bool(wdUInt64, wdUInt64)> FileWriteProgressCallback;
+  using FileWriteProgressCallback = nsDelegate<bool(nsUInt64, nsUInt64)>;
+  constexpr nsUInt32 ArchiveHeaderSize = 16;
+  constexpr nsUInt32 ArchiveTOCMetaMaxFooterSize = 14 + 12; //< note that it's the MAX size, i.e. toc meta can be smaller
 
-  /// \brief Returns a modifiable array of file extensions that the engine considers to be valid wdArchive file extensions.
+  struct TOCMeta
+  {
+    nsUInt32 m_uiTocSize = 0;
+    nsUInt64 m_uiExpectedTocHash = 0;
+    nsUInt32 m_uiTocOffsetFromArchiveEnd = 0;
+  };
+
+  /// \brief Returns a modifiable array of file extensions that the engine considers to be valid nsArchive file extensions.
   ///
-  /// By default it always contains 'wdArchive'.
-  /// Add or overwrite the values, if you want custom file extensions to be handled as wdArchives.
-  WD_FOUNDATION_DLL wdHybridArray<wdString, 4, wdStaticAllocatorWrapper>& GetAcceptedArchiveFileExtensions();
+  /// By default it always contains 'nsArchive'.
+  /// Add or overwrite the values, if you want custom file extensions to be handled as nsArchives.
+  NS_FOUNDATION_DLL nsHybridArray<nsString, 4, nsStaticsAllocatorWrapper>& GetAcceptedArchiveFileExtensions();
 
   /// \brief Checks case insensitive, whether the given extension is in the list of GetAcceptedArchiveFileExtensions().
-  WD_FOUNDATION_DLL bool IsAcceptedArchiveFileExtensions(wdStringView sExtension);
+  NS_FOUNDATION_DLL bool IsAcceptedArchiveFileExtensions(nsStringView sExtension);
 
-  /// \brief Writes the header that identifies the wdArchive file and version to the stream
-  WD_FOUNDATION_DLL wdResult WriteHeader(wdStreamWriter& inout_stream);
+  /// \brief Writes the header that identifies the nsArchive file and version to the stream
+  NS_FOUNDATION_DLL nsResult WriteHeader(nsStreamWriter& inout_stream);
 
-  /// \brief Reads the wdArchive header. Returns success and the version, if the stream is a valid wdArchive file.
-  WD_FOUNDATION_DLL wdResult ReadHeader(wdStreamReader& inout_stream, wdUInt8& out_uiVersion);
+  /// \brief Reads the nsArchive header. Returns success and the version, if the stream is a valid nsArchive file.
+  NS_FOUNDATION_DLL nsResult ReadHeader(nsStreamReader& inout_stream, nsUInt8& out_uiVersion);
 
   /// \brief Writes the archive TOC to the stream. This must be the last thing in the stream, if ExtractTOC() is supposed to work.
-  WD_FOUNDATION_DLL wdResult AppendTOC(wdStreamWriter& inout_stream, const wdArchiveTOC& toc);
+  NS_FOUNDATION_DLL nsResult AppendTOC(nsStreamWriter& inout_stream, const nsArchiveTOC& toc);
+
+  /// \brief Deserializes the TOC meta from archive ending. Assumes the TOC is the very last data in the file.
+  NS_FOUNDATION_DLL nsResult ExtractTOCMeta(nsUInt64 uiArchiveEndingDataSize, const void* pArchiveEndingDataBuffer, TOCMeta& ref_tocMeta, nsUInt8 uiArchiveVersion);
+
+  /// \brief Deserializes the TOC meta from the memory mapped file. Assumes the TOC is the very last data in the file.
+  NS_FOUNDATION_DLL nsResult ExtractTOCMeta(const nsMemoryMappedFile& memFile, TOCMeta& ref_tocMeta, nsUInt8 uiArchiveVersion);
+
+  /// \brief Deserializes the TOC from from archive ending. Assumes the TOC is the very last data in the file and reads it from the back.
+  NS_FOUNDATION_DLL nsResult ExtractTOC(nsUInt64 uiArchiveEndingDataSize, const void* pArchiveEndingDataBuffer, nsArchiveTOC& ref_toc, nsUInt8 uiArchiveVersion);
 
   /// \brief Deserializes the TOC from the memory mapped file. Assumes the TOC is the very last data in the file and reads it from the back.
-  WD_FOUNDATION_DLL wdResult ExtractTOC(wdMemoryMappedFile& ref_memFile, wdArchiveTOC& ref_toc, wdUInt8 uiArchiveVersion);
+  NS_FOUNDATION_DLL nsResult ExtractTOC(const nsMemoryMappedFile& memFile, nsArchiveTOC& ref_toc, nsUInt8 uiArchiveVersion);
 
-  /// \brief Writes a single file entry to an wdArchive stream with the given compression level.
+  /// \brief Writes a single file entry to an nsArchive stream with the given compression level.
   ///
   /// Appends information to the TOC for finding the data in the stream. Reads and updates inout_uiCurrentStreamPosition with the data byte
   /// offset. The progress callback is executed for every couple of KB of data that were written.
-  WD_FOUNDATION_DLL wdResult WriteEntry(wdStreamWriter& inout_stream, wdStringView sAbsSourcePath, wdUInt32 uiPathStringOffset,
-    wdArchiveCompressionMode compression, wdInt32 iCompressionLevel, wdArchiveEntry& ref_tocEntry, wdUInt64& inout_uiCurrentStreamPosition,
+  NS_FOUNDATION_DLL nsResult WriteEntry(nsStreamWriter& inout_stream, nsStringView sAbsSourcePath, nsUInt32 uiPathStringOffset,
+    nsArchiveCompressionMode compression, nsInt32 iCompressionLevel, nsArchiveEntry& ref_tocEntry, nsUInt64& inout_uiCurrentStreamPosition,
     FileWriteProgressCallback progress = FileWriteProgressCallback());
+
+  /// \brief Writes a single file entry to an nsArchive stream with the given compression level.
+  ///
+  /// Appends information to the TOC for finding the data in the stream. Reads and updates inout_uiCurrentStreamPosition with the data byte
+  /// offset. Compression parameter indicate compression that the entry data already have applied.
+  NS_FOUNDATION_DLL nsResult WriteEntryPreprocessed(nsStreamWriter& inout_stream, nsConstByteArrayPtr entryData, nsUInt32 uiPathStringOffset,
+    nsArchiveCompressionMode compression, nsUInt32 uiUncompressedEntryDataSize, nsArchiveEntry& ref_tocEntry, nsUInt64& inout_uiCurrentStreamPosition);
 
   /// \brief Similar to WriteEntry, but if compression is enabled, checks that compression makes enough of a difference.
   /// If compression does not reduce file size enough, the file is stored uncompressed instead.
-  WD_FOUNDATION_DLL wdResult WriteEntryOptimal(wdStreamWriter& inout_stream, wdStringView sAbsSourcePath, wdUInt32 uiPathStringOffset,
-    wdArchiveCompressionMode compression, wdInt32 iCompressionLevel, wdArchiveEntry& ref_tocEntry, wdUInt64& inout_uiCurrentStreamPosition,
+  NS_FOUNDATION_DLL nsResult WriteEntryOptimal(nsStreamWriter& inout_stream, nsStringView sAbsSourcePath, nsUInt32 uiPathStringOffset,
+    nsArchiveCompressionMode compression, nsInt32 iCompressionLevel, nsArchiveEntry& ref_tocEntry, nsUInt64& inout_uiCurrentStreamPosition,
     FileWriteProgressCallback progress = FileWriteProgressCallback());
 
   /// \brief Configures \a memReader as a view into the data stored for \a entry in the archive file.
   ///
   /// The raw memory stream may be compressed or uncompressed. This only creates a view for the stored data, it does not interpret it.
-  WD_FOUNDATION_DLL void ConfigureRawMemoryStreamReader(
-    const wdArchiveEntry& entry, const void* pStartOfArchiveData, wdRawMemoryStreamReader& ref_memReader);
+  NS_FOUNDATION_DLL void ConfigureRawMemoryStreamReader(
+    const nsArchiveEntry& entry, const void* pStartOfArchiveData, nsRawMemoryStreamReader& ref_memReader);
 
   /// \brief Creates a new stream reader which allows to read the uncompressed data for the given archive entry.
   ///
   /// Under the hood it may create different types of stream readers to uncompress or decode the data.
-  WD_FOUNDATION_DLL wdUniquePtr<wdStreamReader> CreateEntryReader(const wdArchiveEntry& entry, const void* pStartOfArchiveData);
+  NS_FOUNDATION_DLL nsUniquePtr<nsStreamReader> CreateEntryReader(const nsArchiveEntry& entry, const void* pStartOfArchiveData);
 
-  WD_FOUNDATION_DLL wdResult ReadZipHeader(wdStreamReader& inout_stream, wdUInt8& out_uiVersion);
-  WD_FOUNDATION_DLL wdResult ExtractZipTOC(wdMemoryMappedFile& ref_memFile, wdArchiveTOC& ref_toc);
+  NS_FOUNDATION_DLL nsResult ReadZipHeader(nsStreamReader& inout_stream, nsUInt8& out_uiVersion);
+  NS_FOUNDATION_DLL nsResult ExtractZipTOC(const nsMemoryMappedFile& memFile, nsArchiveTOC& ref_toc);
 
 
-} // namespace wdArchiveUtils
+} // namespace nsArchiveUtils

@@ -539,15 +539,15 @@ function(cpack_rpm_prepare_install_files INSTALL_FILES_LIST WDIR PACKAGE_PREFIXE
         string(APPEND IN_SYMLINK_POINT_REGEX "/.*")
         if(SYMLINK_POINT_ MATCHES "${IN_SYMLINK_POINT_REGEX}")
           # only symlinks that are pointing inside the packaging structure should be checked for relocation
-          string(SUBSTRING "${SYMLINK_POINT_}" ${WDR_LEN_} -1 SYMLINK_POINT_WD_)
+          string(SUBSTRING "${SYMLINK_POINT_}" ${WDR_LEN_} -1 SYMLINK_POINT_NS_)
           cpack_rpm_symlink_get_relocation_prefixes("${F}" "${PACKAGE_PREFIXES}" "SYMLINK_RELOCATIONS")
-          cpack_rpm_symlink_get_relocation_prefixes("${SYMLINK_POINT_WD_}" "${PACKAGE_PREFIXES}" "POINT_RELOCATIONS")
+          cpack_rpm_symlink_get_relocation_prefixes("${SYMLINK_POINT_NS_}" "${PACKAGE_PREFIXES}" "POINT_RELOCATIONS")
 
           list(LENGTH SYMLINK_RELOCATIONS SYMLINK_RELOCATIONS_COUNT)
           list(LENGTH POINT_RELOCATIONS POINT_RELOCATIONS_COUNT)
         else()
           # location pointed to is outside WDR so it should be treated as a permanent symlink
-          set(SYMLINK_POINT_WD_ "${SYMLINK_POINT_}")
+          set(SYMLINK_POINT_NS_ "${SYMLINK_POINT_}")
 
           unset(SYMLINK_RELOCATIONS)
           unset(POINT_RELOCATIONS)
@@ -571,25 +571,25 @@ function(cpack_rpm_prepare_install_files INSTALL_FILES_LIST WDIR PACKAGE_PREFIXE
             if(${SYMLINK_RELOCATIONS_COUNT} EQUAL 1 AND ${POINT_RELOCATIONS_COUNT} EQUAL 1)
               # permanent symlink
               get_filename_component(SYMLINK_LOCATION_ "${F}" DIRECTORY)
-              file(RELATIVE_PATH FINAL_PATH_ ${SYMLINK_LOCATION_} ${SYMLINK_POINT_WD_})
+              file(RELATIVE_PATH FINAL_PATH_ ${SYMLINK_LOCATION_} ${SYMLINK_POINT_NS_})
               execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink "${FINAL_PATH_}" "${WDIR}/${F}")
             else()
               # relocation subpaths
               cpack_rpm_symlink_add_for_relocation_script("${PACKAGE_PREFIXES}" "${F}" "${SYMLINK_RELOCATIONS}"
-                  "${SYMLINK_POINT_WD_}" "${POINT_RELOCATIONS}")
+                  "${SYMLINK_POINT_NS_}" "${POINT_RELOCATIONS}")
             endif()
           else()
             # not on the same relocation path
             cpack_rpm_symlink_add_for_relocation_script("${PACKAGE_PREFIXES}" "${F}" "${SYMLINK_RELOCATIONS}"
-                "${SYMLINK_POINT_WD_}" "${POINT_RELOCATIONS}")
+                "${SYMLINK_POINT_NS_}" "${POINT_RELOCATIONS}")
           endif()
         elseif(POINT_RELOCATIONS_COUNT)
           # point is relocatable
           cpack_rpm_symlink_add_for_relocation_script("${PACKAGE_PREFIXES}" "${F}" "${SYMLINK_RELOCATIONS}"
-              "${SYMLINK_POINT_WD_}" "${POINT_RELOCATIONS}")
+              "${SYMLINK_POINT_NS_}" "${POINT_RELOCATIONS}")
         else()
           # is not relocatable or points to non relocatable path - permanent symlink
-          execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink "${SYMLINK_POINT_WD_}" "${WDIR}/${F}")
+          execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink "${SYMLINK_POINT_NS_}" "${WDIR}/${F}")
         endif()
       endif()
     elseif(IS_DIRECTORY "${WDIR}/${F}")

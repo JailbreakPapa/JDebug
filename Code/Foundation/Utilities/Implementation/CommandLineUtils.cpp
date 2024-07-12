@@ -4,29 +4,29 @@
 #include <Foundation/Utilities/CommandLineUtils.h>
 #include <Foundation/Utilities/ConversionUtils.h>
 
-#if WD_ENABLED(WD_PLATFORM_WINDOWS)
+#if NS_ENABLED(NS_PLATFORM_WINDOWS)
 #  include <Foundation/Basics/Platform/Win/IncludeWindows.h>
 #  include <shellapi.h>
 #endif
 
-static wdCommandLineUtils g_pCmdLineInstance;
+static nsCommandLineUtils g_pCmdLineInstance;
 
-wdCommandLineUtils* wdCommandLineUtils::GetGlobalInstance()
+nsCommandLineUtils* nsCommandLineUtils::GetGlobalInstance()
 {
   return &g_pCmdLineInstance;
 }
 
-void wdCommandLineUtils::SplitCommandLineString(const char* szCommandString, bool bAddExecutableDir, wdDynamicArray<wdString>& out_args, wdDynamicArray<const char*>& out_argsV)
+void nsCommandLineUtils::SplitCommandLineString(const char* szCommandString, bool bAddExecutableDir, nsDynamicArray<nsString>& out_args, nsDynamicArray<const char*>& out_argsV)
 {
   // Add application dir as first argument as customary on other platforms.
   if (bAddExecutableDir)
   {
-#if WD_ENABLED(WD_PLATFORM_WINDOWS)
+#if NS_ENABLED(NS_PLATFORM_WINDOWS)
     wchar_t moduleFilename[256];
     GetModuleFileNameW(nullptr, moduleFilename, 256);
-    out_args.PushBack(wdStringUtf8(moduleFilename).GetData());
+    out_args.PushBack(nsStringUtf8(moduleFilename).GetData());
 #else
-    WD_ASSERT_NOT_IMPLEMENTED;
+    NS_ASSERT_NOT_IMPLEMENTED;
 #endif
   }
 
@@ -40,22 +40,22 @@ void wdCommandLineUtils::SplitCommandLineString(const char* szCommandString, boo
       inQuotes = !inQuotes;
     else if (*currentChar == ' ' && !inQuotes)
     {
-      wdStringBuilder path = wdStringView(lastEnd, currentChar);
+      nsStringBuilder path = nsStringView(lastEnd, currentChar);
       path.Trim(" \"");
       out_args.PushBack(path);
       lastEnd = currentChar + 1;
     }
-    wdUnicodeUtils::MoveToNextUtf8(currentChar);
+    nsUnicodeUtils::MoveToNextUtf8(currentChar).IgnoreResult();
   }
 
   out_argsV.Reserve(out_argsV.GetCount());
-  for (wdString& str : out_args)
+  for (nsString& str : out_args)
     out_argsV.PushBack(str.GetData());
 }
 
-void wdCommandLineUtils::SetCommandLine(wdUInt32 uiArgc, const char** pArgv, ArgMode mode /*= UseArgcArgv*/)
+void nsCommandLineUtils::SetCommandLine(nsUInt32 uiArgc, const char** pArgv, ArgMode mode /*= UseArgcArgv*/)
 {
-#if WD_ENABLED(WD_PLATFORM_WINDOWS_DESKTOP)
+#if NS_ENABLED(NS_PLATFORM_WINDOWS_DESKTOP)
   if (mode == ArgMode::PreferOsArgs)
   {
     SetCommandLine();
@@ -66,29 +66,29 @@ void wdCommandLineUtils::SetCommandLine(wdUInt32 uiArgc, const char** pArgv, Arg
   m_Commands.Clear();
   m_Commands.Reserve(uiArgc);
 
-  for (wdUInt32 i = 0; i < uiArgc; ++i)
+  for (nsUInt32 i = 0; i < uiArgc; ++i)
     m_Commands.PushBack(pArgv[i]);
 }
 
-void wdCommandLineUtils::SetCommandLine(wdArrayPtr<wdString> commands)
+void nsCommandLineUtils::SetCommandLine(nsArrayPtr<nsString> commands)
 {
   m_Commands = commands;
 }
 
-#if WD_ENABLED(WD_PLATFORM_WINDOWS_DESKTOP)
+#if NS_ENABLED(NS_PLATFORM_WINDOWS_DESKTOP)
 
-void wdCommandLineUtils::SetCommandLine()
+void nsCommandLineUtils::SetCommandLine()
 {
   int argc = 0;
 
   LPWSTR* argvw = CommandLineToArgvW(::GetCommandLineW(), &argc);
 
-  WD_ASSERT_RELEASE(argvw != nullptr, "CommandLineToArgvW failed");
+  NS_ASSERT_RELEASE(argvw != nullptr, "CommandLineToArgvW failed");
 
-  wdArrayPtr<wdStringUtf8> ArgvUtf8 = WD_DEFAULT_NEW_ARRAY(wdStringUtf8, argc);
-  wdArrayPtr<const char*> argv = WD_DEFAULT_NEW_ARRAY(const char*, argc);
+  nsArrayPtr<nsStringUtf8> ArgvUtf8 = NS_DEFAULT_NEW_ARRAY(nsStringUtf8, argc);
+  nsArrayPtr<const char*> argv = NS_DEFAULT_NEW_ARRAY(const char*, argc);
 
-  for (wdInt32 i = 0; i < argc; ++i)
+  for (nsInt32 i = 0; i < argc; ++i)
   {
     ArgvUtf8[i] = argvw[i];
     argv[i] = ArgvUtf8[i].GetData();
@@ -97,32 +97,33 @@ void wdCommandLineUtils::SetCommandLine()
   SetCommandLine(argc, argv.GetPtr(), ArgMode::UseArgcArgv);
 
 
-  WD_DEFAULT_DELETE_ARRAY(ArgvUtf8);
-  WD_DEFAULT_DELETE_ARRAY(argv);
+  NS_DEFAULT_DELETE_ARRAY(ArgvUtf8);
+  NS_DEFAULT_DELETE_ARRAY(argv);
   LocalFree(argvw);
 }
 
-#elif WD_ENABLED(WD_PLATFORM_WINDOWS_UWP)
+#elif NS_ENABLED(NS_PLATFORM_WINDOWS_UWP)
 // Not implemented on Windows UWP.
-#elif WD_ENABLED(WD_PLATFORM_OSX)
+#elif NS_ENABLED(NS_PLATFORM_OSX)
 // Not implemented on OSX.
-#elif WD_ENABLED(WD_PLATFORM_LINUX)
+#elif NS_ENABLED(NS_PLATFORM_LINUX)
 // Not implemented on Linux.
-#elif WD_ENABLED(WD_PLATFORM_ANDROID)
+#elif NS_ENABLED(NS_PLATFORM_ANDROID)
 // Not implemented on Android.
+#elif NS_ENABLED(NS_PLATFORM_PLAYSTATION_5)
 #else
-#  error "wdCommandLineUtils::SetCommandLine(): Abstraction missing."
+#  error "nsCommandLineUtils::SetCommandLine(): Abstraction missing."
 #endif
 
-const wdDynamicArray<wdString>& wdCommandLineUtils::GetCommandLineArray() const
+const nsDynamicArray<nsString>& nsCommandLineUtils::GetCommandLineArray() const
 {
   return m_Commands;
 }
 
-wdString wdCommandLineUtils::GetCommandLineString() const
+nsString nsCommandLineUtils::GetCommandLineString() const
 {
-  wdStringBuilder commandLine;
-  for (const wdString& command : m_Commands)
+  nsStringBuilder commandLine;
+  for (const nsString& command : m_Commands)
   {
     if (commandLine.IsEmpty())
     {
@@ -136,45 +137,45 @@ wdString wdCommandLineUtils::GetCommandLineString() const
   return commandLine;
 }
 
-wdUInt32 wdCommandLineUtils::GetParameterCount() const
+nsUInt32 nsCommandLineUtils::GetParameterCount() const
 {
   return m_Commands.GetCount();
 }
 
-const char* wdCommandLineUtils::GetParameter(wdUInt32 uiParam) const
+const nsString& nsCommandLineUtils::GetParameter(nsUInt32 uiParam) const
 {
-  return m_Commands[uiParam].GetData();
+  return m_Commands[uiParam];
 }
 
-wdInt32 wdCommandLineUtils::GetOptionIndex(const char* szOption, bool bCaseSensitive) const
+nsInt32 nsCommandLineUtils::GetOptionIndex(nsStringView sOption, bool bCaseSensitive) const
 {
-  WD_ASSERT_DEV(wdStringUtils::StartsWith(szOption, "-"), "All command line option names must start with a hyphen (e.g. -file)");
+  NS_ASSERT_DEV(sOption.StartsWith("-"), "All command line option names must start with a hyphen (e.g. -file)");
 
-  for (wdUInt32 i = 0; i < m_Commands.GetCount(); ++i)
+  for (nsUInt32 i = 0; i < m_Commands.GetCount(); ++i)
   {
-    if ((bCaseSensitive && m_Commands[i].IsEqual(szOption)) || (!bCaseSensitive && m_Commands[i].IsEqual_NoCase(szOption)))
+    if ((bCaseSensitive && m_Commands[i].IsEqual(sOption)) || (!bCaseSensitive && m_Commands[i].IsEqual_NoCase(sOption)))
       return i;
   }
 
   return -1;
 }
 
-bool wdCommandLineUtils::HasOption(const char* szOption, bool bCaseSensitive /*= false*/) const
+bool nsCommandLineUtils::HasOption(nsStringView sOption, bool bCaseSensitive /*= false*/) const
 {
-  return GetOptionIndex(szOption, bCaseSensitive) >= 0;
+  return GetOptionIndex(sOption, bCaseSensitive) >= 0;
 }
 
-wdUInt32 wdCommandLineUtils::GetStringOptionArguments(const char* szOption, bool bCaseSensitive) const
+nsUInt32 nsCommandLineUtils::GetStringOptionArguments(nsStringView sOption, bool bCaseSensitive) const
 {
-  const wdInt32 iIndex = GetOptionIndex(szOption, bCaseSensitive);
+  const nsInt32 iIndex = GetOptionIndex(sOption, bCaseSensitive);
 
   // not found -> no parameters
   if (iIndex < 0)
     return 0;
 
-  wdUInt32 uiParamCount = 0;
+  nsUInt32 uiParamCount = 0;
 
-  for (wdUInt32 uiParam = iIndex + 1; uiParam < m_Commands.GetCount(); ++uiParam)
+  for (nsUInt32 uiParam = iIndex + 1; uiParam < m_Commands.GetCount(); ++uiParam)
   {
     if (m_Commands[uiParam].StartsWith("-")) // next command is the next option -> no parameters
       break;
@@ -185,20 +186,20 @@ wdUInt32 wdCommandLineUtils::GetStringOptionArguments(const char* szOption, bool
   return uiParamCount;
 }
 
-const char* wdCommandLineUtils::GetStringOption(const char* szOption, wdUInt32 uiArgument, const char* szDefault, bool bCaseSensitive) const
+nsStringView nsCommandLineUtils::GetStringOption(nsStringView sOption, nsUInt32 uiArgument, nsStringView sDefault, bool bCaseSensitive) const
 {
-  const wdInt32 iIndex = GetOptionIndex(szOption, bCaseSensitive);
+  const nsInt32 iIndex = GetOptionIndex(sOption, bCaseSensitive);
 
   // not found -> no parameters
   if (iIndex < 0)
-    return szDefault;
+    return sDefault;
 
-  wdUInt32 uiParamCount = 0;
+  nsUInt32 uiParamCount = 0;
 
-  for (wdUInt32 uiParam = iIndex + 1; uiParam < m_Commands.GetCount(); ++uiParam)
+  for (nsUInt32 uiParam = iIndex + 1; uiParam < m_Commands.GetCount(); ++uiParam)
   {
     if (m_Commands[uiParam].StartsWith("-")) // next command is the next option -> not enough parameters
-      return szDefault;
+      return sDefault;
 
     // found the right one, return it
     if (uiParamCount == uiArgument)
@@ -207,27 +208,27 @@ const char* wdCommandLineUtils::GetStringOption(const char* szOption, wdUInt32 u
     ++uiParamCount;
   }
 
-  return szDefault;
+  return sDefault;
 }
 
-const wdString wdCommandLineUtils::GetAbsolutePathOption(const char* szOption, wdUInt32 uiArgument /*= 0*/, const char* szDefault /*= ""*/, bool bCaseSensitive /*= false*/) const
+const nsString nsCommandLineUtils::GetAbsolutePathOption(nsStringView sOption, nsUInt32 uiArgument /*= 0*/, nsStringView sDefault /*= {} */, bool bCaseSensitive /*= false*/) const
 {
-  const char* szPath = GetStringOption(szOption, uiArgument, szDefault, bCaseSensitive);
+  nsStringView sPath = GetStringOption(sOption, uiArgument, sDefault, bCaseSensitive);
 
-  if (wdStringUtils::IsNullOrEmpty(szPath))
-    return szPath;
+  if (sPath.IsEmpty())
+    return sPath;
 
-  return wdOSFile::MakePathAbsoluteWithCWD(szPath);
+  return nsOSFile::MakePathAbsoluteWithCWD(sPath);
 }
 
-bool wdCommandLineUtils::GetBoolOption(const char* szOption, bool bDefault, bool bCaseSensitive) const
+bool nsCommandLineUtils::GetBoolOption(nsStringView sOption, bool bDefault, bool bCaseSensitive) const
 {
-  const wdInt32 iIndex = GetOptionIndex(szOption, bCaseSensitive);
+  const nsInt32 iIndex = GetOptionIndex(sOption, bCaseSensitive);
 
   if (iIndex < 0)
     return bDefault;
 
-  if (iIndex + 1 == m_Commands.GetCount()) // last command, treat this as 'on'
+  if (iIndex + 1 == m_Commands.GetCount())    // last command, treat this as 'on'
     return true;
 
   if (m_Commands[iIndex + 1].StartsWith("-")) // next command is the next option -> treat this as 'on' as well
@@ -235,14 +236,14 @@ bool wdCommandLineUtils::GetBoolOption(const char* szOption, bool bDefault, bool
 
   // otherwise try to convert the next option to a boolean
   bool bRes = bDefault;
-  wdConversionUtils::StringToBool(m_Commands[iIndex + 1].GetData(), bRes).IgnoreResult();
+  nsConversionUtils::StringToBool(m_Commands[iIndex + 1].GetData(), bRes).IgnoreResult();
 
   return bRes;
 }
 
-wdInt32 wdCommandLineUtils::GetIntOption(const char* szOption, wdInt32 iDefault, bool bCaseSensitive) const
+nsInt32 nsCommandLineUtils::GetIntOption(nsStringView sOption, nsInt32 iDefault, bool bCaseSensitive) const
 {
-  const wdInt32 iIndex = GetOptionIndex(szOption, bCaseSensitive);
+  const nsInt32 iIndex = GetOptionIndex(sOption, bCaseSensitive);
 
   if (iIndex < 0)
     return iDefault;
@@ -251,15 +252,15 @@ wdInt32 wdCommandLineUtils::GetIntOption(const char* szOption, wdInt32 iDefault,
     return iDefault;
 
   // try to convert the next option to a number
-  wdInt32 iRes = iDefault;
-  wdConversionUtils::StringToInt(m_Commands[iIndex + 1].GetData(), iRes).IgnoreResult();
+  nsInt32 iRes = iDefault;
+  nsConversionUtils::StringToInt(m_Commands[iIndex + 1].GetData(), iRes).IgnoreResult();
 
   return iRes;
 }
 
-wdUInt32 wdCommandLineUtils::GetUIntOption(const char* szOption, wdUInt32 uiDefault, bool bCaseSensitive) const
+nsUInt32 nsCommandLineUtils::GetUIntOption(nsStringView sOption, nsUInt32 uiDefault, bool bCaseSensitive) const
 {
-  const wdInt32 iIndex = GetOptionIndex(szOption, bCaseSensitive);
+  const nsInt32 iIndex = GetOptionIndex(sOption, bCaseSensitive);
 
   if (iIndex < 0)
     return uiDefault;
@@ -268,15 +269,15 @@ wdUInt32 wdCommandLineUtils::GetUIntOption(const char* szOption, wdUInt32 uiDefa
     return uiDefault;
 
   // try to convert the next option to a number
-  wdUInt32 uiRes = uiDefault;
-  wdConversionUtils::StringToUInt(m_Commands[iIndex + 1].GetData(), uiRes).IgnoreResult();
+  nsUInt32 uiRes = uiDefault;
+  nsConversionUtils::StringToUInt(m_Commands[iIndex + 1].GetData(), uiRes).IgnoreResult();
 
   return uiRes;
 }
 
-double wdCommandLineUtils::GetFloatOption(const char* szOption, double fDefault, bool bCaseSensitive) const
+double nsCommandLineUtils::GetFloatOption(nsStringView sOption, double fDefault, bool bCaseSensitive) const
 {
-  const wdInt32 iIndex = GetOptionIndex(szOption, bCaseSensitive);
+  const nsInt32 iIndex = GetOptionIndex(sOption, bCaseSensitive);
 
   if (iIndex < 0)
     return fDefault;
@@ -286,14 +287,12 @@ double wdCommandLineUtils::GetFloatOption(const char* szOption, double fDefault,
 
   // try to convert the next option to a number
   double fRes = fDefault;
-  wdConversionUtils::StringToFloat(m_Commands[iIndex + 1].GetData(), fRes).IgnoreResult();
+  nsConversionUtils::StringToFloat(m_Commands[iIndex + 1].GetData(), fRes).IgnoreResult();
 
   return fRes;
 }
 
-void wdCommandLineUtils::InjectCustomArgument(const char* szArgument)
+void nsCommandLineUtils::InjectCustomArgument(nsStringView sArgument)
 {
-  m_Commands.PushBack(szArgument);
+  m_Commands.PushBack(sArgument);
 }
-
-WD_STATICLINK_FILE(Foundation, Foundation_Utilities_Implementation_CommandLineUtils);

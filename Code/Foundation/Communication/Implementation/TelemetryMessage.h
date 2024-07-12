@@ -2,36 +2,36 @@
 
 #include <Foundation/IO/MemoryStream.h>
 
-class WD_FOUNDATION_DLL wdTelemetryMessage
+class NS_FOUNDATION_DLL nsTelemetryMessage
 {
 public:
-  wdTelemetryMessage();
-  wdTelemetryMessage(const wdTelemetryMessage& rhs);
-  ~wdTelemetryMessage();
+  nsTelemetryMessage();
+  nsTelemetryMessage(const nsTelemetryMessage& rhs);
+  ~nsTelemetryMessage();
 
-  void operator=(const wdTelemetryMessage& rhs);
+  void operator=(const nsTelemetryMessage& rhs);
 
-  WD_ALWAYS_INLINE wdStreamReader& GetReader() { return m_Reader; }
-  WD_ALWAYS_INLINE wdStreamWriter& GetWriter() { return m_Writer; }
+  NS_ALWAYS_INLINE nsStreamReader& GetReader() { return m_Reader; }
+  NS_ALWAYS_INLINE nsStreamWriter& GetWriter() { return m_Writer; }
 
-  WD_ALWAYS_INLINE wdUInt32 GetSystemID() const { return m_uiSystemID; }
-  WD_ALWAYS_INLINE wdUInt32 GetMessageID() const { return m_uiMsgID; }
+  NS_ALWAYS_INLINE nsUInt32 GetSystemID() const { return m_uiSystemID; }
+  NS_ALWAYS_INLINE nsUInt32 GetMessageID() const { return m_uiMsgID; }
 
-  WD_ALWAYS_INLINE void SetMessageID(wdUInt32 uiSystemID, wdUInt32 uiMessageID)
+  NS_ALWAYS_INLINE void SetMessageID(nsUInt32 uiSystemID, nsUInt32 uiMessageID)
   {
     m_uiSystemID = uiSystemID;
     m_uiMsgID = uiMessageID;
   }
 
-  //wdUInt64 GetMessageSize() const { return m_Storage.GetStorageSize64(); }
+  // nsUInt64 GetMessageSize() const { return m_Storage.GetStorageSize64(); }
 
 private:
-  friend class wdTelemetry;
+  friend class nsTelemetry;
 
-  wdUInt32 m_uiSystemID;
-  wdUInt32 m_uiMsgID;
+  nsUInt32 m_uiSystemID;
+  nsUInt32 m_uiMsgID;
 
-  wdContiguousMemoryStreamStorage m_Storage;
-  wdMemoryStreamReader m_Reader;
-  wdMemoryStreamWriter m_Writer;
+  nsContiguousMemoryStreamStorage m_Storage;
+  nsMemoryStreamReader m_Reader;
+  nsMemoryStreamWriter m_Writer;
 };

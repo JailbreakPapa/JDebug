@@ -2,62 +2,65 @@
 
 #include <Foundation/Algorithm/HashStream.h>
 
+NS_WARNING_PUSH()
+NS_WARNING_DISABLE_CLANG("-Wunused-function")
+
 #define XXH_INLINE_ALL
 #include <Foundation/ThirdParty/xxHash/xxhash.h>
 
-wdHashStreamWriter32::wdHashStreamWriter32(wdUInt32 uiSeed)
+NS_WARNING_POP()
+
+nsHashStreamWriter32::nsHashStreamWriter32(nsUInt32 uiSeed)
 {
   m_pState = XXH32_createState();
-  WD_VERIFY(XXH_OK == XXH32_reset((XXH32_state_t*)m_pState, uiSeed), "");
+  NS_VERIFY(XXH_OK == XXH32_reset((XXH32_state_t*)m_pState, uiSeed), "");
 }
 
-wdHashStreamWriter32::~wdHashStreamWriter32()
+nsHashStreamWriter32::~nsHashStreamWriter32()
 {
   XXH32_freeState((XXH32_state_t*)m_pState);
 }
 
-wdResult wdHashStreamWriter32::WriteBytes(const void* pWriteBuffer, wdUInt64 uiBytesToWrite)
+nsResult nsHashStreamWriter32::WriteBytes(const void* pWriteBuffer, nsUInt64 uiBytesToWrite)
 {
   if (uiBytesToWrite > std::numeric_limits<size_t>::max())
-    return WD_FAILURE;
+    return NS_FAILURE;
 
   if (XXH_OK == XXH32_update((XXH32_state_t*)m_pState, pWriteBuffer, static_cast<size_t>(uiBytesToWrite)))
-    return WD_SUCCESS;
+    return NS_SUCCESS;
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
-wdUInt32 wdHashStreamWriter32::GetHashValue() const
+nsUInt32 nsHashStreamWriter32::GetHashValue() const
 {
   return XXH32_digest((XXH32_state_t*)m_pState);
 }
 
 
-wdHashStreamWriter64::wdHashStreamWriter64(wdUInt64 uiSeed)
+nsHashStreamWriter64::nsHashStreamWriter64(nsUInt64 uiSeed)
 {
   m_pState = XXH64_createState();
-  WD_VERIFY(XXH_OK == XXH64_reset((XXH64_state_t*)m_pState, uiSeed), "");
+  NS_VERIFY(XXH_OK == XXH64_reset((XXH64_state_t*)m_pState, uiSeed), "");
 }
 
-wdHashStreamWriter64::~wdHashStreamWriter64()
+nsHashStreamWriter64::~nsHashStreamWriter64()
 {
   XXH64_freeState((XXH64_state_t*)m_pState);
 }
 
-wdResult wdHashStreamWriter64::WriteBytes(const void* pWriteBuffer, wdUInt64 uiBytesToWrite)
+nsResult nsHashStreamWriter64::WriteBytes(const void* pWriteBuffer, nsUInt64 uiBytesToWrite)
 {
   if (uiBytesToWrite > std::numeric_limits<size_t>::max())
-    return WD_FAILURE;
+    return NS_FAILURE;
 
   if (XXH_OK == XXH64_update((XXH64_state_t*)m_pState, pWriteBuffer, static_cast<size_t>(uiBytesToWrite)))
-    return WD_SUCCESS;
+    return NS_SUCCESS;
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
-wdUInt64 wdHashStreamWriter64::GetHashValue() const
+nsUInt64 nsHashStreamWriter64::GetHashValue() const
 {
   return XXH64_digest((XXH64_state_t*)m_pState);
 }
-
-WD_STATICLINK_FILE(Foundation, Foundation_Algorithm_Implementation_HashStream);

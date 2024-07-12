@@ -3,11 +3,11 @@
 #include <Foundation/Communication/Telemetry.h>
 #include <Foundation/Threading/Thread.h>
 
-class wdTelemetryThread : public wdThread
+class nsTelemetryThread : public nsThread
 {
 public:
-  wdTelemetryThread()
-    : wdThread("wdTelemetryThread")
+  nsTelemetryThread()
+    : nsThread("nsTelemetryThread")
   {
     m_bKeepRunning = true;
   }
@@ -15,63 +15,59 @@ public:
   volatile bool m_bKeepRunning;
 
 private:
-  virtual wdUInt32 Run()
+  virtual nsUInt32 Run()
   {
-    wdTime LastPing;
+    nsTime LastPing;
 
     while (m_bKeepRunning)
     {
-      wdTelemetry::UpdateNetwork();
+      nsTelemetry::UpdateNetwork();
 
       // Send a Ping every once in a while
-      if (wdTelemetry::s_ConnectionMode == wdTelemetry::Client)
+      if (nsTelemetry::s_ConnectionMode == nsTelemetry::Client)
       {
-        wdTime tNow = wdTime::Now();
+        nsTime tNow = nsTime::Now();
 
-        if (tNow - LastPing > wdTime::Milliseconds(500))
+        if (tNow - LastPing > nsTime::MakeFromMilliseconds(500))
         {
           LastPing = tNow;
 
-          wdTelemetry::UpdateServerPing();
+          nsTelemetry::UpdateServerPing();
         }
       }
 
-      wdThreadUtils::Sleep(wdTime::Milliseconds(10));
+      nsThreadUtils::Sleep(nsTime::MakeFromMilliseconds(10));
     }
 
     return 0;
   }
 };
 
-static wdTelemetryThread* g_pBroadcastThread = nullptr;
-wdMutex wdTelemetry::s_TelemetryMutex;
+static nsTelemetryThread* g_pBroadcastThread = nullptr;
+nsMutex nsTelemetry::s_TelemetryMutex;
 
 
-wdMutex& wdTelemetry::GetTelemetryMutex()
+nsMutex& nsTelemetry::GetTelemetryMutex()
 {
   return s_TelemetryMutex;
 }
 
-void wdTelemetry::StartTelemetryThread()
+void nsTelemetry::StartTelemetryThread()
 {
   if (!g_pBroadcastThread)
   {
-    g_pBroadcastThread = WD_DEFAULT_NEW(wdTelemetryThread);
+    g_pBroadcastThread = NS_DEFAULT_NEW(nsTelemetryThread);
     g_pBroadcastThread->Start();
   }
 }
 
-void wdTelemetry::StopTelemetryThread()
+void nsTelemetry::StopTelemetryThread()
 {
   if (g_pBroadcastThread)
   {
     g_pBroadcastThread->m_bKeepRunning = false;
     g_pBroadcastThread->Join();
 
-    WD_DEFAULT_DELETE(g_pBroadcastThread);
+    NS_DEFAULT_DELETE(g_pBroadcastThread);
   }
 }
-
-
-
-WD_STATICLINK_FILE(Foundation, Foundation_Communication_Implementation_TelemetryThread);

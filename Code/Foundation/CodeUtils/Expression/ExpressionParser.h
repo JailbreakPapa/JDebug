@@ -3,66 +3,66 @@
 #include <Foundation/CodeUtils/Expression/ExpressionAST.h>
 #include <Foundation/CodeUtils/TokenParseUtils.h>
 
-class WD_FOUNDATION_DLL wdExpressionParser
+class NS_FOUNDATION_DLL nsExpressionParser
 {
 public:
-  wdExpressionParser();
-  ~wdExpressionParser();
+  nsExpressionParser();
+  ~nsExpressionParser();
 
-  void RegisterFunction(const wdExpression::FunctionDesc& funcDesc);
-  void UnregisterFunction(const wdExpression::FunctionDesc& funcDesc);
+  static const nsHashTable<nsHashedString, nsEnum<nsExpressionAST::DataType>>& GetKnownTypes();
+  static const nsHashTable<nsHashedString, nsEnum<nsExpressionAST::NodeType>>& GetBuiltinFunctions();
+
+  void RegisterFunction(const nsExpression::FunctionDesc& funcDesc);
+  void UnregisterFunction(const nsExpression::FunctionDesc& funcDesc);
 
   struct Options
   {
     bool m_bTreatUnknownVariablesAsInputs = false;
   };
 
-  wdResult Parse(wdStringView sCode, wdArrayPtr<wdExpression::StreamDesc> inputs, wdArrayPtr<wdExpression::StreamDesc> outputs, const Options& options, wdExpressionAST& out_ast);
+  nsResult Parse(nsStringView sCode, nsArrayPtr<nsExpression::StreamDesc> inputs, nsArrayPtr<nsExpression::StreamDesc> outputs, const Options& options, nsExpressionAST& out_ast);
 
 private:
   static constexpr int s_iLowestPrecedence = 20;
 
-  void RegisterKnownTypes();
-  void RegisterBuiltinFunctions();
-  void SetupInAndOutputs(wdArrayPtr<wdExpression::StreamDesc> inputs, wdArrayPtr<wdExpression::StreamDesc> outputs);
+  static void RegisterKnownTypes();
+  static void RegisterBuiltinFunctions();
+  void SetupInAndOutputs(nsArrayPtr<nsExpression::StreamDesc> inputs, nsArrayPtr<nsExpression::StreamDesc> outputs);
 
-  wdResult ParseStatement();
-  wdResult ParseType(wdStringView sTypeName, wdEnum<wdExpressionAST::DataType>& out_type);
-  wdResult ParseVariableDefinition(wdEnum<wdExpressionAST::DataType> type);
-  wdResult ParseAssignment();
+  nsResult ParseStatement();
+  nsResult ParseType(nsStringView sTypeName, nsEnum<nsExpressionAST::DataType>& out_type);
+  nsResult ParseVariableDefinition(nsEnum<nsExpressionAST::DataType> type);
+  nsResult ParseAssignment();
 
-  wdExpressionAST::Node* ParseFactor();
-  wdExpressionAST::Node* ParseExpression(int iPrecedence = s_iLowestPrecedence);
-  wdExpressionAST::Node* ParseUnaryExpression();
-  wdExpressionAST::Node* ParseFunctionCall(wdStringView sFunctionName);
-  wdExpressionAST::Node* ParseSwizzle(wdExpressionAST::Node* pExpression);
+  nsExpressionAST::Node* ParseFactor();
+  nsExpressionAST::Node* ParseExpression(int iPrecedence = s_iLowestPrecedence);
+  nsExpressionAST::Node* ParseUnaryExpression();
+  nsExpressionAST::Node* ParseFunctionCall(nsStringView sFunctionName);
+  nsExpressionAST::Node* ParseSwizzle(nsExpressionAST::Node* pExpression);
 
   bool AcceptStatementTerminator();
-  bool AcceptOperator(wdStringView sName);
-  bool AcceptBinaryOperator(wdExpressionAST::NodeType::Enum& out_binaryOp, int& out_iOperatorPrecedence, wdUInt32& out_uiOperatorLength);
-  wdExpressionAST::Node* GetVariable(wdStringView sVarName);
-  wdExpressionAST::Node* EnsureExpectedType(wdExpressionAST::Node* pNode, wdExpressionAST::DataType::Enum expectedType);
-  wdExpressionAST::Node* Unpack(wdExpressionAST::Node* pNode, bool bUnassignedError = true);
+  bool AcceptOperator(nsStringView sName);
+  bool AcceptBinaryOperator(nsExpressionAST::NodeType::Enum& out_binaryOp, int& out_iOperatorPrecedence, nsUInt32& out_uiOperatorLength);
+  nsExpressionAST::Node* GetVariable(nsStringView sVarName);
+  nsExpressionAST::Node* EnsureExpectedType(nsExpressionAST::Node* pNode, nsExpressionAST::DataType::Enum expectedType);
+  nsExpressionAST::Node* Unpack(nsExpressionAST::Node* pNode, bool bUnassignedError = true);
 
-  wdResult Expect(const char* szToken, const wdToken** pExpectedToken = nullptr);
-  wdResult Expect(wdTokenType::Enum Type, const wdToken** pExpectedToken = nullptr);
+  nsResult Expect(nsStringView sToken, const nsToken** pExpectedToken = nullptr);
+  nsResult Expect(nsTokenType::Enum Type, const nsToken** pExpectedToken = nullptr);
 
-  void ReportError(const wdToken* pToken, const wdFormatString& message);
+  void ReportError(const nsToken* pToken, const nsFormatString& message);
 
   /// \brief Checks whether all outputs have been written
-  wdResult CheckOutputs();
+  nsResult CheckOutputs();
 
   Options m_Options;
 
-  wdTokenParseUtils::TokenStream m_TokenStream;
-  wdUInt32 m_uiCurrentToken = 0;
-  wdExpressionAST* m_pAST = nullptr;
+  nsTokenParseUtils::TokenStream m_TokenStream;
+  nsUInt32 m_uiCurrentToken = 0;
+  nsExpressionAST* m_pAST = nullptr;
 
-  wdHashTable<wdHashedString, wdEnum<wdExpressionAST::DataType>> m_KnownTypes;
-
-  wdHashTable<wdHashedString, wdExpressionAST::Node*> m_KnownVariables;
-  wdHashTable<wdHashedString, wdEnum<wdExpressionAST::NodeType>> m_BuiltinFunctions;
-  wdHashTable<wdHashedString, wdHybridArray<wdExpression::FunctionDesc, 1>> m_FunctionDescs;
+  nsHashTable<nsHashedString, nsExpressionAST::Node*> m_KnownVariables;
+  nsHashTable<nsHashedString, nsHybridArray<nsExpression::FunctionDesc, 1>> m_FunctionDescs;
 };
 
 #include <Foundation/CodeUtils/Expression/Implementation/ExpressionParser_inl.h>

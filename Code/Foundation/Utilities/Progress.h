@@ -4,15 +4,15 @@
 #include <Foundation/Communication/Event.h>
 #include <Foundation/Strings/String.h>
 
-class wdProgress;
-class wdProgressRange;
+class nsProgress;
+class nsProgressRange;
 
-/// \brief Through these events the state of an wdProgress instance is communicated.
+/// \brief Through these events the state of an nsProgress instance is communicated.
 ///
 /// Other code can use this to visualize the progress in different ways.
 /// For instance a GUI application can show a progress bar dialog and a game
 /// could show a loading screen.
-struct WD_FOUNDATION_DLL wdProgressEvent
+struct NS_FOUNDATION_DLL nsProgressEvent
 {
   enum class Type
   {
@@ -23,34 +23,34 @@ struct WD_FOUNDATION_DLL wdProgressEvent
   };
 
   Type m_Type;
-  wdProgress* m_pProgressbar;
+  nsProgress* m_pProgressbar;
 };
 
 /// \brief Manages the way a progress bar is subdivided and advanced.
 ///
-/// wdProgress represents a single progress bar. It can be sub-divided into groups and sub-groups using wdProgressbarRange.
+/// nsProgress represents a single progress bar. It can be sub-divided into groups and sub-groups using nsProgressbarRange.
 /// From the ranges and the current advancement, a final progress percentage is computed. Every time a significant change
 /// takes place, an event is broadcast. This allows other code to display the progress, either in a GUI application
 /// or in a fullscreen loading screen or in any other way appropriate.
-class WD_FOUNDATION_DLL wdProgress
+class NS_FOUNDATION_DLL nsProgress
 {
 public:
-  wdProgress();
-  ~wdProgress();
+  nsProgress();
+  ~nsProgress();
 
   /// \brief Returns the current overall progress in [0; 1] range.
   float GetCompletion() const;
 
-  /// \brief Sets the current overall progress in [0; 1] range. Should not be called directly, typically called by wdProgreesRange.
+  /// \brief Sets the current overall progress in [0; 1] range. Should not be called directly, typically called by nsProgreesRange.
   void SetCompletion(float fCompletion);
 
   /// \brief Returns the current 'headline' text for the progress bar
-  wdStringView GetMainDisplayText() const;
+  nsStringView GetMainDisplayText() const;
 
   /// \brief Returns the current detail text for the progress bar
-  wdStringView GetStepDisplayText() const;
+  nsStringView GetStepDisplayText() const;
 
-  /// \brief Used to inform wdProgress of outside user input. May have an effect or not.
+  /// \brief Used to inform nsProgress of outside user input. May have an effect or not.
   void UserClickedCancel();
 
   /// \brief Whether the user requested to cancel the operation.
@@ -59,25 +59,25 @@ public:
   /// \brief Returns whether the current operations may be canceled or not.
   bool AllowUserCancel() const;
 
-  /// \brief Returns the currently set default wdProgress instance. This will always be valid.
-  static wdProgress* GetGlobalProgressbar();
+  /// \brief Returns the currently set default nsProgress instance. This will always be valid.
+  static nsProgress* GetGlobalProgressbar();
 
-  /// \brief Allows to set a custom wdProgress instance as the global default instance.
-  static void SetGlobalProgressbar(wdProgress* pProgress);
+  /// \brief Allows to set a custom nsProgress instance as the global default instance.
+  static void SetGlobalProgressbar(nsProgress* pProgress);
 
   /// \brief Events are sent when the progress changes
-  wdEvent<const wdProgressEvent&> m_Events;
+  nsEvent<const nsProgressEvent&> m_Events;
 
   /// \brief Custom user data.
   void* m_pUserData = nullptr;
 
 private:
-  friend class wdProgressRange;
-  void SetActiveRange(wdProgressRange* pRange);
+  friend class nsProgressRange;
+  void SetActiveRange(nsProgressRange* pRange);
 
-  wdProgressRange* m_pActiveRange = nullptr;
+  nsProgressRange* m_pActiveRange = nullptr;
 
-  wdString m_sCurrentDisplayText;
+  nsString m_sCurrentDisplayText;
   bool m_bCancelClicked = false;
   bool m_bEnableCancel = true;
 
@@ -85,17 +85,17 @@ private:
   float m_fCurrentCompletion = 0.0f;
 };
 
-/// \brief wdProgressRange is the preferred method to inform the system of progress.
+/// \brief nsProgressRange is the preferred method to inform the system of progress.
 ///
-/// wdProgressRange is a scoped class, ie. upon creation it adds a range to the current progress
+/// nsProgressRange is a scoped class, ie. upon creation it adds a range to the current progress
 /// and upon destruction the entire range is considered to be completed.
 /// Ranges can be nested. For instance when a top level range consists of three 'steps',
 /// then opening a nested range will sub-divide that first step. When the nested range is closed,
 /// the first top-level step is finished and BeginNextStep() should be called on the top-level range.
-/// Subsequently the second step is active and can again be further subdivided with another nested wdProgressRange.
-class WD_FOUNDATION_DLL wdProgressRange
+/// Subsequently the second step is active and can again be further subdivided with another nested nsProgressRange.
+class NS_FOUNDATION_DLL nsProgressRange
 {
-  WD_DISALLOW_COPY_AND_ASSIGN(wdProgressRange);
+  NS_DISALLOW_COPY_AND_ASSIGN(nsProgressRange);
 
 public:
   /// \brief Creates a progress range scope.
@@ -104,32 +104,32 @@ public:
   /// \param szDisplayText is the main display text for this range.
   /// \param uiSteps is the number of steps that this range will be subdivided into
   /// \param bAllowCancel specifies whether the user can cancel this operation
-  /// \param pProgressbar can be specified, if available, otherwise the currently active wdProgress instance is used.
-  wdProgressRange(wdStringView sDisplayText, wdUInt32 uiSteps, bool bAllowCancel, wdProgress* pProgressbar = nullptr);
+  /// \param pProgressbar can be specified, if available, otherwise the currently active nsProgress instance is used.
+  nsProgressRange(nsStringView sDisplayText, nsUInt32 uiSteps, bool bAllowCancel, nsProgress* pProgressbar = nullptr);
 
   /// \brief Creates a progress range scope without steps. Use SetCompletion to manually set the completion value.
-  wdProgressRange(wdStringView sDisplayText, bool bAllowCancel, wdProgress* pProgressbar = nullptr);
+  nsProgressRange(nsStringView sDisplayText, bool bAllowCancel, nsProgress* pProgressbar = nullptr);
 
   /// \brief The destructor closes the current range. All progress in this range is assumed to have completed,
   /// even if BeginNextStep() has not been called once for every subdivision step.
-  ~wdProgressRange();
+  ~nsProgressRange();
 
-  /// \brief Returns the wdProgress instance that this range uses.
-  wdProgress* GetProgressbar() const;
+  /// \brief Returns the nsProgress instance that this range uses.
+  nsProgress* GetProgressbar() const;
 
   /// \brief Allows to weigh each step differently.
   ///
   /// This makes it possible to divide an operation into two steps, but have one part take up 90% and the other 10%.
   /// \param uiStep The index for the step to set the weight
   /// \param fWeight The weighting in [0; 1] range
-  void SetStepWeighting(wdUInt32 uiStep, float fWeight);
+  void SetStepWeighting(nsUInt32 uiStep, float fWeight);
 
   /// \brief Should be called whenever a new sub-step is started to advance the progress.
   ///
   /// \param szStepDisplayText The sub-text for the next step to be displayed.
   /// \param uiNumSteps How many steps have been completed.
   /// \return Returns false if the user clicked cancel.
-  bool BeginNextStep(wdStringView sStepDisplayText, wdUInt32 uiNumSteps = 1);
+  bool BeginNextStep(nsStringView sStepDisplayText, nsUInt32 uiNumSteps = 1);
 
   /// \brief Manually set the completion value between 0..1.
   bool SetCompletion(double fCompletionFactor);
@@ -138,19 +138,19 @@ public:
   bool WasCanceled() const;
 
 private:
-  friend class wdProgress;
+  friend class nsProgress;
 
-  void Init(wdStringView sDisplayText, bool bAllowCancel, wdProgress* pProgressbar);
-  float GetStepWeight(wdUInt32 uiStep) const;
+  void Init(nsStringView sDisplayText, bool bAllowCancel, nsProgress* pProgressbar);
+  float GetStepWeight(nsUInt32 uiStep) const;
   void ComputeCurStepBaseAndRange(double& out_base, double& out_range);
 
-  wdProgressRange* m_pParentRange = nullptr;
-  wdProgress* m_pProgressbar = nullptr;
+  nsProgressRange* m_pParentRange = nullptr;
+  nsProgress* m_pProgressbar = nullptr;
 
-  wdInt32 m_iCurrentStep = 0;
-  wdString m_sDisplayText;
-  wdString m_sStepDisplayText;
-  wdHashTable<wdUInt32, float> m_StepWeights;
+  nsInt32 m_iCurrentStep = 0;
+  nsString m_sDisplayText;
+  nsString m_sStepDisplayText;
+  nsHashTable<nsUInt32, float> m_StepWeights;
 
   bool m_bAllowCancel = false;
   double m_fPercentageBase = 0.0;

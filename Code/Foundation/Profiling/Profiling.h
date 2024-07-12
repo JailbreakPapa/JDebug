@@ -6,128 +6,128 @@
 #include <Foundation/System/Process.h>
 #include <Foundation/Time/Time.h>
 
-class wdStreamWriter;
-class wdThread;
+class nsStreamWriter;
+class nsThread;
 
 /// \brief This class encapsulates a profiling scope.
 ///
 /// The constructor creates a new scope in the profiling system and the destructor pops the scope.
-/// You shouldn't need to use this directly, just use the macro WD_PROFILE_SCOPE provided below.
-class WD_FOUNDATION_DLL wdProfilingScope
+/// You shouldn't need to use this directly, just use the macro NS_PROFILE_SCOPE provided below.
+class NS_FOUNDATION_DLL nsProfilingScope
 {
 public:
-  wdProfilingScope(wdStringView sName, const char* szFunctionName, wdTime timeout);
-  ~wdProfilingScope();
+  nsProfilingScope(nsStringView sName, const char* szFunctionName, nsTime timeout);
+  ~nsProfilingScope();
 
 protected:
-  wdStringView m_sName;
+  nsStringView m_sName;
   const char* m_szFunction;
-  wdTime m_BeginTime;
-  wdTime m_Timeout;
+  nsTime m_BeginTime;
+  nsTime m_Timeout;
 };
 
-/// \brief This class implements a profiling scope similar to wdProfilingScope, but with additional sub-scopes which can be added easily without
+/// \brief This class implements a profiling scope similar to nsProfilingScope, but with additional sub-scopes which can be added easily without
 /// introducing actual C++ scopes.
 ///
 /// The constructor pushes one surrounding scope on the stack and then a nested scope as the first section.
 /// The function StartNextSection() will end the nested scope and start a new inner scope.
 /// This allows to end one scope and start a new one, without having to add actual C++ scopes for starting/stopping profiling scopes.
 ///
-/// You shouldn't need to use this directly, just use the macro WD_PROFILE_LIST_SCOPE provided below.
-class wdProfilingListScope
+/// You shouldn't need to use this directly, just use the macro NS_PROFILE_LIST_SCOPE provided below.
+class nsProfilingListScope
 {
 public:
-  WD_FOUNDATION_DLL wdProfilingListScope(wdStringView sListName, wdStringView sFirstSectionName, const char* szFunctionName);
-  WD_FOUNDATION_DLL ~wdProfilingListScope();
+  NS_FOUNDATION_DLL nsProfilingListScope(nsStringView sListName, nsStringView sFirstSectionName, const char* szFunctionName);
+  NS_FOUNDATION_DLL ~nsProfilingListScope();
 
-  WD_FOUNDATION_DLL static void StartNextSection(wdStringView sNextSectionName);
+  NS_FOUNDATION_DLL static void StartNextSection(nsStringView sNextSectionName);
 
 protected:
-  static thread_local wdProfilingListScope* s_pCurrentList;
+  static thread_local nsProfilingListScope* s_pCurrentList;
 
-  wdProfilingListScope* m_pPreviousList;
+  nsProfilingListScope* m_pPreviousList;
 
-  wdStringView m_sListName;
+  nsStringView m_sListName;
   const char* m_szListFunction;
-  wdTime m_ListBeginTime;
+  nsTime m_ListBeginTime;
 
-  wdStringView m_sCurSectionName;
-  wdTime m_CurSectionBeginTime;
+  nsStringView m_sCurSectionName;
+  nsTime m_CurSectionBeginTime;
 };
 
 /// \brief Helper functionality of the profiling system.
-class WD_FOUNDATION_DLL wdProfilingSystem
+class NS_FOUNDATION_DLL nsProfilingSystem
 {
 public:
   struct ThreadInfo
   {
-    wdUInt64 m_uiThreadId;
-    wdString m_sName;
+    nsUInt64 m_uiThreadId;
+    nsString m_sName;
   };
 
   struct CPUScope
   {
-    WD_DECLARE_POD_TYPE();
+    NS_DECLARE_POD_TYPE();
 
-    static constexpr wdUInt32 NAME_SIZE = 40;
+    static constexpr nsUInt32 NAME_SIZE = 40;
 
     const char* m_szFunctionName;
-    wdTime m_BeginTime;
-    wdTime m_EndTime;
+    nsTime m_BeginTime;
+    nsTime m_EndTime;
     char m_szName[NAME_SIZE];
   };
 
   struct CPUScopesBufferFlat
   {
-    wdDynamicArray<CPUScope> m_Data;
-    wdUInt64 m_uiThreadId = 0;
+    nsDynamicArray<CPUScope> m_Data;
+    nsUInt64 m_uiThreadId = 0;
   };
 
   /// \brief Helper struct to hold GPU profiling data.
   struct GPUScope
   {
-    WD_DECLARE_POD_TYPE();
+    NS_DECLARE_POD_TYPE();
 
-    static constexpr wdUInt32 NAME_SIZE = 48;
+    static constexpr nsUInt32 NAME_SIZE = 48;
 
-    wdTime m_BeginTime;
-    wdTime m_EndTime;
+    nsTime m_BeginTime;
+    nsTime m_EndTime;
     char m_szName[NAME_SIZE];
   };
 
-  struct WD_FOUNDATION_DLL ProfilingData
+  struct NS_FOUNDATION_DLL ProfilingData
   {
-    wdUInt32 m_uiFramesThreadID = 0;
-    wdUInt32 m_uiProcessSortIndex = 0;
-    wdOsProcessID m_uiProcessID = 0;
+    nsUInt32 m_uiFramesThreadID = 0;
+    nsUInt32 m_uiProcessSortIndex = 0;
+    nsOsProcessID m_uiProcessID = 0;
 
-    wdHybridArray<ThreadInfo, 16> m_ThreadInfos;
+    nsHybridArray<ThreadInfo, 16> m_ThreadInfos;
 
-    wdDynamicArray<CPUScopesBufferFlat> m_AllEventBuffers;
+    nsDynamicArray<CPUScopesBufferFlat> m_AllEventBuffers;
 
-    wdUInt64 m_uiFrameCount = 0;
-    wdDynamicArray<wdTime> m_FrameStartTimes;
+    nsUInt64 m_uiFrameCount = 0;
+    nsDynamicArray<nsTime> m_FrameStartTimes;
 
-    wdDynamicArray<wdDynamicArray<GPUScope>> m_GPUScopes;
+    nsDynamicArray<nsDynamicArray<GPUScope>> m_GPUScopes;
 
     /// \brief Writes profiling data as JSON to the output stream.
-    wdResult Write(wdStreamWriter& ref_outputStream) const;
+    nsResult Write(nsStreamWriter& ref_outputStream) const;
 
     void Clear();
 
     /// \brief Concatenates all given ProfilingData instances into one merge struct
-    static void Merge(ProfilingData& out_merged, wdArrayPtr<const ProfilingData*> inputs);
+    static void Merge(ProfilingData& out_merged, nsArrayPtr<const ProfilingData*> inputs);
   };
 
 public:
   static void Clear();
 
-  static void Capture(wdProfilingSystem::ProfilingData& out_capture, bool bClearAfterCapture = false);
+  static void Capture(nsProfilingSystem::ProfilingData& out_capture, bool bClearAfterCapture = false);
 
   /// \brief Scopes are discarded if their duration is shorter than the specified threshold. Default is 0.1ms.
-  static void SetDiscardThreshold(wdTime threshold);
+  static void SetDiscardThreshold(nsTime threshold);
 
-  using ScopeTimeoutDelegate = wdDelegate<void(wdStringView sName, wdStringView sFunctionName, wdTime duration)>;
+  using ScopeTimeoutDelegate = nsDelegate<void(nsStringView sName, nsStringView sFunctionName, nsTime duration)>;
 
   /// \brief Sets a callback that is triggered when a profiling scope takes longer than desired.
   static void SetScopeTimeoutCallback(ScopeTimeoutDelegate callback);
@@ -136,98 +136,86 @@ public:
   static void StartNewFrame();
 
   /// \brief Adds a new scoped event for the calling thread in the profiling system
-  static void AddCPUScope(wdStringView sName, const char* szFunctionName, wdTime beginTime, wdTime endTime, wdTime scopeTimeout);
+  static void AddCPUScope(nsStringView sName, const char* szFunctionName, nsTime beginTime, nsTime endTime, nsTime scopeTimeout);
 
   /// \brief Get current frame counter
-  static wdUInt64 GetFrameCount();
+  static nsUInt64 GetFrameCount();
 
 private:
-  WD_MAKE_SUBSYSTEM_STARTUP_FRIEND(Foundation, ProfilingSystem);
-  friend wdUInt32 RunThread(wdThread* pThread);
+  NS_MAKE_SUBSYSTEM_STARTUP_FRIEND(Foundation, ProfilingSystem);
+  friend nsUInt32 RunThread(nsThread* pThread);
 
   static void Initialize();
   /// \brief Removes profiling data of dead threads.
   static void Reset();
 
   /// \brief Sets the name of the current thread.
-  static void SetThreadName(wdStringView sThreadName);
+  static void SetThreadName(nsStringView sThreadName);
   /// \brief Removes the current thread from the profiling system.
   ///  Needs to be called before the thread exits to be able to release profiling memory of dead threads on Reset.
   static void RemoveThread();
 
 public:
   /// \brief Initialized internal data structures for GPU profiling data. Needs to be called before adding any data.
-  static void InitializeGPUData(wdUInt32 uiGpuCount = 1);
+  static void InitializeGPUData(nsUInt32 uiGpuCount = 1);
 
   /// \brief Adds a GPU profiling scope in the internal event ringbuffer.
-  static void AddGPUScope(wdStringView sName, wdTime beginTime, wdTime endTime, wdUInt32 uiGpuIndex = 0);
+  static void AddGPUScope(nsStringView sName, nsTime beginTime, nsTime endTime, nsUInt32 uiGpuIndex = 0);
 };
 
-#if WD_ENABLED(WD_USE_PROFILING) || defined(WD_DOCS)
+#if NS_ENABLED(NS_USE_PROFILING) || defined(NS_DOCS)
 
-#  ifdef USE_OPTICK
-#include <optick/optick.h>
-      /// CPU Profilings
-
-      /// \brief Basic scoped performance counter. Use this counter 99% of the time. It automatically extracts the name
-      /// of the current function. Users can also pass an optional name for this macro to override the name
-      /// - WD_OPTICK_PROFILE_EVENT("szScopeName");. Useful for marking multiple scopes within one function.
-      #  define WD_OPTICK_PROFILE_EVENT(...) OPTICK_EVENT(__VA_ARGS__);
-      #else
-        #  define WD_OPTICK_PROFILE_EVENT(...)
-    #endif
-#endif
 /// \brief Profiles the current scope using the given name.
 ///
-/// It is allowed to nest WD_PROFILE_SCOPE, also with WD_PROFILE_LIST_SCOPE. However WD_PROFILE_SCOPE should start and end within the same list scope
+/// It is allowed to nest NS_PROFILE_SCOPE, also with NS_PROFILE_LIST_SCOPE. However NS_PROFILE_SCOPE should start and end within the same list scope
 /// section.
 ///
 /// \note The name string must not be destroyed before the current scope ends.
 ///
-/// \sa wdProfilingScope
-/// \sa WD_PROFILE_LIST_SCOPE
-#define WD_PROFILE_SCOPE(szScopeName)   \
-  WD_OPTICK_PROFILE_EVENT(szScopeName); \
-  wdProfilingScope WD_CONCAT(_wdProfilingScope, WD_SOURCE_LINE)(szScopeName, WD_SOURCE_FUNCTION, wdTime::Zero()) \
+/// \sa nsProfilingScope
+/// \sa NS_PROFILE_LIST_SCOPE
+#  define NS_PROFILE_SCOPE(ScopeName) \
+    nsProfilingScope NS_CONCAT(_nsProfilingScope, NS_SOURCE_LINE)(ScopeName, NS_SOURCE_FUNCTION, nsTime::MakeZero())
 
-
-
-
-/// \brief Same as WD_PROFILE_SCOPE but if the scope takes longer than 'Timeout', the wdProfilingSystem's timeout callback is executed.
+/// \brief Same as NS_PROFILE_SCOPE but if the scope takes longer than 'Timeout', the nsProfilingSystem's timeout callback is executed.
 ///
 /// This can be used to log an error or save a callstack, etc. when a scope exceeds an expected amount of time.
-/// 
-/// \sa wdProfilingSystem::SetScopeTimeoutCallback()
-#  define WD_PROFILE_SCOPE_WITH_TIMEOUT(szScopeName, Timeout)  wdProfilingScope WD_CONCAT(_wdProfilingScope, WD_SOURCE_LINE)(szScopeName, WD_SOURCE_FUNCTION, Timeout)
+///
+/// \sa nsProfilingSystem::SetScopeTimeoutCallback()
+#  define NS_PROFILE_SCOPE_WITH_TIMEOUT(ScopeName, Timeout) \
+    nsProfilingScope NS_CONCAT(_nsProfilingScope, NS_SOURCE_LINE)(ScopeName, NS_SOURCE_FUNCTION, Timeout)
 
 /// \brief Profiles the current scope using the given name as the overall list scope name and the section name for the first section in the list.
 ///
-/// Use WD_PROFILE_LIST_NEXT_SECTION to start a new section in the list scope.
+/// Use NS_PROFILE_LIST_NEXT_SECTION to start a new section in the list scope.
 ///
-/// It is allowed to nest WD_PROFILE_SCOPE, also with WD_PROFILE_LIST_SCOPE. However WD_PROFILE_SCOPE should start and end within the same list scope
+/// It is allowed to nest NS_PROFILE_SCOPE, also with NS_PROFILE_LIST_SCOPE. However NS_PROFILE_SCOPE should start and end within the same list scope
 /// section.
 ///
 /// \note The name string must not be destroyed before the current scope ends.
 ///
-/// \sa wdProfilingListScope
-/// \sa WD_PROFILE_LIST_NEXT_SECTION
-#  define WD_PROFILE_LIST_SCOPE(szListName, szFirstSectionName) \
-    wdProfilingListScope WD_CONCAT(_wdProfilingScope, WD_SOURCE_LINE)(szListName, szFirstSectionName, WD_SOURCE_FUNCTION)
+/// \sa nsProfilingListScope
+/// \sa NS_PROFILE_LIST_NEXT_SECTION
+#  define NS_PROFILE_LIST_SCOPE(ListName, FirstSectionName) \
+    nsProfilingListScope NS_CONCAT(_nsProfilingScope, NS_SOURCE_LINE)(ListName, FirstSectionName, NS_SOURCE_FUNCTION)
 
-/// \brief Starts a new section in a WD_PROFILE_LIST_SCOPE
+/// \brief Starts a new section in a NS_PROFILE_LIST_SCOPE
 ///
-/// \sa wdProfilingListScope
-/// \sa WD_PROFILE_LIST_SCOPE
-#  define WD_PROFILE_LIST_NEXT_SECTION(szNextSectionName)  wdProfilingListScope::StartNextSection(szNextSectionName)
+/// \sa nsProfilingListScope
+/// \sa NS_PROFILE_LIST_SCOPE
+#  define NS_PROFILE_LIST_NEXT_SECTION(NextSectionName) \
+    nsProfilingListScope::StartNextSection(NextSectionName)
 
-#if WD_DISABLED(WD_USE_PROFILING)
+/// \brief Used to indicate that a frame is finished and another starts.
+#  define NS_PROFILER_FRAME_MARKER()
 
-#  define WD_PROFILE_SCOPE(Name) /*empty*/
-
-#  define WD_PROFILE_SCOPE_WITH_TIMEOUT(szScopeName, Timeout) /*empty*/
-
-#  define WD_PROFILE_LIST_SCOPE(szListName, szFirstSectionName) /*empty*/
-
-#  define WD_PROFILE_LIST_NEXT_SECTION(szNextSectionName) /*empty*/
-
+#else
+#  define NS_PROFILE_SCOPE(ScopeName)
+#  define NS_PROFILE_SCOPE_WITH_TIMEOUT(ScopeName, Timeout)
+#  define NS_PROFILE_LIST_SCOPE(ListName, FirstSectionName)
+#  define NS_PROFILE_LIST_NEXT_SECTION(NextSectionName)
+#  define NS_PROFILER_FRAME_MARKER()
 #endif
+
+// Let Tracy override the macros.
+#include <Foundation/Profiling/Profiling_Tracy.h>

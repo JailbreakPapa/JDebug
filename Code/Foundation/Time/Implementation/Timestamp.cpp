@@ -3,58 +3,64 @@
 #include <Foundation/Time/Timestamp.h>
 
 // clang-format off
-WD_BEGIN_STATIC_REFLECTED_TYPE(wdTimestamp, wdNoBase, 1, wdRTTINoAllocator)
+NS_BEGIN_STATIC_REFLECTED_TYPE(nsTimestamp, nsNoBase, 1, nsRTTINoAllocator)
 {
-  WD_BEGIN_PROPERTIES
+  NS_BEGIN_PROPERTIES
   {
-    WD_MEMBER_PROPERTY("time", m_iTimestamp),
+    NS_MEMBER_PROPERTY("time", m_iTimestamp),
   }
-  WD_END_PROPERTIES;
+  NS_END_PROPERTIES;
 }
-WD_END_STATIC_REFLECTED_TYPE;
+NS_END_STATIC_REFLECTED_TYPE;
 // clang-format on
 
-wdInt64 wdTimestamp::GetInt64(wdSIUnitOfTime::Enum unitOfTime) const
+nsInt64 nsTimestamp::GetInt64(nsSIUnitOfTime::Enum unitOfTime) const
 {
-  WD_ASSERT_DEV(IsValid(), "Can't retrieve timestamp of invalid values!");
-  WD_ASSERT_DEV(unitOfTime >= wdSIUnitOfTime::Nanosecond && unitOfTime <= wdSIUnitOfTime::Second, "Invalid wdSIUnitOfTime value ({0})", unitOfTime);
+  NS_ASSERT_DEV(IsValid(), "Can't retrieve timestamp of invalid values!");
+  NS_ASSERT_DEV(unitOfTime >= nsSIUnitOfTime::Nanosecond && unitOfTime <= nsSIUnitOfTime::Second, "Invalid nsSIUnitOfTime value ({0})", unitOfTime);
 
   switch (unitOfTime)
   {
-    case wdSIUnitOfTime::Nanosecond:
+    case nsSIUnitOfTime::Nanosecond:
       return m_iTimestamp * 1000LL;
-    case wdSIUnitOfTime::Microsecond:
+    case nsSIUnitOfTime::Microsecond:
       return m_iTimestamp;
-    case wdSIUnitOfTime::Millisecond:
+    case nsSIUnitOfTime::Millisecond:
       return m_iTimestamp / 1000LL;
-    case wdSIUnitOfTime::Second:
+    case nsSIUnitOfTime::Second:
       return m_iTimestamp / 1000000LL;
   }
-  return WD_INVALID_TIME_STAMP;
+  return NS_INVALID_TIME_STAMP;
 }
 
-void wdTimestamp::SetInt64(wdInt64 iTimeValue, wdSIUnitOfTime::Enum unitOfTime)
+nsTimestamp nsTimestamp::MakeFromInt(nsInt64 iTimeValue, nsSIUnitOfTime::Enum unitOfTime)
 {
-  WD_ASSERT_DEV(unitOfTime >= wdSIUnitOfTime::Nanosecond && unitOfTime <= wdSIUnitOfTime::Second, "Invalid wdSIUnitOfTime value ({0})", unitOfTime);
+  NS_ASSERT_DEV(unitOfTime >= nsSIUnitOfTime::Nanosecond && unitOfTime <= nsSIUnitOfTime::Second, "Invalid nsSIUnitOfTime value ({0})", unitOfTime);
+
+  nsTimestamp ts;
 
   switch (unitOfTime)
   {
-    case wdSIUnitOfTime::Nanosecond:
-      m_iTimestamp = iTimeValue / 1000LL;
+    case nsSIUnitOfTime::Nanosecond:
+      ts.m_iTimestamp = iTimeValue / 1000LL;
       break;
-    case wdSIUnitOfTime::Microsecond:
-      m_iTimestamp = iTimeValue;
+    case nsSIUnitOfTime::Microsecond:
+      ts.m_iTimestamp = iTimeValue;
       break;
-    case wdSIUnitOfTime::Millisecond:
-      m_iTimestamp = iTimeValue * 1000LL;
+    case nsSIUnitOfTime::Millisecond:
+      ts.m_iTimestamp = iTimeValue * 1000LL;
       break;
-    case wdSIUnitOfTime::Second:
-      m_iTimestamp = iTimeValue * 1000000LL;
+    case nsSIUnitOfTime::Second:
+      ts.m_iTimestamp = iTimeValue * 1000000LL;
       break;
+
+      NS_DEFAULT_CASE_NOT_IMPLEMENTED;
   }
+
+  return ts;
 }
 
-bool wdTimestamp::Compare(const wdTimestamp& rhs, CompareMode::Enum mode) const
+bool nsTimestamp::Compare(const nsTimestamp& rhs, CompareMode::Enum mode) const
 {
   switch (mode)
   {
@@ -70,31 +76,46 @@ bool wdTimestamp::Compare(const wdTimestamp& rhs, CompareMode::Enum mode) const
       return (m_iTimestamp / 1000000LL) > (rhs.m_iTimestamp / 1000000LL);
   }
 
-  WD_ASSERT_NOT_IMPLEMENTED;
+  NS_ASSERT_NOT_IMPLEMENTED;
   return false;
 }
 
-wdDateTime::wdDateTime()
-  : m_uiMicroseconds(0)
-  , m_iYear(0)
-  , m_uiMonth(0)
-  , m_uiDay(0)
-  , m_uiDayOfWeek(0)
-  , m_uiHour(0)
-  , m_uiMinute(0)
-  , m_uiSecond(0)
+nsDateTime::nsDateTime() = default;
+nsDateTime::~nsDateTime() = default;
+
+nsDateTime nsDateTime::MakeFromTimestamp(nsTimestamp timestamp)
 {
+  nsDateTime res;
+  res.SetFromTimestamp(timestamp).AssertSuccess("Invalid timestamp");
+  return res;
 }
 
-wdDateTime::wdDateTime(wdTimestamp timestamp)
-  : wdDateTime()
+bool nsDateTime::IsValid() const
 {
-  SetTimestamp(timestamp);
+  if (m_uiMonth <= 0 || m_uiMonth > 12)
+    return false;
+
+  if (m_uiDay <= 0 || m_uiDay > 31)
+    return false;
+
+  if (m_uiDayOfWeek > 6)
+    return false;
+
+  if (m_uiHour > 23)
+    return false;
+
+  if (m_uiMinute > 59)
+    return false;
+
+  if (m_uiSecond > 59)
+    return false;
+
+  return true;
 }
 
-wdStringView BuildString(char* szTmp, wdUInt32 uiLength, const wdDateTime& arg)
+nsStringView BuildString(char* szTmp, nsUInt32 uiLength, const nsDateTime& arg)
 {
-  wdStringUtils::snprintf(szTmp, uiLength, "%04u-%02u-%02u_%02u-%02u-%02u-%03u", arg.GetYear(), arg.GetMonth(), arg.GetDay(), arg.GetHour(),
+  nsStringUtils::snprintf(szTmp, uiLength, "%04u-%02u-%02u_%02u-%02u-%02u-%03u", arg.GetYear(), arg.GetMonth(), arg.GetDay(), arg.GetHour(),
     arg.GetMinute(), arg.GetSecond(), arg.GetMicroseconds() / 1000);
 
   return szTmp;
@@ -105,7 +126,7 @@ namespace
   // This implementation chooses a 3-character-long short name for each of the twelve months
   // for consistency reasons. Mind, that other, potentially more widely-spread stylist
   // alternatives may exist.
-  const char* GetMonthShortName(const wdDateTime& dateTime)
+  const char* GetMonthShortName(const nsDateTime& dateTime)
   {
     switch (dateTime.GetMonth())
     {
@@ -134,7 +155,7 @@ namespace
       case 12:
         return "Dec";
       default:
-        WD_ASSERT_DEV(false, "Unknown month.");
+        NS_ASSERT_DEV(false, "Unknown month.");
         return "Unknown Month";
     }
   }
@@ -142,7 +163,7 @@ namespace
   // This implementation chooses a 3-character-long short name for each of the seven days
   // of the week for consistency reasons. Mind, that other, potentially more widely-spread
   // stylistic alternatives may exist.
-  const char* GetDayOfWeekShortName(const wdDateTime& dateTime)
+  const char* GetDayOfWeekShortName(const nsDateTime& dateTime)
   {
     switch (dateTime.GetDayOfWeek())
     {
@@ -161,33 +182,33 @@ namespace
       case 6:
         return "Sat";
       default:
-        WD_ASSERT_DEV(false, "Unknown day of week.");
+        NS_ASSERT_DEV(false, "Unknown day of week.");
         return "Unknown Day of Week";
     }
   }
 } // namespace
 
-wdStringView BuildString(char* szTmp, wdUInt32 uiLength, const wdArgDateTime& arg)
+nsStringView BuildString(char* szTmp, nsUInt32 uiLength, const nsArgDateTime& arg)
 {
-  const wdDateTime& dateTime = arg.m_Value;
+  const nsDateTime& dateTime = arg.m_Value;
 
-  wdUInt32 offset = 0;
+  nsUInt32 offset = 0;
 
-  if ((arg.m_uiFormattingFlags & wdArgDateTime::ShowDate) == wdArgDateTime::ShowDate)
+  if ((arg.m_uiFormattingFlags & nsArgDateTime::ShowDate) == nsArgDateTime::ShowDate)
   {
-    if ((arg.m_uiFormattingFlags & wdArgDateTime::TextualDate) == wdArgDateTime::TextualDate)
+    if ((arg.m_uiFormattingFlags & nsArgDateTime::TextualDate) == nsArgDateTime::TextualDate)
     {
-      offset += wdStringUtils::snprintf(
+      offset += nsStringUtils::snprintf(
         szTmp + offset, uiLength - offset, "%04u %s %02u", dateTime.GetYear(), ::GetMonthShortName(dateTime), dateTime.GetDay());
     }
     else
     {
       offset +=
-        wdStringUtils::snprintf(szTmp + offset, uiLength - offset, "%04u-%02u-%02u", dateTime.GetYear(), dateTime.GetMonth(), dateTime.GetDay());
+        nsStringUtils::snprintf(szTmp + offset, uiLength - offset, "%04u-%02u-%02u", dateTime.GetYear(), dateTime.GetMonth(), dateTime.GetDay());
     }
   }
 
-  if ((arg.m_uiFormattingFlags & wdArgDateTime::ShowWeekday) == wdArgDateTime::ShowWeekday)
+  if ((arg.m_uiFormattingFlags & nsArgDateTime::ShowWeekday) == nsArgDateTime::ShowWeekday)
   {
     // add a space
     if (offset != 0)
@@ -197,10 +218,10 @@ wdStringView BuildString(char* szTmp, wdUInt32 uiLength, const wdArgDateTime& ar
       szTmp[offset] = '\0';
     }
 
-    offset += wdStringUtils::snprintf(szTmp + offset, uiLength - offset, "(%s)", ::GetDayOfWeekShortName(dateTime));
+    offset += nsStringUtils::snprintf(szTmp + offset, uiLength - offset, "(%s)", ::GetDayOfWeekShortName(dateTime));
   }
 
-  if ((arg.m_uiFormattingFlags & wdArgDateTime::ShowTime) == wdArgDateTime::ShowTime)
+  if ((arg.m_uiFormattingFlags & nsArgDateTime::ShowTime) == nsArgDateTime::ShowTime)
   {
     // add a space
     if (offset != 0)
@@ -212,38 +233,25 @@ wdStringView BuildString(char* szTmp, wdUInt32 uiLength, const wdArgDateTime& ar
       offset += 3;
     }
 
-    offset += wdStringUtils::snprintf(szTmp + offset, uiLength - offset, "%02u:%02u", dateTime.GetHour(), dateTime.GetMinute());
+    offset += nsStringUtils::snprintf(szTmp + offset, uiLength - offset, "%02u:%02u", dateTime.GetHour(), dateTime.GetMinute());
 
-    if ((arg.m_uiFormattingFlags & wdArgDateTime::ShowSeconds) == wdArgDateTime::ShowSeconds)
+    if ((arg.m_uiFormattingFlags & nsArgDateTime::ShowSeconds) == nsArgDateTime::ShowSeconds)
     {
-      offset += wdStringUtils::snprintf(szTmp + offset, uiLength - offset, ":%02u", dateTime.GetSecond());
+      offset += nsStringUtils::snprintf(szTmp + offset, uiLength - offset, ":%02u", dateTime.GetSecond());
     }
 
-    if ((arg.m_uiFormattingFlags & wdArgDateTime::ShowMilliseconds) == wdArgDateTime::ShowMilliseconds)
+    if ((arg.m_uiFormattingFlags & nsArgDateTime::ShowMilliseconds) == nsArgDateTime::ShowMilliseconds)
     {
-      offset += wdStringUtils::snprintf(szTmp + offset, uiLength - offset, ".%03u", dateTime.GetMicroseconds() / 1000);
+      offset += nsStringUtils::snprintf(szTmp + offset, uiLength - offset, ".%03u", dateTime.GetMicroseconds() / 1000);
     }
 
-    if ((arg.m_uiFormattingFlags & wdArgDateTime::ShowTimeZone) == wdArgDateTime::ShowTimeZone)
+    if ((arg.m_uiFormattingFlags & nsArgDateTime::ShowTimeZone) == nsArgDateTime::ShowTimeZone)
     {
-      offset += wdStringUtils::snprintf(szTmp + offset, uiLength - offset, " (UTC)");
+      nsStringUtils::snprintf(szTmp + offset, uiLength - offset, " (UTC)");
     }
   }
 
   return szTmp;
 }
 
-// Include inline file
-#if WD_ENABLED(WD_PLATFORM_WINDOWS)
-#  include <Foundation/Time/Implementation/Win/Timestamp_win.h>
-#elif WD_ENABLED(WD_PLATFORM_OSX)
-#  include <Foundation/Time/Implementation/OSX/Timestamp_osx.h>
-#elif WD_ENABLED(WD_PLATFORM_ANDROID)
-#  include <Foundation/Time/Implementation/Android/Timestamp_android.h>
-#elif WD_ENABLED(WD_PLATFORM_LINUX)
-#  include <Foundation/Time/Implementation/Posix/Timestamp_posix.h>
-#else
-#  error "Time functions are not implemented on current platform"
-#endif
-
-WD_STATICLINK_FILE(Foundation, Foundation_Time_Implementation_Timestamp);
+NS_STATICLINK_FILE(Foundation, Foundation_Time_Implementation_Timestamp);

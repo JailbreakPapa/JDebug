@@ -5,61 +5,61 @@
 #include <Foundation/Utilities/DGMLWriter.h>
 
 // static
-bool wdExpressionAST::NodeType::IsUnary(Enum nodeType)
+bool nsExpressionAST::NodeType::IsUnary(Enum nodeType)
 {
   return nodeType > FirstUnary && nodeType < LastUnary;
 }
 
 // static
-bool wdExpressionAST::NodeType::IsBinary(Enum nodeType)
+bool nsExpressionAST::NodeType::IsBinary(Enum nodeType)
 {
   return nodeType > FirstBinary && nodeType < LastBinary;
 }
 
 // static
-bool wdExpressionAST::NodeType::IsTernary(Enum nodeType)
+bool nsExpressionAST::NodeType::IsTernary(Enum nodeType)
 {
   return nodeType > FirstTernary && nodeType < LastTernary;
 }
 
 // static
-bool wdExpressionAST::NodeType::IsConstant(Enum nodeType)
+bool nsExpressionAST::NodeType::IsConstant(Enum nodeType)
 {
   return nodeType == Constant;
 }
 
 // static
-bool wdExpressionAST::NodeType::IsSwizzle(Enum nodeType)
+bool nsExpressionAST::NodeType::IsSwizzle(Enum nodeType)
 {
   return nodeType == Swizzle;
 }
 
 // static
-bool wdExpressionAST::NodeType::IsInput(Enum nodeType)
+bool nsExpressionAST::NodeType::IsInput(Enum nodeType)
 {
   return nodeType == Input;
 }
 
 // static
-bool wdExpressionAST::NodeType::IsOutput(Enum nodeType)
+bool nsExpressionAST::NodeType::IsOutput(Enum nodeType)
 {
   return nodeType == Output;
 }
 
 // static
-bool wdExpressionAST::NodeType::IsFunctionCall(Enum nodeType)
+bool nsExpressionAST::NodeType::IsFunctionCall(Enum nodeType)
 {
   return nodeType == FunctionCall;
 }
 
 // static
-bool wdExpressionAST::NodeType::IsConstructorCall(Enum nodeType)
+bool nsExpressionAST::NodeType::IsConstructorCall(Enum nodeType)
 {
   return nodeType == ConstructorCall;
 }
 
 // static
-bool wdExpressionAST::NodeType::IsCommutative(Enum nodeType)
+bool nsExpressionAST::NodeType::IsCommutative(Enum nodeType)
 {
   return nodeType == Add || nodeType == Multiply ||
          nodeType == Min || nodeType == Max ||
@@ -69,7 +69,7 @@ bool wdExpressionAST::NodeType::IsCommutative(Enum nodeType)
 }
 
 // static
-bool wdExpressionAST::NodeType::AlwaysReturnsSingleElement(Enum nodeType)
+bool nsExpressionAST::NodeType::AlwaysReturnsSingleElement(Enum nodeType)
 {
   return nodeType == Length ||
          nodeType == All || nodeType == Any ||
@@ -148,6 +148,8 @@ namespace
     "Clamp",
     "Select",
     "Lerp",
+    "SmoothStep",
+    "SmootherStep",
     "",
 
     "Constant",
@@ -159,37 +161,37 @@ namespace
     "ConstructorCall",
   };
 
-  static_assert(WD_ARRAY_SIZE(s_szNodeTypeNames) == wdExpressionAST::NodeType::Count);
+  static_assert(NS_ARRAY_SIZE(s_szNodeTypeNames) == nsExpressionAST::NodeType::Count);
 
-  static constexpr wdUInt16 BuildSignature(wdExpression::RegisterType::Enum returnType, wdExpression::RegisterType::Enum a, wdExpression::RegisterType::Enum b = wdExpression::RegisterType::Unknown, wdExpression::RegisterType::Enum c = wdExpression::RegisterType::Unknown)
+  static constexpr nsUInt16 BuildSignature(nsExpression::RegisterType::Enum returnType, nsExpression::RegisterType::Enum a, nsExpression::RegisterType::Enum b = nsExpression::RegisterType::Unknown, nsExpression::RegisterType::Enum c = nsExpression::RegisterType::Unknown)
   {
-    wdUInt32 signature = static_cast<wdUInt32>(returnType);
-    signature |= a << wdExpression::RegisterType::MaxNumBits * 1;
-    signature |= b << wdExpression::RegisterType::MaxNumBits * 2;
-    signature |= c << wdExpression::RegisterType::MaxNumBits * 3;
-    return static_cast<wdUInt16>(signature);
+    nsUInt32 signature = static_cast<nsUInt32>(returnType);
+    signature |= a << nsExpression::RegisterType::MaxNumBits * 1;
+    signature |= b << nsExpression::RegisterType::MaxNumBits * 2;
+    signature |= c << nsExpression::RegisterType::MaxNumBits * 3;
+    return static_cast<nsUInt16>(signature);
   }
 
-  static constexpr wdExpression::RegisterType::Enum GetReturnTypeFromSignature(wdUInt16 uiSignature)
+  static constexpr nsExpression::RegisterType::Enum GetReturnTypeFromSignature(nsUInt16 uiSignature)
   {
-    wdUInt32 uiMask = WD_BIT(wdExpression::RegisterType::MaxNumBits) - 1;
-    return static_cast<wdExpression::RegisterType::Enum>(uiSignature & uiMask);
+    nsUInt32 uiMask = NS_BIT(nsExpression::RegisterType::MaxNumBits) - 1;
+    return static_cast<nsExpression::RegisterType::Enum>(uiSignature & uiMask);
   }
 
-  static constexpr wdExpression::RegisterType::Enum GetArgumentTypeFromSignature(wdUInt16 uiSignature, wdUInt32 uiArgumentIndex)
+  static constexpr nsExpression::RegisterType::Enum GetArgumentTypeFromSignature(nsUInt16 uiSignature, nsUInt32 uiArgumentIndex)
   {
-    wdUInt32 uiShift = wdExpression::RegisterType::MaxNumBits * (uiArgumentIndex + 1);
-    wdUInt32 uiMask = WD_BIT(wdExpression::RegisterType::MaxNumBits) - 1;
-    return static_cast<wdExpression::RegisterType::Enum>((uiSignature >> uiShift) & uiMask);
+    nsUInt32 uiShift = nsExpression::RegisterType::MaxNumBits * (uiArgumentIndex + 1);
+    nsUInt32 uiMask = NS_BIT(nsExpression::RegisterType::MaxNumBits) - 1;
+    return static_cast<nsExpression::RegisterType::Enum>((uiSignature >> uiShift) & uiMask);
   }
 
-#define SIG1(r, a) BuildSignature(wdExpression::RegisterType::r, wdExpression::RegisterType::a)
-#define SIG2(r, a, b) BuildSignature(wdExpression::RegisterType::r, wdExpression::RegisterType::a, wdExpression::RegisterType::b)
-#define SIG3(r, a, b, c) BuildSignature(wdExpression::RegisterType::r, wdExpression::RegisterType::a, wdExpression::RegisterType::b, wdExpression::RegisterType::c)
+#define SIG1(r, a) BuildSignature(nsExpression::RegisterType::r, nsExpression::RegisterType::a)
+#define SIG2(r, a, b) BuildSignature(nsExpression::RegisterType::r, nsExpression::RegisterType::a, nsExpression::RegisterType::b)
+#define SIG3(r, a, b, c) BuildSignature(nsExpression::RegisterType::r, nsExpression::RegisterType::a, nsExpression::RegisterType::b, nsExpression::RegisterType::c)
 
   struct Overloads
   {
-    wdUInt16 m_Signatures[4] = {};
+    nsUInt16 m_Signatures[4] = {};
   };
 
   static Overloads s_NodeTypeOverloads[] = {
@@ -262,18 +264,20 @@ namespace
     {SIG3(Float, Float, Float, Float), SIG3(Int, Int, Int, Int)},                               // Clamp,
     {SIG3(Float, Bool, Float, Float), SIG3(Int, Bool, Int, Int), SIG3(Bool, Bool, Bool, Bool)}, // Select,
     {SIG3(Float, Float, Float, Float)},                                                         // Lerp,
+    {SIG3(Float, Float, Float, Float)},                                                         // SmoothStep,
+    {SIG3(Float, Float, Float, Float)},                                                         // SmootherStep,
     {},                                                                                         // LastTernary,
 
-    {}, // Constant,
-    {}, // Swizzle,
-    {}, // Input,
-    {}, // Output,
+    {},                                                                                         // Constant,
+    {},                                                                                         // Swizzle,
+    {},                                                                                         // Input,
+    {},                                                                                         // Output,
 
-    {}, // FunctionCall,
-    {}, // ConstructorCall,
+    {},                                                                                         // FunctionCall,
+    {},                                                                                         // ConstructorCall,
   };
 
-  static_assert(WD_ARRAY_SIZE(s_NodeTypeOverloads) == wdExpressionAST::NodeType::Count);
+  static_assert(NS_ARRAY_SIZE(s_NodeTypeOverloads) == nsExpressionAST::NodeType::Count);
 } // namespace
 
 #undef SIG1
@@ -281,9 +285,9 @@ namespace
 #undef SIG3
 
 // static
-const char* wdExpressionAST::NodeType::GetName(Enum nodeType)
+const char* nsExpressionAST::NodeType::GetName(Enum nodeType)
 {
-  WD_ASSERT_DEBUG(nodeType >= 0 && nodeType < WD_ARRAY_SIZE(s_szNodeTypeNames), "Out of bounds access");
+  NS_ASSERT_DEBUG(nodeType >= 0 && nodeType < NS_ARRAY_SIZE(s_szNodeTypeNames), "Out of bounds access");
   return s_szNodeTypeNames[nodeType];
 }
 
@@ -291,61 +295,61 @@ const char* wdExpressionAST::NodeType::GetName(Enum nodeType)
 
 namespace
 {
-  static wdVariantType::Enum s_DataTypeVariantTypes[] = {
-    wdVariantType::Invalid, // Unknown,
-    wdVariantType::Invalid, // Unknown2,
-    wdVariantType::Invalid, // Unknown3,
-    wdVariantType::Invalid, // Unknown4,
+  static nsVariantType::Enum s_DataTypeVariantTypes[] = {
+    nsVariantType::Invalid,  // Unknown,
+    nsVariantType::Invalid,  // Unknown2,
+    nsVariantType::Invalid,  // Unknown3,
+    nsVariantType::Invalid,  // Unknown4,
 
-    wdVariantType::Bool,    // Bool,
-    wdVariantType::Invalid, // Bool2,
-    wdVariantType::Invalid, // Bool3,
-    wdVariantType::Invalid, // Bool4,
+    nsVariantType::Bool,     // Bool,
+    nsVariantType::Invalid,  // Bool2,
+    nsVariantType::Invalid,  // Bool3,
+    nsVariantType::Invalid,  // Bool4,
 
-    wdVariantType::Int32,    // Int,
-    wdVariantType::Vector2I, // Int2,
-    wdVariantType::Vector3I, // Int3,
-    wdVariantType::Vector4I, // Int4,
+    nsVariantType::Int32,    // Int,
+    nsVariantType::Vector2I, // Int2,
+    nsVariantType::Vector3I, // Int3,
+    nsVariantType::Vector4I, // Int4,
 
-    wdVariantType::Float,   // Float,
-    wdVariantType::Vector2, // Float2,
-    wdVariantType::Vector3, // Float3,
-    wdVariantType::Vector4, // Float4,
+    nsVariantType::Float,    // Float,
+    nsVariantType::Vector2,  // Float2,
+    nsVariantType::Vector3,  // Float3,
+    nsVariantType::Vector4,  // Float4,
   };
-  static_assert(WD_ARRAY_SIZE(s_DataTypeVariantTypes) == (size_t)wdExpressionAST::DataType::Count);
+  static_assert(NS_ARRAY_SIZE(s_DataTypeVariantTypes) == (size_t)nsExpressionAST::DataType::Count);
 
-  static wdExpressionAST::DataType::Enum s_DataTypeFromStreamType[] = {
-    wdExpressionAST::DataType::Float,  // Half,
-    wdExpressionAST::DataType::Float2, // Half2,
-    wdExpressionAST::DataType::Float3, // Half3,
-    wdExpressionAST::DataType::Float4, // Half4,
+  static nsExpressionAST::DataType::Enum s_DataTypeFromStreamType[] = {
+    nsExpressionAST::DataType::Float,  // Half,
+    nsExpressionAST::DataType::Float2, // Half2,
+    nsExpressionAST::DataType::Float3, // Half3,
+    nsExpressionAST::DataType::Float4, // Half4,
 
-    wdExpressionAST::DataType::Float,  // Float,
-    wdExpressionAST::DataType::Float2, // Float2,
-    wdExpressionAST::DataType::Float3, // Float3,
-    wdExpressionAST::DataType::Float4, // Float4,
+    nsExpressionAST::DataType::Float,  // Float,
+    nsExpressionAST::DataType::Float2, // Float2,
+    nsExpressionAST::DataType::Float3, // Float3,
+    nsExpressionAST::DataType::Float4, // Float4,
 
-    wdExpressionAST::DataType::Int,  // Byte,
-    wdExpressionAST::DataType::Int2, // Byte2,
-    wdExpressionAST::DataType::Int3, // Byte3,
-    wdExpressionAST::DataType::Int4, // Byte4,
+    nsExpressionAST::DataType::Int,    // Byte,
+    nsExpressionAST::DataType::Int2,   // Byte2,
+    nsExpressionAST::DataType::Int3,   // Byte3,
+    nsExpressionAST::DataType::Int4,   // Byte4,
 
-    wdExpressionAST::DataType::Int,  // Short,
-    wdExpressionAST::DataType::Int2, // Short2,
-    wdExpressionAST::DataType::Int3, // Short3,
-    wdExpressionAST::DataType::Int4, // Short4,
+    nsExpressionAST::DataType::Int,    // Short,
+    nsExpressionAST::DataType::Int2,   // Short2,
+    nsExpressionAST::DataType::Int3,   // Short3,
+    nsExpressionAST::DataType::Int4,   // Short4,
 
-    wdExpressionAST::DataType::Int,  // Int,
-    wdExpressionAST::DataType::Int2, // Int2,
-    wdExpressionAST::DataType::Int3, // Int3,
-    wdExpressionAST::DataType::Int4, // Int4,
+    nsExpressionAST::DataType::Int,    // Int,
+    nsExpressionAST::DataType::Int2,   // Int2,
+    nsExpressionAST::DataType::Int3,   // Int3,
+    nsExpressionAST::DataType::Int4,   // Int4,
   };
-  static_assert(WD_ARRAY_SIZE(s_DataTypeFromStreamType) == (size_t)wdProcessingStream::DataType::Count);
+  static_assert(NS_ARRAY_SIZE(s_DataTypeFromStreamType) == (size_t)nsProcessingStream::DataType::Count);
 
-  static_assert(wdExpressionAST::DataType::Float >> 2 == wdExpression::RegisterType::Float);
-  static_assert(wdExpressionAST::DataType::Int >> 2 == wdExpression::RegisterType::Int);
-  static_assert(wdExpressionAST::DataType::Bool >> 2 == wdExpression::RegisterType::Bool);
-  static_assert(wdExpressionAST::DataType::Unknown >> 2 == wdExpression::RegisterType::Unknown);
+  static_assert(nsExpressionAST::DataType::Float >> 2 == nsExpression::RegisterType::Float);
+  static_assert(nsExpressionAST::DataType::Int >> 2 == nsExpression::RegisterType::Int);
+  static_assert(nsExpressionAST::DataType::Bool >> 2 == nsExpression::RegisterType::Bool);
+  static_assert(nsExpressionAST::DataType::Unknown >> 2 == nsExpression::RegisterType::Unknown);
 
   static const char* s_szDataTypeNames[] = {
     "Unknown",  // Unknown,
@@ -353,44 +357,44 @@ namespace
     "Unknown3", // Unknown3,
     "Unknown4", // Unknown4,
 
-    "Bool",  // Bool,
-    "Bool2", // Bool2,
-    "Bool3", // Bool3,
-    "Bool4", // Bool4,
+    "Bool",     // Bool,
+    "Bool2",    // Bool2,
+    "Bool3",    // Bool3,
+    "Bool4",    // Bool4,
 
-    "Int",  // Int,
-    "Int2", // Int2,
-    "Int3", // Int3,
-    "Int4", // Int4,
+    "Int",      // Int,
+    "Int2",     // Int2,
+    "Int3",     // Int3,
+    "Int4",     // Int4,
 
-    "Float",  // Float,
-    "Float2", // Float2,
-    "Float3", // Float3,
-    "Float4", // Float4,
+    "Float",    // Float,
+    "Float2",   // Float2,
+    "Float3",   // Float3,
+    "Float4",   // Float4,
   };
 
-  static_assert(WD_ARRAY_SIZE(s_szDataTypeNames) == wdExpressionAST::DataType::Count);
+  static_assert(NS_ARRAY_SIZE(s_szDataTypeNames) == nsExpressionAST::DataType::Count);
 } // namespace
 
 
 // static
-wdVariantType::Enum wdExpressionAST::DataType::GetVariantType(Enum dataType)
+nsVariantType::Enum nsExpressionAST::DataType::GetVariantType(Enum dataType)
 {
-  WD_ASSERT_DEBUG(dataType >= 0 && dataType < WD_ARRAY_SIZE(s_DataTypeVariantTypes), "Out of bounds access");
+  NS_ASSERT_DEBUG(dataType >= 0 && dataType < NS_ARRAY_SIZE(s_DataTypeVariantTypes), "Out of bounds access");
   return s_DataTypeVariantTypes[dataType];
 }
 
 // static
-wdExpressionAST::DataType::Enum wdExpressionAST::DataType::FromStreamType(wdProcessingStream::DataType dataType)
+nsExpressionAST::DataType::Enum nsExpressionAST::DataType::FromStreamType(nsProcessingStream::DataType dataType)
 {
-  WD_ASSERT_DEBUG(static_cast<wdUInt32>(dataType) >= 0 && static_cast<wdUInt32>(dataType) < WD_ARRAY_SIZE(s_DataTypeFromStreamType), "Out of bounds access");
-  return s_DataTypeFromStreamType[static_cast<wdUInt32>(dataType)];
+  NS_ASSERT_DEBUG(static_cast<nsUInt32>(dataType) >= 0 && static_cast<nsUInt32>(dataType) < NS_ARRAY_SIZE(s_DataTypeFromStreamType), "Out of bounds access");
+  return s_DataTypeFromStreamType[static_cast<nsUInt32>(dataType)];
 }
 
 // static
-const char* wdExpressionAST::DataType::GetName(Enum dataType)
+const char* nsExpressionAST::DataType::GetName(Enum dataType)
 {
-  WD_ASSERT_DEBUG(dataType >= 0 && dataType < WD_ARRAY_SIZE(s_szDataTypeNames), "Out of bounds access");
+  NS_ASSERT_DEBUG(dataType >= 0 && dataType < NS_ARRAY_SIZE(s_szDataTypeNames), "Out of bounds access");
   return s_szDataTypeNames[dataType];
 }
 
@@ -412,20 +416,20 @@ namespace
     "a",
   };
 
-  static_assert(WD_ARRAY_SIZE(s_szVectorComponentNames) == wdExpressionAST::VectorComponent::Count);
-  static_assert(WD_ARRAY_SIZE(s_szVectorComponentAltNames) == wdExpressionAST::VectorComponent::Count);
+  static_assert(NS_ARRAY_SIZE(s_szVectorComponentNames) == nsExpressionAST::VectorComponent::Count);
+  static_assert(NS_ARRAY_SIZE(s_szVectorComponentAltNames) == nsExpressionAST::VectorComponent::Count);
 } // namespace
 
 // static
-const char* wdExpressionAST::VectorComponent::GetName(Enum vectorComponent)
+const char* nsExpressionAST::VectorComponent::GetName(Enum vectorComponent)
 {
-  WD_ASSERT_DEBUG(vectorComponent >= 0 && vectorComponent < WD_ARRAY_SIZE(s_szVectorComponentNames), "Out of bounds access");
+  NS_ASSERT_DEBUG(vectorComponent >= 0 && vectorComponent < NS_ARRAY_SIZE(s_szVectorComponentNames), "Out of bounds access");
   return s_szVectorComponentNames[vectorComponent];
 }
 
-wdExpressionAST::VectorComponent::Enum wdExpressionAST::VectorComponent::FromChar(wdUInt32 uiChar)
+nsExpressionAST::VectorComponent::Enum nsExpressionAST::VectorComponent::FromChar(nsUInt32 uiChar)
 {
-  for (wdUInt32 i = 0; i < Count; ++i)
+  for (nsUInt32 i = 0; i < Count; ++i)
   {
     if (uiChar == s_szVectorComponentNames[i][0] || uiChar == s_szVectorComponentAltNames[i][0])
     {
@@ -438,11 +442,11 @@ wdExpressionAST::VectorComponent::Enum wdExpressionAST::VectorComponent::FromCha
 
 //////////////////////////////////////////////////////////////////////////
 
-wdExpressionAST::wdExpressionAST()
-  : m_Allocator("Expression AST", wdFoundation::GetAlignedAllocator())
+nsExpressionAST::nsExpressionAST()
+  : m_Allocator("Expression AST", nsFoundation::GetAlignedAllocator())
 {
   static_assert(sizeof(Node) == 8);
-#if WD_ENABLED(WD_PLATFORM_64BIT)
+#if NS_ENABLED(NS_PLATFORM_64BIT)
   static_assert(sizeof(UnaryOperator) == 16);
   static_assert(sizeof(BinaryOperator) == 24);
   static_assert(sizeof(TernaryOperator) == 32);
@@ -455,13 +459,13 @@ wdExpressionAST::wdExpressionAST()
 #endif
 }
 
-wdExpressionAST::~wdExpressionAST() = default;
+nsExpressionAST::~nsExpressionAST() = default;
 
-wdExpressionAST::UnaryOperator* wdExpressionAST::CreateUnaryOperator(NodeType::Enum type, Node* pOperand, DataType::Enum returnType /*= DataType::Unknown*/)
+nsExpressionAST::UnaryOperator* nsExpressionAST::CreateUnaryOperator(NodeType::Enum type, Node* pOperand, DataType::Enum returnType /*= DataType::Unknown*/)
 {
-  WD_ASSERT_DEBUG(NodeType::IsUnary(type), "Type '{}' is not an unary operator", NodeType::GetName(type));
+  NS_ASSERT_DEBUG(NodeType::IsUnary(type), "Type '{}' is not an unary operator", NodeType::GetName(type));
 
-  auto pUnaryOperator = WD_NEW(&m_Allocator, UnaryOperator);
+  auto pUnaryOperator = NS_NEW(&m_Allocator, UnaryOperator);
   pUnaryOperator->m_Type = type;
   pUnaryOperator->m_ReturnType = returnType;
   pUnaryOperator->m_pOperand = pOperand;
@@ -471,11 +475,11 @@ wdExpressionAST::UnaryOperator* wdExpressionAST::CreateUnaryOperator(NodeType::E
   return pUnaryOperator;
 }
 
-wdExpressionAST::BinaryOperator* wdExpressionAST::CreateBinaryOperator(NodeType::Enum type, Node* pLeftOperand, Node* pRightOperand)
+nsExpressionAST::BinaryOperator* nsExpressionAST::CreateBinaryOperator(NodeType::Enum type, Node* pLeftOperand, Node* pRightOperand)
 {
-  WD_ASSERT_DEBUG(NodeType::IsBinary(type), "Type '{}' is not a binary operator", NodeType::GetName(type));
+  NS_ASSERT_DEBUG(NodeType::IsBinary(type), "Type '{}' is not a binary operator", NodeType::GetName(type));
 
-  auto pBinaryOperator = WD_NEW(&m_Allocator, BinaryOperator);
+  auto pBinaryOperator = NS_NEW(&m_Allocator, BinaryOperator);
   pBinaryOperator->m_Type = type;
   pBinaryOperator->m_ReturnType = DataType::Unknown;
   pBinaryOperator->m_pLeftOperand = pLeftOperand;
@@ -486,11 +490,11 @@ wdExpressionAST::BinaryOperator* wdExpressionAST::CreateBinaryOperator(NodeType:
   return pBinaryOperator;
 }
 
-wdExpressionAST::TernaryOperator* wdExpressionAST::CreateTernaryOperator(NodeType::Enum type, Node* pFirstOperand, Node* pSecondOperand, Node* pThirdOperand)
+nsExpressionAST::TernaryOperator* nsExpressionAST::CreateTernaryOperator(NodeType::Enum type, Node* pFirstOperand, Node* pSecondOperand, Node* pThirdOperand)
 {
-  WD_ASSERT_DEBUG(NodeType::IsTernary(type), "Type '{}' is not a ternary operator", NodeType::GetName(type));
+  NS_ASSERT_DEBUG(NodeType::IsTernary(type), "Type '{}' is not a ternary operator", NodeType::GetName(type));
 
-  auto pTernaryOperator = WD_NEW(&m_Allocator, TernaryOperator);
+  auto pTernaryOperator = NS_NEW(&m_Allocator, TernaryOperator);
   pTernaryOperator->m_Type = type;
   pTernaryOperator->m_ReturnType = DataType::Unknown;
   pTernaryOperator->m_pFirstOperand = pFirstOperand;
@@ -502,32 +506,33 @@ wdExpressionAST::TernaryOperator* wdExpressionAST::CreateTernaryOperator(NodeTyp
   return pTernaryOperator;
 }
 
-wdExpressionAST::Constant* wdExpressionAST::CreateConstant(const wdVariant& value, DataType::Enum dataType /*= DataType::Float*/)
+nsExpressionAST::Constant* nsExpressionAST::CreateConstant(const nsVariant& value, DataType::Enum dataType /*= DataType::Float*/)
 {
-  wdVariantType::Enum variantType = DataType::GetVariantType(dataType);
-  WD_ASSERT_DEV(variantType != wdVariantType::Invalid, "Invalid constant type '{}'", DataType::GetName(dataType));
+  nsVariantType::Enum variantType = DataType::GetVariantType(dataType);
+  NS_IGNORE_UNUSED(variantType);
+  NS_ASSERT_DEV(variantType != nsVariantType::Invalid, "Invalid constant type '{}'", DataType::GetName(dataType));
 
-  auto pConstant = WD_NEW(&m_Allocator, Constant);
+  auto pConstant = NS_NEW(&m_Allocator, Constant);
   pConstant->m_Type = NodeType::Constant;
   pConstant->m_ReturnType = dataType;
   pConstant->m_Value = value.ConvertTo(DataType::GetVariantType(dataType));
 
-  WD_ASSERT_DEV(pConstant->m_Value.IsValid(), "Invalid constant value or conversion to target data type failed");
+  NS_ASSERT_DEV(pConstant->m_Value.IsValid(), "Invalid constant value or conversion to target data type failed");
 
   return pConstant;
 }
 
-wdExpressionAST::Swizzle* wdExpressionAST::CreateSwizzle(wdStringView sSwizzle, Node* pExpression)
+nsExpressionAST::Swizzle* nsExpressionAST::CreateSwizzle(nsStringView sSwizzle, Node* pExpression)
 {
-  wdEnum<VectorComponent> components[4];
-  wdUInt32 numComponents = 0;
+  nsEnum<VectorComponent> components[4];
+  nsUInt32 numComponents = 0;
 
   for (auto it : sSwizzle)
   {
-    if (numComponents == WD_ARRAY_SIZE(components))
+    if (numComponents == NS_ARRAY_SIZE(components))
       return nullptr;
 
-    wdEnum<VectorComponent> component = VectorComponent::FromChar(it);
+    nsEnum<VectorComponent> component = VectorComponent::FromChar(it);
     if (component == VectorComponent::Count)
       return nullptr;
 
@@ -535,60 +540,61 @@ wdExpressionAST::Swizzle* wdExpressionAST::CreateSwizzle(wdStringView sSwizzle, 
     ++numComponents;
   }
 
-  return CreateSwizzle(wdMakeArrayPtr(components, numComponents), pExpression);
+  return CreateSwizzle(nsMakeArrayPtr(components, numComponents), pExpression);
 }
 
-wdExpressionAST::Swizzle* wdExpressionAST::CreateSwizzle(wdEnum<VectorComponent> component, Node* pExpression)
+nsExpressionAST::Swizzle* nsExpressionAST::CreateSwizzle(nsEnum<VectorComponent> component, Node* pExpression)
 {
-  return CreateSwizzle(wdMakeArrayPtr(&component, 1), pExpression);
+  return CreateSwizzle(nsMakeArrayPtr(&component, 1), pExpression);
 }
 
-wdExpressionAST::Swizzle* wdExpressionAST::CreateSwizzle(wdArrayPtr<wdEnum<VectorComponent>> swizzle, Node* pExpression)
+nsExpressionAST::Swizzle* nsExpressionAST::CreateSwizzle(nsArrayPtr<nsEnum<VectorComponent>> swizzle, Node* pExpression)
 {
-  WD_ASSERT_DEV(swizzle.GetCount() >= 1 && swizzle.GetCount() <= 4, "Invalid number of vector components for swizzle.");
-  WD_ASSERT_DEV(pExpression->m_ReturnType != DataType::Unknown, "Expression return type must be known.");
+  NS_ASSERT_DEV(swizzle.GetCount() >= 1 && swizzle.GetCount() <= 4, "Invalid number of vector components for swizzle.");
+  NS_ASSERT_DEV(pExpression->m_ReturnType != DataType::Unknown, "Expression return type must be known.");
 
-  auto pSwizzle = WD_NEW(&m_Allocator, Swizzle);
+  auto pSwizzle = NS_NEW(&m_Allocator, Swizzle);
   pSwizzle->m_Type = NodeType::Swizzle;
   pSwizzle->m_ReturnType = DataType::FromRegisterType(DataType::GetRegisterType(pExpression->m_ReturnType), swizzle.GetCount());
 
-  wdMemoryUtils::Copy(pSwizzle->m_Components, swizzle.GetPtr(), swizzle.GetCount());
+  nsMemoryUtils::Copy(pSwizzle->m_Components, swizzle.GetPtr(), swizzle.GetCount());
   pSwizzle->m_NumComponents = swizzle.GetCount();
   pSwizzle->m_pExpression = pExpression;
 
   return pSwizzle;
 }
 
-wdExpressionAST::Input* wdExpressionAST::CreateInput(const wdExpression::StreamDesc& desc)
+nsExpressionAST::Input* nsExpressionAST::CreateInput(const nsExpression::StreamDesc& desc)
 {
-  auto pInput = WD_NEW(&m_Allocator, Input);
+  auto pInput = NS_NEW(&m_Allocator, Input);
   pInput->m_Type = NodeType::Input;
   pInput->m_ReturnType = DataType::FromStreamType(desc.m_DataType);
+  pInput->m_uiNumInputElements = static_cast<nsUInt8>(DataType::GetElementCount(pInput->m_ReturnType));
   pInput->m_Desc = desc;
 
   return pInput;
 }
 
-wdExpressionAST::Output* wdExpressionAST::CreateOutput(const wdExpression::StreamDesc& desc, Node* pExpression)
+nsExpressionAST::Output* nsExpressionAST::CreateOutput(const nsExpression::StreamDesc& desc, Node* pExpression)
 {
-  auto pOutput = WD_NEW(&m_Allocator, Output);
+  auto pOutput = NS_NEW(&m_Allocator, Output);
   pOutput->m_Type = NodeType::Output;
   pOutput->m_ReturnType = DataType::FromStreamType(desc.m_DataType);
-  pOutput->m_uiNumInputElements = static_cast<wdUInt8>(DataType::GetElementCount(pOutput->m_ReturnType));
+  pOutput->m_uiNumInputElements = static_cast<nsUInt8>(DataType::GetElementCount(pOutput->m_ReturnType));
   pOutput->m_Desc = desc;
   pOutput->m_pExpression = pExpression;
 
   return pOutput;
 }
 
-wdExpressionAST::FunctionCall* wdExpressionAST::CreateFunctionCall(const wdExpression::FunctionDesc& desc, wdArrayPtr<Node*> arguments)
+nsExpressionAST::FunctionCall* nsExpressionAST::CreateFunctionCall(const nsExpression::FunctionDesc& desc, nsArrayPtr<Node*> arguments)
 {
-  return CreateFunctionCall(wdMakeArrayPtr(&desc, 1), arguments);
+  return CreateFunctionCall(nsMakeArrayPtr(&desc, 1), arguments);
 }
 
-wdExpressionAST::FunctionCall* wdExpressionAST::CreateFunctionCall(wdArrayPtr<const wdExpression::FunctionDesc> descs, wdArrayPtr<Node*> arguments)
+nsExpressionAST::FunctionCall* nsExpressionAST::CreateFunctionCall(nsArrayPtr<const nsExpression::FunctionDesc> descs, nsArrayPtr<Node*> arguments)
 {
-  auto pFunctionCall = WD_NEW(&m_Allocator, FunctionCall);
+  auto pFunctionCall = NS_NEW(&m_Allocator, FunctionCall);
   pFunctionCall->m_Type = NodeType::FunctionCall;
   pFunctionCall->m_ReturnType = DataType::Unknown;
 
@@ -606,11 +612,11 @@ wdExpressionAST::FunctionCall* wdExpressionAST::CreateFunctionCall(wdArrayPtr<co
   return pFunctionCall;
 }
 
-wdExpressionAST::ConstructorCall* wdExpressionAST::CreateConstructorCall(DataType::Enum dataType, wdArrayPtr<Node*> arguments)
+nsExpressionAST::ConstructorCall* nsExpressionAST::CreateConstructorCall(DataType::Enum dataType, nsArrayPtr<Node*> arguments)
 {
-  WD_ASSERT_DEV(dataType >= DataType::Bool, "Invalid data type for constructor");
+  NS_ASSERT_DEV(dataType >= DataType::Bool, "Invalid data type for constructor");
 
-  auto pConstructorCall = WD_NEW(&m_Allocator, ConstructorCall);
+  auto pConstructorCall = NS_NEW(&m_Allocator, ConstructorCall);
   pConstructorCall->m_Type = NodeType::ConstructorCall;
   pConstructorCall->m_ReturnType = dataType;
   pConstructorCall->m_Arguments = arguments;
@@ -620,10 +626,10 @@ wdExpressionAST::ConstructorCall* wdExpressionAST::CreateConstructorCall(DataTyp
   return pConstructorCall;
 }
 
-wdExpressionAST::ConstructorCall* wdExpressionAST::CreateConstructorCall(Node* pOldValue, Node* pNewValue, wdStringView sPartialAssignmentMask)
+nsExpressionAST::ConstructorCall* nsExpressionAST::CreateConstructorCall(Node* pOldValue, Node* pNewValue, nsStringView sPartialAssignmentMask)
 {
-  wdExpression::RegisterType::Enum registerType = wdExpression::RegisterType::Unknown;
-  wdSmallArray<Node*, 4> arguments;
+  nsExpression::RegisterType::Enum registerType = nsExpression::RegisterType::Unknown;
+  nsSmallArray<Node*, 4> arguments;
 
   if (pOldValue != nullptr)
   {
@@ -636,14 +642,14 @@ wdExpressionAST::ConstructorCall* wdExpressionAST::CreateConstructorCall(Node* p
     }
     else
     {
-      const wdUInt32 uiNumElements = DataType::GetElementCount(pOldValue->m_ReturnType);
+      const nsUInt32 uiNumElements = DataType::GetElementCount(pOldValue->m_ReturnType);
       if (uiNumElements == 1)
       {
         arguments.PushBack(pOldValue);
       }
       else
       {
-        for (wdUInt32 i = 0; i < uiNumElements; ++i)
+        for (nsUInt32 i = 0; i < uiNumElements; ++i)
         {
           auto pSwizzle = CreateSwizzle(static_cast<VectorComponent::Enum>(i), pOldValue);
           arguments.PushBack(pSwizzle);
@@ -652,12 +658,12 @@ wdExpressionAST::ConstructorCall* wdExpressionAST::CreateConstructorCall(Node* p
     }
   }
 
-  const wdUInt32 uiNewValueElementCount = DataType::GetElementCount(pNewValue->m_ReturnType);
-  wdUInt32 uiNewValueElementIndex = 0;
+  const nsUInt32 uiNewValueElementCount = DataType::GetElementCount(pNewValue->m_ReturnType);
+  nsUInt32 uiNewValueElementIndex = 0;
   for (auto it : sPartialAssignmentMask)
   {
-    auto component = wdExpressionAST::VectorComponent::FromChar(it);
-    if (component == wdExpressionAST::VectorComponent::Count)
+    auto component = nsExpressionAST::VectorComponent::FromChar(it);
+    if (component == nsExpressionAST::VectorComponent::Count)
     {
       return nullptr;
     }
@@ -678,7 +684,7 @@ wdExpressionAST::ConstructorCall* wdExpressionAST::CreateConstructorCall(Node* p
       ++uiNewValueElementIndex;
     }
 
-    wdUInt32 componentIndex = component;
+    nsUInt32 componentIndex = component;
     if (componentIndex >= arguments.GetCount())
     {
       while (componentIndex > arguments.GetCount())
@@ -695,42 +701,42 @@ wdExpressionAST::ConstructorCall* wdExpressionAST::CreateConstructorCall(Node* p
 
     if (pOldValue == nullptr)
     {
-      registerType = wdMath::Max(registerType, DataType::GetRegisterType(pNewValueElement->m_ReturnType));
+      registerType = nsMath::Max(registerType, DataType::GetRegisterType(pNewValueElement->m_ReturnType));
     }
   }
 
-  wdEnum<DataType> newType = DataType::FromRegisterType(registerType, arguments.GetCount());
+  nsEnum<DataType> newType = DataType::FromRegisterType(registerType, arguments.GetCount());
   return CreateConstructorCall(newType, arguments);
 }
 
 // static
-wdArrayPtr<wdExpressionAST::Node*> wdExpressionAST::GetChildren(Node* pNode)
+nsArrayPtr<nsExpressionAST::Node*> nsExpressionAST::GetChildren(Node* pNode)
 {
   NodeType::Enum nodeType = pNode->m_Type;
   if (NodeType::IsUnary(nodeType))
   {
     auto& pChild = static_cast<UnaryOperator*>(pNode)->m_pOperand;
-    return wdMakeArrayPtr(&pChild, 1);
+    return nsMakeArrayPtr(&pChild, 1);
   }
   else if (NodeType::IsBinary(nodeType))
   {
     auto& pChildren = static_cast<BinaryOperator*>(pNode)->m_pLeftOperand;
-    return wdMakeArrayPtr(&pChildren, 2);
+    return nsMakeArrayPtr(&pChildren, 2);
   }
   else if (NodeType::IsTernary(nodeType))
   {
     auto& pChildren = static_cast<TernaryOperator*>(pNode)->m_pFirstOperand;
-    return wdMakeArrayPtr(&pChildren, 3);
+    return nsMakeArrayPtr(&pChildren, 3);
   }
   else if (NodeType::IsSwizzle(nodeType))
   {
     auto& pChild = static_cast<Swizzle*>(pNode)->m_pExpression;
-    return wdMakeArrayPtr(&pChild, 1);
+    return nsMakeArrayPtr(&pChild, 1);
   }
   else if (NodeType::IsOutput(nodeType))
   {
     auto& pChild = static_cast<Output*>(pNode)->m_pExpression;
-    return wdMakeArrayPtr(&pChild, 1);
+    return nsMakeArrayPtr(&pChild, 1);
   }
   else if (NodeType::IsFunctionCall(nodeType))
   {
@@ -743,70 +749,70 @@ wdArrayPtr<wdExpressionAST::Node*> wdExpressionAST::GetChildren(Node* pNode)
     return args;
   }
 
-  WD_ASSERT_DEV(NodeType::IsInput(nodeType) || NodeType::IsConstant(nodeType), "Unknown node type");
-  return wdArrayPtr<Node*>();
+  NS_ASSERT_DEV(NodeType::IsInput(nodeType) || NodeType::IsConstant(nodeType), "Unknown node type");
+  return nsArrayPtr<Node*>();
 }
 
 // static
-wdArrayPtr<const wdExpressionAST::Node*> wdExpressionAST::GetChildren(const Node* pNode)
+nsArrayPtr<const nsExpressionAST::Node*> nsExpressionAST::GetChildren(const Node* pNode)
 {
   NodeType::Enum nodeType = pNode->m_Type;
   if (NodeType::IsUnary(nodeType))
   {
     auto& pChild = static_cast<const UnaryOperator*>(pNode)->m_pOperand;
-    return wdMakeArrayPtr((const Node**)&pChild, 1);
+    return nsMakeArrayPtr((const Node**)&pChild, 1);
   }
   else if (NodeType::IsBinary(nodeType))
   {
     auto& pChildren = static_cast<const BinaryOperator*>(pNode)->m_pLeftOperand;
-    return wdMakeArrayPtr((const Node**)&pChildren, 2);
+    return nsMakeArrayPtr((const Node**)&pChildren, 2);
   }
   else if (NodeType::IsTernary(nodeType))
   {
     auto& pChildren = static_cast<const TernaryOperator*>(pNode)->m_pFirstOperand;
-    return wdMakeArrayPtr((const Node**)&pChildren, 3);
+    return nsMakeArrayPtr((const Node**)&pChildren, 3);
   }
   else if (NodeType::IsSwizzle(nodeType))
   {
     auto& pChild = static_cast<const Swizzle*>(pNode)->m_pExpression;
-    return wdMakeArrayPtr((const Node**)&pChild, 1);
+    return nsMakeArrayPtr((const Node**)&pChild, 1);
   }
   else if (NodeType::IsOutput(nodeType))
   {
     auto& pChild = static_cast<const Output*>(pNode)->m_pExpression;
-    return wdMakeArrayPtr((const Node**)&pChild, 1);
+    return nsMakeArrayPtr((const Node**)&pChild, 1);
   }
   else if (NodeType::IsFunctionCall(nodeType))
   {
     auto& args = static_cast<const FunctionCall*>(pNode)->m_Arguments;
-    return wdArrayPtr<const Node*>((const Node**)args.GetData(), args.GetCount());
+    return nsArrayPtr<const Node*>((const Node**)args.GetData(), args.GetCount());
   }
   else if (NodeType::IsConstructorCall(nodeType))
   {
     auto& args = static_cast<const ConstructorCall*>(pNode)->m_Arguments;
-    return wdArrayPtr<const Node*>((const Node**)args.GetData(), args.GetCount());
+    return nsArrayPtr<const Node*>((const Node**)args.GetData(), args.GetCount());
   }
 
-  WD_ASSERT_DEV(NodeType::IsInput(nodeType) || NodeType::IsConstant(nodeType), "Unknown node type");
-  return wdArrayPtr<const Node*>();
+  NS_ASSERT_DEV(NodeType::IsInput(nodeType) || NodeType::IsConstant(nodeType), "Unknown node type");
+  return nsArrayPtr<const Node*>();
 }
 
 namespace
 {
   struct NodeInfo
   {
-    WD_DECLARE_POD_TYPE();
+    NS_DECLARE_POD_TYPE();
 
-    const wdExpressionAST::Node* m_pNode;
-    wdUInt32 m_uiParentGraphNode;
+    const nsExpressionAST::Node* m_pNode;
+    nsUInt32 m_uiParentGraphNode;
   };
 } // namespace
 
-void wdExpressionAST::PrintGraph(wdDGMLGraph& inout_graph) const
+void nsExpressionAST::PrintGraph(nsDGMLGraph& inout_graph) const
 {
-  wdHybridArray<NodeInfo, 64> nodeStack;
+  nsHybridArray<NodeInfo, 64> nodeStack;
 
-  wdStringBuilder sTmp;
+  nsStringBuilder sTmp;
   for (auto pOutputNode : m_OutputNodes)
   {
     if (pOutputNode == nullptr)
@@ -816,21 +822,21 @@ void wdExpressionAST::PrintGraph(wdDGMLGraph& inout_graph) const
     sTmp.Append("(", DataType::GetName(pOutputNode->m_ReturnType), ")");
     sTmp.Append(": ", pOutputNode->m_Desc.m_sName);
 
-    wdDGMLGraph::NodeDesc nd;
-    nd.m_Color = wdColorScheme::LightUI(wdColorScheme::Blue);
-    wdUInt32 uiGraphNode = inout_graph.AddNode(sTmp, &nd);
+    nsDGMLGraph::NodeDesc nd;
+    nd.m_Color = nsColorScheme::LightUI(nsColorScheme::Blue);
+    nsUInt32 uiGraphNode = inout_graph.AddNode(sTmp, &nd);
 
     nodeStack.PushBack({pOutputNode->m_pExpression, uiGraphNode});
   }
 
-  wdHashTable<const Node*, wdUInt32> nodeCache;
+  nsHashTable<const Node*, nsUInt32> nodeCache;
 
   while (!nodeStack.IsEmpty())
   {
     NodeInfo currentNodeInfo = nodeStack.PeekBack();
     nodeStack.PopBack();
 
-    wdUInt32 uiGraphNode = 0;
+    nsUInt32 uiGraphNode = 0;
     if (currentNodeInfo.m_pNode != nullptr)
     {
       if (!nodeCache.TryGetValue(currentNodeInfo.m_pNode, uiGraphNode))
@@ -838,17 +844,17 @@ void wdExpressionAST::PrintGraph(wdDGMLGraph& inout_graph) const
         NodeType::Enum nodeType = currentNodeInfo.m_pNode->m_Type;
         sTmp = NodeType::GetName(nodeType);
         sTmp.Append("(", DataType::GetName(currentNodeInfo.m_pNode->m_ReturnType), ")");
-        wdColor color = wdColor::White;
+        nsColor color = nsColor::White;
 
         if (NodeType::IsConstant(nodeType))
         {
-          sTmp.AppendFormat(": {0}", static_cast<const Constant*>(currentNodeInfo.m_pNode)->m_Value.ConvertTo<wdString>());
+          sTmp.AppendFormat(": {0}", static_cast<const Constant*>(currentNodeInfo.m_pNode)->m_Value.ConvertTo<nsString>());
         }
         else if (NodeType::IsSwizzle(nodeType))
         {
           auto pSwizzleNode = static_cast<const Swizzle*>(currentNodeInfo.m_pNode);
           sTmp.Append(": ");
-          for (wdUInt32 i = 0; i < pSwizzleNode->m_NumComponents; ++i)
+          for (nsUInt32 i = 0; i < pSwizzleNode->m_NumComponents; ++i)
           {
             sTmp.Append(VectorComponent::GetName(pSwizzleNode->m_Components[i]));
           }
@@ -857,7 +863,7 @@ void wdExpressionAST::PrintGraph(wdDGMLGraph& inout_graph) const
         {
           auto pInputNode = static_cast<const Input*>(currentNodeInfo.m_pNode);
           sTmp.Append(": ", pInputNode->m_Desc.m_sName);
-          color = wdColorScheme::LightUI(wdColorScheme::Green);
+          color = nsColorScheme::LightUI(nsColorScheme::Green);
         }
         else if (NodeType::IsFunctionCall(nodeType))
         {
@@ -871,10 +877,10 @@ void wdExpressionAST::PrintGraph(wdDGMLGraph& inout_graph) const
           {
             sTmp.Append(": ", pFunctionCall->m_Descs[0]->m_sName);
           }
-          color = wdColorScheme::LightUI(wdColorScheme::Yellow);
+          color = nsColorScheme::LightUI(nsColorScheme::Yellow);
         }
 
-        wdDGMLGraph::NodeDesc nd;
+        nsDGMLGraph::NodeDesc nd;
         nd.m_Color = color;
         uiGraphNode = inout_graph.AddNode(sTmp, &nd);
         nodeCache.Insert(currentNodeInfo.m_pNode, uiGraphNode);
@@ -889,8 +895,8 @@ void wdExpressionAST::PrintGraph(wdDGMLGraph& inout_graph) const
     }
     else
     {
-      wdDGMLGraph::NodeDesc nd;
-      nd.m_Color = wdColor::OrangeRed;
+      nsDGMLGraph::NodeDesc nd;
+      nd.m_Color = nsColor::OrangeRed;
       uiGraphNode = inout_graph.AddNode("Invalid", &nd);
     }
 
@@ -898,7 +904,7 @@ void wdExpressionAST::PrintGraph(wdDGMLGraph& inout_graph) const
   }
 }
 
-void wdExpressionAST::ResolveOverloads(Node* pNode)
+void nsExpressionAST::ResolveOverloads(Node* pNode)
 {
   if (pNode->m_uiOverloadIndex != 0xFF)
   {
@@ -909,33 +915,34 @@ void wdExpressionAST::ResolveOverloads(Node* pNode)
   const NodeType::Enum nodeType = pNode->m_Type;
   if (nodeType == NodeType::TypeConversion)
   {
-    WD_ASSERT_DEV(pNode->m_ReturnType != DataType::Unknown, "Return type must be specified for conversion nodes");
+    NS_ASSERT_DEV(pNode->m_ReturnType != DataType::Unknown, "Return type must be specified for conversion nodes");
     pNode->m_uiOverloadIndex = 0;
     return;
   }
 
-  auto CalculateMatchDistance = [](wdArrayPtr<Node*> children, wdArrayPtr<const wdEnum<wdExpression::RegisterType>> expectedTypes, wdUInt32 uiNumRequiredArgs, wdUInt32& ref_uiMaxNumElements) {
+  auto CalculateMatchDistance = [](nsArrayPtr<Node*> children, nsArrayPtr<const nsEnum<nsExpression::RegisterType>> expectedTypes, nsUInt32 uiNumRequiredArgs, nsUInt32& ref_uiMaxNumElements)
+  {
     if (children.GetCount() < uiNumRequiredArgs)
     {
-      return wdInvalidIndex;
+      return nsInvalidIndex;
     }
 
-    wdUInt32 uiMatchDistance = 0;
+    nsUInt32 uiMatchDistance = 0;
     ref_uiMaxNumElements = 1;
-    for (wdUInt32 i = 0; i < wdMath::Min(children.GetCount(), expectedTypes.GetCount()); ++i)
+    for (nsUInt32 i = 0; i < nsMath::Min(children.GetCount(), expectedTypes.GetCount()); ++i)
     {
       auto& pChildNode = children[i];
-      WD_ASSERT_DEV(pChildNode != nullptr && pChildNode->m_ReturnType != DataType::Unknown, "Invalid child node");
+      NS_ASSERT_DEV(pChildNode != nullptr && pChildNode->m_ReturnType != DataType::Unknown, "Invalid child node");
 
       auto childType = DataType::GetRegisterType(pChildNode->m_ReturnType);
       int iDistance = expectedTypes[i] - childType;
       if (iDistance < 0)
       {
         // Penalty to prevent 'narrowing' conversions
-        iDistance *= -wdExpression::RegisterType::Count;
+        iDistance *= -nsExpression::RegisterType::Count;
       }
       uiMatchDistance += iDistance;
-      ref_uiMaxNumElements = wdMath::Max(ref_uiMaxNumElements, DataType::GetElementCount(pChildNode->m_ReturnType));
+      ref_uiMaxNumElements = nsMath::Max(ref_uiMaxNumElements, DataType::GetElementCount(pChildNode->m_ReturnType));
     }
     return uiMatchDistance;
   };
@@ -943,29 +950,29 @@ void wdExpressionAST::ResolveOverloads(Node* pNode)
   if (NodeType::IsUnary(nodeType) || NodeType::IsBinary(nodeType) || NodeType::IsTernary(nodeType))
   {
     auto children = GetChildren(pNode);
-    wdSmallArray<wdEnum<wdExpression::RegisterType>, 4> expectedTypes;
-    wdUInt32 uiBestMatchDistance = wdInvalidIndex;
+    nsSmallArray<nsEnum<nsExpression::RegisterType>, 4> expectedTypes;
+    nsUInt32 uiBestMatchDistance = nsInvalidIndex;
 
-    for (wdUInt32 uiSigIndex = 0; uiSigIndex < WD_ARRAY_SIZE(Overloads::m_Signatures); ++uiSigIndex)
+    for (nsUInt32 uiSigIndex = 0; uiSigIndex < NS_ARRAY_SIZE(Overloads::m_Signatures); ++uiSigIndex)
     {
-      const wdUInt16 uiSignature = s_NodeTypeOverloads[nodeType].m_Signatures[uiSigIndex];
+      const nsUInt16 uiSignature = s_NodeTypeOverloads[nodeType].m_Signatures[uiSigIndex];
       if (uiSignature == 0)
         break;
 
       expectedTypes.Clear();
-      for (wdUInt32 i = 0; i < children.GetCount(); ++i)
+      for (nsUInt32 i = 0; i < children.GetCount(); ++i)
       {
         expectedTypes.PushBack(GetArgumentTypeFromSignature(uiSignature, i));
       }
 
-      wdUInt32 uiMaxNumElements = 1;
-      wdUInt32 uiMatchDistance = CalculateMatchDistance(children, expectedTypes, expectedTypes.GetCount(), uiMaxNumElements);
+      nsUInt32 uiMaxNumElements = 1;
+      nsUInt32 uiMatchDistance = CalculateMatchDistance(children, expectedTypes, expectedTypes.GetCount(), uiMaxNumElements);
       if (uiMatchDistance < uiBestMatchDistance)
       {
-        const wdUInt32 uiReturnTypeElements = NodeType::AlwaysReturnsSingleElement(nodeType) ? 1 : uiMaxNumElements;
+        const nsUInt32 uiReturnTypeElements = NodeType::AlwaysReturnsSingleElement(nodeType) ? 1 : uiMaxNumElements;
         pNode->m_ReturnType = DataType::FromRegisterType(GetReturnTypeFromSignature(uiSignature), uiReturnTypeElements);
-        pNode->m_uiNumInputElements = static_cast<wdUInt8>(uiMaxNumElements);
-        pNode->m_uiOverloadIndex = static_cast<wdUInt8>(uiSigIndex);
+        pNode->m_uiNumInputElements = static_cast<nsUInt8>(uiMaxNumElements);
+        pNode->m_uiOverloadIndex = static_cast<nsUInt8>(uiSigIndex);
         uiBestMatchDistance = uiMatchDistance;
       }
     }
@@ -973,19 +980,19 @@ void wdExpressionAST::ResolveOverloads(Node* pNode)
   else if (NodeType::IsFunctionCall(nodeType))
   {
     auto pFunctionCall = static_cast<FunctionCall*>(pNode);
-    wdUInt32 uiBestMatchDistance = wdInvalidIndex;
+    nsUInt32 uiBestMatchDistance = nsInvalidIndex;
 
-    for (wdUInt32 uiOverloadIndex = 0; uiOverloadIndex < pFunctionCall->m_Descs.GetCount(); ++uiOverloadIndex)
+    for (nsUInt32 uiOverloadIndex = 0; uiOverloadIndex < pFunctionCall->m_Descs.GetCount(); ++uiOverloadIndex)
     {
       auto pFuncDesc = pFunctionCall->m_Descs[uiOverloadIndex];
 
-      wdUInt32 uiMaxNumElements = 1;
-      wdUInt32 uiMatchDistance = CalculateMatchDistance(pFunctionCall->m_Arguments, pFuncDesc->m_InputTypes, pFuncDesc->m_uiNumRequiredInputs, uiMaxNumElements);
+      nsUInt32 uiMaxNumElements = 1;
+      nsUInt32 uiMatchDistance = CalculateMatchDistance(pFunctionCall->m_Arguments, pFuncDesc->m_InputTypes, pFuncDesc->m_uiNumRequiredInputs, uiMaxNumElements);
       if (uiMatchDistance < uiBestMatchDistance)
       {
         pNode->m_ReturnType = DataType::FromRegisterType(pFuncDesc->m_OutputType, uiMaxNumElements);
-        pNode->m_uiNumInputElements = static_cast<wdUInt8>(uiMaxNumElements);
-        pNode->m_uiOverloadIndex = static_cast<wdUInt8>(uiOverloadIndex);
+        pNode->m_uiNumInputElements = static_cast<nsUInt8>(uiMaxNumElements);
+        pNode->m_uiOverloadIndex = static_cast<nsUInt8>(uiOverloadIndex);
         uiBestMatchDistance = uiMatchDistance;
       }
     }
@@ -997,7 +1004,7 @@ void wdExpressionAST::ResolveOverloads(Node* pNode)
       // Trim arguments array to number of inputs
       if (pFunctionCall->m_Arguments.GetCount() > pFuncDesc->m_InputTypes.GetCount())
       {
-        pFunctionCall->m_Arguments.SetCount(static_cast<wdUInt16>(pFuncDesc->m_InputTypes.GetCount()));
+        pFunctionCall->m_Arguments.SetCount(static_cast<nsUInt16>(pFuncDesc->m_InputTypes.GetCount()));
       }
     }
   }
@@ -1005,11 +1012,11 @@ void wdExpressionAST::ResolveOverloads(Node* pNode)
   {
     auto pConstructorCall = static_cast<ConstructorCall*>(pNode);
     auto& args = pConstructorCall->m_Arguments;
-    const wdUInt32 uiElementCount = wdExpressionAST::DataType::GetElementCount(pNode->m_ReturnType);
+    const nsUInt32 uiElementCount = nsExpressionAST::DataType::GetElementCount(pNode->m_ReturnType);
 
-    if (uiElementCount > 1 && args.GetCount() == 1 && wdExpressionAST::DataType::GetElementCount(args[0]->m_ReturnType) == 1)
+    if (uiElementCount > 1 && args.GetCount() == 1 && nsExpressionAST::DataType::GetElementCount(args[0]->m_ReturnType) == 1)
     {
-      for (wdUInt32 i = 0; i < uiElementCount - 1; ++i)
+      for (nsUInt32 i = 0; i < uiElementCount - 1; ++i)
       {
         pConstructorCall->m_Arguments.PushBack(args[0]);
       }
@@ -1017,20 +1024,20 @@ void wdExpressionAST::ResolveOverloads(Node* pNode)
       return;
     }
 
-    wdSmallArray<Node*, 4> newArguments;
+    nsSmallArray<Node*, 4> newArguments;
     Node* pZero = nullptr;
 
-    wdUInt32 uiArgumentIndex = 0;
-    wdUInt32 uiArgumentElementIndex = 0;
+    nsUInt32 uiArgumentIndex = 0;
+    nsUInt32 uiArgumentElementIndex = 0;
 
-    for (wdUInt32 i = 0; i < uiElementCount; ++i)
+    for (nsUInt32 i = 0; i < uiElementCount; ++i)
     {
       if (uiArgumentIndex < args.GetCount())
       {
         auto pArg = args[uiArgumentIndex];
-        WD_ASSERT_DEV(pArg != nullptr && pArg->m_ReturnType != DataType::Unknown, "Invalid argument node");
+        NS_ASSERT_DEV(pArg != nullptr && pArg->m_ReturnType != DataType::Unknown, "Invalid argument node");
 
-        const wdUInt32 uiArgElementCount = wdExpressionAST::DataType::GetElementCount(pArg->m_ReturnType);
+        const nsUInt32 uiArgElementCount = nsExpressionAST::DataType::GetElementCount(pArg->m_ReturnType);
         if (uiArgElementCount == 1)
         {
           newArguments.PushBack(pArg);
@@ -1057,18 +1064,18 @@ void wdExpressionAST::ResolveOverloads(Node* pNode)
       }
     }
 
-    WD_ASSERT_DEBUG(newArguments.GetCount() == uiElementCount, "Not enough arguments");
+    NS_ASSERT_DEBUG(newArguments.GetCount() == uiElementCount, "Not enough arguments");
     pConstructorCall->m_Arguments = newArguments;
   }
 }
 
 // static
-wdExpressionAST::DataType::Enum wdExpressionAST::GetExpectedChildDataType(const Node* pNode, wdUInt32 uiChildIndex)
+nsExpressionAST::DataType::Enum nsExpressionAST::GetExpectedChildDataType(const Node* pNode, nsUInt32 uiChildIndex)
 {
   const NodeType::Enum nodeType = pNode->m_Type;
   const DataType::Enum returnType = pNode->m_ReturnType;
-  const wdUInt32 uiOverloadIndex = pNode->m_uiOverloadIndex;
-  WD_ASSERT_DEV(returnType != DataType::Unknown, "Return type must not be unknown");
+  const nsUInt32 uiOverloadIndex = pNode->m_uiOverloadIndex;
+  NS_ASSERT_DEV(returnType != DataType::Unknown, "Return type must not be unknown");
 
   if (nodeType == NodeType::TypeConversion || NodeType::IsSwizzle(nodeType))
   {
@@ -1076,8 +1083,8 @@ wdExpressionAST::DataType::Enum wdExpressionAST::GetExpectedChildDataType(const 
   }
   else if (NodeType::IsUnary(nodeType) || NodeType::IsBinary(nodeType) || NodeType::IsTernary(nodeType))
   {
-    WD_ASSERT_DEV(uiOverloadIndex != 0xFF, "Unresolved overload");
-    wdUInt16 uiSignature = s_NodeTypeOverloads[nodeType].m_Signatures[uiOverloadIndex];
+    NS_ASSERT_DEV(uiOverloadIndex != 0xFF, "Unresolved overload");
+    nsUInt16 uiSignature = s_NodeTypeOverloads[nodeType].m_Signatures[uiOverloadIndex];
     return DataType::FromRegisterType(GetArgumentTypeFromSignature(uiSignature, uiChildIndex), pNode->m_uiNumInputElements);
   }
   else if (NodeType::IsOutput(nodeType))
@@ -1086,7 +1093,7 @@ wdExpressionAST::DataType::Enum wdExpressionAST::GetExpectedChildDataType(const 
   }
   else if (NodeType::IsFunctionCall(nodeType))
   {
-    WD_ASSERT_DEV(uiOverloadIndex != 0xFF, "Unresolved overload");
+    NS_ASSERT_DEV(uiOverloadIndex != 0xFF, "Unresolved overload");
 
     auto pDesc = static_cast<const FunctionCall*>(pNode)->m_Descs[uiOverloadIndex];
     return DataType::FromRegisterType(pDesc->m_InputTypes[uiChildIndex], pNode->m_uiNumInputElements);
@@ -1096,16 +1103,16 @@ wdExpressionAST::DataType::Enum wdExpressionAST::GetExpectedChildDataType(const 
     return DataType::FromRegisterType(DataType::GetRegisterType(returnType));
   }
 
-  WD_ASSERT_NOT_IMPLEMENTED;
+  NS_ASSERT_NOT_IMPLEMENTED;
   return DataType::Unknown;
 }
 
 // static
-void wdExpressionAST::UpdateHash(Node* pNode)
+void nsExpressionAST::UpdateHash(Node* pNode)
 {
-  wdHybridArray<wdUInt32, 16> valuesToHash;
+  nsHybridArray<nsUInt32, 16> valuesToHash;
 
-  const wdUInt32* pBaseValues = reinterpret_cast<const wdUInt32*>(pNode);
+  const nsUInt32* pBaseValues = reinterpret_cast<const nsUInt32*>(pNode);
   valuesToHash.PushBack(pBaseValues[0]);
   valuesToHash.PushBack(pBaseValues[1]);
 
@@ -1118,13 +1125,13 @@ void wdExpressionAST::UpdateHash(Node* pNode)
   else if (NodeType::IsBinary(nodeType))
   {
     auto pBinary = static_cast<const BinaryOperator*>(pNode);
-    wdUInt32 uiHashLeft = pBinary->m_pLeftOperand->m_uiHash;
-    wdUInt32 uiHashRight = pBinary->m_pRightOperand->m_uiHash;
+    nsUInt32 uiHashLeft = pBinary->m_pLeftOperand->m_uiHash;
+    nsUInt32 uiHashRight = pBinary->m_pRightOperand->m_uiHash;
 
     // Sort by hash value for commutative operations so operand order doesn't matter
     if (NodeType::IsCommutative(nodeType) && uiHashLeft > uiHashRight)
     {
-      wdMath::Swap(uiHashLeft, uiHashRight);
+      nsMath::Swap(uiHashLeft, uiHashRight);
     }
 
     valuesToHash.PushBack(uiHashLeft);
@@ -1140,31 +1147,31 @@ void wdExpressionAST::UpdateHash(Node* pNode)
   else if (NodeType::IsConstant(nodeType))
   {
     auto pConstant = static_cast<const Constant*>(pNode);
-    const wdUInt64 uiValueHash = pConstant->m_Value.ComputeHash();
-    valuesToHash.PushBack(static_cast<wdUInt32>(uiValueHash));
-    valuesToHash.PushBack(static_cast<wdUInt32>(uiValueHash >> 32u));
+    const nsUInt64 uiValueHash = pConstant->m_Value.ComputeHash();
+    valuesToHash.PushBack(static_cast<nsUInt32>(uiValueHash));
+    valuesToHash.PushBack(static_cast<nsUInt32>(uiValueHash >> 32u));
   }
   else if (NodeType::IsInput(nodeType))
   {
     auto pInput = static_cast<const Input*>(pNode);
-    const wdUInt64 uiNameHash = pInput->m_Desc.m_sName.GetHash();
-    valuesToHash.PushBack(static_cast<wdUInt32>(uiNameHash));
-    valuesToHash.PushBack(static_cast<wdUInt32>(uiNameHash >> 32u));
+    const nsUInt64 uiNameHash = pInput->m_Desc.m_sName.GetHash();
+    valuesToHash.PushBack(static_cast<nsUInt32>(uiNameHash));
+    valuesToHash.PushBack(static_cast<nsUInt32>(uiNameHash >> 32u));
   }
   else if (NodeType::IsOutput(nodeType))
   {
     auto pOutput = static_cast<const Output*>(pNode);
-    const wdUInt64 uiNameHash = pOutput->m_Desc.m_sName.GetHash();
-    valuesToHash.PushBack(static_cast<wdUInt32>(uiNameHash));
-    valuesToHash.PushBack(static_cast<wdUInt32>(uiNameHash >> 32u));
+    const nsUInt64 uiNameHash = pOutput->m_Desc.m_sName.GetHash();
+    valuesToHash.PushBack(static_cast<nsUInt32>(uiNameHash));
+    valuesToHash.PushBack(static_cast<nsUInt32>(uiNameHash >> 32u));
     valuesToHash.PushBack(pOutput->m_pExpression->m_uiHash);
   }
   else if (NodeType::IsFunctionCall(nodeType))
   {
     auto pFunctionCall = static_cast<const FunctionCall*>(pNode);
-    const wdUInt64 uiNameHash = pFunctionCall->m_Descs[0]->m_sName.GetHash();
-    valuesToHash.PushBack(static_cast<wdUInt32>(uiNameHash));
-    valuesToHash.PushBack(static_cast<wdUInt32>(uiNameHash >> 32u));
+    const nsUInt64 uiNameHash = pFunctionCall->m_Descs[0]->m_sName.GetHash();
+    valuesToHash.PushBack(static_cast<nsUInt32>(uiNameHash));
+    valuesToHash.PushBack(static_cast<nsUInt32>(uiNameHash >> 32u));
 
     for (auto pArg : pFunctionCall->m_Arguments)
     {
@@ -1173,17 +1180,17 @@ void wdExpressionAST::UpdateHash(Node* pNode)
   }
   else
   {
-    WD_ASSERT_NOT_IMPLEMENTED;
+    NS_ASSERT_NOT_IMPLEMENTED;
   }
 
-  pNode->m_uiHash = wdHashingUtils::xxHash32(valuesToHash.GetData(), valuesToHash.GetCount() * sizeof(wdUInt32));
+  pNode->m_uiHash = nsHashingUtils::xxHash32(valuesToHash.GetData(), valuesToHash.GetCount() * sizeof(nsUInt32));
 }
 
 // static
-bool wdExpressionAST::IsEqual(const Node* pNodeA, const Node* pNodeB)
+bool nsExpressionAST::IsEqual(const Node* pNodeA, const Node* pNodeB)
 {
-  const wdUInt32 uiBaseValuesA = *reinterpret_cast<const wdUInt32*>(pNodeA);
-  const wdUInt32 uiBaseValuesB = *reinterpret_cast<const wdUInt32*>(pNodeB);
+  const nsUInt32 uiBaseValuesA = *reinterpret_cast<const nsUInt32*>(pNodeA);
+  const nsUInt32 uiBaseValuesB = *reinterpret_cast<const nsUInt32*>(pNodeB);
   if (uiBaseValuesA != uiBaseValuesB)
   {
     return false;
@@ -1210,10 +1217,10 @@ bool wdExpressionAST::IsEqual(const Node* pNodeA, const Node* pNodeB)
     if (NodeType::IsCommutative(nodeType))
     {
       if (pLeftA > pRightA)
-        wdMath::Swap(pLeftA, pRightA);
+        nsMath::Swap(pLeftA, pRightA);
 
       if (pLeftB > pRightB)
-        wdMath::Swap(pLeftB, pRightB);
+        nsMath::Swap(pLeftB, pRightB);
     }
 
     return pLeftA == pLeftB && pRightA == pRightB;
@@ -1257,9 +1264,6 @@ bool wdExpressionAST::IsEqual(const Node* pNodeA, const Node* pNodeB)
            pFunctionCallA->m_Arguments == pFunctionCallB->m_Arguments;
   }
 
-  WD_ASSERT_NOT_IMPLEMENTED;
+  NS_ASSERT_NOT_IMPLEMENTED;
   return false;
 }
-
-
-WD_STATICLINK_FILE(Foundation, Foundation_CodeUtils_Expression_Implementation_ExpressionAST);

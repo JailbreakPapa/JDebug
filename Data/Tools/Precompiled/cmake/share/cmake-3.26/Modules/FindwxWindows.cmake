@@ -208,7 +208,7 @@ if(WIN32_STYLE_FIND)
       DOC "wxWindows static release build GL library" )
 
     find_library(WXWINDOWS_STATIC_DEBUG_LIBRARY_GL
-      NAMES wxd_gl wxmswd_gl wxmsw26d_gl
+      NAMES wxd_gl wxmsns_gl wxmsw26d_gl
       PATHS
       "${WXWINDOWS_ROOT_DIR}/lib/vc_lib"
       ${WXWINDOWS_POSSIBLE_LIB_PATHS}
@@ -296,7 +296,7 @@ if(WIN32_STYLE_FIND)
       DOC "wxWindows shared release build GL library" )
 
     find_library(WXWINDOWS_SHARED_DEBUG_LIBRARY_GL
-      NAMES wxd_gl wxmswd_gl wxmsw26d_gl
+      NAMES wxd_gl wxmsns_gl wxmsw26d_gl
       PATHS
       "${WXWINDOWS_ROOT_DIR}/lib/vc_dll"
       ${WXWINDOWS_POSSIBLE_LIB_PATHS}

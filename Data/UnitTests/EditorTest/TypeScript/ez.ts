@@ -1,67 +1,67 @@
-import __Log = require("./wd/Log")
+import __Log = require("./ns/Log")
 export import Log = __Log.Log;
 
-import __Utils = require("./wd/Utils")
+import __Utils = require("./ns/Utils")
 export import Utils = __Utils.Utils;
 
-import __Vec2 = require("./wd/Vec2")
+import __Vec2 = require("./ns/Vec2")
 export import Vec2 = __Vec2.Vec2;
 
-import __Vec3 = require("./wd/Vec3")
+import __Vec3 = require("./ns/Vec3")
 export import Vec3 = __Vec3.Vec3;
 
-import __Mat3 = require("./wd/Mat3")
+import __Mat3 = require("./ns/Mat3")
 export import Mat3 = __Mat3.Mat3;
 
-import __Mat4 = require("./wd/Mat4")
+import __Mat4 = require("./ns/Mat4")
 export import Mat4 = __Mat4.Mat4;
 
-import __Quat = require("./wd/Quat")
+import __Quat = require("./ns/Quat")
 export import Quat = __Quat.Quat;
 
-import __Transform = require("./wd/Transform")
+import __Transform = require("./ns/Transform")
 export import Transform = __Transform.Transform;
 
-import __Color = require("./wd/Color")
+import __Color = require("./ns/Color")
 export import Color = __Color.Color;
 
-import __Time = require("./wd/Time")
+import __Time = require("./ns/Time")
 export import Time = __Time.Time;
 
-import __Angle = require("./wd/Angle")
+import __Angle = require("./ns/Angle")
 export import Angle = __Angle.Angle;
 
-import __GameObject = require("./wd/GameObject")
+import __GameObject = require("./ns/GameObject")
 export import GameObject = __GameObject.GameObject;
 
-import __Component = require("./wd/Component")
+import __Component = require("./ns/Component")
 export import Component = __Component.Component;
 export import TypescriptComponent = __Component.TypescriptComponent;
 export import TickedTypescriptComponent = __Component.TickedTypescriptComponent;
 
-import __World = require("./wd/World")
+import __World = require("./ns/World")
 export import World = __World.World;
 export import GameObjectDesc = __World.GameObjectDesc;
 
-import __Message = require("./wd/Message")
+import __Message = require("./ns/Message")
 export import Message = __Message.Message;
 
-import __Debug = require("./wd/Debug")
+import __Debug = require("./ns/Debug")
 export import Debug = __Debug.Debug;
 
-import __Random = require("./wd/Random")
+import __Random = require("./ns/Random")
 export import Random = __Random.Random;
 
-import __Clock = require("./wd/Clock")
+import __Clock = require("./ns/Clock")
 export import Clock = __Clock.Clock;
 
-import __Physics = require("./wd/Physics")
+import __Physics = require("./ns/Physics")
 export import Physics = __Physics.Physics;
 
 
 
 // AUTO-GENERATED
-import __AllComponents = require("./wd/AllComponents")
+import __AllComponents = require("./ns/AllComponents")
 export import CollectionComponent = __AllComponents.CollectionComponent;
 export import EventMessageHandlerComponent = __AllComponents.EventMessageHandlerComponent;
 export import SettingsComponent = __AllComponents.SettingsComponent;
@@ -158,7 +158,7 @@ export import ShapeIconComponent = __AllComponents.ShapeIconComponent;
 
 
 // AUTO-GENERATED
-import __AllMessages = require("./wd/AllMessages")
+import __AllMessages = require("./ns/AllMessages")
 export import MsgGenericEvent = __AllMessages.MsgGenericEvent;
 export import MsgCollision = __AllMessages.MsgCollision;
 export import MsgDeleteGameObject = __AllMessages.MsgDeleteGameObject;
@@ -191,7 +191,7 @@ export import MsgTypeScriptMsgProxy = __AllMessages.MsgTypeScriptMsgProxy;
 
 
 // AUTO-GENERATED
-import __AllEnums = require("./wd/AllEnums")
+import __AllEnums = require("./ns/AllEnums")
 export import SetColorMode = __AllEnums.SetColorMode;
 export import TriggerState = __AllEnums.TriggerState;
 

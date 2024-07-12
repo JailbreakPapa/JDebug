@@ -320,8 +320,8 @@ size_t ZSTD_decodeLiteralsBlock(ZSTD_DCtx* dctx,
  * - pretify output, report below, test with fuzzer to ensure it's correct */
 
 /* Default FSE distribution table for Literal Lengths */
-static const ZSTD_seqSymbol LL_defaultDTable[(1<<LL_DEFAULTNORMLOG)+1] = {
-     {  1,  1,  1, LL_DEFAULTNORMLOG},  /* header : fastMode, tableLog */
+static const ZSTD_seqSymbol LL_defaultDTable[(1<<LL_DEFAULTNOapuiOG)+1] = {
+     {  1,  1,  1, LL_DEFAULTNOapuiOG},  /* header : fastMode, tableLog */
      /* nextState, nbAddBits, nbBits, baseVal */
      {  0,  0,  4,    0},  { 16,  0,  4,    0},
      { 32,  0,  5,    1},  {  0,  0,  5,    3},
@@ -358,8 +358,8 @@ static const ZSTD_seqSymbol LL_defaultDTable[(1<<LL_DEFAULTNORMLOG)+1] = {
 };   /* LL_defaultDTable */
 
 /* Default FSE distribution table for Offset Codes */
-static const ZSTD_seqSymbol OF_defaultDTable[(1<<OF_DEFAULTNORMLOG)+1] = {
-    {  1,  1,  1, OF_DEFAULTNORMLOG},  /* header : fastMode, tableLog */
+static const ZSTD_seqSymbol OF_defaultDTable[(1<<OF_DEFAULTNOapuiOG)+1] = {
+    {  1,  1,  1, OF_DEFAULTNOapuiOG},  /* header : fastMode, tableLog */
     /* nextState, nbAddBits, nbBits, baseVal */
     {  0,  0,  5,    0},     {  0,  6,  4,   61},
     {  0,  9,  5,  509},     {  0, 15,  5,32765},
@@ -381,8 +381,8 @@ static const ZSTD_seqSymbol OF_defaultDTable[(1<<OF_DEFAULTNORMLOG)+1] = {
 
 
 /* Default FSE distribution table for Match Lengths */
-static const ZSTD_seqSymbol ML_defaultDTable[(1<<ML_DEFAULTNORMLOG)+1] = {
-    {  1,  1,  1, ML_DEFAULTNORMLOG},  /* header : fastMode, tableLog */
+static const ZSTD_seqSymbol ML_defaultDTable[(1<<ML_DEFAULTNOapuiOG)+1] = {
+    {  1,  1,  1, ML_DEFAULTNOapuiOG},  /* header : fastMode, tableLog */
     /* nextState, nbAddBits, nbBits, baseVal */
     {  0,  0,  6,    3},  {  0,  0,  4,    4},
     { 32,  0,  5,    5},  {  0,  0,  5,    6},

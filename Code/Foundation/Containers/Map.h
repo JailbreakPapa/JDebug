@@ -2,6 +2,169 @@
 
 #include <Foundation/Containers/Deque.h>
 
+template <typename KeyType, typename ValueType, typename Comparer>
+class nsMapBase;
+
+/// \brief Base class for all iterators.
+template <typename KeyType, typename ValueType, typename Comparer, bool REVERSE>
+struct nsMapBaseConstIteratorBase
+{
+  using iterator_category = std::forward_iterator_tag;
+  using value_type = nsMapBaseConstIteratorBase<KeyType, ValueType, Comparer, false>;
+  using difference_type = std::ptrdiff_t;
+  using pointer = nsMapBaseConstIteratorBase<KeyType, ValueType, Comparer, false>*;
+  using reference = nsMapBaseConstIteratorBase<KeyType, ValueType, Comparer, false>&;
+
+  NS_DECLARE_POD_TYPE();
+
+  /// \brief Constructs an invalid iterator.
+  NS_ALWAYS_INLINE nsMapBaseConstIteratorBase()
+    : m_pElement(nullptr)
+  {
+  } // [tested]
+
+  /// \brief Checks whether this iterator points to a valid element.
+  NS_ALWAYS_INLINE bool IsValid() const { return (m_pElement != nullptr); } // [tested]
+
+  /// \brief Checks whether the two iterators point to the same element.
+  NS_ALWAYS_INLINE bool operator==(const nsMapBaseConstIteratorBase& it2) const { return (m_pElement == it2.m_pElement); }
+  NS_ADD_DEFAULT_OPERATOR_NOTEQUAL(const nsMapBaseConstIteratorBase&);
+
+  /// \brief Returns the 'key' of the element that this iterator points to.
+  NS_FORCE_INLINE const KeyType& Key() const
+  {
+    NS_ASSERT_DEBUG(IsValid(), "Cannot access the 'key' of an invalid iterator.");
+    return m_pElement->m_Key;
+  } // [tested]
+
+  /// \brief Returns the 'value' of the element that this iterator points to.
+  NS_FORCE_INLINE const ValueType& Value() const
+  {
+    NS_ASSERT_DEBUG(IsValid(), "Cannot access the 'value' of an invalid iterator.");
+    return m_pElement->m_Value;
+  } // [tested]
+
+  /// \brief Returns '*this' to enable foreach
+  NS_ALWAYS_INLINE nsMapBaseConstIteratorBase& operator*() { return *this; } // [tested]
+
+  /// \brief Advances the iterator to the next element in the map. The iterator will not be valid anymore, if the end is reached.
+  void Next(); // [tested]
+
+  /// \brief Advances the iterator to the previous element in the map. The iterator will not be valid anymore, if the end is reached.
+  void Prev(); // [tested]
+
+  /// \brief Shorthand for 'Next'
+  NS_ALWAYS_INLINE void operator++() { Next(); } // [tested]
+
+  /// \brief Shorthand for 'Prev'
+  NS_ALWAYS_INLINE void operator--() { Prev(); } // [tested]
+
+protected:
+  void Advance(const nsInt32 dir0, const nsInt32 dir1);
+
+  friend class nsMapBase<KeyType, ValueType, Comparer>;
+
+  NS_ALWAYS_INLINE explicit nsMapBaseConstIteratorBase(typename nsMapBase<KeyType, ValueType, Comparer>::Node* pInit)
+    : m_pElement(pInit)
+  {
+  }
+
+  typename nsMapBase<KeyType, ValueType, Comparer>::Node* m_pElement;
+
+#if NS_ENABLED(NS_USE_CPP20_OPERATORS)
+public:
+  struct Pointer
+  {
+    std::pair<const KeyType&, const ValueType&> value;
+    const std::pair<const KeyType&, const ValueType&>* operator->() const { return &value; }
+  };
+
+  NS_ALWAYS_INLINE Pointer operator->() const
+  {
+    return Pointer{.value = {Key(), Value()}};
+  }
+
+  // This function is used to return the values for structured bindings.
+  // The number and type of each slot are defined in the inl file.
+  template <std::size_t Index>
+  std::tuple_element_t<Index, nsMapBaseConstIteratorBase>& get() const
+  {
+    if constexpr (Index == 0)
+      return Key();
+    if constexpr (Index == 1)
+      return Value();
+  }
+#endif
+};
+
+/// \brief Forward Iterator to iterate over all elements in sorted order.
+template <typename KeyType, typename ValueType, typename Comparer, bool REVERSE>
+struct nsMapBaseIteratorBase : public nsMapBaseConstIteratorBase<KeyType, ValueType, Comparer, REVERSE>
+{
+  using iterator_category = std::forward_iterator_tag;
+  using value_type = nsMapBaseIteratorBase<KeyType, ValueType, Comparer, REVERSE>;
+  using difference_type = std::ptrdiff_t;
+  using pointer = nsMapBaseIteratorBase<KeyType, ValueType, Comparer, REVERSE>*;
+  using reference = nsMapBaseIteratorBase<KeyType, ValueType, Comparer, REVERSE>&;
+
+  NS_DECLARE_POD_TYPE();
+
+  /// \brief Constructs an invalid iterator.
+  NS_ALWAYS_INLINE nsMapBaseIteratorBase()
+    : nsMapBaseConstIteratorBase<KeyType, ValueType, Comparer, REVERSE>()
+  {
+  }
+
+  /// \brief Returns the 'value' of the element that this iterator points to.
+  NS_FORCE_INLINE ValueType& Value()
+  {
+    NS_ASSERT_DEBUG(this->IsValid(), "Cannot access the 'value' of an invalid iterator.");
+    return this->m_pElement->m_Value;
+  }
+
+  /// \brief Returns the 'value' of the element that this iterator points to.
+  NS_FORCE_INLINE ValueType& Value() const
+  {
+    NS_ASSERT_DEBUG(this->IsValid(), "Cannot access the 'value' of an invalid iterator.");
+    return this->m_pElement->m_Value;
+  }
+
+  /// \brief Returns '*this' to enable foreach
+  NS_ALWAYS_INLINE nsMapBaseIteratorBase& operator*() { return *this; } // [tested]
+
+private:
+  friend class nsMapBase<KeyType, ValueType, Comparer>;
+
+  NS_ALWAYS_INLINE explicit nsMapBaseIteratorBase(typename nsMapBase<KeyType, ValueType, Comparer>::Node* pInit)
+    : nsMapBaseConstIteratorBase<KeyType, ValueType, Comparer, REVERSE>(pInit)
+  {
+  }
+
+#if NS_ENABLED(NS_USE_CPP20_OPERATORS)
+public:
+  // These functions are used to return the values for structured bindings.
+  // The number and type of type of each slot are defined in the inl file.
+
+  template <std::size_t Index>
+  std::tuple_element_t<Index, nsMapBaseIteratorBase>& get()
+  {
+    if constexpr (Index == 0)
+      return nsMapBaseConstIteratorBase<KeyType, ValueType, Comparer, REVERSE>::Key();
+    if constexpr (Index == 1)
+      return Value();
+  }
+
+  template <std::size_t Index>
+  std::tuple_element_t<Index, nsMapBaseIteratorBase>& get() const
+  {
+    if constexpr (Index == 0)
+      return nsMapBaseConstIteratorBase<KeyType, ValueType, Comparer, REVERSE>::Key();
+    if constexpr (Index == 1)
+      return Value();
+  }
+#endif
+};
+
 /// \brief An associative container. Similar to STL::map
 ///
 /// A map allows to store key/value pairs. This in turn allows to search for values by looking them
@@ -14,9 +177,21 @@
 /// ValueType is the value type. For example int.\n
 /// Comparer is a helper class that implements a strictly weak-ordering comparison for Key types.
 template <typename KeyType, typename ValueType, typename Comparer>
-class wdMapBase
+class nsMapBase
 {
+
+public:
+  using ConstIterator = nsMapBaseConstIteratorBase<KeyType, ValueType, Comparer, false>;
+  using ConstReverseIterator = nsMapBaseConstIteratorBase<KeyType, ValueType, Comparer, true>;
+
+  using Iterator = nsMapBaseIteratorBase<KeyType, ValueType, Comparer, false>;
+  using ReverseIterator = nsMapBaseIteratorBase<KeyType, ValueType, Comparer, true>;
+
 private:
+  friend ConstIterator;
+  friend ConstReverseIterator;
+  friend Iterator;
+  friend ReverseIterator;
   struct Node;
 
   /// \brief Only used by the sentinel node.
@@ -24,7 +199,7 @@ private:
   {
     Node* m_pParent = nullptr;
     Node* m_pLink[2] = {nullptr, nullptr};
-    wdUInt8 m_uiLevel = 0;
+    nsUInt8 m_uiLevel = 0;
   };
 
   /// \brief A node storing the key/value pair.
@@ -34,131 +209,25 @@ private:
     ValueType m_Value;
   };
 
-public:
-  /// \brief Base class for all iterators.
-  struct ConstIterator
-  {
-    typedef std::forward_iterator_tag iterator_category;
-    using value_type = ConstIterator;
-    using difference_type = ptrdiff_t;
-    using pointer = ConstIterator*;
-    using reference = ConstIterator&;
-
-    WD_DECLARE_POD_TYPE();
-
-    /// \brief Constructs an invalid iterator.
-    WD_ALWAYS_INLINE ConstIterator()
-      : m_pElement(nullptr)
-    {
-    } // [tested]
-
-    /// \brief Checks whether this iterator points to a valid element.
-    WD_ALWAYS_INLINE bool IsValid() const { return (m_pElement != nullptr); } // [tested]
-
-    /// \brief Checks whether the two iterators point to the same element.
-    WD_ALWAYS_INLINE bool operator==(const typename wdMapBase<KeyType, ValueType, Comparer>::ConstIterator& it2) const { return (m_pElement == it2.m_pElement); }
-
-    /// \brief Checks whether the two iterators point to the same element.
-    WD_ALWAYS_INLINE bool operator!=(const typename wdMapBase<KeyType, ValueType, Comparer>::ConstIterator& it2) const { return (m_pElement != it2.m_pElement); }
-
-    /// \brief Returns the 'key' of the element that this iterator points to.
-    WD_FORCE_INLINE const KeyType& Key() const
-    {
-      WD_ASSERT_DEBUG(IsValid(), "Cannot access the 'key' of an invalid iterator.");
-      return m_pElement->m_Key;
-    } // [tested]
-
-    /// \brief Returns the 'value' of the element that this iterator points to.
-    WD_FORCE_INLINE const ValueType& Value() const
-    {
-      WD_ASSERT_DEBUG(IsValid(), "Cannot access the 'value' of an invalid iterator.");
-      return m_pElement->m_Value;
-    } // [tested]
-
-    /// \brief Returns '*this' to enable foreach
-    WD_ALWAYS_INLINE ConstIterator& operator*() { return *this; } // [tested]
-
-    /// \brief Advances the iterator to the next element in the map. The iterator will not be valid anymore, if the end is reached.
-    void Next(); // [tested]
-
-    /// \brief Advances the iterator to the previous element in the map. The iterator will not be valid anymore, if the end is reached.
-    void Prev(); // [tested]
-
-    /// \brief Shorthand for 'Next'
-    WD_ALWAYS_INLINE void operator++() { Next(); } // [tested]
-
-    /// \brief Shorthand for 'Prev'
-    WD_ALWAYS_INLINE void operator--() { Prev(); } // [tested]
-
-  protected:
-    friend class wdMapBase<KeyType, ValueType, Comparer>;
-
-    WD_ALWAYS_INLINE explicit ConstIterator(Node* pInit)
-      : m_pElement(pInit)
-    {
-    }
-
-    Node* m_pElement;
-  };
-
-  /// \brief Forward Iterator to iterate over all elements in sorted order.
-  struct Iterator : public ConstIterator
-  {
-    using iterator_category = std::forward_iterator_tag;
-    using value_type = Iterator;
-    using difference_type = ptrdiff_t;
-    using pointer = Iterator*;
-    using reference = Iterator&;
-
-    // this is required to pull in the const version of this function
-    using ConstIterator::Value;
-
-    WD_DECLARE_POD_TYPE();
-
-    /// \brief Constructs an invalid iterator.
-    WD_ALWAYS_INLINE Iterator()
-      : ConstIterator()
-    {
-    }
-
-    /// \brief Returns the 'value' of the element that this iterator points to.
-    WD_FORCE_INLINE ValueType& Value()
-    {
-      WD_ASSERT_DEBUG(this->IsValid(), "Cannot access the 'value' of an invalid iterator.");
-      return this->m_pElement->m_Value;
-    }
-
-    /// \brief Returns '*this' to enable foreach
-    WD_ALWAYS_INLINE Iterator& operator*() { return *this; } // [tested]
-
-  private:
-    friend class wdMapBase<KeyType, ValueType, Comparer>;
-
-    WD_ALWAYS_INLINE explicit Iterator(Node* pInit)
-      : ConstIterator(pInit)
-    {
-    }
-  };
-
 protected:
   /// \brief Initializes the map to be empty.
-  wdMapBase(const Comparer& comparer, wdAllocatorBase* pAllocator); // [tested]
+  nsMapBase(const Comparer& comparer, nsAllocator* pAllocator); // [tested]
 
   /// \brief Copies all key/value pairs from the given map into this one.
-  wdMapBase(const wdMapBase<KeyType, ValueType, Comparer>& cc, wdAllocatorBase* pAllocator); // [tested]
+  nsMapBase(const nsMapBase<KeyType, ValueType, Comparer>& cc, nsAllocator* pAllocator); // [tested]
 
   /// \brief Destroys all elements from the map.
-  ~wdMapBase(); // [tested]
+  ~nsMapBase(); // [tested]
 
   /// \brief Copies all key/value pairs from the given map into this one.
-  void operator=(const wdMapBase<KeyType, ValueType, Comparer>& rhs);
+  void operator=(const nsMapBase<KeyType, ValueType, Comparer>& rhs);
 
 public:
   /// \brief Returns whether there are no elements in the map. O(1) operation.
   bool IsEmpty() const; // [tested]
 
   /// \brief Returns the number of elements currently stored in the map. O(1) operation.
-  wdUInt32 GetCount() const; // [tested]
+  nsUInt32 GetCount() const; // [tested]
 
   /// \brief Destroys all elements in the map and resets its size to zero.
   void Clear(); // [tested]
@@ -166,14 +235,14 @@ public:
   /// \brief Returns an Iterator to the very first element.
   Iterator GetIterator(); // [tested]
 
+  /// \brief Returns a ReverseIterator to the very last element.
+  ReverseIterator GetReverseIterator(); // [tested]
+
   /// \brief Returns a constant Iterator to the very first element.
   ConstIterator GetIterator() const; // [tested]
 
-  /// \brief Returns an Iterator to the very last element. For reverse traversal.
-  Iterator GetLastIterator(); // [tested]
-
-  /// \brief Returns a constant Iterator to the very last element. For reverse traversal.
-  ConstIterator GetLastIterator() const; // [tested]
+  /// \brief Returns a constant ReverseIterator to the very last element.
+  ConstReverseIterator GetReverseIterator() const; // [tested]
 
   /// \brief Inserts the key/value pair into the tree and returns an Iterator to it. O(log n) operation.
   template <typename CompatibleKeyType, typename CompatibleValueType>
@@ -254,19 +323,17 @@ public:
   ConstIterator UpperBound(const CompatibleKeyType& key) const; // [tested]
 
   /// \brief Returns the allocator that is used by this instance.
-  wdAllocatorBase* GetAllocator() const { return m_Elements.GetAllocator(); }
+  nsAllocator* GetAllocator() const { return m_Elements.GetAllocator(); }
 
   /// \brief Comparison operator
-  bool operator==(const wdMapBase<KeyType, ValueType, Comparer>& rhs) const; // [tested]
-
-  /// \brief Comparison operator
-  bool operator!=(const wdMapBase<KeyType, ValueType, Comparer>& rhs) const; // [tested]
+  bool operator==(const nsMapBase<KeyType, ValueType, Comparer>& rhs) const; // [tested]
+  NS_ADD_DEFAULT_OPERATOR_NOTEQUAL(const nsMapBase<KeyType, ValueType, Comparer>&);
 
   /// \brief Returns the amount of bytes that are currently allocated on the heap.
-  wdUInt64 GetHeapMemoryUsage() const { return m_Elements.GetHeapMemoryUsage(); } // [tested]
+  nsUInt64 GetHeapMemoryUsage() const { return m_Elements.GetHeapMemoryUsage(); } // [tested]
 
   /// \brief Swaps this map with the other one.
-  void Swap(wdMapBase<KeyType, ValueType, Comparer>& other); // [tested]
+  void Swap(nsMapBase<KeyType, ValueType, Comparer>& other); // [tested]
 
 private:
   template <typename CompatibleKeyType>
@@ -281,7 +348,7 @@ private:
 
   /// \brief Creates one new node and initializes it.
   template <typename CompatibleKeyType>
-  Node* AcquireNode(CompatibleKeyType&& key, ValueType&& value, wdUInt8 uiLevel, Node* pParent);
+  Node* AcquireNode(CompatibleKeyType&& key, ValueType&& value, nsUInt8 uiLevel, Node* pParent);
 
   /// \brief Destroys the given node.
   void ReleaseNode(Node* pNode);
@@ -306,73 +373,73 @@ private:
   /// \brief Root node of the tree.
   Node* m_pRoot;
 
+  /// \brief Stack of recently discarded nodes to quickly acquire new nodes.
+  Node* m_pFreeElementStack;
+
   /// \brief Sentinel node.
   NilNode m_NilNode;
 
-  /// \brief Number of active nodes in the tree.
-  wdUInt32 m_uiCount;
-
   /// \brief Data store. Keeps all the nodes.
-  wdDeque<Node, wdNullAllocatorWrapper, false> m_Elements;
+  nsDeque<Node, nsNullAllocatorWrapper, false> m_Elements;
 
-  /// \brief Stack of recently discarded nodes to quickly acquire new nodes.
-  Node* m_pFreeElementStack;
+  /// \brief Number of active nodes in the tree.
+  nsUInt32 m_uiCount;
 
   /// \brief Comparer object
   Comparer m_Comparer;
 };
 
 
-/// \brief \see wdMapBase
-template <typename KeyType, typename ValueType, typename Comparer = wdCompareHelper<KeyType>, typename AllocatorWrapper = wdDefaultAllocatorWrapper>
-class wdMap : public wdMapBase<KeyType, ValueType, Comparer>
+/// \brief \see nsMapBase
+template <typename KeyType, typename ValueType, typename Comparer = nsCompareHelper<KeyType>, typename AllocatorWrapper = nsDefaultAllocatorWrapper>
+class nsMap : public nsMapBase<KeyType, ValueType, Comparer>
 {
 public:
-  wdMap();
-  explicit wdMap(wdAllocatorBase* pAllocator);
-  wdMap(const Comparer& comparer, wdAllocatorBase* pAllocator);
+  nsMap();
+  explicit nsMap(nsAllocator* pAllocator);
+  nsMap(const Comparer& comparer, nsAllocator* pAllocator);
 
-  wdMap(const wdMap<KeyType, ValueType, Comparer, AllocatorWrapper>& other);
-  wdMap(const wdMapBase<KeyType, ValueType, Comparer>& other);
+  nsMap(const nsMap<KeyType, ValueType, Comparer, AllocatorWrapper>& other);
+  nsMap(const nsMapBase<KeyType, ValueType, Comparer>& other);
 
-  void operator=(const wdMap<KeyType, ValueType, Comparer, AllocatorWrapper>& rhs);
-  void operator=(const wdMapBase<KeyType, ValueType, Comparer>& rhs);
+  void operator=(const nsMap<KeyType, ValueType, Comparer, AllocatorWrapper>& rhs);
+  void operator=(const nsMapBase<KeyType, ValueType, Comparer>& rhs);
 };
 
 template <typename KeyType, typename ValueType, typename Comparer>
-typename wdMapBase<KeyType, ValueType, Comparer>::Iterator begin(wdMapBase<KeyType, ValueType, Comparer>& ref_container)
+typename nsMapBase<KeyType, ValueType, Comparer>::Iterator begin(nsMapBase<KeyType, ValueType, Comparer>& ref_container)
 {
   return ref_container.GetIterator();
 }
 
 template <typename KeyType, typename ValueType, typename Comparer>
-typename wdMapBase<KeyType, ValueType, Comparer>::ConstIterator begin(const wdMapBase<KeyType, ValueType, Comparer>& container)
+typename nsMapBase<KeyType, ValueType, Comparer>::ConstIterator begin(const nsMapBase<KeyType, ValueType, Comparer>& container)
 {
   return container.GetIterator();
 }
 
 template <typename KeyType, typename ValueType, typename Comparer>
-typename wdMapBase<KeyType, ValueType, Comparer>::ConstIterator cbegin(const wdMapBase<KeyType, ValueType, Comparer>& container)
+typename nsMapBase<KeyType, ValueType, Comparer>::ConstIterator cbegin(const nsMapBase<KeyType, ValueType, Comparer>& container)
 {
   return container.GetIterator();
 }
 
 template <typename KeyType, typename ValueType, typename Comparer>
-typename wdMapBase<KeyType, ValueType, Comparer>::Iterator end(wdMapBase<KeyType, ValueType, Comparer>& ref_container)
+typename nsMapBase<KeyType, ValueType, Comparer>::Iterator end(nsMapBase<KeyType, ValueType, Comparer>& ref_container)
 {
-  return typename wdMapBase<KeyType, ValueType, Comparer>::Iterator();
+  return typename nsMapBase<KeyType, ValueType, Comparer>::Iterator();
 }
 
 template <typename KeyType, typename ValueType, typename Comparer>
-typename wdMapBase<KeyType, ValueType, Comparer>::ConstIterator end(const wdMapBase<KeyType, ValueType, Comparer>& container)
+typename nsMapBase<KeyType, ValueType, Comparer>::ConstIterator end(const nsMapBase<KeyType, ValueType, Comparer>& container)
 {
-  return typename wdMapBase<KeyType, ValueType, Comparer>::ConstIterator();
+  return typename nsMapBase<KeyType, ValueType, Comparer>::ConstIterator();
 }
 
 template <typename KeyType, typename ValueType, typename Comparer>
-typename wdMapBase<KeyType, ValueType, Comparer>::ConstIterator cend(const wdMapBase<KeyType, ValueType, Comparer>& container)
+typename nsMapBase<KeyType, ValueType, Comparer>::ConstIterator cend(const nsMapBase<KeyType, ValueType, Comparer>& container)
 {
-  return typename wdMapBase<KeyType, ValueType, Comparer>::ConstIterator();
+  return typename nsMapBase<KeyType, ValueType, Comparer>::ConstIterator();
 }
 
 #include <Foundation/Containers/Implementation/Map_inl.h>

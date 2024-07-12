@@ -2,55 +2,55 @@
 
 #include <Foundation/Math/Math.h>
 
-template <wdUInt8 DecimalBits>
-const wdFixedPoint<DecimalBits>& wdFixedPoint<DecimalBits>::operator=(wdInt32 iVal)
+template <nsUInt8 DecimalBits>
+const nsFixedPoint<DecimalBits>& nsFixedPoint<DecimalBits>::operator=(nsInt32 iVal)
 {
   m_iValue = iVal << DecimalBits;
   return *this;
 }
 
-template <wdUInt8 DecimalBits>
-const wdFixedPoint<DecimalBits>& wdFixedPoint<DecimalBits>::operator=(float fVal)
+template <nsUInt8 DecimalBits>
+const nsFixedPoint<DecimalBits>& nsFixedPoint<DecimalBits>::operator=(float fVal)
 {
-  m_iValue = (wdInt32)wdMath::Round(fVal * (1 << DecimalBits));
+  m_iValue = (nsInt32)nsMath::Round(fVal * (1 << DecimalBits));
   return *this;
 }
 
-template <wdUInt8 DecimalBits>
-const wdFixedPoint<DecimalBits>& wdFixedPoint<DecimalBits>::operator=(double fVal)
+template <nsUInt8 DecimalBits>
+const nsFixedPoint<DecimalBits>& nsFixedPoint<DecimalBits>::operator=(double fVal)
 {
-  m_iValue = (wdInt32)wdMath::Round(fVal * (1 << DecimalBits));
+  m_iValue = (nsInt32)nsMath::Round(fVal * (1 << DecimalBits));
   return *this;
 }
 
-template <wdUInt8 DecimalBits>
-wdInt32 wdFixedPoint<DecimalBits>::ToInt() const
+template <nsUInt8 DecimalBits>
+nsInt32 nsFixedPoint<DecimalBits>::ToInt() const
 {
-  return (wdInt32)(m_iValue >> DecimalBits);
+  return (nsInt32)(m_iValue >> DecimalBits);
 }
 
-template <wdUInt8 DecimalBits>
-float wdFixedPoint<DecimalBits>::ToFloat() const
+template <nsUInt8 DecimalBits>
+float nsFixedPoint<DecimalBits>::ToFloat() const
 {
   return (float)((double)m_iValue / (double)(1 << DecimalBits));
 }
 
-template <wdUInt8 DecimalBits>
-double wdFixedPoint<DecimalBits>::ToDouble() const
+template <nsUInt8 DecimalBits>
+double nsFixedPoint<DecimalBits>::ToDouble() const
 {
   return ((double)m_iValue / (double)(1 << DecimalBits));
 }
 
-template <wdUInt8 DecimalBits>
-void wdFixedPoint<DecimalBits>::operator*=(const wdFixedPoint<DecimalBits>& rhs)
+template <nsUInt8 DecimalBits>
+void nsFixedPoint<DecimalBits>::operator*=(const nsFixedPoint<DecimalBits>& rhs)
 {
   // lhs and rhs are in N:M format (N Bits for the Integer part, M Bits for the fractional part)
   // after multiplication, it will be in 2N:2M format
 
-  const wdInt64 TempLHS = m_iValue;
-  const wdInt64 TempRHS = rhs.m_iValue;
+  const nsInt64 TempLHS = m_iValue;
+  const nsInt64 TempRHS = rhs.m_iValue;
 
-  wdInt64 TempRes = TempLHS * TempRHS;
+  nsInt64 TempRes = TempLHS * TempRHS;
 
   // the lower DecimalBits Bits are nearly of no concern (we throw them away anyway), except for the upper most Bit
   // that is Bit '(DecimalBits - 1)' and its Bitmask is therefore '(1 << (DecimalBits - 1))'
@@ -62,18 +62,18 @@ void wdFixedPoint<DecimalBits>::operator*=(const wdFixedPoint<DecimalBits>& rhs)
   TempRes >>= DecimalBits; // result format: 2N:M
 
   // the upper N Bits are thrown away during conversion from 64 Bit to 32 Bit
-  m_iValue = (wdInt32)TempRes;
+  m_iValue = (nsInt32)TempRes;
 }
 
-template <wdUInt8 DecimalBits>
-void wdFixedPoint<DecimalBits>::operator/=(const wdFixedPoint<DecimalBits>& rhs)
+template <nsUInt8 DecimalBits>
+void nsFixedPoint<DecimalBits>::operator/=(const nsFixedPoint<DecimalBits>& rhs)
 {
-  wdInt64 TempLHS = m_iValue;
-  const wdInt64 TempRHS = rhs.m_iValue;
+  nsInt64 TempLHS = m_iValue;
+  const nsInt64 TempRHS = rhs.m_iValue;
 
   TempLHS <<= 31;
 
-  wdInt64 TempRes = TempLHS / TempRHS;
+  nsInt64 TempRes = TempLHS / TempRHS;
 
   // same rounding concept as in multiplication
   TempRes += ((TempRes & (1 << (31 - DecimalBits - 1))) << 1);
@@ -81,63 +81,63 @@ void wdFixedPoint<DecimalBits>::operator/=(const wdFixedPoint<DecimalBits>& rhs)
   TempRes >>= (31 - DecimalBits);
 
   // here we throw away the upper 32 Bits again (not needed anymore)
-  m_iValue = (wdInt32)TempRes;
+  m_iValue = (nsInt32)TempRes;
 }
 
 
-template <wdUInt8 DecimalBits>
-wdFixedPoint<DecimalBits> operator+(const wdFixedPoint<DecimalBits>& lhs, const wdFixedPoint<DecimalBits>& rhs)
+template <nsUInt8 DecimalBits>
+nsFixedPoint<DecimalBits> operator+(const nsFixedPoint<DecimalBits>& lhs, const nsFixedPoint<DecimalBits>& rhs)
 {
-  wdFixedPoint<DecimalBits> res = lhs;
+  nsFixedPoint<DecimalBits> res = lhs;
   res += rhs;
   return res;
 }
 
-template <wdUInt8 DecimalBits>
-wdFixedPoint<DecimalBits> operator-(const wdFixedPoint<DecimalBits>& lhs, const wdFixedPoint<DecimalBits>& rhs)
+template <nsUInt8 DecimalBits>
+nsFixedPoint<DecimalBits> operator-(const nsFixedPoint<DecimalBits>& lhs, const nsFixedPoint<DecimalBits>& rhs)
 {
-  wdFixedPoint<DecimalBits> res = lhs;
+  nsFixedPoint<DecimalBits> res = lhs;
   res -= rhs;
   return res;
 }
 
-template <wdUInt8 DecimalBits>
-wdFixedPoint<DecimalBits> operator*(const wdFixedPoint<DecimalBits>& lhs, const wdFixedPoint<DecimalBits>& rhs)
+template <nsUInt8 DecimalBits>
+nsFixedPoint<DecimalBits> operator*(const nsFixedPoint<DecimalBits>& lhs, const nsFixedPoint<DecimalBits>& rhs)
 {
-  wdFixedPoint<DecimalBits> res = lhs;
+  nsFixedPoint<DecimalBits> res = lhs;
   res *= rhs;
   return res;
 }
 
-template <wdUInt8 DecimalBits>
-wdFixedPoint<DecimalBits> operator/(const wdFixedPoint<DecimalBits>& lhs, const wdFixedPoint<DecimalBits>& rhs)
+template <nsUInt8 DecimalBits>
+nsFixedPoint<DecimalBits> operator/(const nsFixedPoint<DecimalBits>& lhs, const nsFixedPoint<DecimalBits>& rhs)
 {
-  wdFixedPoint<DecimalBits> res = lhs;
+  nsFixedPoint<DecimalBits> res = lhs;
   res /= rhs;
   return res;
 }
 
 
-template <wdUInt8 DecimalBits>
-wdFixedPoint<DecimalBits> operator*(const wdFixedPoint<DecimalBits>& lhs, wdInt32 rhs)
+template <nsUInt8 DecimalBits>
+nsFixedPoint<DecimalBits> operator*(const nsFixedPoint<DecimalBits>& lhs, nsInt32 rhs)
 {
-  wdFixedPoint<DecimalBits> ret = lhs;
+  nsFixedPoint<DecimalBits> ret = lhs;
   ret *= rhs;
   return ret;
 }
 
-template <wdUInt8 DecimalBits>
-wdFixedPoint<DecimalBits> operator*(wdInt32 lhs, const wdFixedPoint<DecimalBits>& rhs)
+template <nsUInt8 DecimalBits>
+nsFixedPoint<DecimalBits> operator*(nsInt32 lhs, const nsFixedPoint<DecimalBits>& rhs)
 {
-  wdFixedPoint<DecimalBits> ret = rhs;
+  nsFixedPoint<DecimalBits> ret = rhs;
   ret *= lhs;
   return ret;
 }
 
-template <wdUInt8 DecimalBits>
-wdFixedPoint<DecimalBits> operator/(const wdFixedPoint<DecimalBits>& lhs, wdInt32 rhs)
+template <nsUInt8 DecimalBits>
+nsFixedPoint<DecimalBits> operator/(const nsFixedPoint<DecimalBits>& lhs, nsInt32 rhs)
 {
-  wdFixedPoint<DecimalBits> ret = lhs;
+  nsFixedPoint<DecimalBits> ret = lhs;
   ret /= rhs;
   return ret;
 }

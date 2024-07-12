@@ -2,14 +2,14 @@
 
 #include <Foundation/Basics.h>
 
-#define WD_INCLUDED_WINDOWS_H 1
+#define NS_INCLUDED_WINDOWS_H 1
 
-#if WD_ENABLED(WD_PLATFORM_WINDOWS)
+#if NS_ENABLED(NS_PLATFORM_WINDOWS)
 // this is important for code that wants to include winsock2.h later on
 #  define _WINSOCKAPI_ /* Prevent inclusion of winsock.h in windows.h */
 
 // already includes Windows.h, but defines important other things first
-//#include <winsock2.h>
+// #include <winsock2.h>
 
 #  ifndef WIN32_LEAN_AND_MEAN
 #    define WIN32_LEAN_AND_MEAN
@@ -31,34 +31,34 @@
 
 #  include <Foundation/Basics/Platform/Win/MinWindows.h>
 
-namespace wdMinWindows
+namespace nsMinWindows
 {
   template <>
   struct ToNativeImpl<HINSTANCE>
   {
-    typedef ::HINSTANCE type;
-    static WD_ALWAYS_INLINE ::HINSTANCE ToNative(HINSTANCE hInstance) { return reinterpret_cast<::HINSTANCE>(hInstance); }
+    using type = ::HINSTANCE;
+    static NS_ALWAYS_INLINE ::HINSTANCE ToNative(HINSTANCE hInstance) { return reinterpret_cast<::HINSTANCE>(hInstance); }
   };
 
   template <>
   struct ToNativeImpl<HWND>
   {
     using type = ::HWND;
-    static WD_ALWAYS_INLINE ::HWND ToNative(HWND hWnd) { return reinterpret_cast<::HWND>(hWnd); }
+    static NS_ALWAYS_INLINE ::HWND ToNative(HWND hWnd) { return reinterpret_cast<::HWND>(hWnd); }
   };
 
   template <>
   struct FromNativeImpl<::HWND>
   {
     using type = HWND;
-    static WD_ALWAYS_INLINE HWND FromNative(::HWND pWnd) { return reinterpret_cast<HWND>(pWnd); }
+    static NS_ALWAYS_INLINE HWND FromNative(::HWND hWnd) { return reinterpret_cast<HWND>(hWnd); }
   };
 
   template <>
   struct FromNativeImpl<::HINSTANCE>
   {
     using type = HINSTANCE;
-    static WD_ALWAYS_INLINE HINSTANCE FromNative(::HINSTANCE pInstance) { return reinterpret_cast<HINSTANCE>(pInstance); }
+    static NS_ALWAYS_INLINE HINSTANCE FromNative(::HINSTANCE hInstance) { return reinterpret_cast<HINSTANCE>(hInstance); }
   };
-} // namespace wdMinWindows
+} // namespace nsMinWindows
 #endif

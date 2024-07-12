@@ -3,7 +3,7 @@
 #include <Foundation/Serialization/BinarySerializer.h>
 #include <Foundation/Serialization/GraphVersioning.h>
 
-enum wdBinarySerializerVersion : wdUInt32
+enum nsBinarySerializerVersion : nsUInt32
 {
   InvalidVersion = 0,
   Version1,
@@ -13,11 +13,11 @@ enum wdBinarySerializerVersion : wdUInt32
   CurrentVersion = ENUM_COUNT - 1 // automatically the highest version number
 };
 
-static void WriteGraph(const wdAbstractObjectGraph* pGraph, wdStreamWriter& inout_stream)
+static void WriteGraph(const nsAbstractObjectGraph* pGraph, nsStreamWriter& inout_stream)
 {
   const auto& Nodes = pGraph->GetAllNodes();
 
-  wdUInt32 uiNodes = Nodes.GetCount();
+  nsUInt32 uiNodes = Nodes.GetCount();
   inout_stream << uiNodes;
   for (auto itNode = Nodes.GetIterator(); itNode.IsValid(); ++itNode)
   {
@@ -27,20 +27,20 @@ static void WriteGraph(const wdAbstractObjectGraph* pGraph, wdStreamWriter& inou
     inout_stream << node.GetTypeVersion();
     inout_stream << node.GetNodeName();
 
-    const wdHybridArray<wdAbstractObjectNode::Property, 16>& properties = node.GetProperties();
-    wdUInt32 uiProps = properties.GetCount();
+    const nsHybridArray<nsAbstractObjectNode::Property, 16>& properties = node.GetProperties();
+    nsUInt32 uiProps = properties.GetCount();
     inout_stream << uiProps;
-    for (const wdAbstractObjectNode::Property& prop : properties)
+    for (const nsAbstractObjectNode::Property& prop : properties)
     {
-      inout_stream << prop.m_szPropertyName;
+      inout_stream << prop.m_sPropertyName;
       inout_stream << prop.m_Value;
     }
   }
 }
 
-void wdAbstractGraphBinarySerializer::Write(wdStreamWriter& inout_stream, const wdAbstractObjectGraph* pGraph, const wdAbstractObjectGraph* pTypesGraph)
+void nsAbstractGraphBinarySerializer::Write(nsStreamWriter& inout_stream, const nsAbstractObjectGraph* pGraph, const nsAbstractObjectGraph* pTypesGraph)
 {
-  wdUInt32 uiVersion = wdBinarySerializerVersion::CurrentVersion;
+  nsUInt32 uiVersion = nsBinarySerializerVersion::CurrentVersion;
   inout_stream << uiVersion;
 
   WriteGraph(pGraph, inout_stream);
@@ -50,27 +50,27 @@ void wdAbstractGraphBinarySerializer::Write(wdStreamWriter& inout_stream, const 
   }
 }
 
-static void ReadGraph(wdStreamReader& inout_stream, wdAbstractObjectGraph* pGraph)
+static void ReadGraph(nsStreamReader& inout_stream, nsAbstractObjectGraph* pGraph)
 {
-  wdUInt32 uiNodes = 0;
+  nsUInt32 uiNodes = 0;
   inout_stream >> uiNodes;
-  for (wdUInt32 uiNodeIdx = 0; uiNodeIdx < uiNodes; uiNodeIdx++)
+  for (nsUInt32 uiNodeIdx = 0; uiNodeIdx < uiNodes; uiNodeIdx++)
   {
-    wdUuid guid;
-    wdUInt32 uiTypeVersion;
-    wdStringBuilder sType;
-    wdStringBuilder sNodeName;
+    nsUuid guid;
+    nsUInt32 uiTypeVersion;
+    nsStringBuilder sType;
+    nsStringBuilder sNodeName;
     inout_stream >> guid;
     inout_stream >> sType;
     inout_stream >> uiTypeVersion;
     inout_stream >> sNodeName;
-    wdAbstractObjectNode* pNode = pGraph->AddNode(guid, sType, uiTypeVersion, sNodeName);
-    wdUInt32 uiProps = 0;
+    nsAbstractObjectNode* pNode = pGraph->AddNode(guid, sType, uiTypeVersion, sNodeName);
+    nsUInt32 uiProps = 0;
     inout_stream >> uiProps;
-    for (wdUInt32 propIdx = 0; propIdx < uiProps; ++propIdx)
+    for (nsUInt32 propIdx = 0; propIdx < uiProps; ++propIdx)
     {
-      wdStringBuilder sPropName;
-      wdVariant value;
+      nsStringBuilder sPropName;
+      nsVariant value;
       inout_stream >> sPropName;
       inout_stream >> value;
       pNode->AddProperty(sPropName, value);
@@ -78,15 +78,15 @@ static void ReadGraph(wdStreamReader& inout_stream, wdAbstractObjectGraph* pGrap
   }
 }
 
-void wdAbstractGraphBinarySerializer::Read(
-  wdStreamReader& inout_stream, wdAbstractObjectGraph* pGraph, wdAbstractObjectGraph* pTypesGraph, bool bApplyPatches)
+void nsAbstractGraphBinarySerializer::Read(
+  nsStreamReader& inout_stream, nsAbstractObjectGraph* pGraph, nsAbstractObjectGraph* pTypesGraph, bool bApplyPatches)
 {
-  wdUInt32 uiVersion = 0;
+  nsUInt32 uiVersion = 0;
   inout_stream >> uiVersion;
-  if (uiVersion != wdBinarySerializerVersion::CurrentVersion)
+  if (uiVersion != nsBinarySerializerVersion::CurrentVersion)
   {
-    WD_REPORT_FAILURE(
-      "Binary serializer version {0} does not match expected version {1}, re-export file.", uiVersion, wdBinarySerializerVersion::CurrentVersion);
+    NS_REPORT_FAILURE(
+      "Binary serializer version {0} does not match expected version {1}, re-export file.", uiVersion, nsBinarySerializerVersion::CurrentVersion);
     return;
   }
   ReadGraph(inout_stream, pGraph);
@@ -98,9 +98,7 @@ void wdAbstractGraphBinarySerializer::Read(
   if (bApplyPatches)
   {
     if (pTypesGraph)
-      wdGraphVersioning::GetSingleton()->PatchGraph(pTypesGraph);
-    wdGraphVersioning::GetSingleton()->PatchGraph(pGraph, pTypesGraph);
+      nsGraphVersioning::GetSingleton()->PatchGraph(pTypesGraph);
+    nsGraphVersioning::GetSingleton()->PatchGraph(pGraph, pTypesGraph);
   }
 }
-
-WD_STATICLINK_FILE(Foundation, Foundation_Serialization_Implementation_BinarySerializer);

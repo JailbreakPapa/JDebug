@@ -2,27 +2,27 @@
 
 #include <Foundation/SimdMath/SimdVec4i.h>
 
-class WD_FOUNDATION_DLL wdSimdPerlinNoise
+class NS_FOUNDATION_DLL nsSimdPerlinNoise
 {
 public:
-  wdSimdPerlinNoise(wdUInt32 uiSeed);
+  nsSimdPerlinNoise(nsUInt32 uiSeed);
 
-  wdSimdVec4f NoiseZeroToOne(const wdSimdVec4f& x, const wdSimdVec4f& y, const wdSimdVec4f& z, wdUInt32 uiNumOctaves = 1);
+  nsSimdVec4f NoiseZeroToOne(const nsSimdVec4f& x, const nsSimdVec4f& y, const nsSimdVec4f& z, nsUInt32 uiNumOctaves = 1);
 
 private:
-  wdSimdVec4f Noise(const wdSimdVec4f& x, const wdSimdVec4f& y, const wdSimdVec4f& z);
+  nsSimdVec4f Noise(const nsSimdVec4f& x, const nsSimdVec4f& y, const nsSimdVec4f& z);
 
-  WD_FORCE_INLINE wdSimdVec4i Permute(const wdSimdVec4i& v)
+  NS_FORCE_INLINE nsSimdVec4i Permute(const nsSimdVec4i& v)
   {
 #if 0
-    wdArrayPtr<wdUInt8> p = wdMakeArrayPtr(m_Permutations);
+    nsArrayPtr<nsUInt8> p = nsMakeArrayPtr(m_Permutations);
 #else
-    wdUInt8* p = m_Permutations;
+    nsUInt8* p = m_Permutations;
 #endif
 
-    wdSimdVec4i i = v & wdSimdVec4i(WD_ARRAY_SIZE(m_Permutations) - 1);
-    return wdSimdVec4i(p[i.x()], p[i.y()], p[i.z()], p[i.w()]);
+    nsSimdVec4i i = v & nsSimdVec4i(NS_ARRAY_SIZE(m_Permutations) - 1);
+    return nsSimdVec4i(p[i.x()], p[i.y()], p[i.z()], p[i.w()]);
   }
 
-  wdUInt8 m_Permutations[256];
+  nsUInt8 m_Permutations[256];
 };

@@ -1,5 +1,5 @@
 
-WD_ALWAYS_INLINE wdMutex::wdMutex()
+NS_ALWAYS_INLINE nsMutex::nsMutex()
 {
   pthread_mutexattr_t mutexAttributes;
   pthread_mutexattr_init(&mutexAttributes);
@@ -10,28 +10,28 @@ WD_ALWAYS_INLINE wdMutex::wdMutex()
   pthread_mutexattr_destroy(&mutexAttributes);
 }
 
-WD_ALWAYS_INLINE wdMutex::~wdMutex()
+NS_ALWAYS_INLINE nsMutex::~nsMutex()
 {
   pthread_mutex_destroy(&m_hHandle);
 }
 
-WD_ALWAYS_INLINE void wdMutex::Lock()
+NS_ALWAYS_INLINE void nsMutex::Lock()
 {
   pthread_mutex_lock(&m_hHandle);
   ++m_iLockCount;
 }
 
-WD_ALWAYS_INLINE wdResult wdMutex::TryLock()
+NS_ALWAYS_INLINE nsResult nsMutex::TryLock()
 {
   if (pthread_mutex_trylock(&m_hHandle) == 0)
   {
     ++m_iLockCount;
-    return WD_SUCCESS;
+    return NS_SUCCESS;
   }
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
-WD_ALWAYS_INLINE void wdMutex::Unlock()
+NS_ALWAYS_INLINE void nsMutex::Unlock()
 {
   --m_iLockCount;
   pthread_mutex_unlock(&m_hHandle);

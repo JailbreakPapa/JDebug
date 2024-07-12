@@ -5,43 +5,43 @@
 
 #include <Foundation/Basics/Platform/Win/MinWindows.h>
 
-#if WD_ENABLED(WD_PLATFORM_32BIT)
-struct alignas(4) wdMutexHandle
+#if NS_ENABLED(NS_PLATFORM_32BIT)
+struct alignas(4) nsMutexHandle
 {
-  wdUInt8 data[24];
+  nsUInt8 data[24];
 };
 #else
-struct alignas(8) wdMutexHandle
+struct alignas(8) nsMutexHandle
 {
-  wdUInt8 data[40];
+  nsUInt8 data[40];
 };
 #endif
 
 
-#if WD_ENABLED(WD_PLATFORM_32BIT)
-struct alignas(4) wdConditionVariableHandle
+#if NS_ENABLED(NS_PLATFORM_32BIT)
+struct alignas(4) nsConditionVariableHandle
 {
-  wdUInt8 data[4];
+  nsUInt8 data[4];
 };
 #else
-struct alignas(8) wdConditionVariableHandle
+struct alignas(8) nsConditionVariableHandle
 {
-  wdUInt8 data[8];
+  nsUInt8 data[8];
 };
 #endif
 
 
 
-using wdThreadHandle = wdMinWindows::HANDLE;
-using wdThreadID = wdMinWindows::DWORD;
-using wdOSThreadEntryPoint = wdMinWindows::DWORD(__stdcall*)(void* lpThreadParameter);
-using wdSemaphoreHandle = wdMinWindows::HANDLE;
+using nsThreadHandle = nsMinWindows::HANDLE;
+using nsThreadID = nsMinWindows::DWORD;
+using nsOSThreadEntryPoint = nsMinWindows::DWORD(__stdcall*)(void* lpThreadParameter);
+using nsSemaphoreHandle = nsMinWindows::HANDLE;
 
-#define WD_THREAD_CLASS_ENTRY_POINT wdMinWindows::DWORD __stdcall wdThreadClassEntryPoint(void* lpThreadParameter);
+#define NS_THREAD_CLASS_ENTRY_POINT nsMinWindows::DWORD __stdcall nsThreadClassEntryPoint(void* lpThreadParameter);
 
-struct wdConditionVariableData
+struct nsConditionVariableData
 {
-  wdConditionVariableHandle m_ConditionVariable;
+  nsConditionVariableHandle m_ConditionVariable;
 };
 
 /// \endcond

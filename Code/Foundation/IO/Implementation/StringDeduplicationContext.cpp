@@ -2,28 +2,28 @@
 
 #include <Foundation/IO/StringDeduplicationContext.h>
 
-static const wdTypeVersion s_uiStringDeduplicationVersion = 1;
+static constexpr nsTypeVersion s_uiStringDeduplicationVersion = 1;
 
-WD_IMPLEMENT_SERIALIZATION_CONTEXT(wdStringDeduplicationWriteContext)
+NS_IMPLEMENT_SERIALIZATION_CONTEXT(nsStringDeduplicationWriteContext)
 
-wdStringDeduplicationWriteContext::wdStringDeduplicationWriteContext(wdStreamWriter& ref_originalStream)
-  : wdSerializationContext()
+nsStringDeduplicationWriteContext::nsStringDeduplicationWriteContext(nsStreamWriter& ref_originalStream)
+  : nsSerializationContext()
   , m_OriginalStream(ref_originalStream)
 {
 }
 
-wdStringDeduplicationWriteContext::~wdStringDeduplicationWriteContext() = default;
+nsStringDeduplicationWriteContext::~nsStringDeduplicationWriteContext() = default;
 
-wdStreamWriter& wdStringDeduplicationWriteContext::Begin()
+nsStreamWriter& nsStringDeduplicationWriteContext::Begin()
 {
-  WD_ASSERT_DEV(m_TempStreamStorage.GetStorageSize64() == 0, "Begin() can only be called once on a string deduplication context.");
+  NS_ASSERT_DEV(m_TempStreamStorage.GetStorageSize64() == 0, "Begin() can only be called once on a string deduplication context.");
 
   m_TempStreamWriter.SetStorage(&m_TempStreamStorage);
 
   return m_TempStreamWriter;
 }
 
-wdResult wdStringDeduplicationWriteContext::End()
+nsResult nsStringDeduplicationWriteContext::End()
 {
   // We set the context manual to null here since we need normal
   // string serialization to write the de-duplicated map
@@ -31,10 +31,10 @@ wdResult wdStringDeduplicationWriteContext::End()
 
   m_OriginalStream.WriteVersion(s_uiStringDeduplicationVersion);
 
-  const wdUInt64 uiNumEntries = m_DeduplicatedStrings.GetCount();
+  const nsUInt64 uiNumEntries = m_DeduplicatedStrings.GetCount();
   m_OriginalStream << uiNumEntries;
 
-  wdMap<wdUInt32, wdHybridString<64>> StringsSortedByIndex;
+  nsMap<nsUInt32, nsHybridString<64>> StringsSortedByIndex;
 
   // Build a new map from index to string so we can use a plain
   // array for serialization and lookup purposes
@@ -50,12 +50,12 @@ wdResult wdStringDeduplicationWriteContext::End()
   }
 
   // Now append the original stream
-  WD_SUCCEED_OR_RETURN(m_TempStreamStorage.CopyToStream(m_OriginalStream));
+  NS_SUCCEED_OR_RETURN(m_TempStreamStorage.CopyToStream(m_OriginalStream));
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
-void wdStringDeduplicationWriteContext::SerializeString(const wdStringView& sString, wdStreamWriter& ref_writer)
+void nsStringDeduplicationWriteContext::SerializeString(const nsStringView& sString, nsStreamWriter& ref_writer)
 {
   bool bAlreadDeduplicated = false;
   auto it = m_DeduplicatedStrings.FindOrAdd(sString, &bAlreadDeduplicated);
@@ -68,16 +68,16 @@ void wdStringDeduplicationWriteContext::SerializeString(const wdStringView& sStr
   ref_writer << it.Value();
 }
 
-wdUInt32 wdStringDeduplicationWriteContext::GetUniqueStringCount() const
+nsUInt32 nsStringDeduplicationWriteContext::GetUniqueStringCount() const
 {
   return m_DeduplicatedStrings.GetCount();
 }
 
 
-WD_IMPLEMENT_SERIALIZATION_CONTEXT(wdStringDeduplicationReadContext)
+NS_IMPLEMENT_SERIALIZATION_CONTEXT(nsStringDeduplicationReadContext)
 
-wdStringDeduplicationReadContext::wdStringDeduplicationReadContext(wdStreamReader& inout_stream)
-  : wdSerializationContext()
+nsStringDeduplicationReadContext::nsStringDeduplicationReadContext(nsStreamReader& inout_stream)
+  : nsSerializationContext()
 {
   // We set the context manually to nullptr to get the original string table
   SetContext(nullptr);
@@ -85,29 +85,34 @@ wdStringDeduplicationReadContext::wdStringDeduplicationReadContext(wdStreamReade
   // Read the string table first
   /*auto version =*/inout_stream.ReadVersion(s_uiStringDeduplicationVersion);
 
-  wdUInt64 uiNumEntries = 0;
+  nsUInt64 uiNumEntries = 0;
   inout_stream >> uiNumEntries;
 
-  for (wdUInt64 i = 0; i < uiNumEntries; ++i)
-  {
-    wdStringBuilder Builder;
-    inout_stream >> Builder;
+  m_DeduplicatedStrings.Reserve(static_cast<nsUInt32>(uiNumEntries));
 
-    m_DeduplicatedStrings.ExpandAndGetRef() = std::move(Builder);
+  for (nsUInt64 i = 0; i < uiNumEntries; ++i)
+  {
+    nsStringBuilder s;
+    inout_stream >> s;
+
+    m_DeduplicatedStrings.PushBackUnchecked(std::move(s));
   }
 
   SetContext(this);
 }
 
-wdStringDeduplicationReadContext::~wdStringDeduplicationReadContext() = default;
+nsStringDeduplicationReadContext::~nsStringDeduplicationReadContext() = default;
 
-wdStringView wdStringDeduplicationReadContext::DeserializeString(wdStreamReader& ref_reader)
+nsStringView nsStringDeduplicationReadContext::DeserializeString(nsStreamReader& ref_reader)
 {
-  wdUInt32 uiIndex;
+  nsUInt32 uiIndex = nsInvalidIndex;
   ref_reader >> uiIndex;
+
+  if (uiIndex >= m_DeduplicatedStrings.GetCount())
+  {
+    NS_ASSERT_DEBUG(uiIndex < m_DeduplicatedStrings.GetCount(), "Failed to read data from file.");
+    return {};
+  }
 
   return m_DeduplicatedStrings[uiIndex].GetView();
 }
-
-
-WD_STATICLINK_FILE(Foundation, Foundation_IO_Implementation_StringDeduplicationContext);

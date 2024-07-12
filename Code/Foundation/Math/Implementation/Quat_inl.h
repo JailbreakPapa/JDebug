@@ -4,192 +4,221 @@
 #include <Foundation/Math/Vec3.h>
 
 template <typename Type>
-WD_ALWAYS_INLINE wdQuatTemplate<Type>::wdQuatTemplate()
+NS_ALWAYS_INLINE nsQuatTemplate<Type>::nsQuatTemplate()
 {
-#if WD_ENABLED(WD_COMPILE_FOR_DEBUG)
+#if NS_ENABLED(NS_MATH_CHECK_FOR_NAN)
   // Initialize all data to NaN in debug mode to find problems with uninitialized data easier.
-  const Type TypeNaN = wdMath::NaN<Type>();
+  const Type TypeNaN = nsMath::NaN<Type>();
+  x = TypeNaN;
+  y = TypeNaN;
+  z = TypeNaN;
   w = TypeNaN;
 #endif
 }
 
 template <typename Type>
-WD_ALWAYS_INLINE wdQuatTemplate<Type>::wdQuatTemplate(Type x, Type y, Type z, Type w)
-  : v(x, y, z)
-  , w(w)
+NS_ALWAYS_INLINE nsQuatTemplate<Type>::nsQuatTemplate(Type inX, Type inY, Type inZ, Type inW)
+  : x(inX)
+  , y(inY)
+  , z(inZ)
+  , w(inW)
 {
 }
 
 template <typename Type>
-WD_ALWAYS_INLINE const wdQuatTemplate<Type> wdQuatTemplate<Type>::IdentityQuaternion()
+NS_ALWAYS_INLINE const nsQuatTemplate<Type> nsQuatTemplate<Type>::MakeIdentity()
 {
-  return wdQuatTemplate(0, 0, 0, 1);
+  return nsQuatTemplate(0, 0, 0, 1);
 }
 
 template <typename Type>
-WD_ALWAYS_INLINE void wdQuatTemplate<Type>::SetElements(Type inX, Type inY, Type inZ, Type inW)
+NS_ALWAYS_INLINE nsQuatTemplate<Type> nsQuatTemplate<Type>::MakeFromElements(Type inX, Type inY, Type inZ, Type inW)
 {
-  v.Set(inX, inY, inZ);
-  w = inW;
+  return nsQuatTemplate<Type>(inX, inY, inZ, inW);
 }
 
 template <typename Type>
-WD_ALWAYS_INLINE void wdQuatTemplate<Type>::SetIdentity()
+NS_ALWAYS_INLINE void nsQuatTemplate<Type>::SetIdentity()
 {
-  v.SetZero();
+  x = (Type)0;
+  y = (Type)0;
+  z = (Type)0;
   w = (Type)1;
 }
 
 template <typename Type>
-void wdQuatTemplate<Type>::SetFromAxisAndAngle(const wdVec3Template<Type>& vRotationAxis, wdAngle angle)
+nsQuatTemplate<Type> nsQuatTemplate<Type>::MakeFromAxisAndAngle(const nsVec3Template<Type>& vRotationAxis, nsAngle angle)
 {
-  const wdAngle halfAngle = angle * 0.5f;
+  const nsAngle halfAngle = angle * 0.5f;
 
-  v = static_cast<Type>(wdMath::Sin(halfAngle)) * vRotationAxis;
-  w = wdMath::Cos(halfAngle);
+  nsVec3 v = static_cast<Type>(nsMath::Sin(halfAngle)) * vRotationAxis;
+  float w = nsMath::Cos(halfAngle);
+
+  return nsQuatTemplate<Type>(v.x, v.y, v.z, w);
 }
 
 template <typename Type>
-void wdQuatTemplate<Type>::Normalize()
+void nsQuatTemplate<Type>::Normalize()
 {
-  WD_NAN_ASSERT(this);
+  NS_NAN_ASSERT(this);
 
-  Type n = v.x * v.x + v.y * v.y + v.z * v.z + w * w;
+  Type n = x * x + y * y + z * z + w * w;
 
-  n = wdMath::Invert(wdMath::Sqrt(n));
+  n = nsMath::Invert(nsMath::Sqrt(n));
 
-  v *= n;
+  x *= n;
+  y *= n;
+  z *= n;
   w *= n;
 }
 
 template <typename Type>
-wdResult wdQuatTemplate<Type>::GetRotationAxisAndAngle(wdVec3Template<Type>& out_vAxis, wdAngle& out_angle, Type fEpsilon) const
+void nsQuatTemplate<Type>::GetRotationAxisAndAngle(nsVec3Template<Type>& out_vAxis, nsAngle& out_angle, Type fEpsilon) const
 {
-  WD_NAN_ASSERT(this);
+  NS_NAN_ASSERT(this);
 
-  const wdAngle acos = wdMath::ACos(static_cast<float>(w));
-  const float d = wdMath::Sin(acos);
+  out_angle = 2 * nsMath::ACos(static_cast<float>(w));
 
-  if (d < fEpsilon)
+  const float s = nsMath::Sqrt(1 - w * w);
+
+  if (s < fEpsilon)
   {
     out_vAxis.Set(1, 0, 0);
   }
   else
   {
-    out_vAxis = (v / static_cast<Type>(d));
+    const float ds = 1.0f / s;
+    out_vAxis.x = x * ds;
+    out_vAxis.y = y * ds;
+    out_vAxis.z = z * ds;
   }
-
-  out_angle = acos * 2;
-
-  return WD_SUCCESS;
 }
 
 template <typename Type>
-WD_FORCE_INLINE void wdQuatTemplate<Type>::Invert()
+NS_FORCE_INLINE void nsQuatTemplate<Type>::Invert()
 {
-  WD_NAN_ASSERT(this);
+  NS_NAN_ASSERT(this);
 
-  *this = -(*this);
+  *this = GetInverse();
 }
 
 template <typename Type>
-WD_FORCE_INLINE const wdQuatTemplate<Type> wdQuatTemplate<Type>::operator-() const
+NS_FORCE_INLINE const nsQuatTemplate<Type> nsQuatTemplate<Type>::GetInverse() const
 {
-  WD_NAN_ASSERT(this);
+  NS_NAN_ASSERT(this);
 
-  return (wdQuatTemplate(-v.x, -v.y, -v.z, w));
+  return (nsQuatTemplate(-x, -y, -z, w));
 }
 
 template <typename Type>
-WD_FORCE_INLINE Type wdQuatTemplate<Type>::Dot(const wdQuatTemplate& rhs) const
+NS_FORCE_INLINE const nsQuatTemplate<Type> nsQuatTemplate<Type>::GetNegated() const
 {
-  WD_NAN_ASSERT(this);
-  WD_NAN_ASSERT(&rhs);
+  NS_NAN_ASSERT(this);
 
-  return v.Dot(rhs.v) + w * rhs.w;
+  return (nsQuatTemplate(-x, -y, -z, -w));
 }
 
 template <typename Type>
-WD_ALWAYS_INLINE const wdVec3Template<Type> operator*(const wdQuatTemplate<Type>& q, const wdVec3Template<Type>& v)
+NS_FORCE_INLINE Type nsQuatTemplate<Type>::Dot(const nsQuatTemplate& rhs) const
 {
-  wdVec3Template<Type> t = q.v.CrossRH(v) * (Type)2;
-  return v + q.w * t + q.v.CrossRH(t);
+  NS_NAN_ASSERT(this);
+  NS_NAN_ASSERT(&rhs);
+
+  return GetVectorPart().Dot(rhs.GetVectorPart()) + w * rhs.w;
 }
 
 template <typename Type>
-WD_ALWAYS_INLINE const wdQuatTemplate<Type> operator*(const wdQuatTemplate<Type>& q1, const wdQuatTemplate<Type>& q2)
+NS_ALWAYS_INLINE nsVec3Template<Type> nsQuatTemplate<Type>::Rotate(const nsVec3Template<Type>& v) const
 {
-  wdQuatTemplate<Type> q;
-
-  q.w = q1.w * q2.w - q1.v.Dot(q2.v);
-  q.v = q1.w * q2.v + q2.w * q1.v + q1.v.CrossRH(q2.v);
-
-  return (q);
+  return *this * v;
 }
 
 template <typename Type>
-bool wdQuatTemplate<Type>::IsValid(Type fEpsilon) const
+NS_ALWAYS_INLINE const nsVec3Template<Type> operator*(const nsQuatTemplate<Type>& q, const nsVec3Template<Type>& v)
 {
-  if (!v.IsValid())
+  nsVec3Template<Type> t = q.GetVectorPart().CrossRH(v) * (Type)2;
+  return v + q.w * t + q.GetVectorPart().CrossRH(t);
+}
+
+template <typename Type>
+NS_ALWAYS_INLINE const nsQuatTemplate<Type> operator*(const nsQuatTemplate<Type>& q1, const nsQuatTemplate<Type>& q2)
+{
+  nsQuatTemplate<Type> q;
+
+  q.w = q1.w * q2.w - (q1.x * q2.x + q1.y * q2.y + q1.z * q2.z);
+
+  const nsVec3 v1 = q1.GetVectorPart();
+  const nsVec3 v2 = q2.GetVectorPart();
+
+  const nsVec3 vr = q1.w * v2 + q2.w * v1 + v1.CrossRH(v2);
+  q.x = vr.x;
+  q.y = vr.y;
+  q.z = vr.z;
+
+  return q;
+}
+
+template <typename Type>
+bool nsQuatTemplate<Type>::IsValid(Type fEpsilon) const
+{
+  if (!GetVectorPart().IsValid())
     return false;
-  if (!wdMath::IsFinite(w))
+  if (!nsMath::IsFinite(w))
     return false;
 
-  Type n = v.x * v.x + v.y * v.y + v.z * v.z + w * w;
+  Type n = x * x + y * y + z * z + w * w;
 
-  return (wdMath::IsEqual(n, (Type)1, fEpsilon));
+  return nsMath::IsEqual(n, (Type)1, fEpsilon);
 }
 
 template <typename Type>
-bool wdQuatTemplate<Type>::IsNaN() const
+bool nsQuatTemplate<Type>::IsNaN() const
 {
-  return v.IsNaN() || wdMath::IsNaN(w);
+  return nsMath::IsNaN(x) || nsMath::IsNaN(y) || nsMath::IsNaN(z) || nsMath::IsNaN(w);
 }
 
 template <typename Type>
-bool wdQuatTemplate<Type>::IsEqualRotation(const wdQuatTemplate<Type>& qOther, Type fEpsilon) const
+bool nsQuatTemplate<Type>::IsEqualRotation(const nsQuatTemplate<Type>& qOther, Type fEpsilon) const
 {
-  if (v.IsEqual(qOther.v, (Type)0.00001) && wdMath::IsEqual(w, qOther.w, (Type)0.00001))
+  if (GetVectorPart().IsEqual(qOther.GetVectorPart(), (Type)0.00001) && nsMath::IsEqual(w, qOther.w, (Type)0.00001))
   {
     return true;
   }
 
-  wdVec3Template<Type> vA1, vA2;
-  wdAngle A1, A2;
+  nsVec3Template<Type> vA1, vA2;
+  nsAngle A1, A2;
 
-  if (GetRotationAxisAndAngle(vA1, A1) == WD_FAILURE)
-    return false;
-  if (qOther.GetRotationAxisAndAngle(vA2, A2) == WD_FAILURE)
-    return false;
+  GetRotationAxisAndAngle(vA1, A1);
+  qOther.GetRotationAxisAndAngle(vA2, A2);
 
-  if ((A1.IsEqualSimple(A2, wdAngle::Degree(static_cast<float>(fEpsilon)))) && (vA1.IsEqual(vA2, fEpsilon)))
+  if ((A1.IsEqualSimple(A2, nsAngle::MakeFromDegree(static_cast<float>(fEpsilon)))) && (vA1.IsEqual(vA2, fEpsilon)))
     return true;
 
-  if ((A1.IsEqualSimple(-A2, wdAngle::Degree(static_cast<float>(fEpsilon)))) && (vA1.IsEqual(-vA2, fEpsilon)))
+  if ((A1.IsEqualSimple(-A2, nsAngle::MakeFromDegree(static_cast<float>(fEpsilon)))) && (vA1.IsEqual(-vA2, fEpsilon)))
     return true;
 
   return false;
 }
 
 template <typename Type>
-const wdMat3Template<Type> wdQuatTemplate<Type>::GetAsMat3() const
+const nsMat3Template<Type> nsQuatTemplate<Type>::GetAsMat3() const
 {
-  WD_NAN_ASSERT(this);
+  NS_NAN_ASSERT(this);
 
-  wdMat3Template<Type> m;
+  nsMat3Template<Type> m;
 
-  const Type fTx = v.x + v.x;
-  const Type fTy = v.y + v.y;
-  const Type fTz = v.z + v.z;
+  const Type fTx = x + x;
+  const Type fTy = y + y;
+  const Type fTz = z + z;
   const Type fTwx = fTx * w;
   const Type fTwy = fTy * w;
   const Type fTwz = fTz * w;
-  const Type fTxx = fTx * v.x;
-  const Type fTxy = fTy * v.x;
-  const Type fTxz = fTz * v.x;
-  const Type fTyy = fTy * v.y;
-  const Type fTyz = fTz * v.y;
-  const Type fTzz = fTz * v.z;
+  const Type fTxx = fTx * x;
+  const Type fTxy = fTy * x;
+  const Type fTxz = fTz * x;
+  const Type fTyy = fTy * y;
+  const Type fTyz = fTz * y;
+  const Type fTzz = fTz * z;
 
   m.Element(0, 0) = (Type)1 - (fTyy + fTzz);
   m.Element(1, 0) = fTxy - fTwz;
@@ -204,24 +233,24 @@ const wdMat3Template<Type> wdQuatTemplate<Type>::GetAsMat3() const
 }
 
 template <typename Type>
-const wdMat4Template<Type> wdQuatTemplate<Type>::GetAsMat4() const
+const nsMat4Template<Type> nsQuatTemplate<Type>::GetAsMat4() const
 {
-  WD_NAN_ASSERT(this);
+  NS_NAN_ASSERT(this);
 
-  wdMat4Template<Type> m;
+  nsMat4Template<Type> m;
 
-  const Type fTx = v.x + v.x;
-  const Type fTy = v.y + v.y;
-  const Type fTz = v.z + v.z;
+  const Type fTx = x + x;
+  const Type fTy = y + y;
+  const Type fTz = z + z;
   const Type fTwx = fTx * w;
   const Type fTwy = fTy * w;
   const Type fTwz = fTz * w;
-  const Type fTxx = fTx * v.x;
-  const Type fTxy = fTy * v.x;
-  const Type fTxz = fTz * v.x;
-  const Type fTyy = fTy * v.y;
-  const Type fTyz = fTz * v.y;
-  const Type fTzz = fTz * v.z;
+  const Type fTxx = fTx * x;
+  const Type fTxy = fTy * x;
+  const Type fTxz = fTz * x;
+  const Type fTyy = fTy * y;
+  const Type fTyz = fTz * y;
+  const Type fTzz = fTz * z;
 
   m.Element(0, 0) = (Type)1 - (fTyy + fTzz);
   m.Element(1, 0) = fTxy - fTwz;
@@ -243,9 +272,9 @@ const wdMat4Template<Type> wdQuatTemplate<Type>::GetAsMat4() const
 }
 
 template <typename Type>
-void wdQuatTemplate<Type>::SetFromMat3(const wdMat3Template<Type>& m)
+nsQuatTemplate<Type> nsQuatTemplate<Type>::MakeFromMat3(const nsMat3Template<Type>& m)
 {
-  WD_NAN_ASSERT(&m);
+  NS_NAN_ASSERT(&m);
 
   const Type trace = m.Element(0, 0) + m.Element(1, 1) + m.Element(2, 2);
   const Type half = (Type)0.5;
@@ -254,7 +283,7 @@ void wdQuatTemplate<Type>::SetFromMat3(const wdMat3Template<Type>& m)
 
   if (trace > (Type)0)
   {
-    Type s = wdMath::Sqrt(trace + (Type)1);
+    Type s = nsMath::Sqrt(trace + (Type)1);
     Type t = half / s;
 
     val[0] = (m.Element(1, 2) - m.Element(2, 1)) * t;
@@ -265,8 +294,8 @@ void wdQuatTemplate<Type>::SetFromMat3(const wdMat3Template<Type>& m)
   }
   else
   {
-    const wdInt32 next[] = {1, 2, 0};
-    wdInt32 i = 0;
+    const nsInt32 next[] = {1, 2, 0};
+    nsInt32 i = 0;
 
     if (m.Element(1, 1) > m.Element(0, 0))
       i = 1;
@@ -274,10 +303,10 @@ void wdQuatTemplate<Type>::SetFromMat3(const wdMat3Template<Type>& m)
     if (m.Element(2, 2) > m.Element(i, i))
       i = 2;
 
-    wdInt32 j = next[i];
-    wdInt32 k = next[j];
+    nsInt32 j = next[i];
+    nsInt32 k = next[j];
 
-    Type s = wdMath::Sqrt(m.Element(i, i) - (m.Element(j, j) + m.Element(k, k)) + (Type)1);
+    Type s = nsMath::Sqrt(m.Element(i, i) - (m.Element(j, j) + m.Element(k, k)) + (Type)1);
     Type t = half / s;
 
     val[i] = half * s;
@@ -286,40 +315,42 @@ void wdQuatTemplate<Type>::SetFromMat3(const wdMat3Template<Type>& m)
     val[k] = (m.Element(i, k) + m.Element(k, i)) * t;
   }
 
-  v.x = val[0];
-  v.y = val[1];
-  v.z = val[2];
-  w = val[3];
+  nsQuatTemplate<Type> q;
+  q.x = val[0];
+  q.y = val[1];
+  q.z = val[2];
+  q.w = val[3];
+  return q;
 }
 
 template <typename Type>
-void wdQuatTemplate<Type>::ReconstructFromMat3(const wdMat3Template<Type>& mMat)
+void nsQuatTemplate<Type>::ReconstructFromMat3(const nsMat3Template<Type>& mMat)
 {
-  const wdVec3 x = (mMat * wdVec3(1, 0, 0)).GetNormalized();
-  const wdVec3 y = (mMat * wdVec3(0, 1, 0)).GetNormalized();
-  const wdVec3 z = x.CrossRH(y);
+  const nsVec3 x = (mMat * nsVec3(1, 0, 0)).GetNormalized();
+  const nsVec3 y = (mMat * nsVec3(0, 1, 0)).GetNormalized();
+  const nsVec3 z = x.CrossRH(y);
 
-  wdMat3 m;
+  nsMat3 m;
   m.SetColumn(0, x);
   m.SetColumn(1, y);
   m.SetColumn(2, z);
 
-  SetFromMat3(m);
+  *this = nsQuat::MakeFromMat3(m);
 }
 
 template <typename Type>
-void wdQuatTemplate<Type>::ReconstructFromMat4(const wdMat4Template<Type>& mMat)
+void nsQuatTemplate<Type>::ReconstructFromMat4(const nsMat4Template<Type>& mMat)
 {
-  const wdVec3 x = mMat.TransformDirection(wdVec3(1, 0, 0)).GetNormalized();
-  const wdVec3 y = mMat.TransformDirection(wdVec3(0, 1, 0)).GetNormalized();
-  const wdVec3 z = x.CrossRH(y);
+  const nsVec3 x = mMat.TransformDirection(nsVec3(1, 0, 0)).GetNormalized();
+  const nsVec3 y = mMat.TransformDirection(nsVec3(0, 1, 0)).GetNormalized();
+  const nsVec3 z = x.CrossRH(y);
 
-  wdMat3 m;
+  nsMat3 m;
   m.SetColumn(0, x);
   m.SetColumn(1, y);
   m.SetColumn(2, z);
 
-  SetFromMat3(m);
+  *this = nsQuat::MakeFromMat3(m);
 }
 
 /*! \note This function will ALWAYS return a quaternion that rotates from one direction to another.
@@ -329,51 +360,54 @@ void wdQuatTemplate<Type>::ReconstructFromMat4(const wdMat4Template<Type>& mMat)
   such a rotation with other means.
 */
 template <typename Type>
-void wdQuatTemplate<Type>::SetShortestRotation(const wdVec3Template<Type>& vDirFrom, const wdVec3Template<Type>& vDirTo)
+nsQuatTemplate<Type> nsQuatTemplate<Type>::MakeShortestRotation(const nsVec3Template<Type>& vDirFrom, const nsVec3Template<Type>& vDirTo)
 {
-  const wdVec3Template<Type> v0 = vDirFrom.GetNormalized();
-  const wdVec3Template<Type> v1 = vDirTo.GetNormalized();
+  const nsVec3Template<Type> v0 = vDirFrom.GetNormalized();
+  const nsVec3Template<Type> v1 = vDirTo.GetNormalized();
 
   const Type fDot = v0.Dot(v1);
 
   // if both vectors are identical -> no rotation needed
-  if (wdMath::IsEqual(fDot, (Type)1, (Type)0.0000001))
+  if (nsMath::IsEqual(fDot, (Type)1, (Type)0.0000001))
   {
-    SetIdentity();
-    return;
+    return MakeIdentity();
   }
-  else if (wdMath::IsEqual(fDot, (Type)-1, (Type)0.0000001)) // if both vectors are opposing
+  else if (nsMath::IsEqual(fDot, (Type)-1, (Type)0.0000001)) // if both vectors are opposing
   {
-    // find an axis, that is not identical and not opposing, wdVec3Template::Cross-product to find perpendicular vector, rotate around that
-    if (wdMath::Abs(v0.Dot(wdVec3Template<Type>(1, 0, 0))) < (Type)0.8)
-      SetFromAxisAndAngle(v0.CrossRH(wdVec3Template<Type>(1, 0, 0)).GetNormalized(), wdAngle::Radian(wdMath::Pi<float>()));
+    // find an axis, that is not identical and not opposing, nsVec3Template::Cross-product to find perpendicular vector, rotate around that
+    if (nsMath::Abs(v0.Dot(nsVec3Template<Type>(1, 0, 0))) < (Type)0.8)
+      return MakeFromAxisAndAngle(v0.CrossRH(nsVec3Template<Type>(1, 0, 0)).GetNormalized(), nsAngle::MakeFromRadian(nsMath::Pi<float>()));
     else
-      SetFromAxisAndAngle(v0.CrossRH(wdVec3Template<Type>(0, 1, 0)).GetNormalized(), wdAngle::Radian(wdMath::Pi<float>()));
-
-    return;
+      return MakeFromAxisAndAngle(v0.CrossRH(nsVec3Template<Type>(0, 1, 0)).GetNormalized(), nsAngle::MakeFromRadian(nsMath::Pi<float>()));
   }
 
-  const wdVec3Template<Type> c = v0.CrossRH(v1);
+  const nsVec3Template<Type> c = v0.CrossRH(v1);
   const Type d = v0.Dot(v1);
-  const Type s = wdMath::Sqrt(((Type)1 + d) * (Type)2);
+  const Type s = nsMath::Sqrt(((Type)1 + d) * (Type)2);
 
-  WD_ASSERT_DEBUG(c.IsValid(), "SetShortestRotation failed.");
+  NS_ASSERT_DEBUG(c.IsValid(), "SetShortestRotation failed.");
 
-  v = c / s;
-  w = s / (Type)2;
+  const Type fOneDivS = 1.0f / s;
 
-  Normalize();
+  nsQuatTemplate<Type> q;
+  q.x = c.x * fOneDivS;
+  q.y = c.y * fOneDivS;
+  q.z = c.z * fOneDivS;
+  q.w = s / (Type)2;
+  q.Normalize();
+
+  return q;
 }
 
 template <typename Type>
-void wdQuatTemplate<Type>::SetSlerp(const wdQuatTemplate<Type>& qFrom, const wdQuatTemplate<Type>& qTo, Type t)
+nsQuatTemplate<Type> nsQuatTemplate<Type>::MakeSlerp(const nsQuatTemplate<Type>& qFrom, const nsQuatTemplate<Type>& qTo, Type t)
 {
-  WD_ASSERT_DEBUG((t >= (Type)0) && (t <= (Type)1), "Invalid lerp factor.");
+  NS_ASSERT_DEBUG((t >= (Type)0) && (t <= (Type)1), "Invalid lerp factor.");
 
   const Type one = 1;
   const Type qdelta = (Type)1 - (Type)0.001;
 
-  const Type fDot = (qFrom.v.x * qTo.v.x + qFrom.v.y * qTo.v.y + qFrom.v.z * qTo.v.z + qFrom.w * qTo.w);
+  const Type fDot = (qFrom.x * qTo.x + qFrom.y * qTo.y + qFrom.z * qTo.z + qFrom.w * qTo.w);
 
   Type cosTheta = fDot;
 
@@ -388,14 +422,14 @@ void wdQuatTemplate<Type>::SetSlerp(const wdQuatTemplate<Type>& qFrom, const wdQ
 
   if (cosTheta < qdelta)
   {
-    wdAngle theta = wdMath::ACos((float)cosTheta);
+    nsAngle theta = nsMath::ACos((float)cosTheta);
 
     // use sqrtInv(1+c^2) instead of 1.0/sin(theta)
-    const Type iSinTheta = (Type)1 / wdMath::Sqrt(one - (cosTheta * cosTheta));
-    const wdAngle tTheta = static_cast<float>(t) * theta;
+    const Type iSinTheta = (Type)1 / nsMath::Sqrt(one - (cosTheta * cosTheta));
+    const nsAngle tTheta = static_cast<float>(t) * theta;
 
-    Type s0 = wdMath::Sin(theta - tTheta);
-    Type s1 = wdMath::Sin(tTheta);
+    Type s0 = nsMath::Sin(theta - tTheta);
+    Type s1 = nsMath::Sin(tTheta);
 
     t0 = s0 * iSinTheta;
     t1 = s1 * iSinTheta;
@@ -410,113 +444,97 @@ void wdQuatTemplate<Type>::SetSlerp(const wdQuatTemplate<Type>& qFrom, const wdQ
   if (bFlipSign)
     t1 = -t1;
 
-  v.x = t0 * qFrom.v.x;
-  v.y = t0 * qFrom.v.y;
-  v.z = t0 * qFrom.v.z;
-  w = t0 * qFrom.w;
+  nsQuatTemplate<Type> q;
 
-  v.x += t1 * qTo.v.x;
-  v.y += t1 * qTo.v.y;
-  v.z += t1 * qTo.v.z;
-  w += t1 * qTo.w;
+  q.x = t0 * qFrom.x;
+  q.y = t0 * qFrom.y;
+  q.z = t0 * qFrom.z;
+  q.w = t0 * qFrom.w;
 
-  Normalize();
+  q.x += t1 * qTo.x;
+  q.y += t1 * qTo.y;
+  q.z += t1 * qTo.z;
+  q.w += t1 * qTo.w;
+
+  q.Normalize();
+
+  return q;
 }
 
 template <typename Type>
-WD_ALWAYS_INLINE bool operator==(const wdQuatTemplate<Type>& q1, const wdQuatTemplate<Type>& q2)
+NS_ALWAYS_INLINE bool operator==(const nsQuatTemplate<Type>& q1, const nsQuatTemplate<Type>& q2)
 {
-  return q1.v.IsIdentical(q2.v) && q1.w == q2.w;
+  return q1.x == q2.x && q1.y == q2.y && q1.z == q2.z && q1.w == q2.w;
 }
 
 template <typename Type>
-WD_ALWAYS_INLINE bool operator!=(const wdQuatTemplate<Type>& q1, const wdQuatTemplate<Type>& q2)
+NS_ALWAYS_INLINE bool operator!=(const nsQuatTemplate<Type>& q1, const nsQuatTemplate<Type>& q2)
 {
   return !(q1 == q2);
 }
 
 template <typename Type>
-void wdQuatTemplate<Type>::GetAsEulerAngles(wdAngle& out_x, wdAngle& out_y, wdAngle& out_z) const
+void nsQuatTemplate<Type>::GetAsEulerAngles(nsAngle& out_x, nsAngle& out_y, nsAngle& out_z) const
 {
-  /// \test This is new
+  // Taken from https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
+  // and http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToEuler/
+  // adapted to our convention (yaw->pitch->roll, ZYX order or 3-2-1 order)
 
-  // Originally taken from https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
-  // but that code is incorrect and easily produces NaNs.
-  // Better code copied from OZZ animation library: "ToEuler()"
+  auto& yaw = out_z;
+  auto& pitch = out_y;
+  auto& roll = out_x;
 
-  struct Q
+  const double fSingularityTest = w * y - z * x;
+  const double fSingularityThreshold = 0.4999995;
+
+  if (fSingularityTest > fSingularityThreshold) // singularity at north pole
   {
-    float x;
-    float y;
-    float z;
-    float w;
-  };
-
-  const Q _q{v.x, v.y, v.z, w};
-
-  const float kPi_2 = 1.5707963267948966192313216916398f;
-
-  const float sqw = _q.w * _q.w;
-  const float sqx = _q.x * _q.x;
-  const float sqy = _q.y * _q.y;
-  const float sqz = _q.z * _q.z;
-  // If normalized is one, otherwise is correction factor.
-  const float unit = sqx + sqy + sqz + sqw;
-  const float test = _q.x * _q.y + _q.z * _q.w;
-  wdVec3 euler;
-
-  if (test > .499f * unit)
-  {
-    // Singularity at north pole
-    euler.x = 2.f * std::atan2(_q.x, _q.w);
-    euler.y = kPi_2;
-    euler.z = 0;
+    yaw = -2.0f * nsMath::ATan2(x, w);
+    pitch = nsAngle::MakeFromDegree(90.0f);
+    roll = nsAngle::MakeFromDegree(0.0f);
   }
-  else if (test < -.499f * unit)
+  else if (fSingularityTest < -fSingularityThreshold) // singularity at south pole
   {
-    // Singularity at south pole
-    euler.x = -2 * std::atan2(_q.x, _q.w);
-    euler.y = -kPi_2;
-    euler.z = 0;
+    yaw = 2.0f * nsMath::ATan2(x, w);
+    pitch = nsAngle::MakeFromDegree(-90.0f);
+    roll = nsAngle::MakeFromDegree(0.0f);
   }
   else
   {
-    euler.x = std::atan2(2.f * _q.y * _q.w - 2.f * _q.x * _q.z, sqx - sqy - sqz + sqw);
-    euler.y = std::asin(2.f * test / unit);
-    euler.z = std::atan2(2.f * _q.x * _q.w - 2.f * _q.y * _q.z, -sqx + sqy - sqz + sqw);
-  }
+    // yaw (z-axis rotation)
+    const double siny = 2.0 * (w * z + x * y);
+    const double cosy = 1.0 - 2.0 * (y * y + z * z);
+    yaw = nsMath::ATan2((float)siny, (float)cosy);
 
-  out_x.SetRadian(euler.z);
-  out_y.SetRadian(euler.x);
-  out_z.SetRadian(euler.y);
+    // pitch (y-axis rotation)
+    pitch = nsMath::ASin(2.0f * (float)fSingularityTest);
+
+    // roll (x-axis rotation)
+    const double sinr = 2.0 * (w * x + y * z);
+    const double cosr = 1.0 - 2.0 * (x * x + y * y);
+    roll = nsMath::ATan2((float)sinr, (float)cosr);
+  }
 }
 
 template <typename Type>
-void wdQuatTemplate<Type>::SetFromEulerAngles(const wdAngle& x, const wdAngle& y, const wdAngle& z)
+nsQuatTemplate<Type> nsQuatTemplate<Type>::MakeFromEulerAngles(const nsAngle& x, const nsAngle& y, const nsAngle& z)
 {
-  /// \test This is new
+  /// Taken from here (yaw->pitch->roll, ZYX order or 3-2-1 order):
+  /// https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
+  const auto& yaw = z;
+  const auto& pitch = y;
+  const auto& roll = x;
+  const double cy = nsMath::Cos(yaw * 0.5);
+  const double sy = nsMath::Sin(yaw * 0.5);
+  const double cp = nsMath::Cos(pitch * 0.5);
+  const double sp = nsMath::Sin(pitch * 0.5);
+  const double cr = nsMath::Cos(roll * 0.5);
+  const double sr = nsMath::Sin(roll * 0.5);
 
-  // Originally taken from https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
-  // but since the ToEuler function was unreliable, this was also replaced with the OZZ function "Quaternion::FromEuler()"
-
-  const float _yaw = y.GetRadian();
-  const float _pitch = z.GetRadian();
-  const float _roll = x.GetRadian();
-
-  const float half_yaw = _yaw * .5f;
-  const float c1 = std::cos(half_yaw);
-  const float s1 = std::sin(half_yaw);
-  const float half_pitch = _pitch * .5f;
-  const float c2 = std::cos(half_pitch);
-  const float s2 = std::sin(half_pitch);
-  const float half_roll = _roll * .5f;
-  const float c3 = std::cos(half_roll);
-  const float s3 = std::sin(half_roll);
-  const float c1c2 = c1 * c2;
-  const float s1s2 = s1 * s2;
-
-  v.x = c1c2 * s3 + s1s2 * c3;
-  v.y = s1 * c2 * c3 + c1 * s2 * s3;
-  v.z = c1 * s2 * c3 - s1 * c2 * s3;
-  w = c1c2 * c3 - s1s2 * s3;
+  nsQuatTemplate<Type> q;
+  q.w = (float)(cy * cp * cr + sy * sp * sr);
+  q.x = (float)(cy * cp * sr - sy * sp * cr);
+  q.y = (float)(cy * sp * cr + sy * cp * sr);
+  q.z = (float)(sy * cp * cr - cy * sp * sr);
+  return q;
 }

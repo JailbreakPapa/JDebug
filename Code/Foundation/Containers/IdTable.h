@@ -10,15 +10,15 @@
 /// Lookup is nearly as fast as a simple array lookup.
 /// The table stores a free-list in its free elements to ensure fast insertion/erasure.
 ///
-/// @note Valid IDs will never be all zero (index + generation).
+/// \note Valid IDs will never be all zero (index + generation).
 ///
-/// @SEE: wdGenericId
+/// \see nsGenericId
 template <typename IdType, typename ValueType>
-class wdIdTableBase
+class nsIdTableBase
 {
 public:
-  typedef typename IdType::StorageType IndexType;
-  typedef IdType TypeOfId;
+  using IndexType = typename IdType::StorageType;
+  using TypeOfId = IdType;
 
   /// \brief Const iterator.
   class ConstIterator
@@ -28,10 +28,10 @@ public:
     bool IsValid() const; // [tested]
 
     /// \brief Checks whether the two iterators point to the same element.
-    bool operator==(const typename wdIdTableBase<IdType, ValueType>::ConstIterator& it2) const;
+    bool operator==(const typename nsIdTableBase<IdType, ValueType>::ConstIterator& it2) const;
 
     /// \brief Checks whether the two iterators point to the same element.
-    bool operator!=(const typename wdIdTableBase<IdType, ValueType>::ConstIterator& it2) const;
+    bool operator!=(const typename nsIdTableBase<IdType, ValueType>::ConstIterator& it2) const;
 
     /// \brief Returns the 'id' of the element that this iterator points to.
     IdType Id() const; // [tested]
@@ -46,11 +46,11 @@ public:
     void operator++(); // [tested]
 
   protected:
-    friend class wdIdTableBase<IdType, ValueType>;
+    friend class nsIdTableBase<IdType, ValueType>;
 
-    explicit ConstIterator(const wdIdTableBase<IdType, ValueType>& idTable);
+    explicit ConstIterator(const nsIdTableBase<IdType, ValueType>& idTable);
 
-    const wdIdTableBase<IdType, ValueType>& m_IdTable;
+    const nsIdTableBase<IdType, ValueType>& m_IdTable;
     IndexType m_CurrentIndex; // current element index that this iterator points to.
     IndexType m_CurrentCount; // current number of valid elements that this iterator has found so far.
   };
@@ -66,23 +66,23 @@ public:
     ValueType& Value(); // [tested]
 
   private:
-    friend class wdIdTableBase<IdType, ValueType>;
+    friend class nsIdTableBase<IdType, ValueType>;
 
-    explicit Iterator(const wdIdTableBase<IdType, ValueType>& idTable);
+    explicit Iterator(const nsIdTableBase<IdType, ValueType>& idTable);
   };
 
 protected:
   /// \brief Creates an empty id-table. Does not allocate any data yet.
-  explicit wdIdTableBase(wdAllocatorBase* pAllocator); // [tested]
+  explicit nsIdTableBase(nsAllocator* pAllocator); // [tested]
 
   /// \brief Creates a copy of the given id-table.
-  wdIdTableBase(const wdIdTableBase<IdType, ValueType>& rhs, wdAllocatorBase* pAllocator); // [tested]
+  nsIdTableBase(const nsIdTableBase<IdType, ValueType>& rhs, nsAllocator* pAllocator); // [tested]
 
   /// \brief Destructor.
-  ~wdIdTableBase(); // [tested]
+  ~nsIdTableBase(); // [tested]
 
   /// \brief Copies the data from another table into this one.
-  void operator=(const wdIdTableBase<IdType, ValueType>& rhs); // [tested]
+  void operator=(const nsIdTableBase<IdType, ValueType>& rhs); // [tested]
 
 public:
   /// \brief Expands the table so it can at least store the given capacity.
@@ -134,7 +134,7 @@ public:
   ConstIterator GetIterator() const; // [tested]
 
   /// \brief Returns the allocator that is used by this instance.
-  wdAllocatorBase* GetAllocator() const;
+  nsAllocator* GetAllocator() const;
 
   /// \brief Returns whether the internal free-list is valid. For testing purpose only.
   bool IsFreelistValid() const;
@@ -159,25 +159,25 @@ private:
   IndexType m_FreelistEnqueue;
   IndexType m_FreelistDequeue;
 
-  wdAllocatorBase* m_pAllocator;
+  nsAllocator* m_pAllocator;
 
   void SetCapacity(IndexType uiCapacity);
   void InitializeFreelist(IndexType uiStart, IndexType uiEnd);
 };
 
-/// \brief \see wdIdTableBase
-template <typename IdType, typename ValueType, typename AllocatorWrapper = wdDefaultAllocatorWrapper>
-class wdIdTable : public wdIdTableBase<IdType, ValueType>
+/// \brief \see nsIdTableBase
+template <typename IdType, typename ValueType, typename AllocatorWrapper = nsDefaultAllocatorWrapper>
+class nsIdTable : public nsIdTableBase<IdType, ValueType>
 {
 public:
-  wdIdTable();
-  explicit wdIdTable(wdAllocatorBase* pAllocator);
+  nsIdTable();
+  explicit nsIdTable(nsAllocator* pAllocator);
 
-  wdIdTable(const wdIdTable<IdType, ValueType, AllocatorWrapper>& other);
-  wdIdTable(const wdIdTableBase<IdType, ValueType>& other);
+  nsIdTable(const nsIdTable<IdType, ValueType, AllocatorWrapper>& other);
+  nsIdTable(const nsIdTableBase<IdType, ValueType>& other);
 
-  void operator=(const wdIdTable<IdType, ValueType, AllocatorWrapper>& rhs);
-  void operator=(const wdIdTableBase<IdType, ValueType>& rhs);
+  void operator=(const nsIdTable<IdType, ValueType, AllocatorWrapper>& rhs);
+  void operator=(const nsIdTableBase<IdType, ValueType>& rhs);
 };
 
 #include <Foundation/Containers/Implementation/IdTable_inl.h>

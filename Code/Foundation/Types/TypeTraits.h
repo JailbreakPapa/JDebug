@@ -6,86 +6,83 @@
 
 /// Type traits
 template <int v>
-struct wdTraitInt
+struct nsTraitInt
 {
-  enum
-  {
-    value = v
-  };
+  static constexpr int value = v;
 };
 
-using wdTypeIsMemRelocatable = wdTraitInt<2>;
-using wdTypeIsPod = wdTraitInt<1>;
-using wdTypeIsClass = wdTraitInt<0>;
+using nsTypeIsMemRelocatable = nsTraitInt<2>;
+using nsTypeIsPod = nsTraitInt<1>;
+using nsTypeIsClass = nsTraitInt<0>;
 
-using wdCompileTimeTrueType = char;
-using wdCompileTimeFalseType = int;
+using nsCompileTimeTrueType = char;
+using nsCompileTimeFalseType = int;
 
 /// \brief Converts a bool condition to CompileTimeTrue/FalseType
 template <bool cond>
-struct wdConditionToCompileTimeBool
+struct nsConditionToCompileTimeBool
 {
-  using type = wdCompileTimeFalseType;
+  using type = nsCompileTimeFalseType;
 };
 
 template <>
-struct wdConditionToCompileTimeBool<true>
+struct nsConditionToCompileTimeBool<true>
 {
-  using type = wdCompileTimeTrueType;
+  using type = nsCompileTimeTrueType;
 };
 
 /// \brief Default % operator for T and TypeIsPod which returns a CompileTimeFalseType.
 template <typename T>
-wdCompileTimeFalseType operator%(const T&, const wdTypeIsPod&);
+nsCompileTimeFalseType operator%(const T&, const nsTypeIsPod&);
 
 /// \brief If there is an % operator which takes a TypeIsPod and returns a CompileTimeTrueType T is Pod. Default % operator return false.
 template <typename T>
-struct wdIsPodType : public wdTraitInt<(sizeof(*((T*)0) % *((const wdTypeIsPod*)0)) == sizeof(wdCompileTimeTrueType)) ? 1 : 0>
+struct nsIsPodType : public nsTraitInt<(sizeof(*((T*)0) % *((const nsTypeIsPod*)0)) == sizeof(nsCompileTimeTrueType)) ? 1 : 0>
 {
 };
 
 /// \brief Pointers are POD types.
 template <typename T>
-struct wdIsPodType<T*> : public wdTypeIsPod
+struct nsIsPodType<T*> : public nsTypeIsPod
 {
 };
 
 /// \brief arrays are POD types
 template <typename T, int N>
-struct wdIsPodType<T[N]> : public wdTypeIsPod
+struct nsIsPodType<T[N]> : public nsTypeIsPod
 {
 };
 
-/// \brief Default % operator for T and wdTypeIsMemRelocatable which returns a CompileTimeFalseType.
+/// \brief Default % operator for T and nsTypeIsMemRelocatable which returns a CompileTimeFalseType.
 template <typename T>
-wdCompileTimeFalseType operator%(const T&, const wdTypeIsMemRelocatable&);
+nsCompileTimeFalseType operator%(const T&, const nsTypeIsMemRelocatable&);
 
-/// \brief If there is an % operator which takes a wdTypeIsMemRelocatable and returns a CompileTimeTrueType T is Pod. Default % operator
+/// \brief If there is an % operator which takes a nsTypeIsMemRelocatable and returns a CompileTimeTrueType T is Pod. Default % operator
 /// return false.
 template <typename T>
-struct wdGetTypeClass
-  : public wdTraitInt<(sizeof(*((T*)0) % *((const wdTypeIsMemRelocatable*)0)) == sizeof(wdCompileTimeTrueType)) ? 2 : wdIsPodType<T>::value>
+struct nsGetTypeClass
+  : public nsTraitInt<(sizeof(*((T*)0) % *((const nsTypeIsMemRelocatable*)0)) == sizeof(nsCompileTimeTrueType)) ? 2 : nsIsPodType<T>::value>
 {
 };
 
 /// \brief Static Conversion Test
 template <typename From, typename To>
-struct wdConversionTest
+struct nsConversionTest
 {
-  static wdCompileTimeTrueType Test(const To&);
-  static wdCompileTimeFalseType Test(...);
+  static nsCompileTimeTrueType Test(const To&);
+  static nsCompileTimeFalseType Test(...);
   static From MakeFrom();
 
   enum
   {
-    exists = sizeof(Test(MakeFrom())) == sizeof(wdCompileTimeTrueType),
+    exists = sizeof(Test(MakeFrom())) == sizeof(nsCompileTimeTrueType),
     sameType = 0
   };
 };
 
 /// \brief Specialization for above Type.
 template <typename T>
-struct wdConversionTest<T, T>
+struct nsConversionTest<T, T>
 {
   enum
   {
@@ -96,22 +93,8 @@ struct wdConversionTest<T, T>
 
 // remapping of the 0 (not special) type to 3
 template <typename T1, typename T2>
-struct wdGetStrongestTypeClass : public wdTraitInt<(T1::value == 0 || T2::value == 0) ? 0 : WD_COMPILE_TIME_MAX(T1::value, T2::value)>
+struct nsGetStrongestTypeClass : public nsTraitInt<(T1::value == 0 || T2::value == 0) ? 0 : NS_COMPILE_TIME_MAX(T1::value, T2::value)>
 {
-};
-
-
-/// \brief Determines whether a type is a pointer.
-template <typename T>
-struct wdIsPointer
-{
-  static constexpr bool value = false;
-};
-
-template <typename T>
-struct wdIsPointer<T*>
-{
-  static constexpr bool value = true;
 };
 
 
@@ -119,93 +102,106 @@ struct wdIsPointer<T*>
 
 /// \brief Embed this into a class to mark it as a POD type.
 /// POD types will get special treatment from allocators and container classes, such that they are faster to construct and copy.
-#  define WD_DECLARE_POD_TYPE()
+#  define NS_DECLARE_POD_TYPE()
 
 /// \brief Embed this into a class to mark it as memory relocatable.
 /// Memory relocatable types will get special treatment from allocators and container classes, such that they are faster to construct and
 /// copy. A type is memory relocatable if it does not have any internal references. e.g: struct example { char[16] buffer; char* pCur;
 /// example() pCur(buffer) {} }; A memory relocatable type also must not give out any pointers to its own location. If these two conditions
 /// are met, a type is memory relocatable.
-#  define WD_DECLARE_MEM_RELOCATABLE_TYPE()
+#  define NS_DECLARE_MEM_RELOCATABLE_TYPE()
 
 /// \brief mark a class as memory relocatable if the passed type is relocatable or pod.
-#  define WD_DECLARE_MEM_RELOCATABLE_TYPE_CONDITIONAL(T)
+#  define NS_DECLARE_MEM_RELOCATABLE_TYPE_CONDITIONAL(T)
 
 // \brief embed this into a class to automatically detect which type class it belongs to
 // This macro is only guaranteed to work for classes / structs which don't have any constructor / destructor / assignment operator!
 // As arguments you have to list the types of all the members of the class / struct.
-#  define WD_DETECT_TYPE_CLASS(...)
+#  define NS_DETECT_TYPE_CLASS(...)
 
 #else
 
 /// \brief Embed this into a class to mark it as a POD type.
 /// POD types will get special treatment from allocators and container classes, such that they are faster to construct and copy.
-#  define WD_DECLARE_POD_TYPE() \
-    wdCompileTimeTrueType operator%(const wdTypeIsPod&) const { return {}; }
+#  define NS_DECLARE_POD_TYPE()                               \
+    nsCompileTimeTrueType operator%(const nsTypeIsPod&) const \
+    {                                                         \
+      return {};                                              \
+    }
 
 /// \brief Embed this into a class to mark it as memory relocatable.
 /// Memory relocatable types will get special treatment from allocators and container classes, such that they are faster to construct and
 /// copy. A type is memory relocatable if it does not have any internal references. e.g: struct example { char[16] buffer; char* pCur;
 /// example() pCur(buffer) {} }; A memory relocatable type also must not give out any pointers to its own location. If these two conditions
 /// are met, a type is memory relocatable.
-#  define WD_DECLARE_MEM_RELOCATABLE_TYPE() \
-    wdCompileTimeTrueType operator%(const wdTypeIsMemRelocatable&) const { return {}; }
+#  define NS_DECLARE_MEM_RELOCATABLE_TYPE()                              \
+    nsCompileTimeTrueType operator%(const nsTypeIsMemRelocatable&) const \
+    {                                                                    \
+      return {};                                                         \
+    }
 
 /// \brief mark a class as memory relocatable if the passed type is relocatable or pod.
-#  define WD_DECLARE_MEM_RELOCATABLE_TYPE_CONDITIONAL(T)                                                                                       \
-    typename wdConditionToCompileTimeBool<wdGetTypeClass<T>::value == wdTypeIsMemRelocatable::value || wdIsPodType<T>::value>::type operator%( \
-      const wdTypeIsMemRelocatable&) const { return {}; }
+#  define NS_DECLARE_MEM_RELOCATABLE_TYPE_CONDITIONAL(T)                                                                                       \
+    typename nsConditionToCompileTimeBool<nsGetTypeClass<T>::value == nsTypeIsMemRelocatable::value || nsIsPodType<T>::value>::type operator%( \
+      const nsTypeIsMemRelocatable&) const                                                                                                     \
+    {                                                                                                                                          \
+      return {};                                                                                                                               \
+    }
 
-#  define WD_DETECT_TYPE_CLASS_1(T1) wdGetTypeClass<T1>
-#  define WD_DETECT_TYPE_CLASS_2(T1, T2) wdGetStrongestTypeClass<WD_DETECT_TYPE_CLASS_1(T1), WD_DETECT_TYPE_CLASS_1(T2)>
-#  define WD_DETECT_TYPE_CLASS_3(T1, T2, T3) wdGetStrongestTypeClass<WD_DETECT_TYPE_CLASS_2(T1, T2), WD_DETECT_TYPE_CLASS_1(T3)>
-#  define WD_DETECT_TYPE_CLASS_4(T1, T2, T3, T4) wdGetStrongestTypeClass<WD_DETECT_TYPE_CLASS_2(T1, T2), WD_DETECT_TYPE_CLASS_2(T3, T4)>
-#  define WD_DETECT_TYPE_CLASS_5(T1, T2, T3, T4, T5) wdGetStrongestTypeClass<WD_DETECT_TYPE_CLASS_4(T1, T2, T3, T4), WD_DETECT_TYPE_CLASS_1(T5)>
-#  define WD_DETECT_TYPE_CLASS_6(T1, T2, T3, T4, T5, T6) \
-    wdGetStrongestTypeClass<WD_DETECT_TYPE_CLASS_4(T1, T2, T3, T4), WD_DETECT_TYPE_CLASS_2(T5, T6)>
+#  define NS_DETECT_TYPE_CLASS_1(T1) nsGetTypeClass<T1>
+#  define NS_DETECT_TYPE_CLASS_2(T1, T2) nsGetStrongestTypeClass<NS_DETECT_TYPE_CLASS_1(T1), NS_DETECT_TYPE_CLASS_1(T2)>
+#  define NS_DETECT_TYPE_CLASS_3(T1, T2, T3) nsGetStrongestTypeClass<NS_DETECT_TYPE_CLASS_2(T1, T2), NS_DETECT_TYPE_CLASS_1(T3)>
+#  define NS_DETECT_TYPE_CLASS_4(T1, T2, T3, T4) nsGetStrongestTypeClass<NS_DETECT_TYPE_CLASS_2(T1, T2), NS_DETECT_TYPE_CLASS_2(T3, T4)>
+#  define NS_DETECT_TYPE_CLASS_5(T1, T2, T3, T4, T5) nsGetStrongestTypeClass<NS_DETECT_TYPE_CLASS_4(T1, T2, T3, T4), NS_DETECT_TYPE_CLASS_1(T5)>
+#  define NS_DETECT_TYPE_CLASS_6(T1, T2, T3, T4, T5, T6) \
+    nsGetStrongestTypeClass<NS_DETECT_TYPE_CLASS_4(T1, T2, T3, T4), NS_DETECT_TYPE_CLASS_2(T5, T6)>
 
 // \brief embed this into a class to automatically detect which type class it belongs to
 // This macro is only guaranteed to work for classes / structs which don't have any constructor / destructor / assignment operator!
 // As arguments you have to list the types of all the members of the class / struct.
-#  define WD_DETECT_TYPE_CLASS(...)  \
-    wdCompileTimeTrueType operator%( \
-      const wdTraitInt<WD_CALL_MACRO(WD_CONCAT(WD_DETECT_TYPE_CLASS_, WD_VA_NUM_ARGS(__VA_ARGS__)), (__VA_ARGS__))::value>&) const { return {}; }
+#  define NS_DETECT_TYPE_CLASS(...)                                                                                                \
+    nsCompileTimeTrueType operator%(                                                                                               \
+      const nsTraitInt<NS_CALL_MACRO(NS_CONCAT(NS_DETECT_TYPE_CLASS_, NS_VA_NUM_ARGS(__VA_ARGS__)), (__VA_ARGS__))::value>&) const \
+    {                                                                                                                              \
+      return {};                                                                                                                   \
+    }
 #endif
 
 /// \brief Defines a type T as Pod.
 /// POD types will get special treatment from allocators and container classes, such that they are faster to construct and copy.
-#define WD_DEFINE_AS_POD_TYPE(T)             \
+#define NS_DEFINE_AS_POD_TYPE(T)             \
   template <>                                \
-  struct wdIsPodType<T> : public wdTypeIsPod \
+  struct nsIsPodType<T> : public nsTypeIsPod \
   {                                          \
   }
 
-WD_DEFINE_AS_POD_TYPE(bool);
-WD_DEFINE_AS_POD_TYPE(float);
-WD_DEFINE_AS_POD_TYPE(double);
+NS_DEFINE_AS_POD_TYPE(bool);
+NS_DEFINE_AS_POD_TYPE(float);
+NS_DEFINE_AS_POD_TYPE(double);
 
-WD_DEFINE_AS_POD_TYPE(char);
-WD_DEFINE_AS_POD_TYPE(wdInt8);
-WD_DEFINE_AS_POD_TYPE(wdInt16);
-WD_DEFINE_AS_POD_TYPE(wdInt32);
-WD_DEFINE_AS_POD_TYPE(wdInt64);
-WD_DEFINE_AS_POD_TYPE(wdUInt8);
-WD_DEFINE_AS_POD_TYPE(wdUInt16);
-WD_DEFINE_AS_POD_TYPE(wdUInt32);
-WD_DEFINE_AS_POD_TYPE(wdUInt64);
-WD_DEFINE_AS_POD_TYPE(wchar_t);
-WD_DEFINE_AS_POD_TYPE(unsigned long);
-WD_DEFINE_AS_POD_TYPE(long);
+NS_DEFINE_AS_POD_TYPE(char);
+NS_DEFINE_AS_POD_TYPE(nsInt8);
+NS_DEFINE_AS_POD_TYPE(nsInt16);
+NS_DEFINE_AS_POD_TYPE(nsInt32);
+NS_DEFINE_AS_POD_TYPE(nsInt64);
+NS_DEFINE_AS_POD_TYPE(nsUInt8);
+NS_DEFINE_AS_POD_TYPE(nsUInt16);
+NS_DEFINE_AS_POD_TYPE(nsUInt32);
+NS_DEFINE_AS_POD_TYPE(nsUInt64);
+NS_DEFINE_AS_POD_TYPE(wchar_t);
+NS_DEFINE_AS_POD_TYPE(unsigned long);
+NS_DEFINE_AS_POD_TYPE(long);
+NS_DEFINE_AS_POD_TYPE(std::byte);
 
 /// \brief Checks inheritance at compile time.
-#define WD_IS_DERIVED_FROM_STATIC(BaseClass, DerivedClass) \
-  (wdConversionTest<const DerivedClass*, const BaseClass*>::exists && !wdConversionTest<const BaseClass*, const void*>::sameType)
+#define NS_IS_DERIVED_FROM_STATIC(BaseClass, DerivedClass) \
+  (nsConversionTest<const DerivedClass*, const BaseClass*>::exists && !nsConversionTest<const BaseClass*, const void*>::sameType)
 
 /// \brief Checks whether A and B are the same type
-#define WD_IS_SAME_TYPE(TypeA, TypeB) wdConversionTest<TypeA, TypeB>::sameType
+#define NS_IS_SAME_TYPE(TypeA, TypeB) nsConversionTest<TypeA, TypeB>::sameType
 
 template <typename T>
-struct wdTypeTraits
+struct nsTypeTraits
 {
   /// \brief removes const qualifier
   using NonConstType = typename std::remove_const<T>::type;
@@ -229,18 +225,18 @@ struct wdTypeTraits
 
 /// generates a template named 'checkerName' which checks for the existence of a member function with
 /// the name 'functionName' and the signature 'Signature'
-#define WD_MAKE_MEMBERFUNCTION_CHECKER(functionName, checkerName)                \
+#define NS_MAKE_MEMBERFUNCTION_CHECKER(functionName, checkerName)                \
   template <typename T, typename Signature>                                      \
   struct checkerName                                                             \
   {                                                                              \
     template <typename U, U>                                                     \
     struct type_check;                                                           \
     template <typename O>                                                        \
-    static wdCompileTimeTrueType& chk(type_check<Signature, &O::functionName>*); \
+    static nsCompileTimeTrueType& chk(type_check<Signature, &O::functionName>*); \
     template <typename>                                                          \
-    static wdCompileTimeFalseType& chk(...);                                     \
+    static nsCompileTimeFalseType& chk(...);                                     \
     enum                                                                         \
     {                                                                            \
-      value = (sizeof(chk<T>(0)) == sizeof(wdCompileTimeTrueType)) ? 1 : 0       \
+      value = (sizeof(chk<T>(0)) == sizeof(nsCompileTimeTrueType)) ? 1 : 0       \
     };                                                                           \
   }

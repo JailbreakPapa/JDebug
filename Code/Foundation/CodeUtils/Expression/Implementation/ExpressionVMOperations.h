@@ -8,57 +8,46 @@ namespace
 {
   struct ExecutionContext
   {
-    wdExpression::Register* m_pRegisters = nullptr;
-    wdUInt32 m_uiNumInstances = 0;
-    wdUInt32 m_uiNumSimd4Instances = 0;
-    wdArrayPtr<wdProcessingStream*> m_Inputs;
-    wdArrayPtr<wdProcessingStream*> m_Outputs;
-    wdArrayPtr<const wdExpressionFunction*> m_Functions;
-    const wdExpression::GlobalData* m_pGlobalData = nullptr;
+    nsExpression::Register* m_pRegisters = nullptr;
+    nsUInt32 m_uiNumInstances = 0;
+    nsUInt32 m_uiNumSimd4Instances = 0;
+    nsArrayPtr<const nsProcessingStream*> m_Inputs;
+    nsArrayPtr<nsProcessingStream*> m_Outputs;
+    nsArrayPtr<const nsExpressionFunction*> m_Functions;
+    const nsExpression::GlobalData* m_pGlobalData = nullptr;
   };
 
-  using ByteCodeType = wdExpressionByteCode::StorageType;
+  using ByteCodeType = nsExpressionByteCode::StorageType;
   using OpFunc = void (*)(const ByteCodeType*& pByteCode, ExecutionContext& context);
 
 #define DEFINE_TARGET_REGISTER()                                                                                                        \
-  wdExpression::Register* r = context.m_pRegisters + wdExpressionByteCode::GetRegisterIndex(pByteCode) * context.m_uiNumSimd4Instances; \
-  wdExpression::Register* re = r + context.m_uiNumSimd4Instances;
+  nsExpression::Register* r = context.m_pRegisters + nsExpressionByteCode::GetRegisterIndex(pByteCode) * context.m_uiNumSimd4Instances; \
+  nsExpression::Register* re = r + context.m_uiNumSimd4Instances;                                                                       \
+  NS_IGNORE_UNUSED(re);
 
 #define DEFINE_OP_REGISTER(name) \
-  const wdExpression::Register* name = context.m_pRegisters + wdExpressionByteCode::GetRegisterIndex(pByteCode) * context.m_uiNumSimd4Instances;
+  const nsExpression::Register* name = context.m_pRegisters + nsExpressionByteCode::GetRegisterIndex(pByteCode) * context.m_uiNumSimd4Instances;
 
 #define DEFINE_CONSTANT(name)                                                      \
-  const wdUInt32 WD_CONCAT(name, Raw) = *pByteCode;                                \
-  const wdExpression::Register tmp = wdExpressionByteCode::GetConstant(pByteCode); \
-  const wdExpression::Register* name = &tmp;
+  const nsUInt32 NS_CONCAT(name, Raw) = *pByteCode;                                \
+  NS_IGNORE_UNUSED(NS_CONCAT(name, Raw));                                          \
+  const nsExpression::Register tmp = nsExpressionByteCode::GetConstant(pByteCode); \
+  const nsExpression::Register* name = &tmp;
 
 #define UNARY_OP_INNER_LOOP(code) \
   code;                           \
   ++r;                            \
   ++a;
 
-#define DEFINE_UNARY_OP(name, code)                                                    \
-  void WD_CONCAT(name, _4)(const ByteCodeType*& pByteCode, ExecutionContext& context)  \
-  {                                                                                    \
-    DEFINE_TARGET_REGISTER();                                                          \
-    DEFINE_OP_REGISTER(a);                                                             \
-    while (r != re)                                                                    \
-    {                                                                                  \
-      UNARY_OP_INNER_LOOP(code)                                                        \
-    }                                                                                  \
-  }                                                                                    \
-                                                                                       \
-  void WD_CONCAT(name, _16)(const ByteCodeType*& pByteCode, ExecutionContext& context) \
-  {                                                                                    \
-    DEFINE_TARGET_REGISTER();                                                          \
-    DEFINE_OP_REGISTER(a);                                                             \
-    while (r != re)                                                                    \
-    {                                                                                  \
-      UNARY_OP_INNER_LOOP(code)                                                        \
-      UNARY_OP_INNER_LOOP(code)                                                        \
-      UNARY_OP_INNER_LOOP(code)                                                        \
-      UNARY_OP_INNER_LOOP(code)                                                        \
-    }                                                                                  \
+#define DEFINE_UNARY_OP(name, code)                                                   \
+  void NS_CONCAT(name, _4)(const ByteCodeType*& pByteCode, ExecutionContext& context) \
+  {                                                                                   \
+    DEFINE_TARGET_REGISTER();                                                         \
+    DEFINE_OP_REGISTER(a);                                                            \
+    while (r != re)                                                                   \
+    {                                                                                 \
+      UNARY_OP_INNER_LOOP(code)                                                       \
+    }                                                                                 \
   }
 
 #define BINARY_OP_INNER_LOOP(code)        \
@@ -72,22 +61,24 @@ namespace
 
 #define DEFINE_BINARY_OP(name, code)                                                                                \
   template <bool RightIsConstant>                                                                                   \
-  void WD_CONCAT(name, _4)(const ByteCodeType*& pByteCode, ExecutionContext& context)                               \
+  void NS_CONCAT(name, _4)(const ByteCodeType*& pByteCode, ExecutionContext& context)                               \
   {                                                                                                                 \
     DEFINE_TARGET_REGISTER();                                                                                       \
     DEFINE_OP_REGISTER(a);                                                                                          \
-    wdUInt32 bRaw;                                                                                                  \
-    wdExpression::Register bConstant;                                                                               \
-    const wdExpression::Register* b;                                                                                \
+    nsUInt32 bRaw;                                                                                                  \
+    NS_IGNORE_UNUSED(bRaw);                                                                                         \
+    nsExpression::Register bConstant;                                                                               \
+    const nsExpression::Register* b;                                                                                \
+    NS_IGNORE_UNUSED(b);                                                                                            \
     if constexpr (RightIsConstant)                                                                                  \
     {                                                                                                               \
       bRaw = *pByteCode;                                                                                            \
-      bConstant = wdExpressionByteCode::GetConstant(pByteCode);                                                     \
+      bConstant = nsExpressionByteCode::GetConstant(pByteCode);                                                     \
       b = &bConstant;                                                                                               \
     }                                                                                                               \
     else                                                                                                            \
     {                                                                                                               \
-      b = context.m_pRegisters + wdExpressionByteCode::GetRegisterIndex(pByteCode) * context.m_uiNumSimd4Instances; \
+      b = context.m_pRegisters + nsExpressionByteCode::GetRegisterIndex(pByteCode) * context.m_uiNumSimd4Instances; \
     }                                                                                                               \
     while (r != re)                                                                                                 \
     {                                                                                                               \
@@ -103,7 +94,7 @@ namespace
   ++c;
 
 #define DEFINE_TERNARY_OP(name, code)                                                 \
-  void WD_CONCAT(name, _4)(const ByteCodeType*& pByteCode, ExecutionContext& context) \
+  void NS_CONCAT(name, _4)(const ByteCodeType*& pByteCode, ExecutionContext& context) \
   {                                                                                   \
     DEFINE_TARGET_REGISTER();                                                         \
     DEFINE_OP_REGISTER(a);                                                            \
@@ -119,20 +110,20 @@ namespace
   DEFINE_UNARY_OP(AbsI, r->i = a->i.Abs());
   DEFINE_UNARY_OP(SqrtF, r->f = a->f.GetSqrt());
 
-  DEFINE_UNARY_OP(ExpF, r->f = wdSimdMath::Exp(a->f));
-  DEFINE_UNARY_OP(LnF, r->f = wdSimdMath::Ln(a->f));
-  DEFINE_UNARY_OP(Log2F, r->f = wdSimdMath::Log2(a->f));
-  DEFINE_UNARY_OP(Log2I, r->i = wdSimdMath::Log2i(a->i));
-  DEFINE_UNARY_OP(Log10F, r->f = wdSimdMath::Log10(a->f));
-  DEFINE_UNARY_OP(Pow2F, r->f = wdSimdMath::Pow2(a->f));
+  DEFINE_UNARY_OP(ExpF, r->f = nsSimdMath::Exp(a->f));
+  DEFINE_UNARY_OP(LnF, r->f = nsSimdMath::Ln(a->f));
+  DEFINE_UNARY_OP(Log2F, r->f = nsSimdMath::Log2(a->f));
+  DEFINE_UNARY_OP(Log2I, r->i = nsSimdMath::Log2i(a->i));
+  DEFINE_UNARY_OP(Log10F, r->f = nsSimdMath::Log10(a->f));
+  DEFINE_UNARY_OP(Pow2F, r->f = nsSimdMath::Pow2(a->f));
 
-  DEFINE_UNARY_OP(SinF, r->f = wdSimdMath::Sin(a->f));
-  DEFINE_UNARY_OP(CosF, r->f = wdSimdMath::Cos(a->f));
-  DEFINE_UNARY_OP(TanF, r->f = wdSimdMath::Tan(a->f));
+  DEFINE_UNARY_OP(SinF, r->f = nsSimdMath::Sin(a->f));
+  DEFINE_UNARY_OP(CosF, r->f = nsSimdMath::Cos(a->f));
+  DEFINE_UNARY_OP(TanF, r->f = nsSimdMath::Tan(a->f));
 
-  DEFINE_UNARY_OP(ASinF, r->f = wdSimdMath::ASin(a->f));
-  DEFINE_UNARY_OP(ACosF, r->f = wdSimdMath::ACos(a->f));
-  DEFINE_UNARY_OP(ATanF, r->f = wdSimdMath::ATan(a->f));
+  DEFINE_UNARY_OP(ASinF, r->f = nsSimdMath::ASin(a->f));
+  DEFINE_UNARY_OP(ACosF, r->f = nsSimdMath::ACos(a->f));
+  DEFINE_UNARY_OP(ATanF, r->f = nsSimdMath::ATan(a->f));
 
   DEFINE_UNARY_OP(RoundF, r->f = a->f.Round());
   DEFINE_UNARY_OP(FloorF, r->f = a->f.Floor());
@@ -143,7 +134,7 @@ namespace
   DEFINE_UNARY_OP(NotB, r->b = !a->b);
 
   DEFINE_UNARY_OP(IToF, r->f = a->i.ToFloat());
-  DEFINE_UNARY_OP(FToI, r->i = wdSimdVec4i::Truncate(a->f));
+  DEFINE_UNARY_OP(FToI, r->i = nsSimdVec4i::Truncate(a->f));
 
   DEFINE_BINARY_OP(AddF, r->f = a->f + b->f);
   DEFINE_BINARY_OP(AddI, r->i = a->i + b->i);
@@ -194,9 +185,9 @@ namespace
   DEFINE_BINARY_OP(AndB, r->b = a->b && b->b);
   DEFINE_BINARY_OP(OrB, r->b = a->b || b->b);
 
-  DEFINE_TERNARY_OP(SelF, r->f = wdSimdVec4f::Select(a->b, b->f, c->f));
-  DEFINE_TERNARY_OP(SelI, r->i = wdSimdVec4i::Select(a->b, b->i, c->i));
-  DEFINE_TERNARY_OP(SelB, r->b = wdSimdVec4b::Select(a->b, b->b, c->b));
+  DEFINE_TERNARY_OP(SelF, r->f = nsSimdVec4f::Select(a->b, b->f, c->f));
+  DEFINE_TERNARY_OP(SelI, r->i = nsSimdVec4i::Select(a->b, b->i, c->i));
+  DEFINE_TERNARY_OP(SelB, r->b = nsSimdVec4b::Select(a->b, b->b, c->b));
 
   void VM_MovX_R_4(const ByteCodeType*& pByteCode, ExecutionContext& context)
   {
@@ -212,6 +203,9 @@ namespace
 
   void VM_MovX_C_4(const ByteCodeType*& pByteCode, ExecutionContext& context)
   {
+    NS_WARNING_PUSH()
+    NS_WARNING_DISABLE_MSVC(4189)
+
     DEFINE_TARGET_REGISTER();
     DEFINE_CONSTANT(a);
     while (r != re)
@@ -219,10 +213,12 @@ namespace
       r->i = a->i;
       ++r;
     }
+
+    NS_WARNING_POP()
   }
 
   template <typename ValueType, typename StreamType>
-  WD_ALWAYS_INLINE ValueType ReadInputData(const wdUInt8*& ref_pData, wdUInt32 uiStride)
+  NS_ALWAYS_INLINE ValueType ReadInputData(const nsUInt8*& ref_pData, nsUInt32 uiStride)
   {
     ValueType value = *reinterpret_cast<const StreamType*>(ref_pData);
     ref_pData += uiStride;
@@ -230,10 +226,10 @@ namespace
   }
 
   template <typename RegisterType, typename ValueType, typename StreamType>
-  void LoadInput(RegisterType* r, RegisterType* pRe, const wdProcessingStream& input, wdUInt32 uiNumRemainderInstances)
+  void LoadInput(RegisterType* r, RegisterType* pRe, const nsProcessingStream& input, nsUInt32 uiNumRemainderInstances)
   {
-    const wdUInt8* pInputData = input.GetData<wdUInt8>();
-    const wdUInt32 uiByteStride = input.GetElementStride();
+    const nsUInt8* pInputData = input.GetData<nsUInt8>();
+    const nsUInt32 uiByteStride = input.GetElementStride();
 
     if (uiByteStride == sizeof(ValueType) && std::is_same<ValueType, StreamType>::value)
     {
@@ -273,17 +269,17 @@ namespace
   }
 
   template <typename ValueType, typename StreamType>
-  WD_ALWAYS_INLINE void StoreOutputData(wdUInt8*& ref_pData, wdUInt32 uiStride, ValueType value)
+  NS_ALWAYS_INLINE void StoreOutputData(nsUInt8*& ref_pData, nsUInt32 uiStride, ValueType value)
   {
     *reinterpret_cast<StreamType*>(ref_pData) = static_cast<StreamType>(value);
     ref_pData += uiStride;
   }
 
   template <typename RegisterType, typename ValueType, typename StreamType>
-  void StoreOutput(RegisterType* r, RegisterType* pRe, wdProcessingStream& ref_output, wdUInt32 uiNumRemainderInstances)
+  void StoreOutput(RegisterType* r, RegisterType* pRe, nsProcessingStream& ref_output, nsUInt32 uiNumRemainderInstances)
   {
-    wdUInt8* pOutputData = ref_output.GetWritableData<wdUInt8>();
-    const wdUInt32 uiByteStride = ref_output.GetElementStride();
+    nsUInt8* pOutputData = ref_output.GetWritableData<nsUInt8>();
+    const nsUInt32 uiByteStride = ref_output.GetElementStride();
 
     if (uiByteStride == sizeof(ValueType) && std::is_same<ValueType, StreamType>::value)
     {
@@ -316,7 +312,7 @@ namespace
       ValueType x[4];
       r->template Store<4>(x);
 
-      for (wdUInt32 i = 0; i < uiNumRemainderInstances; ++i)
+      for (nsUInt32 i = 0; i < uiNumRemainderInstances; ++i)
       {
         StoreOutputData<ValueType, StreamType>(pOutputData, uiByteStride, x[i]);
       }
@@ -325,57 +321,57 @@ namespace
 
   void VM_LoadF_4(const ByteCodeType*& pByteCode, ExecutionContext& context)
   {
-    const wdUInt32 uiNumRemainderInstances = context.m_uiNumInstances & 0x3;
+    const nsUInt32 uiNumRemainderInstances = context.m_uiNumInstances & 0x3;
 
     DEFINE_TARGET_REGISTER();
     if (uiNumRemainderInstances > 0)
       --re;
 
-    const wdUInt32 uiInputIndex = wdExpressionByteCode::GetRegisterIndex(pByteCode);
+    const nsUInt32 uiInputIndex = nsExpressionByteCode::GetRegisterIndex(pByteCode);
     auto& input = *context.m_Inputs[uiInputIndex];
 
-    if (input.GetDataType() == wdProcessingStream::DataType::Float)
+    if (input.GetDataType() == nsProcessingStream::DataType::Float)
     {
-      LoadInput<wdSimdVec4f, float, float>(reinterpret_cast<wdSimdVec4f*>(r), reinterpret_cast<wdSimdVec4f*>(re), input, uiNumRemainderInstances);
+      LoadInput<nsSimdVec4f, float, float>(reinterpret_cast<nsSimdVec4f*>(r), reinterpret_cast<nsSimdVec4f*>(re), input, uiNumRemainderInstances);
     }
     else
     {
-      WD_ASSERT_DEBUG(input.GetDataType() == wdProcessingStream::DataType::Half, "Unsupported input type '{}' for LoadF instruction", wdProcessingStream::GetDataTypeName(input.GetDataType()));
-      LoadInput<wdSimdVec4f, float, wdFloat16>(reinterpret_cast<wdSimdVec4f*>(r), reinterpret_cast<wdSimdVec4f*>(re), input, uiNumRemainderInstances);
+      NS_ASSERT_DEBUG(input.GetDataType() == nsProcessingStream::DataType::Half, "Unsupported input type '{}' for LoadF instruction", nsProcessingStream::GetDataTypeName(input.GetDataType()));
+      LoadInput<nsSimdVec4f, float, nsFloat16>(reinterpret_cast<nsSimdVec4f*>(r), reinterpret_cast<nsSimdVec4f*>(re), input, uiNumRemainderInstances);
     }
   }
 
   void VM_LoadI_4(const ByteCodeType*& pByteCode, ExecutionContext& context)
   {
-    const wdUInt32 uiNumRemainderInstances = context.m_uiNumInstances & 0x3;
+    const nsUInt32 uiNumRemainderInstances = context.m_uiNumInstances & 0x3;
 
     DEFINE_TARGET_REGISTER();
     if (uiNumRemainderInstances > 0)
       --re;
 
-    const wdUInt32 uiInputIndex = wdExpressionByteCode::GetRegisterIndex(pByteCode);
+    const nsUInt32 uiInputIndex = nsExpressionByteCode::GetRegisterIndex(pByteCode);
     auto& input = *context.m_Inputs[uiInputIndex];
 
-    if (input.GetDataType() == wdProcessingStream::DataType::Int)
+    if (input.GetDataType() == nsProcessingStream::DataType::Int)
     {
-      LoadInput<wdSimdVec4i, int, int>(reinterpret_cast<wdSimdVec4i*>(r), reinterpret_cast<wdSimdVec4i*>(re), input, uiNumRemainderInstances);
+      LoadInput<nsSimdVec4i, int, int>(reinterpret_cast<nsSimdVec4i*>(r), reinterpret_cast<nsSimdVec4i*>(re), input, uiNumRemainderInstances);
     }
-    else if (input.GetDataType() == wdProcessingStream::DataType::Short)
+    else if (input.GetDataType() == nsProcessingStream::DataType::Short)
     {
-      LoadInput<wdSimdVec4i, int, wdInt16>(reinterpret_cast<wdSimdVec4i*>(r), reinterpret_cast<wdSimdVec4i*>(re), input, uiNumRemainderInstances);
+      LoadInput<nsSimdVec4i, int, nsInt16>(reinterpret_cast<nsSimdVec4i*>(r), reinterpret_cast<nsSimdVec4i*>(re), input, uiNumRemainderInstances);
     }
     else
     {
-      WD_ASSERT_DEBUG(input.GetDataType() == wdProcessingStream::DataType::Byte, "Unsupported input type '{}' for LoadI instruction", wdProcessingStream::GetDataTypeName(input.GetDataType()));
-      LoadInput<wdSimdVec4i, int, wdInt8>(reinterpret_cast<wdSimdVec4i*>(r), reinterpret_cast<wdSimdVec4i*>(re), input, uiNumRemainderInstances);
+      NS_ASSERT_DEBUG(input.GetDataType() == nsProcessingStream::DataType::Byte, "Unsupported input type '{}' for LoadI instruction", nsProcessingStream::GetDataTypeName(input.GetDataType()));
+      LoadInput<nsSimdVec4i, int, nsInt8>(reinterpret_cast<nsSimdVec4i*>(r), reinterpret_cast<nsSimdVec4i*>(re), input, uiNumRemainderInstances);
     }
   }
 
   void VM_StoreF_4(const ByteCodeType*& pByteCode, ExecutionContext& context)
   {
-    const wdUInt32 uiNumRemainderInstances = context.m_uiNumInstances & 0x3;
+    const nsUInt32 uiNumRemainderInstances = context.m_uiNumInstances & 0x3;
 
-    wdUInt32 uiOutputIndex = wdExpressionByteCode::GetRegisterIndex(pByteCode);
+    nsUInt32 uiOutputIndex = nsExpressionByteCode::GetRegisterIndex(pByteCode);
     auto& output = *context.m_Outputs[uiOutputIndex];
 
     // actually not target register but operand register in the is case, but we need something to loop over so we use the target register macro here.
@@ -383,22 +379,22 @@ namespace
     if (uiNumRemainderInstances > 0)
       --re;
 
-    if (output.GetDataType() == wdProcessingStream::DataType::Float)
+    if (output.GetDataType() == nsProcessingStream::DataType::Float)
     {
-      StoreOutput<wdSimdVec4f, float, float>(reinterpret_cast<wdSimdVec4f*>(r), reinterpret_cast<wdSimdVec4f*>(re), output, uiNumRemainderInstances);
+      StoreOutput<nsSimdVec4f, float, float>(reinterpret_cast<nsSimdVec4f*>(r), reinterpret_cast<nsSimdVec4f*>(re), output, uiNumRemainderInstances);
     }
     else
     {
-      WD_ASSERT_DEBUG(output.GetDataType() == wdProcessingStream::DataType::Half, "Unsupported input type '{}' for StoreF instruction", wdProcessingStream::GetDataTypeName(output.GetDataType()));
-      StoreOutput<wdSimdVec4f, float, wdFloat16>(reinterpret_cast<wdSimdVec4f*>(r), reinterpret_cast<wdSimdVec4f*>(re), output, uiNumRemainderInstances);
+      NS_ASSERT_DEBUG(output.GetDataType() == nsProcessingStream::DataType::Half, "Unsupported input type '{}' for StoreF instruction", nsProcessingStream::GetDataTypeName(output.GetDataType()));
+      StoreOutput<nsSimdVec4f, float, nsFloat16>(reinterpret_cast<nsSimdVec4f*>(r), reinterpret_cast<nsSimdVec4f*>(re), output, uiNumRemainderInstances);
     }
   }
 
   void VM_StoreI_4(const ByteCodeType*& pByteCode, ExecutionContext& context)
   {
-    const wdUInt32 uiNumRemainderInstances = context.m_uiNumInstances & 0x3;
+    const nsUInt32 uiNumRemainderInstances = context.m_uiNumInstances & 0x3;
 
-    wdUInt32 uiOutputIndex = wdExpressionByteCode::GetRegisterIndex(pByteCode);
+    nsUInt32 uiOutputIndex = nsExpressionByteCode::GetRegisterIndex(pByteCode);
     auto& output = *context.m_Outputs[uiOutputIndex];
 
     // actually not target register but operand register in the is case, but we need something to loop over so we use the target register macro here.
@@ -406,147 +402,152 @@ namespace
     if (uiNumRemainderInstances > 0)
       --re;
 
-    if (output.GetDataType() == wdProcessingStream::DataType::Int)
+    if (output.GetDataType() == nsProcessingStream::DataType::Int)
     {
-      StoreOutput<wdSimdVec4i, int, int>(reinterpret_cast<wdSimdVec4i*>(r), reinterpret_cast<wdSimdVec4i*>(re), output, uiNumRemainderInstances);
+      StoreOutput<nsSimdVec4i, int, int>(reinterpret_cast<nsSimdVec4i*>(r), reinterpret_cast<nsSimdVec4i*>(re), output, uiNumRemainderInstances);
     }
-    else if (output.GetDataType() == wdProcessingStream::DataType::Short)
+    else if (output.GetDataType() == nsProcessingStream::DataType::Short)
     {
-      StoreOutput<wdSimdVec4i, int, wdInt16>(reinterpret_cast<wdSimdVec4i*>(r), reinterpret_cast<wdSimdVec4i*>(re), output, uiNumRemainderInstances);
+      StoreOutput<nsSimdVec4i, int, nsInt16>(reinterpret_cast<nsSimdVec4i*>(r), reinterpret_cast<nsSimdVec4i*>(re), output, uiNumRemainderInstances);
     }
     else
     {
-      WD_ASSERT_DEBUG(output.GetDataType() == wdProcessingStream::DataType::Byte, "Unsupported input type '{}' for StoreI instruction", wdProcessingStream::GetDataTypeName(output.GetDataType()));
-      StoreOutput<wdSimdVec4i, int, wdInt8>(reinterpret_cast<wdSimdVec4i*>(r), reinterpret_cast<wdSimdVec4i*>(re), output, uiNumRemainderInstances);
+      NS_ASSERT_DEBUG(output.GetDataType() == nsProcessingStream::DataType::Byte, "Unsupported input type '{}' for StoreI instruction", nsProcessingStream::GetDataTypeName(output.GetDataType()));
+      StoreOutput<nsSimdVec4i, int, nsInt8>(reinterpret_cast<nsSimdVec4i*>(r), reinterpret_cast<nsSimdVec4i*>(re), output, uiNumRemainderInstances);
     }
   }
 
   void VM_Call(const ByteCodeType*& pByteCode, ExecutionContext& context)
   {
-    wdUInt32 uiFunctionIndex = wdExpressionByteCode::GetRegisterIndex(pByteCode);
+    NS_WARNING_PUSH()
+    NS_WARNING_DISABLE_MSVC(4189)
+
+    nsUInt32 uiFunctionIndex = nsExpressionByteCode::GetRegisterIndex(pByteCode);
     auto& function = *context.m_Functions[uiFunctionIndex];
 
     DEFINE_TARGET_REGISTER();
-    wdUInt32 uiNumArgs = wdExpressionByteCode::GetFunctionArgCount(pByteCode);
+    nsUInt32 uiNumArgs = nsExpressionByteCode::GetFunctionArgCount(pByteCode);
 
-    wdHybridArray<wdArrayPtr<const wdExpression::Register>, 32> inputs;
+    nsHybridArray<nsArrayPtr<const nsExpression::Register>, 32> inputs;
     inputs.Reserve(uiNumArgs);
-    for (wdUInt32 uiArgIndex = 0; uiArgIndex < uiNumArgs; ++uiArgIndex)
+    for (nsUInt32 uiArgIndex = 0; uiArgIndex < uiNumArgs; ++uiArgIndex)
     {
       DEFINE_OP_REGISTER(x);
-      inputs.PushBack(wdMakeArrayPtr(x, context.m_uiNumSimd4Instances));
+      inputs.PushBack(nsMakeArrayPtr(x, context.m_uiNumSimd4Instances));
     }
 
-    wdExpression::Output output = wdMakeArrayPtr(r, context.m_uiNumSimd4Instances);
+    nsExpression::Output output = nsMakeArrayPtr(r, context.m_uiNumSimd4Instances);
 
     function.m_Func(inputs, output, *context.m_pGlobalData);
+
+    NS_WARNING_POP()
   }
 
   static constexpr OpFunc s_Simd4Funcs[] = {
-    nullptr, // Nop,
+    nullptr,         // Nop,
 
-    nullptr, // FirstUnary,
+    nullptr,         // FirstUnary,
 
-    &AbsF_4,  // AbsF_R,
-    &AbsI_4,  // AbsI_R,
-    &SqrtF_4, // SqrtF_R,
+    &AbsF_4,         // AbsF_R,
+    &AbsI_4,         // AbsI_R,
+    &SqrtF_4,        // SqrtF_R,
 
-    &ExpF_4,   // ExpF_R,
-    &LnF_4,    // LnF_R,
-    &Log2F_4,  // Log2F_R,
-    &Log2I_4,  // Log2I_R,
-    &Log10F_4, // Log10F_R,
-    &Pow2F_4,  // Pow2F_R,
+    &ExpF_4,         // ExpF_R,
+    &LnF_4,          // LnF_R,
+    &Log2F_4,        // Log2F_R,
+    &Log2I_4,        // Log2I_R,
+    &Log10F_4,       // Log10F_R,
+    &Pow2F_4,        // Pow2F_R,
 
-    &SinF_4, // SinF_R,
-    &CosF_4, // CosF_R,
-    &TanF_4, // TanF_R,
+    &SinF_4,         // SinF_R,
+    &CosF_4,         // CosF_R,
+    &TanF_4,         // TanF_R,
 
-    &ASinF_4, // ASinF_R,
-    &ACosF_4, // ACosF_R,
-    &ATanF_4, // ATanF_R,
+    &ASinF_4,        // ASinF_R,
+    &ACosF_4,        // ACosF_R,
+    &ATanF_4,        // ATanF_R,
 
-    &RoundF_4, // RoundF_R,
-    &FloorF_4, // FloorF_R,
-    &CeilF_4,  // CeilF_R,
-    &TruncF_4, // TruncF_R,
+    &RoundF_4,       // RoundF_R,
+    &FloorF_4,       // FloorF_R,
+    &CeilF_4,        // CeilF_R,
+    &TruncF_4,       // TruncF_R,
 
-    &NotI_4, // NotI_R,
-    &NotB_4, // NotB_R,
+    &NotI_4,         // NotI_R,
+    &NotB_4,         // NotB_R,
 
-    &IToF_4, // IToF_R,
-    &FToI_4, // FToI_R,
+    &IToF_4,         // IToF_R,
+    &FToI_4,         // FToI_R,
 
-    nullptr, // LastUnary,
-    nullptr, // FirstBinary,
+    nullptr,         // LastUnary,
+    nullptr,         // FirstBinary,
 
-    &AddF_4<false>, // AddF_RR,
-    &AddI_4<false>, // AddI_RR,
+    &AddF_4<false>,  // AddF_RR,
+    &AddI_4<false>,  // AddI_RR,
 
-    &SubF_4<false>, // SubF_RR,
-    &SubI_4<false>, // SubI_RR,
+    &SubF_4<false>,  // SubF_RR,
+    &SubI_4<false>,  // SubI_RR,
 
-    &MulF_4<false>, // MulF_RR,
-    &MulI_4<false>, // MulI_RR,
+    &MulF_4<false>,  // MulF_RR,
+    &MulI_4<false>,  // MulI_RR,
 
-    &DivF_4<false>, // DivF_RR,
-    &DivI_4<false>, // DivI_RR,
+    &DivF_4<false>,  // DivF_RR,
+    &DivI_4<false>,  // DivI_RR,
 
-    &MinF_4<false>, // MinF_RR,
-    &MinI_4<false>, // MinI_RR,
+    &MinF_4<false>,  // MinF_RR,
+    &MinI_4<false>,  // MinI_RR,
 
-    &MaxF_4<false>, // MaxF_RR,
-    &MaxI_4<false>, // MaxI_RR,
+    &MaxF_4<false>,  // MaxF_RR,
+    &MaxI_4<false>,  // MaxI_RR,
 
-    &ShlI_4<false>, // ShlI_RR,
-    &ShrI_4<false>, // ShrI_RR,
-    &AndI_4<false>, // AndI_RR,
-    &XorI_4<false>, // XorI_RR,
-    &OrI_4<false>,  // OrI_RR,
+    &ShlI_4<false>,  // ShlI_RR,
+    &ShrI_4<false>,  // ShrI_RR,
+    &AndI_4<false>,  // AndI_RR,
+    &XorI_4<false>,  // XorI_RR,
+    &OrI_4<false>,   // OrI_RR,
 
-    &EqF_4<false>, // EqF_RR,
-    &EqI_4<false>, // EqI_RR,
-    &EqB_4<false>, // EqB_RR,
+    &EqF_4<false>,   // EqF_RR,
+    &EqI_4<false>,   // EqI_RR,
+    &EqB_4<false>,   // EqB_RR,
 
-    &NEqF_4<false>, // NEqF_RR,
-    &NEqI_4<false>, // NEqI_RR,
-    &NEqB_4<false>, // NEqB_RR,
+    &NEqF_4<false>,  // NEqF_RR,
+    &NEqI_4<false>,  // NEqI_RR,
+    &NEqB_4<false>,  // NEqB_RR,
 
-    &LtF_4<false>, // LtF_RR,
-    &LtI_4<false>, // LtI_RR,
+    &LtF_4<false>,   // LtF_RR,
+    &LtI_4<false>,   // LtI_RR,
 
-    &LEqF_4<false>, // LEqF_RR,
-    &LEqI_4<false>, // LEqI_RR,
+    &LEqF_4<false>,  // LEqF_RR,
+    &LEqI_4<false>,  // LEqI_RR,
 
-    &GtF_4<false>, // GtF_RR,
-    &GtI_4<false>, // GtI_RR,
+    &GtF_4<false>,   // GtF_RR,
+    &GtI_4<false>,   // GtI_RR,
 
-    &GEqF_4<false>, // GEqF_RR,
-    &GEqI_4<false>, // GEqI_RR,
+    &GEqF_4<false>,  // GEqF_RR,
+    &GEqI_4<false>,  // GEqI_RR,
 
-    &AndB_4<false>, // AndB_RR,
-    &OrB_4<false>,  // OrB_RR,
+    &AndB_4<false>,  // AndB_RR,
+    &OrB_4<false>,   // OrB_RR,
 
-    nullptr, // LastBinary,
-    nullptr, // FirstBinaryWithConstant,
+    nullptr,         // LastBinary,
+    nullptr,         // FirstBinaryWithConstant,
 
-    &AddF_4<true>, // AddF_RC,
-    &AddI_4<true>, // AddI_RC,
+    &AddF_4<true>,   // AddF_RC,
+    &AddI_4<true>,   // AddI_RC,
 
-    &SubF_4<true>, // SubF_RC,
-    &SubI_4<true>, // SubI_RC,
+    &SubF_4<true>,   // SubF_RC,
+    &SubI_4<true>,   // SubI_RC,
 
-    &MulF_4<true>, // MulF_RC,
-    &MulI_4<true>, // MulI_RC,
+    &MulF_4<true>,   // MulF_RC,
+    &MulI_4<true>,   // MulI_RC,
 
-    &DivF_4<true>, // DivF_RC,
-    &DivI_4<true>, // DivI_RC,
+    &DivF_4<true>,   // DivF_RC,
+    &DivI_4<true>,   // DivI_RC,
 
-    &MinF_4<true>, // MinF_RC,
-    &MinI_4<true>, // MinI_RC,
+    &MinF_4<true>,   // MinF_RC,
+    &MinI_4<true>,   // MinI_RC,
 
-    &MaxF_4<true>, // MaxF_RC,
-    &MaxI_4<true>, // MaxI_RC,
+    &MaxF_4<true>,   // MaxF_RC,
+    &MaxI_4<true>,   // MaxI_RC,
 
     &ShlI_C_4<true>, // ShlI_RC,
     &ShrI_C_4<true>, // ShrI_RC,
@@ -554,52 +555,52 @@ namespace
     &XorI_4<true>,   // XorI_RC,
     &OrI_4<true>,    // OrI_RC,
 
-    &EqF_4<true>, // EqF_RC,
-    &EqI_4<true>, // EqI_RC,
-    &EqB_4<true>, // EqB_RC
+    &EqF_4<true>,    // EqF_RC,
+    &EqI_4<true>,    // EqI_RC,
+    &EqB_4<true>,    // EqB_RC
 
-    &NEqF_4<true>, // NEqF_RC,
-    &NEqI_4<true>, // NEqI_RC,
-    &NEqB_4<true>, // NEqB_RC
+    &NEqF_4<true>,   // NEqF_RC,
+    &NEqI_4<true>,   // NEqI_RC,
+    &NEqB_4<true>,   // NEqB_RC
 
-    &LtF_4<true>, // LtF_RC,
-    &LtI_4<true>, // LtI_RC
+    &LtF_4<true>,    // LtF_RC,
+    &LtI_4<true>,    // LtI_RC
 
-    &LEqF_4<true>, // LEqF_RC,
-    &LEqI_4<true>, // LEqI_RC
+    &LEqF_4<true>,   // LEqF_RC,
+    &LEqI_4<true>,   // LEqI_RC
 
-    &GtF_4<true>, // GtF_RC,
-    &GtI_4<true>, // GtI_RC
+    &GtF_4<true>,    // GtF_RC,
+    &GtI_4<true>,    // GtI_RC
 
-    &GEqF_4<true>, // GEqF_RC,
-    &GEqI_4<true>, // GEqI_RC
+    &GEqF_4<true>,   // GEqF_RC,
+    &GEqI_4<true>,   // GEqI_RC
 
-    &AndB_4<true>, // AndB_RC,
-    &OrB_4<true>,  // OrB_RC,
+    &AndB_4<true>,   // AndB_RC,
+    &OrB_4<true>,    // OrB_RC,
 
-    nullptr, // LastBinaryWithConstant,
-    nullptr, // FirstTernary,
+    nullptr,         // LastBinaryWithConstant,
+    nullptr,         // FirstTernary,
 
-    &SelF_4, // SelF_RRR,
-    &SelI_4, // SelI_RRR,
-    &SelB_4, // SelB_RRR,
+    &SelF_4,         // SelF_RRR,
+    &SelI_4,         // SelI_RRR,
+    &SelB_4,         // SelB_RRR,
 
-    nullptr, // LastTernary,
-    nullptr, // FirstSpecial,
+    nullptr,         // LastTernary,
+    nullptr,         // FirstSpecial,
 
-    &VM_MovX_R_4, // MovX_R,
-    &VM_MovX_C_4, // MovX_C,
-    &VM_LoadF_4,  // LoadF,
-    &VM_LoadI_4,  // LoadI,
-    &VM_StoreF_4, // StoreF,
-    &VM_StoreI_4, // StoreI,
+    &VM_MovX_R_4,    // MovX_R,
+    &VM_MovX_C_4,    // MovX_C,
+    &VM_LoadF_4,     // LoadF,
+    &VM_LoadI_4,     // LoadI,
+    &VM_StoreF_4,    // StoreF,
+    &VM_StoreI_4,    // StoreI,
 
-    &VM_Call, // Call,
+    &VM_Call,        // Call,
 
-    nullptr, // LastSpecial,
+    nullptr,         // LastSpecial,
   };
 
-  static_assert(WD_ARRAY_SIZE(s_Simd4Funcs) == wdExpressionByteCode::OpCode::Count);
+  static_assert(NS_ARRAY_SIZE(s_Simd4Funcs) == nsExpressionByteCode::OpCode::Count);
 
 } // namespace
 

@@ -1,169 +1,145 @@
-namespace wdInternal
+
+NS_ALWAYS_INLINE nsAllocator::nsAllocator() = default;
+
+NS_ALWAYS_INLINE nsAllocator::~nsAllocator() = default;
+
+
+namespace nsMath
 {
-  template <typename AllocationPolicy, wdUInt32 TrackingFlags>
-  class wdAllocatorImpl : public wdAllocatorBase
+  // due to #include order issues, we have to forward declare this function here
+
+  NS_FOUNDATION_DLL nsUInt64 SafeMultiply64(nsUInt64 a, nsUInt64 b, nsUInt64 c, nsUInt64 d);
+} // namespace nsMath
+
+namespace nsInternal
+{
+  template <typename T>
+  struct NewInstance
   {
-  public:
-    wdAllocatorImpl(const char* szName, wdAllocatorBase* pParent);
-    ~wdAllocatorImpl();
+    NS_ALWAYS_INLINE NewInstance(T* pInstance, nsAllocator* pAllocator)
+    {
+      m_pInstance = pInstance;
+      m_pAllocator = pAllocator;
+    }
 
-    // wdAllocatorBase implementation
-    virtual void* Allocate(size_t uiSize, size_t uiAlign, wdMemoryUtils::DestructorFunction destructorFunc = nullptr) override;
-    virtual void Deallocate(void* pPtr) override;
-    virtual size_t AllocatedSize(const void* pPtr) override;
-    virtual wdAllocatorId GetId() const override;
-    virtual Stats GetStats() const override;
+    template <typename U>
+    NS_ALWAYS_INLINE NewInstance(NewInstance<U>&& other)
+    {
+      m_pInstance = other.m_pInstance;
+      m_pAllocator = other.m_pAllocator;
 
-    wdAllocatorBase* GetParent() const;
+      other.m_pInstance = nullptr;
+      other.m_pAllocator = nullptr;
+    }
 
-  protected:
-    AllocationPolicy m_allocator;
+    NS_ALWAYS_INLINE NewInstance(std::nullptr_t) {}
 
-    wdAllocatorId m_Id;
-    wdThreadID m_ThreadID;
+    template <typename U>
+    NS_ALWAYS_INLINE NewInstance<U> Cast()
+    {
+      return NewInstance<U>(static_cast<U*>(m_pInstance), m_pAllocator);
+    }
+
+    NS_ALWAYS_INLINE operator T*() { return m_pInstance; }
+
+    NS_ALWAYS_INLINE T* operator->() { return m_pInstance; }
+
+    T* m_pInstance = nullptr;
+    nsAllocator* m_pAllocator = nullptr;
   };
 
-  template <typename AllocationPolicy, wdUInt32 TrackingFlags, bool HasReallocate>
-  class wdAllocatorMixinReallocate : public wdAllocatorImpl<AllocationPolicy, TrackingFlags>
+  template <typename T>
+  NS_ALWAYS_INLINE bool operator<(const NewInstance<T>& lhs, T* rhs)
   {
-  public:
-    wdAllocatorMixinReallocate(const char* szName, wdAllocatorBase* pParent);
-  };
-
-  template <typename AllocationPolicy, wdUInt32 TrackingFlags>
-  class wdAllocatorMixinReallocate<AllocationPolicy, TrackingFlags, true> : public wdAllocatorImpl<AllocationPolicy, TrackingFlags>
-  {
-  public:
-    wdAllocatorMixinReallocate(const char* szName, wdAllocatorBase* pParent);
-    virtual void* Reallocate(void* pPtr, size_t uiCurrentSize, size_t uiNewSize, size_t uiAlign) override;
-  };
-}; // namespace wdInternal
-
-template <typename A, wdUInt32 TrackingFlags>
-WD_FORCE_INLINE wdInternal::wdAllocatorImpl<A, TrackingFlags>::wdAllocatorImpl(const char* szName, wdAllocatorBase* pParent /* = nullptr */)
-  : m_allocator(pParent)
-  , m_ThreadID(wdThreadUtils::GetCurrentThreadID())
-{
-  if ((TrackingFlags & wdMemoryTrackingFlags::RegisterAllocator) != 0)
-  {
-    WD_CHECK_AT_COMPILETIME_MSG((TrackingFlags & ~wdMemoryTrackingFlags::All) == 0, "Invalid tracking flags");
-    const wdUInt32 uiTrackingFlags = TrackingFlags;
-    wdBitflags<wdMemoryTrackingFlags> flags = *reinterpret_cast<const wdBitflags<wdMemoryTrackingFlags>*>(&uiTrackingFlags);
-    this->m_Id = wdMemoryTracker::RegisterAllocator(szName, flags, pParent != nullptr ? pParent->GetId() : wdAllocatorId());
-  }
-}
-
-template <typename A, wdUInt32 TrackingFlags>
-wdInternal::wdAllocatorImpl<A, TrackingFlags>::~wdAllocatorImpl()
-{
-  // WD_ASSERT_RELEASE(m_ThreadID == wdThreadUtils::GetCurrentThreadID(), "Allocator is deleted from another thread");
-
-  if ((TrackingFlags & wdMemoryTrackingFlags::RegisterAllocator) != 0)
-  {
-    wdMemoryTracker::DeregisterAllocator(this->m_Id);
-  }
-}
-
-template <typename A, wdUInt32 TrackingFlags>
-void* wdInternal::wdAllocatorImpl<A, TrackingFlags>::Allocate(size_t uiSize, size_t uiAlign, wdMemoryUtils::DestructorFunction destructorFunc)
-{
-  // zero size allocations always return nullptr without tracking (since deallocate nullptr is ignored)
-  if (uiSize == 0)
-    return nullptr;
-
-  WD_ASSERT_DEBUG(wdMath::IsPowerOf2((wdUInt32)uiAlign), "Alignment must be power of two");
-
-  wdTime fAllocationTime = wdTime::Now();
-
-  void* ptr = m_allocator.Allocate(uiSize, uiAlign);
-  WD_ASSERT_DEV(ptr != nullptr, "Could not allocate {0} bytes. Out of memory?", uiSize);
-
-  if ((TrackingFlags & wdMemoryTrackingFlags::EnableAllocationTracking) != 0)
-  {
-    wdBitflags<wdMemoryTrackingFlags> flags;
-    flags.SetValue(TrackingFlags);
-
-    wdMemoryTracker::AddAllocation(this->m_Id, flags, ptr, uiSize, uiAlign, wdTime::Now() - fAllocationTime);
+    return lhs.m_pInstance < rhs;
   }
 
-  return ptr;
-}
-
-template <typename A, wdUInt32 TrackingFlags>
-void wdInternal::wdAllocatorImpl<A, TrackingFlags>::Deallocate(void* pPtr)
-{
-  if ((TrackingFlags & wdMemoryTrackingFlags::EnableAllocationTracking) != 0)
+  template <typename T>
+  NS_ALWAYS_INLINE bool operator<(T* lhs, const NewInstance<T>& rhs)
   {
-    wdMemoryTracker::RemoveAllocation(this->m_Id, pPtr);
+    return lhs < rhs.m_pInstance;
   }
 
-  m_allocator.Deallocate(pPtr);
-}
-
-template <typename A, wdUInt32 TrackingFlags>
-size_t wdInternal::wdAllocatorImpl<A, TrackingFlags>::AllocatedSize(const void* pPtr)
-{
-  if ((TrackingFlags & wdMemoryTrackingFlags::EnableAllocationTracking) != 0)
+  template <typename T>
+  NS_FORCE_INLINE void Delete(nsAllocator* pAllocator, T* pPtr)
   {
-    return wdMemoryTracker::GetAllocationInfo(this->m_Id, pPtr).m_uiSize;
+    if (pPtr != nullptr)
+    {
+      nsMemoryUtils::Destruct(pPtr, 1);
+      pAllocator->Deallocate(pPtr);
+    }
   }
 
-  return 0;
-}
-
-template <typename A, wdUInt32 TrackingFlags>
-wdAllocatorId wdInternal::wdAllocatorImpl<A, TrackingFlags>::GetId() const
-{
-  return this->m_Id;
-}
-
-template <typename A, wdUInt32 TrackingFlags>
-wdAllocatorBase::Stats wdInternal::wdAllocatorImpl<A, TrackingFlags>::GetStats() const
-{
-  if ((TrackingFlags & wdMemoryTrackingFlags::RegisterAllocator) != 0)
+  template <typename T>
+  NS_FORCE_INLINE T* CreateRawBuffer(nsAllocator* pAllocator, size_t uiCount)
   {
-    return wdMemoryTracker::GetAllocatorStats(this->m_Id);
+    nsUInt64 safeAllocationSize = nsMath::SafeMultiply64(uiCount, sizeof(T));
+    return static_cast<T*>(pAllocator->Allocate(static_cast<size_t>(safeAllocationSize), NS_ALIGNMENT_OF(T))); // Down-cast to size_t for 32-bit
   }
 
-  return Stats();
-}
-
-template <typename A, wdUInt32 TrackingFlags>
-WD_ALWAYS_INLINE wdAllocatorBase* wdInternal::wdAllocatorImpl<A, TrackingFlags>::GetParent() const
-{
-  return m_allocator.GetParent();
-}
-
-template <typename A, wdUInt32 TrackingFlags, bool HasReallocate>
-wdInternal::wdAllocatorMixinReallocate<A, TrackingFlags, HasReallocate>::wdAllocatorMixinReallocate(const char* szName, wdAllocatorBase* pParent)
-  : wdAllocatorImpl<A, TrackingFlags>(szName, pParent)
-{
-}
-
-template <typename A, wdUInt32 TrackingFlags>
-wdInternal::wdAllocatorMixinReallocate<A, TrackingFlags, true>::wdAllocatorMixinReallocate(const char* szName, wdAllocatorBase* pParent)
-  : wdAllocatorImpl<A, TrackingFlags>(szName, pParent)
-{
-}
-
-template <typename A, wdUInt32 TrackingFlags>
-void* wdInternal::wdAllocatorMixinReallocate<A, TrackingFlags, true>::Reallocate(void* pPtr, size_t uiCurrentSize, size_t uiNewSize, size_t uiAlign)
-{
-  if ((TrackingFlags & wdMemoryTrackingFlags::EnableAllocationTracking) != 0)
+  NS_FORCE_INLINE void DeleteRawBuffer(nsAllocator* pAllocator, void* pPtr)
   {
-    wdMemoryTracker::RemoveAllocation(this->m_Id, pPtr);
+    if (pPtr != nullptr)
+    {
+      pAllocator->Deallocate(pPtr);
+    }
   }
 
-  wdTime fAllocationTime = wdTime::Now();
-
-  void* pNewMem = this->m_allocator.Reallocate(pPtr, uiCurrentSize, uiNewSize, uiAlign);
-
-  if ((TrackingFlags & wdMemoryTrackingFlags::EnableAllocationTracking) != 0)
+  template <typename T>
+  inline nsArrayPtr<T> CreateArray(nsAllocator* pAllocator, nsUInt32 uiCount)
   {
-    wdBitflags<wdMemoryTrackingFlags> flags;
-    flags.SetValue(TrackingFlags);
+    T* buffer = CreateRawBuffer<T>(pAllocator, uiCount);
+    nsMemoryUtils::Construct<SkipTrivialTypes>(buffer, uiCount);
 
-    wdMemoryTracker::AddAllocation(this->m_Id, flags, pNewMem, uiNewSize, uiAlign, wdTime::Now() - fAllocationTime);
+    return nsArrayPtr<T>(buffer, uiCount);
   }
-  return pNewMem;
-}
+
+  template <typename T>
+  inline void DeleteArray(nsAllocator* pAllocator, nsArrayPtr<T> arrayPtr)
+  {
+    T* buffer = arrayPtr.GetPtr();
+    if (buffer != nullptr)
+    {
+      nsMemoryUtils::Destruct(buffer, arrayPtr.GetCount());
+      pAllocator->Deallocate(buffer);
+    }
+  }
+
+  template <typename T>
+  NS_FORCE_INLINE T* ExtendRawBuffer(T* pPtr, nsAllocator* pAllocator, size_t uiCurrentCount, size_t uiNewCount, nsTypeIsPod)
+  {
+    return (T*)pAllocator->Reallocate(pPtr, uiCurrentCount * sizeof(T), uiNewCount * sizeof(T), NS_ALIGNMENT_OF(T));
+  }
+
+  template <typename T>
+  NS_FORCE_INLINE T* ExtendRawBuffer(T* pPtr, nsAllocator* pAllocator, size_t uiCurrentCount, size_t uiNewCount, nsTypeIsMemRelocatable)
+  {
+    return (T*)pAllocator->Reallocate(pPtr, uiCurrentCount * sizeof(T), uiNewCount * sizeof(T), NS_ALIGNMENT_OF(T));
+  }
+
+  template <typename T>
+  NS_FORCE_INLINE T* ExtendRawBuffer(T* pPtr, nsAllocator* pAllocator, size_t uiCurrentCount, size_t uiNewCount, nsTypeIsClass)
+  {
+    NS_CHECK_AT_COMPILETIME_MSG(!std::is_trivial<T>::value,
+      "POD type is treated as class. Use NS_DECLARE_POD_TYPE(YourClass) or NS_DEFINE_AS_POD_TYPE(ExternalClass) to mark it as POD.");
+
+    T* pNewMem = CreateRawBuffer<T>(pAllocator, uiNewCount);
+    nsMemoryUtils::RelocateConstruct(pNewMem, pPtr, uiCurrentCount);
+    DeleteRawBuffer(pAllocator, pPtr);
+    return pNewMem;
+  }
+
+  template <typename T>
+  NS_FORCE_INLINE T* ExtendRawBuffer(T* pPtr, nsAllocator* pAllocator, size_t uiCurrentCount, size_t uiNewCount)
+  {
+    NS_ASSERT_DEV(uiCurrentCount < uiNewCount, "Shrinking of a buffer is not implemented yet");
+    NS_ASSERT_DEV(!(uiCurrentCount == uiNewCount), "Same size passed in twice.");
+    if (pPtr == nullptr)
+    {
+      NS_ASSERT_DEV(uiCurrentCount == 0, "current count must be 0 if ptr is nullptr");
+
+      return CreateRawBuffer<T>(pAllocator, uiNewCount);
+    }
+    return ExtendRawBuffer(pPtr, pAllocator, uiCurrentCount, uiNewCount, nsGetTypeClass<T>());
+  }
+} // namespace nsInternal

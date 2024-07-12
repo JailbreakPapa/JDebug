@@ -2,7 +2,7 @@
 
 #include <Foundation/Communication/Implementation/TelemetryMessage.h>
 
-wdTelemetryMessage::wdTelemetryMessage()
+nsTelemetryMessage::nsTelemetryMessage()
   : m_Reader(&m_Storage)
   , m_Writer(&m_Storage)
 {
@@ -10,7 +10,7 @@ wdTelemetryMessage::wdTelemetryMessage()
   m_uiMsgID = 0;
 }
 
-wdTelemetryMessage::wdTelemetryMessage(const wdTelemetryMessage& rhs)
+nsTelemetryMessage::nsTelemetryMessage(const nsTelemetryMessage& rhs)
   : m_Storage(rhs.m_Storage)
   , m_Reader(&m_Storage)
   , m_Writer(&m_Storage)
@@ -19,7 +19,7 @@ wdTelemetryMessage::wdTelemetryMessage(const wdTelemetryMessage& rhs)
   m_uiMsgID = rhs.m_uiMsgID;
 }
 
-void wdTelemetryMessage::operator=(const wdTelemetryMessage& rhs)
+void nsTelemetryMessage::operator=(const nsTelemetryMessage& rhs)
 {
   m_Storage = rhs.m_Storage;
   m_uiSystemID = rhs.m_uiSystemID;
@@ -28,12 +28,8 @@ void wdTelemetryMessage::operator=(const wdTelemetryMessage& rhs)
   m_Writer.SetStorage(&m_Storage);
 }
 
-wdTelemetryMessage::~wdTelemetryMessage()
+nsTelemetryMessage::~nsTelemetryMessage()
 {
   m_Reader.SetStorage(nullptr);
   m_Writer.SetStorage(nullptr);
 }
-
-
-
-WD_STATICLINK_FILE(Foundation, Foundation_Communication_Implementation_TelemetryMessage);

@@ -6,26 +6,26 @@
 #include <Foundation/Reflection/Reflection.h>
 #include <Foundation/Strings/HashedString.h>
 
-class wdProcessingStream;
+class nsProcessingStream;
 
 /// \brief This element spawner initializes new elements with 0 (by writing 0 bytes into the whole element)
-class WD_FOUNDATION_DLL wdProcessingStreamSpawnerZeroInitialized : public wdProcessingStreamProcessor
+class NS_FOUNDATION_DLL nsProcessingStreamSpawnerZeroInitialized : public nsProcessingStreamProcessor
 {
-  WD_ADD_DYNAMIC_REFLECTION(wdProcessingStreamSpawnerZeroInitialized, wdProcessingStreamProcessor);
+  NS_ADD_DYNAMIC_REFLECTION(nsProcessingStreamSpawnerZeroInitialized, nsProcessingStreamProcessor);
 
 public:
-  wdProcessingStreamSpawnerZeroInitialized();
+  nsProcessingStreamSpawnerZeroInitialized();
 
   /// \brief Which stream to zero initialize
-  void SetStreamName(wdStringView sStreamName);
+  void SetStreamName(nsStringView sStreamName);
 
 protected:
-  virtual wdResult UpdateStreamBindings() override;
+  virtual nsResult UpdateStreamBindings() override;
 
-  virtual void InitializeElements(wdUInt64 uiStartIndex, wdUInt64 uiNumElements) override;
-  virtual void Process(wdUInt64 uiNumElements) override {}
+  virtual void InitializeElements(nsUInt64 uiStartIndex, nsUInt64 uiNumElements) override;
+  virtual void Process(nsUInt64 uiNumElements) override {}
 
-  wdHashedString m_sStreamName;
+  nsHashedString m_sStreamName;
 
-  wdProcessingStream* m_pStream;
+  nsProcessingStream* m_pStream = nullptr;
 };

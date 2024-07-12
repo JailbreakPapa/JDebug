@@ -1,6 +1,6 @@
 #pragma once
 
-WD_ALWAYS_INLINE bool wdPathUtils::IsPathSeparator(wdUInt32 c)
+NS_ALWAYS_INLINE bool nsPathUtils::IsPathSeparator(nsUInt32 c)
 {
   return (c == '/' || c == '\\');
 }

@@ -2,14 +2,14 @@
 
 #include <Foundation/Strings/StringBuilder.h>
 
-inline wdDataDirectoryReaderWriterBase::wdDataDirectoryReaderWriterBase(wdInt32 iDataDirUserData, bool bIsReader)
+inline nsDataDirectoryReaderWriterBase::nsDataDirectoryReaderWriterBase(nsInt32 iDataDirUserData, bool bIsReader)
 {
   m_iDataDirUserData = iDataDirUserData;
   m_pDataDirectory = nullptr;
   m_bIsReader = bIsReader;
 }
 
-inline wdResult wdDataDirectoryReaderWriterBase::Open(wdStringView sFile, wdDataDirectoryType* pDataDirectory, wdFileShareMode::Enum fileShareMode)
+inline nsResult nsDataDirectoryReaderWriterBase::Open(nsStringView sFile, nsDataDirectoryType* pDataDirectory, nsFileShareMode::Enum fileShareMode)
 {
   m_pDataDirectory = pDataDirectory;
   m_sFilePath = sFile;
@@ -17,12 +17,12 @@ inline wdResult wdDataDirectoryReaderWriterBase::Open(wdStringView sFile, wdData
   return InternalOpen(fileShareMode);
 }
 
-inline const wdString128& wdDataDirectoryReaderWriterBase::GetFilePath() const
+inline const nsString128& nsDataDirectoryReaderWriterBase::GetFilePath() const
 {
   return m_sFilePath;
 }
 
-inline wdDataDirectoryType* wdDataDirectoryReaderWriterBase::GetDataDirectory() const
+inline nsDataDirectoryType* nsDataDirectoryReaderWriterBase::GetDataDirectory() const
 {
   return m_pDataDirectory;
 }

@@ -5,59 +5,59 @@
 #include <Foundation/Strings/String.h>
 
 /// Build string implementation for HRESULT.
-WD_FOUNDATION_DLL wdString wdHRESULTtoString(wdMinWindows::HRESULT result);
+NS_FOUNDATION_DLL nsString nsHRESULTtoString(nsMinWindows::HRESULT result);
 
-/// Conversion of HRESULT to wdResult.
-WD_ALWAYS_INLINE wdResult wdToResult(wdMinWindows::HRESULT result)
+/// Conversion of HRESULT to nsResult.
+NS_ALWAYS_INLINE nsResult nsToResult(nsMinWindows::HRESULT result)
 {
-  return result >= 0 ? WD_SUCCESS : WD_FAILURE;
+  return result >= 0 ? NS_SUCCESS : NS_FAILURE;
 }
 
-#define WD_HRESULT_TO_FAILURE(code)   \
+#define NS_HRESULT_TO_FAILURE(code)   \
   do                                  \
   {                                   \
-    wdMinWindows::HRESULT s = (code); \
+    nsMinWindows::HRESULT s = (code); \
     if (s < 0)                        \
-      return WD_FAILURE;              \
+      return NS_FAILURE;              \
   } while (false)
 
-#define WD_HRESULT_TO_FAILURE_LOG(code)                                                      \
+#define NS_HRESULT_TO_FAILURE_LOG(code)                                                      \
   do                                                                                         \
   {                                                                                          \
-    wdMinWindows::HRESULT s = (code);                                                        \
+    nsMinWindows::HRESULT s = (code);                                                        \
     if (s < 0)                                                                               \
     {                                                                                        \
-      wdLog::Error("Call '{0}' failed with: {1}", WD_STRINGIZE(code), wdHRESULTtoString(s)); \
-      return WD_FAILURE;                                                                     \
+      nsLog::Error("Call '{0}' failed with: {1}", NS_STRINGIZE(code), nsHRESULTtoString(s)); \
+      return NS_FAILURE;                                                                     \
     }                                                                                        \
   } while (false)
 
-#define WD_HRESULT_TO_LOG(code)                                                              \
+#define NS_HRESULT_TO_LOG(code)                                                              \
   do                                                                                         \
   {                                                                                          \
-    wdMinWindows::HRESULT s = (code);                                                        \
+    nsMinWindows::HRESULT s = (code);                                                        \
     if (s < 0)                                                                               \
     {                                                                                        \
-      wdLog::Error("Call '{0}' failed with: {1}", WD_STRINGIZE(code), wdHRESULTtoString(s)); \
+      nsLog::Error("Call '{0}' failed with: {1}", NS_STRINGIZE(code), nsHRESULTtoString(s)); \
     }                                                                                        \
   } while (false)
 
-#define WD_NO_RETURNVALUE
+#define NS_NO_RETURNVALUE
 
-#define WD_HRESULT_TO_LOG_RET(code, ret)                                                     \
+#define NS_HRESULT_TO_LOG_RET(code, ret)                                                     \
   do                                                                                         \
   {                                                                                          \
-    wdMinWindows::HRESULT s = (code);                                                        \
+    nsMinWindows::HRESULT s = (code);                                                        \
     if (s < 0)                                                                               \
     {                                                                                        \
-      wdLog::Error("Call '{0}' failed with: {1}", WD_STRINGIZE(code), wdHRESULTtoString(s)); \
+      nsLog::Error("Call '{0}' failed with: {1}", NS_STRINGIZE(code), nsHRESULTtoString(s)); \
       return ret;                                                                            \
     }                                                                                        \
   } while (false)
 
-#define WD_HRESULT_TO_ASSERT(code)                                                                  \
+#define NS_HRESULT_TO_ASSERT(code)                                                                  \
   do                                                                                                \
   {                                                                                                 \
-    wdMinWindows::HRESULT s = (code);                                                               \
-    WD_ASSERT_DEV(s >= 0, "Call '{0}' failed with: {1}", WD_STRINGIZE(code), wdHRESULTtoString(s)); \
+    nsMinWindows::HRESULT s = (code);                                                               \
+    NS_ASSERT_DEV(s >= 0, "Call '{0}' failed with: {1}", NS_STRINGIZE(code), nsHRESULTtoString(s)); \
   } while (false)

@@ -1495,9 +1495,9 @@ function(_ep_write_downloadfile_script
   endif()
 
   if(userpwd STREQUAL ":")
-    set(USERPWD_ARGS)
+    set(USERPNS_ARGS)
   else()
-    set(USERPWD_ARGS USERPWD "${userpwd}")
+    set(USERPNS_ARGS USERPWD "${userpwd}")
   endif()
 
   set(HTTP_HEADERS_ARGS "")
@@ -1519,7 +1519,7 @@ function(_ep_write_downloadfile_script
   # * SHOW_PROGRESS
   # * TIMEOUT_ARGS
   # * TIMEOUT_MSG
-  # * USERPWD_ARGS
+  # * USERPNS_ARGS
   # * HTTP_HEADERS_ARGS
   configure_file(
     "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/ExternalProject/download.cmake.in"

@@ -3,7 +3,7 @@ HeaderV2
 o
 {
 	Uuid %id{u4{5984906476330430411,1983541036523368411}}
-	s %t{"wdExposedParametersAttribute"}
+	s %t{"nsExposedParametersAttribute"}
 	u3 %v{1}
 	p
 	{
@@ -13,7 +13,7 @@ o
 o
 {
 	Uuid %id{u4{13402867411579275029,2769991430691516589}}
-	s %t{"wdExposedParametersAttribute"}
+	s %t{"nsExposedParametersAttribute"}
 	u3 %v{1}
 	p
 	{
@@ -23,7 +23,7 @@ o
 o
 {
 	Uuid %id{u4{15696133319264970979,3501877511505309542}}
-	s %t{"wdExposedParameter"}
+	s %t{"nsExposedParameter"}
 	u3 %v{2}
 	p
 	{
@@ -33,13 +33,13 @@ o
 		}
 		Vec3 %DefaultValue{f{0x0000803F,0x00000040,0x00004040}}
 		s %Name{"Vec3Var"}
-		s %Type{"wdVariant"}
+		s %Type{"nsVariant"}
 	}
 }
 o
 {
 	Uuid %id{u4{946935931168176294,5575304682845324353}}
-	s %t{"wdAssetDocumentInfo"}
+	s %t{"nsAssetDocumentInfo"}
 	u3 %v{2}
 	s %n{"Header"}
 	p
@@ -62,7 +62,7 @@ o
 o
 {
 	Uuid %id{u4{13874137247866552233,5847747051445601960}}
-	s %t{"wdExposedParameter"}
+	s %t{"nsExposedParameter"}
 	u3 %v{2}
 	p
 	{
@@ -72,13 +72,13 @@ o
 		}
 		b %DefaultValue{1}
 		s %Name{"BoolVar"}
-		s %Type{"wdVariant"}
+		s %Type{"nsVariant"}
 	}
 }
 o
 {
 	Uuid %id{u4{10674357281614953512,6422159680577271106}}
-	s %t{"wdExposedParametersAttribute"}
+	s %t{"nsExposedParametersAttribute"}
 	u3 %v{1}
 	p
 	{
@@ -88,7 +88,7 @@ o
 o
 {
 	Uuid %id{u4{1314835774538621813,6753052815184399693}}
-	s %t{"wdExposedParametersAttribute"}
+	s %t{"nsExposedParametersAttribute"}
 	u3 %v{1}
 	p
 	{
@@ -98,7 +98,7 @@ o
 o
 {
 	Uuid %id{u4{6500995543144528695,9022086823841100606}}
-	s %t{"wdExposedParametersAttribute"}
+	s %t{"nsExposedParametersAttribute"}
 	u3 %v{1}
 	p
 	{
@@ -108,7 +108,7 @@ o
 o
 {
 	Uuid %id{u4{15709950136310580568,9719543760896104263}}
-	s %t{"wdExposedParameters"}
+	s %t{"nsExposedParameters"}
 	u3 %v{3}
 	p
 	{
@@ -125,7 +125,7 @@ o
 o
 {
 	Uuid %id{u4{13549934426380294816,11019126812429604316}}
-	s %t{"wdExposedParameter"}
+	s %t{"nsExposedParameter"}
 	u3 %v{2}
 	p
 	{
@@ -135,13 +135,13 @@ o
 		}
 		Color %DefaultValue{f{0x90A5443F,0xD357123E,0x8DE8F73A,0x0000803F}}
 		s %Name{"ColorVar"}
-		s %Type{"wdVariant"}
+		s %Type{"nsVariant"}
 	}
 }
 o
 {
 	Uuid %id{u4{4340714732107742219,12240619782740723735}}
-	s %t{"wdExposedParameter"}
+	s %t{"nsExposedParameter"}
 	u3 %v{2}
 	p
 	{
@@ -151,13 +151,13 @@ o
 		}
 		d %DefaultValue{0x0000000000002640}
 		s %Name{"NumberVar"}
-		s %Type{"wdVariant"}
+		s %Type{"nsVariant"}
 	}
 }
 o
 {
 	Uuid %id{u4{10572796249885944839,16837219536386870210}}
-	s %t{"wdExposedParameter"}
+	s %t{"nsExposedParameter"}
 	u3 %v{2}
 	p
 	{
@@ -167,7 +167,7 @@ o
 		}
 		s %DefaultValue{"Hello"}
 		s %Name{"StringVar"}
-		s %Type{"wdVariant"}
+		s %Type{"nsVariant"}
 	}
 }
 }
@@ -176,7 +176,7 @@ Objects
 o
 {
 	Uuid %id{u4{5463840179194449797,4730157493296670849}}
-	s %t{"wdPrefabDocumentSettings"}
+	s %t{"nsPrefabDocumentSettings"}
 	u3 %v{1}
 	p
 	{
@@ -193,7 +193,7 @@ o
 o
 {
 	Uuid %id{u4{16353465784624240054,4871830863623574660}}
-	s %t{"wdGameObject"}
+	s %t{"nsGameObject"}
 	u3 %v{1}
 	p
 	{
@@ -208,7 +208,7 @@ o
 		Quat %LocalRotation{f{0,0,0,0x0000803F}}
 		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
 		f %LocalUniformScaling{0x0000803F}
-		s %Mode{"wdObjectMode::Automatic"}
+		s %Mode{"nsObjectMode::Automatic"}
 		s %Name{"root"}
 		VarArray %Tags
 		{
@@ -220,7 +220,7 @@ o
 o
 {
 	Uuid %id{u4{7767879104445713813,4996436728829446134}}
-	s %t{"wdTypeScriptComponent"}
+	s %t{"nsTypeScriptComponent"}
 	u3 %v{4}
 	p
 	{
@@ -234,7 +234,7 @@ o
 o
 {
 	Uuid %id{u4{11566486118572728965,5373335652665282714}}
-	s %t{"wdExposedSceneProperty"}
+	s %t{"nsExposedSceneProperty"}
 	u3 %v{1}
 	p
 	{
@@ -246,7 +246,7 @@ o
 o
 {
 	Uuid %id{u4{3630727440273417126,5455967693343206127}}
-	s %t{"wdExposedSceneProperty"}
+	s %t{"nsExposedSceneProperty"}
 	u3 %v{1}
 	p
 	{
@@ -258,7 +258,7 @@ o
 o
 {
 	Uuid %id{u4{8988240463185984171,5486834139733566264}}
-	s %t{"wdExposedSceneProperty"}
+	s %t{"nsExposedSceneProperty"}
 	u3 %v{1}
 	p
 	{
@@ -270,7 +270,7 @@ o
 o
 {
 	Uuid %id{u4{15514899180869972367,5598526903524384504}}
-	s %t{"wdExposedSceneProperty"}
+	s %t{"nsExposedSceneProperty"}
 	u3 %v{1}
 	p
 	{
@@ -282,7 +282,7 @@ o
 o
 {
 	Uuid %id{u4{1200365373267124642,5710066096080897677}}
-	s %t{"wdExposedSceneProperty"}
+	s %t{"nsExposedSceneProperty"}
 	u3 %v{1}
 	p
 	{
@@ -294,7 +294,7 @@ o
 o
 {
 	Uuid %id{u4{18096612296587978288,6449934965513159559}}
-	s %t{"wdSceneDocumentRoot"}
+	s %t{"nsSceneDocumentRoot"}
 	u3 %v{2}
 	s %n{"ObjectTree"}
 	p
@@ -312,17 +312,17 @@ Types
 o
 {
 	Uuid %id{u4{6914292285925798136,1108246313736053318}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Abstract|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Abstract|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdReflectedClass"}
+		s %ParentTypeName{"nsReflectedClass"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdComponent"}
+		s %TypeName{"nsComponent"}
 		u3 %TypeSize{48}
 		u3 %TypeVersion{1}
 	}
@@ -330,17 +330,17 @@ o
 o
 {
 	Uuid %id{u4{11638255232360359673,3108610646416571142}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdReflectedClass"}
-		s %PluginName{"wdEditorPluginScene"}
+		s %ParentTypeName{"nsReflectedClass"}
+		s %PluginName{"nsEditorPluginScene"}
 		VarArray %Properties{}
-		s %TypeName{"wdExposedSceneProperty"}
+		s %TypeName{"nsExposedSceneProperty"}
 		u3 %TypeSize{152}
 		u3 %TypeVersion{1}
 	}
@@ -348,17 +348,17 @@ o
 o
 {
 	Uuid %id{u4{14332645745114734426,3197497487504472660}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdSceneDocumentSettingsBase"}
-		s %PluginName{"wdEditorPluginScene"}
+		s %ParentTypeName{"nsSceneDocumentSettingsBase"}
+		s %PluginName{"nsEditorPluginScene"}
 		VarArray %Properties{}
-		s %TypeName{"wdPrefabDocumentSettings"}
+		s %TypeName{"nsPrefabDocumentSettings"}
 		u3 %TypeSize{32}
 		u3 %TypeVersion{1}
 	}
@@ -366,17 +366,17 @@ o
 o
 {
 	Uuid %id{u4{5109955776826617296,6026817826851389185}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Abstract|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Abstract|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdComponent"}
+		s %ParentTypeName{"nsComponent"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdEventMessageHandlerComponent"}
+		s %TypeName{"nsEventMessageHandlerComponent"}
 		u3 %TypeSize{56}
 		u3 %TypeVersion{3}
 	}
@@ -384,17 +384,17 @@ o
 o
 {
 	Uuid %id{u4{13649880205026559927,7297274558339895637}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
 		s %ParentTypeName{""}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdGameObject"}
+		s %TypeName{"nsGameObject"}
 		u3 %TypeSize{128}
 		u3 %TypeVersion{1}
 	}
@@ -402,17 +402,17 @@ o
 o
 {
 	Uuid %id{u4{6089094783765586323,8705960867921430659}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdReflectedClass"}
+		s %ParentTypeName{"nsReflectedClass"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdDocumentRoot"}
+		s %TypeName{"nsDocumentRoot"}
 		u3 %TypeSize{72}
 		u3 %TypeVersion{1}
 	}
@@ -420,17 +420,17 @@ o
 o
 {
 	Uuid %id{u4{3251891958765718680,9159887340540620231}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdDocumentRoot"}
-		s %PluginName{"wdEditorPluginScene"}
+		s %ParentTypeName{"nsDocumentRoot"}
+		s %PluginName{"nsEditorPluginScene"}
 		VarArray %Properties{}
-		s %TypeName{"wdSceneDocumentRoot"}
+		s %TypeName{"nsSceneDocumentRoot"}
 		u3 %TypeSize{80}
 		u3 %TypeVersion{2}
 	}
@@ -438,17 +438,17 @@ o
 o
 {
 	Uuid %id{u4{14543630447052729839,9459039542380974471}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::IsEnum|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::IsEnum|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdEnumBase"}
+		s %ParentTypeName{"nsEnumBase"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdObjectMode"}
+		s %TypeName{"nsObjectMode"}
 		u3 %TypeSize{1}
 		u3 %TypeVersion{1}
 	}
@@ -456,17 +456,17 @@ o
 o
 {
 	Uuid %id{u4{11568452837770943362,10420668725217181016}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdEventMessageHandlerComponent"}
-		s %PluginName{"wdEditorPluginTypeScript"}
+		s %ParentTypeName{"nsEventMessageHandlerComponent"}
+		s %PluginName{"nsEditorPluginTypeScript"}
 		VarArray %Properties{}
-		s %TypeName{"wdTypeScriptComponent"}
+		s %TypeName{"nsTypeScriptComponent"}
 		u3 %TypeSize{200}
 		u3 %TypeVersion{4}
 	}
@@ -474,17 +474,17 @@ o
 o
 {
 	Uuid %id{u4{14700230518358869173,11472901527618371423}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdReflectedClass"}
-		s %PluginName{"wdEditorPluginScene"}
+		s %ParentTypeName{"nsReflectedClass"}
+		s %PluginName{"nsEditorPluginScene"}
 		VarArray %Properties{}
-		s %TypeName{"wdSceneDocumentSettingsBase"}
+		s %TypeName{"nsSceneDocumentSettingsBase"}
 		u3 %TypeSize{8}
 		u3 %TypeVersion{1}
 	}
@@ -492,17 +492,17 @@ o
 o
 {
 	Uuid %id{u4{2947336711354777548,15013008608905564043}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
 		s %ParentTypeName{""}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdEnumBase"}
+		s %TypeName{"nsEnumBase"}
 		u3 %TypeSize{1}
 		u3 %TypeVersion{1}
 	}
@@ -510,17 +510,17 @@ o
 o
 {
 	Uuid %id{u4{983387834180907111,17935407260904399048}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
 		s %ParentTypeName{""}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdReflectedClass"}
+		s %TypeName{"nsReflectedClass"}
 		u3 %TypeSize{8}
 		u3 %TypeVersion{1}
 	}

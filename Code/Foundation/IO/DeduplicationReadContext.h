@@ -8,47 +8,47 @@
 #include <Foundation/Types/SharedPtr.h>
 #include <Foundation/Types/UniquePtr.h>
 
-class wdStreamReader;
+class nsStreamReader;
 
 /// \brief Serialization Context that reads de-duplicated objects from a stream and restores the pointers.
-class WD_FOUNDATION_DLL wdDeduplicationReadContext : public wdSerializationContext<wdDeduplicationReadContext>
+class NS_FOUNDATION_DLL nsDeduplicationReadContext : public nsSerializationContext<nsDeduplicationReadContext>
 {
-  WD_DECLARE_SERIALIZATION_CONTEXT(wdDeduplicationReadContext);
+  NS_DECLARE_SERIALIZATION_CONTEXT(nsDeduplicationReadContext);
 
 public:
-  wdDeduplicationReadContext();
-  ~wdDeduplicationReadContext();
+  nsDeduplicationReadContext();
+  ~nsDeduplicationReadContext();
 
   /// \brief Reads a single object inplace.
   template <typename T>
-  wdResult ReadObjectInplace(wdStreamReader& inout_stream, T& ref_obj); // [tested]
+  nsResult ReadObjectInplace(nsStreamReader& inout_stream, T& ref_obj); // [tested]
 
   /// \brief Reads a single object and sets the pointer to it. The given allocator is used to create the object if it doesn't exist yet.
   template <typename T>
-  wdResult ReadObject(wdStreamReader& inout_stream, T*& ref_pObject,
-    wdAllocatorBase* pAllocator = wdFoundation::GetDefaultAllocator()); // [tested]
+  nsResult ReadObject(nsStreamReader& inout_stream, T*& ref_pObject,
+    nsAllocator* pAllocator = nsFoundation::GetDefaultAllocator()); // [tested]
 
   /// \brief Reads a single object and sets the shared pointer to it. The given allocator is used to create the object if it doesn't exist
   /// yet.
   template <typename T>
-  wdResult ReadObject(wdStreamReader& inout_stream, wdSharedPtr<T>& ref_pObject,
-    wdAllocatorBase* pAllocator = wdFoundation::GetDefaultAllocator()); // [tested]
+  nsResult ReadObject(nsStreamReader& inout_stream, nsSharedPtr<T>& ref_pObject,
+    nsAllocator* pAllocator = nsFoundation::GetDefaultAllocator()); // [tested]
 
   /// \brief Reads a single object and sets the unique pointer to it. The given allocator is used to create the object if it doesn't exist
   /// yet.
   template <typename T>
-  wdResult ReadObject(wdStreamReader& inout_stream, wdUniquePtr<T>& ref_pObject,
-    wdAllocatorBase* pAllocator = wdFoundation::GetDefaultAllocator()); // [tested]
+  nsResult ReadObject(nsStreamReader& inout_stream, nsUniquePtr<T>& ref_pObject,
+    nsAllocator* pAllocator = nsFoundation::GetDefaultAllocator()); // [tested]
 
   /// \brief Reads an array of de-duplicated objects.
   template <typename ArrayType, typename ValueType>
-  wdResult ReadArray(wdStreamReader& inout_stream, wdArrayBase<ValueType, ArrayType>& ref_array,
-    wdAllocatorBase* pAllocator = wdFoundation::GetDefaultAllocator()); // [tested]
+  nsResult ReadArray(nsStreamReader& inout_stream, nsArrayBase<ValueType, ArrayType>& ref_array,
+    nsAllocator* pAllocator = nsFoundation::GetDefaultAllocator()); // [tested]
 
   /// \brief Reads a set of de-duplicated objects.
   template <typename KeyType, typename Comparer>
-  wdResult ReadSet(wdStreamReader& inout_stream, wdSetBase<KeyType, Comparer>& ref_set,
-    wdAllocatorBase* pAllocator = wdFoundation::GetDefaultAllocator()); // [tested]
+  nsResult ReadSet(nsStreamReader& inout_stream, nsSetBase<KeyType, Comparer>& ref_set,
+    nsAllocator* pAllocator = nsFoundation::GetDefaultAllocator()); // [tested]
 
   enum class ReadMapMode
   {
@@ -59,15 +59,15 @@ public:
 
   /// \brief Reads a map. Mode controls whether key or value or both should de-duplicated.
   template <typename KeyType, typename ValueType, typename Comparer>
-  wdResult ReadMap(wdStreamReader& inout_stream, wdMapBase<KeyType, ValueType, Comparer>& ref_map, ReadMapMode mode,
-    wdAllocatorBase* pKeyAllocator = wdFoundation::GetDefaultAllocator(),
-    wdAllocatorBase* pValueAllocator = wdFoundation::GetDefaultAllocator()); // [tested]
+  nsResult ReadMap(nsStreamReader& inout_stream, nsMapBase<KeyType, ValueType, Comparer>& ref_map, ReadMapMode mode,
+    nsAllocator* pKeyAllocator = nsFoundation::GetDefaultAllocator(),
+    nsAllocator* pValueAllocator = nsFoundation::GetDefaultAllocator()); // [tested]
 
 private:
   template <typename T>
-  wdResult ReadObject(wdStreamReader& stream, T& obj, wdAllocatorBase* pAllocator); // [tested]
+  nsResult ReadObject(nsStreamReader& stream, T& obj, nsAllocator* pAllocator); // [tested]
 
-  wdDynamicArray<void*> m_Objects;
+  nsDynamicArray<void*> m_Objects;
 };
 
 #include <Foundation/IO/Implementation/DeduplicationReadContext_inl.h>

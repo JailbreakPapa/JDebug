@@ -1,9 +1,9 @@
 #pragma once
 
 #include <Foundation/FoundationInternal.h>
-WD_FOUNDATION_INTERNAL_HEADER
+NS_FOUNDATION_INTERNAL_HEADER
 
-#if WD_ENABLED(WD_PLATFORM_WINDOWS_UWP)
+#if NS_ENABLED(NS_PLATFORM_WINDOWS_UWP)
 
 #  include <Foundation/Basics.h>
 #  include <Foundation/Strings/String.h>
@@ -14,14 +14,14 @@ WD_FOUNDATION_INTERNAL_HEADER
 #  include <winrt/Windows.ApplicationModel.Activation.h>
 #  include <winrt/Windows.ApplicationModel.Core.h>
 
-class wdApplication;
+class nsApplication;
 
 /// Minimal implementation of a uwp application.
-class wdUwpApplication : public winrt::implements<wdUwpApplication, winrt::Windows::ApplicationModel::Core::IFrameworkView, winrt::Windows::ApplicationModel::Core::IFrameworkViewSource>
+class nsUwpApplication : public winrt::implements<nsUwpApplication, winrt::Windows::ApplicationModel::Core::IFrameworkView, winrt::Windows::ApplicationModel::Core::IFrameworkViewSource>
 {
 public:
-  wdUwpApplication(wdApplication* application);
-  virtual ~wdUwpApplication();
+  nsUwpApplication(nsApplication* application);
+  virtual ~nsUwpApplication();
 
   // Inherited via IFrameworkViewSource
   winrt::Windows::ApplicationModel::Core::IFrameworkView CreateView();
@@ -39,8 +39,8 @@ private:
 
   winrt::event_token m_activateRegistrationToken;
 
-  wdApplication* m_application;
-  wdDynamicArray<wdString> m_commandLineArgs;
+  nsApplication* m_application;
+  nsDynamicArray<nsString> m_commandLineArgs;
 };
 
 #endif

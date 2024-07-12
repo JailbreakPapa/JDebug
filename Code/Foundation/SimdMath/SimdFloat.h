@@ -3,82 +3,88 @@
 #include <Foundation/Math/Angle.h>
 #include <Foundation/SimdMath/SimdTypes.h>
 
-class WD_FOUNDATION_DLL wdSimdFloat
+class NS_FOUNDATION_DLL nsSimdFloat
 {
 public:
-  WD_DECLARE_POD_TYPE();
+  NS_DECLARE_POD_TYPE();
 
   /// \brief Default constructor, leaves the data uninitialized.
-  wdSimdFloat(); // [tested]
+  nsSimdFloat(); // [tested]
 
   /// \brief Constructs from a given float.
-  wdSimdFloat(float f); // [tested]
+  nsSimdFloat(float f); // [tested]
 
   /// \brief Constructs from a given integer.
-  wdSimdFloat(wdInt32 i); // [tested]
+  nsSimdFloat(nsInt32 i); // [tested]
 
   /// \brief Constructs from a given integer.
-  wdSimdFloat(wdUInt32 i); // [tested]
+  nsSimdFloat(nsUInt32 i); // [tested]
 
   /// \brief Constructs from given angle.
-  wdSimdFloat(wdAngle a); // [tested]
+  nsSimdFloat(nsAngle a); // [tested]
 
   /// \brief Constructs from the internal implementation type.
-  wdSimdFloat(wdInternal::QuadFloat v); // [tested]
+  nsSimdFloat(nsInternal::QuadFloat v); // [tested]
 
   /// \brief Returns the stored number as a standard float.
   operator float() const; // [tested]
 
-  static wdSimdFloat Zero(); // [tested]
+  /// \brief Creates an nsSimdFloat that is initialized to zero.
+  [[nodiscard]] static nsSimdFloat MakeZero(); // [tested]
+
+  /// \brief Creates an nsSimdFloat that is initialized to Not-A-Number (NaN).
+  [[nodiscard]] static nsSimdFloat MakeNaN();        // [tested]
 
 public:
-  wdSimdFloat operator+(const wdSimdFloat& f) const; // [tested]
-  wdSimdFloat operator-(const wdSimdFloat& f) const; // [tested]
-  wdSimdFloat operator*(const wdSimdFloat& f) const; // [tested]
-  wdSimdFloat operator/(const wdSimdFloat& f) const; // [tested]
+  nsSimdFloat operator+(const nsSimdFloat& f) const; // [tested]
+  nsSimdFloat operator-(const nsSimdFloat& f) const; // [tested]
+  nsSimdFloat operator*(const nsSimdFloat& f) const; // [tested]
+  nsSimdFloat operator/(const nsSimdFloat& f) const; // [tested]
 
-  wdSimdFloat& operator+=(const wdSimdFloat& f); // [tested]
-  wdSimdFloat& operator-=(const wdSimdFloat& f); // [tested]
-  wdSimdFloat& operator*=(const wdSimdFloat& f); // [tested]
-  wdSimdFloat& operator/=(const wdSimdFloat& f); // [tested]
+  nsSimdFloat& operator+=(const nsSimdFloat& f);     // [tested]
+  nsSimdFloat& operator-=(const nsSimdFloat& f);     // [tested]
+  nsSimdFloat& operator*=(const nsSimdFloat& f);     // [tested]
+  nsSimdFloat& operator/=(const nsSimdFloat& f);     // [tested]
 
-  bool IsEqual(const wdSimdFloat& rhs, const wdSimdFloat& fEpsilon) const;
+  bool IsEqual(const nsSimdFloat& rhs, const nsSimdFloat& fEpsilon) const;
 
-  bool operator==(const wdSimdFloat& f) const; // [tested]
-  bool operator!=(const wdSimdFloat& f) const; // [tested]
-  bool operator>(const wdSimdFloat& f) const;  // [tested]
-  bool operator>=(const wdSimdFloat& f) const; // [tested]
-  bool operator<(const wdSimdFloat& f) const;  // [tested]
-  bool operator<=(const wdSimdFloat& f) const; // [tested]
+  bool operator==(const nsSimdFloat& f) const;               // [tested]
+  bool operator!=(const nsSimdFloat& f) const;               // [tested]
+  bool operator>(const nsSimdFloat& f) const;                // [tested]
+  bool operator>=(const nsSimdFloat& f) const;               // [tested]
+  bool operator<(const nsSimdFloat& f) const;                // [tested]
+  bool operator<=(const nsSimdFloat& f) const;               // [tested]
 
-  bool operator==(float f) const; // [tested]
-  bool operator!=(float f) const; // [tested]
-  bool operator>(float f) const;  // [tested]
-  bool operator>=(float f) const; // [tested]
-  bool operator<(float f) const;  // [tested]
-  bool operator<=(float f) const; // [tested]
+  bool operator==(float f) const;                            // [tested]
+  bool operator!=(float f) const;                            // [tested]
+  bool operator>(float f) const;                             // [tested]
+  bool operator>=(float f) const;                            // [tested]
+  bool operator<(float f) const;                             // [tested]
+  bool operator<=(float f) const;                            // [tested]
 
-  template <wdMathAcc::Enum acc = wdMathAcc::FULL>
-  wdSimdFloat GetReciprocal() const; // [tested]
+  template <nsMathAcc::Enum acc = nsMathAcc::FULL>
+  nsSimdFloat GetReciprocal() const;                         // [tested]
 
-  template <wdMathAcc::Enum acc = wdMathAcc::FULL>
-  wdSimdFloat GetSqrt() const; // [tested]
+  template <nsMathAcc::Enum acc = nsMathAcc::FULL>
+  nsSimdFloat GetSqrt() const;                               // [tested]
 
-  template <wdMathAcc::Enum acc = wdMathAcc::FULL>
-  wdSimdFloat GetInvSqrt() const; // [tested]
+  template <nsMathAcc::Enum acc = nsMathAcc::FULL>
+  nsSimdFloat GetInvSqrt() const;                            // [tested]
 
-  wdSimdFloat Max(const wdSimdFloat& f) const; // [tested]
-  wdSimdFloat Min(const wdSimdFloat& f) const; // [tested]
-  wdSimdFloat Abs() const;                     // [tested]
+  [[nodiscard]] nsSimdFloat Max(const nsSimdFloat& f) const; // [tested]
+  [[nodiscard]] nsSimdFloat Min(const nsSimdFloat& f) const; // [tested]
+  [[nodiscard]] nsSimdFloat Abs() const;                     // [tested]
 
 public:
-  wdInternal::QuadFloat m_v;
+  nsInternal::QuadFloat m_v;
 };
 
-#if WD_SIMD_IMPLEMENTATION == WD_SIMD_IMPLEMENTATION_SSE
+#if NS_SIMD_IMPLEMENTATION == NS_SIMD_IMPLEMENTATION_SSE
 #  include <Foundation/SimdMath/Implementation/SSE/SSEFloat_inl.h>
-#elif WD_SIMD_IMPLEMENTATION == WD_SIMD_IMPLEMENTATION_FPU
+#elif NS_SIMD_IMPLEMENTATION == NS_SIMD_IMPLEMENTATION_FPU
 #  include <Foundation/SimdMath/Implementation/FPU/FPUFloat_inl.h>
+#elif NS_SIMD_IMPLEMENTATION == NS_SIMD_IMPLEMENTATION_NEON
+#  include <Foundation/SimdMath/Implementation/NEON/NEONFloat_inl.h>
 #else
 #  error "Unknown SIMD implementation."
 #endif

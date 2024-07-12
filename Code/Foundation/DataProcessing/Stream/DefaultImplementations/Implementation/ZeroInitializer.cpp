@@ -9,42 +9,41 @@
 #include <Foundation/DataProcessing/Stream/DefaultImplementations/ZeroInitializer.h>
 
 // clang-format off
-WD_BEGIN_DYNAMIC_REFLECTED_TYPE(wdProcessingStreamSpawnerZeroInitialized, 1, wdRTTIDefaultAllocator<wdProcessingStreamSpawnerZeroInitialized>)
-WD_END_DYNAMIC_REFLECTED_TYPE;
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsProcessingStreamSpawnerZeroInitialized, 1, nsRTTIDefaultAllocator<nsProcessingStreamSpawnerZeroInitialized>)
+NS_END_DYNAMIC_REFLECTED_TYPE;
 // clang-format on
 
-wdProcessingStreamSpawnerZeroInitialized::wdProcessingStreamSpawnerZeroInitialized()
-  : m_pStream(nullptr)
-{
-}
+nsProcessingStreamSpawnerZeroInitialized::nsProcessingStreamSpawnerZeroInitialized()
 
-void wdProcessingStreamSpawnerZeroInitialized::SetStreamName(wdStringView sStreamName)
+  = default;
+
+void nsProcessingStreamSpawnerZeroInitialized::SetStreamName(nsStringView sStreamName)
 {
   m_sStreamName.Assign(sStreamName);
 }
 
-wdResult wdProcessingStreamSpawnerZeroInitialized::UpdateStreamBindings()
+nsResult nsProcessingStreamSpawnerZeroInitialized::UpdateStreamBindings()
 {
-  WD_ASSERT_DEBUG(!m_sStreamName.IsEmpty(), "wdProcessingStreamSpawnerZeroInitialized: Stream name has not been configured");
+  NS_ASSERT_DEBUG(!m_sStreamName.IsEmpty(), "nsProcessingStreamSpawnerZeroInitialized: Stream name has not been configured");
 
   m_pStream = m_pStreamGroup->GetStreamByName(m_sStreamName);
-  return m_pStream ? WD_SUCCESS : WD_FAILURE;
+  return m_pStream ? NS_SUCCESS : NS_FAILURE;
 }
 
 
-void wdProcessingStreamSpawnerZeroInitialized::InitializeElements(wdUInt64 uiStartIndex, wdUInt64 uiNumElements)
+void nsProcessingStreamSpawnerZeroInitialized::InitializeElements(nsUInt64 uiStartIndex, nsUInt64 uiNumElements)
 {
-  const wdUInt64 uiElementSize = m_pStream->GetElementSize();
-  const wdUInt64 uiElementStride = m_pStream->GetElementStride();
+  const nsUInt64 uiElementSize = m_pStream->GetElementSize();
+  const nsUInt64 uiElementStride = m_pStream->GetElementStride();
 
-  for (wdUInt64 i = uiStartIndex; i < uiStartIndex + uiNumElements; ++i)
+  for (nsUInt64 i = uiStartIndex; i < uiStartIndex + uiNumElements; ++i)
   {
-    wdMemoryUtils::ZeroFill<wdUInt8>(
-      static_cast<wdUInt8*>(wdMemoryUtils::AddByteOffset(m_pStream->GetWritableData(), static_cast<ptrdiff_t>(i * uiElementStride))),
+    nsMemoryUtils::ZeroFill<nsUInt8>(
+      static_cast<nsUInt8*>(nsMemoryUtils::AddByteOffset(m_pStream->GetWritableData(), static_cast<std::ptrdiff_t>(i * uiElementStride))),
       static_cast<size_t>(uiElementSize));
   }
 }
 
 
 
-WD_STATICLINK_FILE(Foundation, Foundation_DataProcessing_Stream_DefaultImplementations_Implementation_ZeroInitializer);
+NS_STATICLINK_FILE(Foundation, Foundation_DataProcessing_Stream_DefaultImplementations_Implementation_ZeroInitializer);

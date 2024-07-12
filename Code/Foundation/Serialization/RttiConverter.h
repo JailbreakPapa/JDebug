@@ -6,98 +6,114 @@
 #include <Foundation/Reflection/Reflection.h>
 #include <Foundation/Serialization/AbstractObjectGraph.h>
 
-class wdAbstractObjectGraph;
-class wdAbstractObjectNode;
+class nsAbstractObjectGraph;
+class nsAbstractObjectNode;
 
-struct WD_FOUNDATION_DLL wdRttiConverterObject
+struct NS_FOUNDATION_DLL nsRttiConverterObject
 {
-  wdRttiConverterObject()
+  nsRttiConverterObject()
     : m_pType(nullptr)
     , m_pObject(nullptr)
   {
   }
-  wdRttiConverterObject(const wdRTTI* pType, void* pObject)
+  nsRttiConverterObject(const nsRTTI* pType, void* pObject)
     : m_pType(pType)
     , m_pObject(pObject)
   {
   }
 
-  WD_DECLARE_POD_TYPE();
+  NS_DECLARE_POD_TYPE();
 
-  const wdRTTI* m_pType;
+  const nsRTTI* m_pType;
   void* m_pObject;
 };
 
 
-class WD_FOUNDATION_DLL wdRttiConverterContext
+class NS_FOUNDATION_DLL nsRttiConverterContext
 {
 public:
   virtual void Clear();
 
   /// \brief Generates a guid for a new object. Default implementation generates stable guids derived from
   /// parentGuid + property name + index and ignores the address of pObject.
-  virtual wdUuid GenerateObjectGuid(const wdUuid& parentGuid, const wdAbstractProperty* pProp, wdVariant index, void* pObject) const;
+  virtual nsUuid GenerateObjectGuid(const nsUuid& parentGuid, const nsAbstractProperty* pProp, nsVariant index, void* pObject) const;
 
-  virtual wdInternal::NewInstance<void> CreateObject(const wdUuid& guid, const wdRTTI* pRtti);
-  virtual void DeleteObject(const wdUuid& guid);
+  virtual nsInternal::NewInstance<void> CreateObject(const nsUuid& guid, const nsRTTI* pRtti);
+  virtual void DeleteObject(const nsUuid& guid);
 
-  virtual void RegisterObject(const wdUuid& guid, const wdRTTI* pRtti, void* pObject);
-  virtual void UnregisterObject(const wdUuid& guid);
+  virtual void RegisterObject(const nsUuid& guid, const nsRTTI* pRtti, void* pObject);
+  virtual void UnregisterObject(const nsUuid& guid);
 
-  virtual wdRttiConverterObject GetObjectByGUID(const wdUuid& guid) const;
-  virtual wdUuid GetObjectGUID(const wdRTTI* pRtti, const void* pObject) const;
+  virtual nsRttiConverterObject GetObjectByGUID(const nsUuid& guid) const;
+  virtual nsUuid GetObjectGUID(const nsRTTI* pRtti, const void* pObject) const;
 
-  virtual wdUuid EnqueObject(const wdUuid& guid, const wdRTTI* pRtti, void* pObject);
-  virtual wdRttiConverterObject DequeueObject();
+  virtual const nsRTTI* FindTypeByName(nsStringView sName) const;
 
-  virtual void OnUnknownTypeError(wdStringView sTypeName);
+  template <typename T>
+  void GetObjectsByType(nsDynamicArray<T*>& out_objects, nsDynamicArray<nsUuid>* out_pUuids = nullptr)
+  {
+    for (auto it : m_GuidToObject)
+    {
+      if (it.Value().m_pType->IsDerivedFrom(nsGetStaticRTTI<T>()))
+      {
+        out_objects.PushBack(static_cast<T*>(it.Value().m_pObject));
+        if (out_pUuids)
+        {
+          out_pUuids->PushBack(it.Key());
+        }
+      }
+    }
+  }
+
+  virtual nsUuid EnqueObject(const nsUuid& guid, const nsRTTI* pRtti, void* pObject);
+  virtual nsRttiConverterObject DequeueObject();
+
+  virtual void OnUnknownTypeError(nsStringView sTypeName);
 
 protected:
-  wdHashTable<wdUuid, wdRttiConverterObject> m_GuidToObject;
-  mutable wdHashTable<const void*, wdUuid> m_ObjectToGuid;
-  wdSet<wdUuid> m_QueuedObjects;
+  nsHashTable<nsUuid, nsRttiConverterObject> m_GuidToObject;
+  mutable nsHashTable<const void*, nsUuid> m_ObjectToGuid;
+  nsSet<nsUuid> m_QueuedObjects;
 };
 
 
-class WD_FOUNDATION_DLL wdRttiConverterWriter
+class NS_FOUNDATION_DLL nsRttiConverterWriter
 {
 public:
-  using FilterFunction = wdDelegate<bool(const void* pObject, const wdAbstractProperty* pProp)>;
+  using FilterFunction = nsDelegate<bool(const void* pObject, const nsAbstractProperty* pProp)>;
 
-  wdRttiConverterWriter(wdAbstractObjectGraph* pGraph, wdRttiConverterContext* pContext, bool bSerializeReadOnly, bool bSerializeOwnerPtrs);
-  wdRttiConverterWriter(wdAbstractObjectGraph* pGraph, wdRttiConverterContext* pContext, FilterFunction filter);
+  nsRttiConverterWriter(nsAbstractObjectGraph* pGraph, nsRttiConverterContext* pContext, bool bSerializeReadOnly, bool bSerializeOwnerPtrs);
+  nsRttiConverterWriter(nsAbstractObjectGraph* pGraph, nsRttiConverterContext* pContext, FilterFunction filter);
 
-  wdAbstractObjectNode* AddObjectToGraph(wdReflectedClass* pObject, const char* szNodeName = nullptr)
+  nsAbstractObjectNode* AddObjectToGraph(nsReflectedClass* pObject, const char* szNodeName = nullptr)
   {
     return AddObjectToGraph(pObject->GetDynamicRTTI(), pObject, szNodeName);
   }
-  wdAbstractObjectNode* AddObjectToGraph(const wdRTTI* pRtti, const void* pObject, const char* szNodeName = nullptr);
+  nsAbstractObjectNode* AddObjectToGraph(const nsRTTI* pRtti, const void* pObject, const char* szNodeName = nullptr);
 
-  void AddProperty(wdAbstractObjectNode* pNode, const wdAbstractProperty* pProp, const void* pObject);
-  void AddProperties(wdAbstractObjectNode* pNode, const wdRTTI* pRtti, const void* pObject);
+  void AddProperty(nsAbstractObjectNode* pNode, const nsAbstractProperty* pProp, const void* pObject);
+  void AddProperties(nsAbstractObjectNode* pNode, const nsRTTI* pRtti, const void* pObject);
 
-  wdAbstractObjectNode* AddSubObjectToGraph(const wdRTTI* pRtti, const void* pObject, const wdUuid& guid, const char* szNodeName);
+  nsAbstractObjectNode* AddSubObjectToGraph(const nsRTTI* pRtti, const void* pObject, const nsUuid& guid, const char* szNodeName);
 
 private:
-  wdRttiConverterContext* m_pContext = nullptr;
-  wdAbstractObjectGraph* m_pGraph = nullptr;
+  nsRttiConverterContext* m_pContext = nullptr;
+  nsAbstractObjectGraph* m_pGraph = nullptr;
   FilterFunction m_Filter;
-  bool m_bSerializeReadOnly = false;
-  bool m_bSerializeOwnerPtrs = false;
 };
 
-class WD_FOUNDATION_DLL wdRttiConverterReader
+class NS_FOUNDATION_DLL nsRttiConverterReader
 {
 public:
-  wdRttiConverterReader(const wdAbstractObjectGraph* pGraph, wdRttiConverterContext* pContext);
+  nsRttiConverterReader(const nsAbstractObjectGraph* pGraph, nsRttiConverterContext* pContext);
 
-  wdInternal::NewInstance<void> CreateObjectFromNode(const wdAbstractObjectNode* pNode);
-  void ApplyPropertiesToObject(const wdAbstractObjectNode* pNode, const wdRTTI* pRtti, void* pObject);
+  nsInternal::NewInstance<void> CreateObjectFromNode(const nsAbstractObjectNode* pNode);
+  void ApplyPropertiesToObject(const nsAbstractObjectNode* pNode, const nsRTTI* pRtti, void* pObject);
 
 private:
-  void ApplyProperty(void* pObject, wdAbstractProperty* pProperty, const wdAbstractObjectNode::Property* pSource);
-  void CallOnObjectCreated(const wdAbstractObjectNode* pNode, const wdRTTI* pRtti, void* pObject);
+  void ApplyProperty(void* pObject, const nsAbstractProperty* pProperty, const nsAbstractObjectNode::Property* pSource);
+  void CallOnObjectCreated(const nsAbstractObjectNode* pNode, const nsRTTI* pRtti, void* pObject);
 
-  wdRttiConverterContext* m_pContext = nullptr;
-  const wdAbstractObjectGraph* m_pGraph = nullptr;
+  nsRttiConverterContext* m_pContext = nullptr;
+  const nsAbstractObjectGraph* m_pGraph = nullptr;
 };

@@ -2,41 +2,41 @@
 
 #include <Foundation/Algorithm/HashingUtils.h>
 
-inline wdHashedString::wdHashedString(const wdHashedString& rhs)
+inline nsHashedString::nsHashedString(const nsHashedString& rhs)
 {
   m_Data = rhs.m_Data;
 
-#if WD_ENABLED(WD_HASHED_STRING_REF_COUNTING)
+#if NS_ENABLED(NS_HASHED_STRING_REF_COUNTING)
   // the string has a refcount of at least one (rhs holds a reference), thus it will definitely not get deleted on some other thread
   // therefore we can simply increase the refcount without locking
   m_Data.Value().m_iRefCount.Increment();
 #endif
 }
 
-WD_FORCE_INLINE wdHashedString::wdHashedString(wdHashedString&& rhs)
+NS_FORCE_INLINE nsHashedString::nsHashedString(nsHashedString&& rhs)
 {
   m_Data = rhs.m_Data;
   rhs.m_Data = HashedType(); // This leaves the string in an invalid state, all operations will fail except the destructor
 }
 
-inline wdHashedString::~wdHashedString()
+#if NS_ENABLED(NS_HASHED_STRING_REF_COUNTING)
+inline nsHashedString::~nsHashedString()
 {
-#if WD_ENABLED(WD_HASHED_STRING_REF_COUNTING)
   // Explicit check if data is still valid. It can be invalid if this string has been moved.
   if (m_Data.IsValid())
   {
     // just decrease the refcount of the object that we are set to, it might reach refcount zero, but we don't care about that here
     m_Data.Value().m_iRefCount.Decrement();
   }
-#endif
 }
+#endif
 
-inline void wdHashedString::operator=(const wdHashedString& rhs)
+inline void nsHashedString::operator=(const nsHashedString& rhs)
 {
   // first increase the other refcount, then decrease ours
   HashedType tmp = rhs.m_Data;
 
-#if WD_ENABLED(WD_HASHED_STRING_REF_COUNTING)
+#if NS_ENABLED(NS_HASHED_STRING_REF_COUNTING)
   tmp.Value().m_iRefCount.Increment();
 
   m_Data.Value().m_iRefCount.Decrement();
@@ -45,9 +45,9 @@ inline void wdHashedString::operator=(const wdHashedString& rhs)
   m_Data = tmp;
 }
 
-WD_FORCE_INLINE void wdHashedString::operator=(wdHashedString&& rhs)
+NS_FORCE_INLINE void nsHashedString::operator=(nsHashedString&& rhs)
 {
-#if WD_ENABLED(WD_HASHED_STRING_REF_COUNTING)
+#if NS_ENABLED(NS_HASHED_STRING_REF_COUNTING)
   m_Data.Value().m_iRefCount.Decrement();
 #endif
 
@@ -56,167 +56,152 @@ WD_FORCE_INLINE void wdHashedString::operator=(wdHashedString&& rhs)
 }
 
 template <size_t N>
-WD_FORCE_INLINE void wdHashedString::Assign(const char (&string)[N])
+NS_FORCE_INLINE void nsHashedString::Assign(const char (&string)[N])
 {
-#if WD_ENABLED(WD_HASHED_STRING_REF_COUNTING)
+#if NS_ENABLED(NS_HASHED_STRING_REF_COUNTING)
   HashedType tmp = m_Data;
 #endif
   // this function will already increase the refcount as needed
-  m_Data = AddHashedString(string, wdHashingUtils::StringHash(string));
+  m_Data = AddHashedString(string, nsHashingUtils::StringHash(string));
 
-#if WD_ENABLED(WD_HASHED_STRING_REF_COUNTING)
+#if NS_ENABLED(NS_HASHED_STRING_REF_COUNTING)
   tmp.Value().m_iRefCount.Decrement();
 #endif
 }
 
-WD_FORCE_INLINE void wdHashedString::Assign(wdStringView sString)
+NS_FORCE_INLINE void nsHashedString::Assign(nsStringView sString)
 {
-#if WD_ENABLED(WD_HASHED_STRING_REF_COUNTING)
+#if NS_ENABLED(NS_HASHED_STRING_REF_COUNTING)
   HashedType tmp = m_Data;
 #endif
   // this function will already increase the refcount as needed
-  m_Data = AddHashedString(sString, wdHashingUtils::StringHash(sString));
+  m_Data = AddHashedString(sString, nsHashingUtils::StringHash(sString));
 
-#if WD_ENABLED(WD_HASHED_STRING_REF_COUNTING)
+#if NS_ENABLED(NS_HASHED_STRING_REF_COUNTING)
   tmp.Value().m_iRefCount.Decrement();
 #endif
 }
 
-inline bool wdHashedString::operator==(const wdHashedString& rhs) const
+inline bool nsHashedString::operator==(const nsHashedString& rhs) const
 {
   return m_Data == rhs.m_Data;
 }
 
-inline bool wdHashedString::operator!=(const wdHashedString& rhs) const
-{
-  return !(*this == rhs);
-}
-
-inline bool wdHashedString::operator==(const wdTempHashedString& rhs) const
+inline bool nsHashedString::operator==(const nsTempHashedString& rhs) const
 {
   return m_Data.Key() == rhs.m_uiHash;
 }
 
-inline bool wdHashedString::operator!=(const wdTempHashedString& rhs) const
-{
-  return !(*this == rhs);
-}
-
-inline bool wdHashedString::operator<(const wdHashedString& rhs) const
+inline bool nsHashedString::operator<(const nsHashedString& rhs) const
 {
   return m_Data.Key() < rhs.m_Data.Key();
 }
 
-inline bool wdHashedString::operator<(const wdTempHashedString& rhs) const
+inline bool nsHashedString::operator<(const nsTempHashedString& rhs) const
 {
   return m_Data.Key() < rhs.m_uiHash;
 }
 
-WD_ALWAYS_INLINE const wdString& wdHashedString::GetString() const
+NS_ALWAYS_INLINE const nsString& nsHashedString::GetString() const
 {
   return m_Data.Value().m_sString;
 }
 
-WD_ALWAYS_INLINE const char* wdHashedString::GetData() const
+NS_ALWAYS_INLINE const char* nsHashedString::GetData() const
 {
   return m_Data.Value().m_sString.GetData();
 }
 
-WD_ALWAYS_INLINE wdUInt64 wdHashedString::GetHash() const
+NS_ALWAYS_INLINE nsUInt64 nsHashedString::GetHash() const
 {
   return m_Data.Key();
 }
 
 template <size_t N>
-WD_FORCE_INLINE wdHashedString wdMakeHashedString(const char (&string)[N])
+NS_FORCE_INLINE nsHashedString nsMakeHashedString(const char (&string)[N])
 {
-  wdHashedString sResult;
+  nsHashedString sResult;
   sResult.Assign(string);
   return sResult;
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-WD_ALWAYS_INLINE wdTempHashedString::wdTempHashedString()
+NS_ALWAYS_INLINE nsTempHashedString::nsTempHashedString()
 {
-  constexpr wdUInt64 uiEmptyHash = wdHashingUtils::StringHash("");
+  constexpr nsUInt64 uiEmptyHash = nsHashingUtils::StringHash("");
   m_uiHash = uiEmptyHash;
 }
 
 template <size_t N>
-WD_ALWAYS_INLINE wdTempHashedString::wdTempHashedString(const char (&string)[N])
+NS_ALWAYS_INLINE nsTempHashedString::nsTempHashedString(const char (&string)[N])
 {
-  m_uiHash = wdHashingUtils::StringHash<N>(string);
+  m_uiHash = nsHashingUtils::StringHash<N>(string);
 }
 
-WD_ALWAYS_INLINE wdTempHashedString::wdTempHashedString(wdStringView sString)
+NS_ALWAYS_INLINE nsTempHashedString::nsTempHashedString(nsStringView sString)
 {
-  m_uiHash = wdHashingUtils::StringHash(sString);
+  m_uiHash = nsHashingUtils::StringHash(sString);
 }
 
-WD_ALWAYS_INLINE wdTempHashedString::wdTempHashedString(const wdTempHashedString& rhs)
+NS_ALWAYS_INLINE nsTempHashedString::nsTempHashedString(const nsTempHashedString& rhs)
 {
   m_uiHash = rhs.m_uiHash;
 }
 
-WD_ALWAYS_INLINE wdTempHashedString::wdTempHashedString(const wdHashedString& rhs)
+NS_ALWAYS_INLINE nsTempHashedString::nsTempHashedString(const nsHashedString& rhs)
 {
   m_uiHash = rhs.GetHash();
 }
 
-WD_ALWAYS_INLINE wdTempHashedString::wdTempHashedString(wdUInt64 uiHash)
+NS_ALWAYS_INLINE nsTempHashedString::nsTempHashedString(nsUInt64 uiHash)
 {
   m_uiHash = uiHash;
 }
 
 template <size_t N>
-WD_ALWAYS_INLINE void wdTempHashedString::operator=(const char (&string)[N])
+NS_ALWAYS_INLINE void nsTempHashedString::operator=(const char (&string)[N])
 {
-  m_uiHash = wdHashingUtils::StringHash<N>(string);
+  m_uiHash = nsHashingUtils::StringHash<N>(string);
 }
 
-WD_ALWAYS_INLINE void wdTempHashedString::operator=(wdStringView sString)
+NS_ALWAYS_INLINE void nsTempHashedString::operator=(nsStringView sString)
 {
-  m_uiHash = wdHashingUtils::StringHash(sString);
+  m_uiHash = nsHashingUtils::StringHash(sString);
 }
 
-WD_ALWAYS_INLINE void wdTempHashedString::operator=(const wdTempHashedString& rhs)
+NS_ALWAYS_INLINE void nsTempHashedString::operator=(const nsTempHashedString& rhs)
 {
   m_uiHash = rhs.m_uiHash;
 }
 
-WD_ALWAYS_INLINE void wdTempHashedString::operator=(const wdHashedString& rhs)
+NS_ALWAYS_INLINE void nsTempHashedString::operator=(const nsHashedString& rhs)
 {
   m_uiHash = rhs.GetHash();
 }
 
-WD_ALWAYS_INLINE bool wdTempHashedString::operator==(const wdTempHashedString& rhs) const
+NS_ALWAYS_INLINE bool nsTempHashedString::operator==(const nsTempHashedString& rhs) const
 {
   return m_uiHash == rhs.m_uiHash;
 }
 
-WD_ALWAYS_INLINE bool wdTempHashedString::operator!=(const wdTempHashedString& rhs) const
-{
-  return !(m_uiHash == rhs.m_uiHash);
-}
-
-WD_ALWAYS_INLINE bool wdTempHashedString::operator<(const wdTempHashedString& rhs) const
+NS_ALWAYS_INLINE bool nsTempHashedString::operator<(const nsTempHashedString& rhs) const
 {
   return m_uiHash < rhs.m_uiHash;
 }
 
-WD_ALWAYS_INLINE bool wdTempHashedString::IsEmpty() const
+NS_ALWAYS_INLINE bool nsTempHashedString::IsEmpty() const
 {
-  constexpr wdUInt64 uiEmptyHash = wdHashingUtils::StringHash("");
+  constexpr nsUInt64 uiEmptyHash = nsHashingUtils::StringHash("");
   return m_uiHash == uiEmptyHash;
 }
 
-WD_ALWAYS_INLINE void wdTempHashedString::Clear()
+NS_ALWAYS_INLINE void nsTempHashedString::Clear()
 {
-  *this = wdTempHashedString();
+  *this = nsTempHashedString();
 }
 
-WD_ALWAYS_INLINE wdUInt64 wdTempHashedString::GetHash() const
+NS_ALWAYS_INLINE nsUInt64 nsTempHashedString::GetHash() const
 {
   return m_uiHash;
 }
@@ -224,30 +209,30 @@ WD_ALWAYS_INLINE wdUInt64 wdTempHashedString::GetHash() const
 //////////////////////////////////////////////////////////////////////////
 
 template <>
-struct wdHashHelper<wdHashedString>
+struct nsHashHelper<nsHashedString>
 {
-  WD_ALWAYS_INLINE static wdUInt32 Hash(const wdHashedString& value)
+  NS_ALWAYS_INLINE static nsUInt32 Hash(const nsHashedString& value)
   {
-    return wdHashingUtils::StringHashTo32(value.GetHash());
+    return nsHashingUtils::StringHashTo32(value.GetHash());
   }
 
-  WD_ALWAYS_INLINE static wdUInt32 Hash(const wdTempHashedString& value)
+  NS_ALWAYS_INLINE static nsUInt32 Hash(const nsTempHashedString& value)
   {
-    return wdHashingUtils::StringHashTo32(value.GetHash());
+    return nsHashingUtils::StringHashTo32(value.GetHash());
   }
 
-  WD_ALWAYS_INLINE static bool Equal(const wdHashedString& a, const wdHashedString& b) { return a == b; }
+  NS_ALWAYS_INLINE static bool Equal(const nsHashedString& a, const nsHashedString& b) { return a == b; }
 
-  WD_ALWAYS_INLINE static bool Equal(const wdHashedString& a, const wdTempHashedString& b) { return a == b; }
+  NS_ALWAYS_INLINE static bool Equal(const nsHashedString& a, const nsTempHashedString& b) { return a == b; }
 };
 
 template <>
-struct wdHashHelper<wdTempHashedString>
+struct nsHashHelper<nsTempHashedString>
 {
-  WD_ALWAYS_INLINE static wdUInt32 Hash(const wdTempHashedString& value)
+  NS_ALWAYS_INLINE static nsUInt32 Hash(const nsTempHashedString& value)
   {
-    return wdHashingUtils::StringHashTo32(value.GetHash());
+    return nsHashingUtils::StringHashTo32(value.GetHash());
   }
 
-  WD_ALWAYS_INLINE static bool Equal(const wdTempHashedString& a, const wdTempHashedString& b) { return a == b; }
+  NS_ALWAYS_INLINE static bool Equal(const nsTempHashedString& a, const nsTempHashedString& b) { return a == b; }
 };

@@ -3,7 +3,7 @@ HeaderV2
 o
 {
 	Uuid %id{u4{12972323031942315932,5614854980136536726}}
-	s %t{"wdAssetDocumentInfo"}
+	s %t{"nsAssetDocumentInfo"}
 	u3 %v{2}
 	s %n{"Header"}
 	p
@@ -26,38 +26,38 @@ Objects
 o
 {
 	Uuid %id{u4{10318378674283107976,5336301512227721194}}
-	s %t{"wdTextureAssetProperties"}
+	s %t{"nsTextureAssetProperties"}
 	u3 %v{5}
 	p
 	{
-		s %AddressModeU{"wdImageAddressMode::Repeat"}
-		s %AddressModeV{"wdImageAddressMode::Repeat"}
-		s %AddressModeW{"wdImageAddressMode::Repeat"}
+		s %AddressModeU{"nsImageAddressMode::Repeat"}
+		s %AddressModeV{"nsImageAddressMode::Repeat"}
+		s %AddressModeW{"nsImageAddressMode::Repeat"}
 		f %AlphaThreshold{0x0000003F}
 		f %CVarResScale{0x0000803F}
-		s %ChannelMapping{"wdTexture2DChannelMappingEnum::RGB1"}
-		s %CompressionMode{"wdTexConvCompressionMode::Medium"}
+		s %ChannelMapping{"nsTexture2DChannelMappingEnum::RGB1"}
+		s %CompressionMode{"nsTexConvCompressionMode::Medium"}
 		b %DilateColor{1}
 		b %FlipHorizontal{0}
-		s %Format{"wdRenderTargetFormat::RGBA8sRgb"}
+		s %Format{"nsRenderTargetFormat::RGBA8sRgb"}
 		f %HdrExposureBias{0}
 		s %Input1{"Textures/Asphalt06_nrm.jpg"}
 		s %Input2{""}
 		s %Input3{""}
 		s %Input4{""}
 		b %IsRenderTarget{0}
-		s %MipmapMode{"wdTexConvMipmapMode::Linear"}
+		s %MipmapMode{"nsTexConvMipmapMode::Linear"}
 		b %PremultipliedAlpha{0}
 		b %PreserveAlphaCoverage{0}
-		s %Resolution{"wdTexture2DResolution::Fixed256x256"}
-		s %TextureFilter{"wdTextureFilterSetting::DefaultQuality"}
-		s %Usage{"wdTexConvUsage::NormalMap"}
+		s %Resolution{"nsTexture2DResolution::Fixed256x256"}
+		s %TextureFilter{"nsTextureFilterSetting::DefaultQuality"}
+		s %Usage{"nsTexConvUsage::NormalMap"}
 	}
 }
 o
 {
 	Uuid %id{u4{18096612296587978288,6449934965513159559}}
-	s %t{"wdDocumentRoot"}
+	s %t{"nsDocumentRoot"}
 	u3 %v{1}
 	s %n{"ObjectTree"}
 	p
@@ -74,17 +74,17 @@ Types
 o
 {
 	Uuid %id{u4{12203372038544747648,1304846957001536306}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::IsEnum|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::IsEnum|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdEnumBase"}
+		s %ParentTypeName{"nsEnumBase"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdTexConvCompressionMode"}
+		s %TypeName{"nsTexConvCompressionMode"}
 		u3 %TypeSize{1}
 		u3 %TypeVersion{1}
 	}
@@ -92,17 +92,17 @@ o
 o
 {
 	Uuid %id{u4{8056413000846340440,3023450138914009177}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdReflectedClass"}
-		s %PluginName{"wdEditorPluginAssets"}
+		s %ParentTypeName{"nsReflectedClass"}
+		s %PluginName{"nsEditorPluginAssets"}
 		VarArray %Properties{}
-		s %TypeName{"wdTextureAssetProperties"}
+		s %TypeName{"nsTextureAssetProperties"}
 		u3 %TypeSize{296}
 		u3 %TypeVersion{5}
 	}
@@ -110,17 +110,17 @@ o
 o
 {
 	Uuid %id{u4{6606822328587505351,4158023727683023298}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::IsEnum|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::IsEnum|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdEnumBase"}
+		s %ParentTypeName{"nsEnumBase"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdTexConvUsage"}
+		s %TypeName{"nsTexConvUsage"}
 		u3 %TypeSize{1}
 		u3 %TypeVersion{1}
 	}
@@ -128,17 +128,17 @@ o
 o
 {
 	Uuid %id{u4{8978639096379244608,5602414126398036750}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::IsEnum|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::IsEnum|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdEnumBase"}
-		s %PluginName{"wdEditorPluginAssets"}
+		s %ParentTypeName{"nsEnumBase"}
+		s %PluginName{"nsEditorPluginAssets"}
 		VarArray %Properties{}
-		s %TypeName{"wdRenderTargetFormat"}
+		s %TypeName{"nsRenderTargetFormat"}
 		u3 %TypeSize{1}
 		u3 %TypeVersion{1}
 	}
@@ -146,17 +146,17 @@ o
 o
 {
 	Uuid %id{u4{10141898220652821643,7992438720797374380}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::IsEnum|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::IsEnum|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdEnumBase"}
-		s %PluginName{"wdEditorPluginAssets"}
+		s %ParentTypeName{"nsEnumBase"}
+		s %PluginName{"nsEditorPluginAssets"}
 		VarArray %Properties{}
-		s %TypeName{"wdTexture2DResolution"}
+		s %TypeName{"nsTexture2DResolution"}
 		u3 %TypeSize{1}
 		u3 %TypeVersion{1}
 	}
@@ -164,17 +164,17 @@ o
 o
 {
 	Uuid %id{u4{6089094783765586323,8705960867921430659}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdReflectedClass"}
+		s %ParentTypeName{"nsReflectedClass"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdDocumentRoot"}
+		s %TypeName{"nsDocumentRoot"}
 		u3 %TypeSize{72}
 		u3 %TypeVersion{1}
 	}
@@ -182,17 +182,17 @@ o
 o
 {
 	Uuid %id{u4{15250044141338656666,8993131727605744715}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::IsEnum|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::IsEnum|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdEnumBase"}
+		s %ParentTypeName{"nsEnumBase"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdTextureFilterSetting"}
+		s %TypeName{"nsTextureFilterSetting"}
 		u3 %TypeSize{1}
 		u3 %TypeVersion{1}
 	}
@@ -200,17 +200,17 @@ o
 o
 {
 	Uuid %id{u4{9760759588213427989,10521812630174686177}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::IsEnum|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::IsEnum|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdEnumBase"}
-		s %PluginName{"wdEditorPluginAssets"}
+		s %ParentTypeName{"nsEnumBase"}
+		s %PluginName{"nsEditorPluginAssets"}
 		VarArray %Properties{}
-		s %TypeName{"wdTexture2DChannelMappingEnum"}
+		s %TypeName{"nsTexture2DChannelMappingEnum"}
 		u3 %TypeSize{1}
 		u3 %TypeVersion{1}
 	}
@@ -218,17 +218,17 @@ o
 o
 {
 	Uuid %id{u4{14746541170062030859,14911800878971067818}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::IsEnum|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::IsEnum|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdEnumBase"}
+		s %ParentTypeName{"nsEnumBase"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdImageAddressMode"}
+		s %TypeName{"nsImageAddressMode"}
 		u3 %TypeSize{1}
 		u3 %TypeVersion{1}
 	}
@@ -236,17 +236,17 @@ o
 o
 {
 	Uuid %id{u4{2947336711354777548,15013008608905564043}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
 		s %ParentTypeName{""}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdEnumBase"}
+		s %TypeName{"nsEnumBase"}
 		u3 %TypeSize{1}
 		u3 %TypeVersion{1}
 	}
@@ -254,17 +254,17 @@ o
 o
 {
 	Uuid %id{u4{2647008765262101666,17105863286049156560}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::IsEnum|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::IsEnum|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
-		s %ParentTypeName{"wdEnumBase"}
+		s %ParentTypeName{"nsEnumBase"}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdTexConvMipmapMode"}
+		s %TypeName{"nsTexConvMipmapMode"}
 		u3 %TypeSize{1}
 		u3 %TypeVersion{1}
 	}
@@ -272,17 +272,17 @@ o
 o
 {
 	Uuid %id{u4{983387834180907111,17935407260904399048}}
-	s %t{"wdReflectedTypeDescriptor"}
+	s %t{"nsReflectedTypeDescriptor"}
 	u3 %v{1}
 	p
 	{
 		VarArray %Attributes{}
-		s %Flags{"wdTypeFlags::Class|wdTypeFlags::Minimal"}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
 		VarArray %Functions{}
 		s %ParentTypeName{""}
 		s %PluginName{"Static"}
 		VarArray %Properties{}
-		s %TypeName{"wdReflectedClass"}
+		s %TypeName{"nsReflectedClass"}
 		u3 %TypeSize{8}
 		u3 %TypeVersion{1}
 	}

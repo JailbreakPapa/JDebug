@@ -2,11 +2,11 @@
 
 #include <Foundation/Utilities/Progress.h>
 
-static wdProgress* s_pGlobal = nullptr;
+static nsProgress* s_pGlobal = nullptr;
 
-wdProgress::wdProgress() = default;
+nsProgress::nsProgress() = default;
 
-wdProgress::~wdProgress()
+nsProgress::~nsProgress()
 {
   if (s_pGlobal == this)
   {
@@ -14,14 +14,14 @@ wdProgress::~wdProgress()
   }
 }
 
-float wdProgress::GetCompletion() const
+float nsProgress::GetCompletion() const
 {
   return m_fCurrentCompletion;
 }
 
-void wdProgress::SetCompletion(float fCompletion)
+void nsProgress::SetCompletion(float fCompletion)
 {
-  WD_ASSERT_DEV(fCompletion >= 0.0f && fCompletion <= 1.0f, "Completion value {0} is out of valid range", fCompletion);
+  NS_ASSERT_DEV(fCompletion >= 0.0f && fCompletion <= 1.0f, "Completion value {0} is out of valid range", fCompletion);
 
   m_fCurrentCompletion = fCompletion;
 
@@ -29,15 +29,15 @@ void wdProgress::SetCompletion(float fCompletion)
   {
     m_fLastReportedCompletion = fCompletion;
 
-    wdProgressEvent e;
+    nsProgressEvent e;
     e.m_pProgressbar = this;
-    e.m_Type = wdProgressEvent::Type::ProgressChanged;
+    e.m_Type = nsProgressEvent::Type::ProgressChanged;
 
     m_Events.Broadcast(e, 1);
   }
 }
 
-void wdProgress::SetActiveRange(wdProgressRange* pRange)
+void nsProgress::SetActiveRange(nsProgressRange* pRange)
 {
   if (m_pActiveRange == nullptr && pRange != nullptr)
   {
@@ -46,18 +46,18 @@ void wdProgress::SetActiveRange(wdProgressRange* pRange)
     m_bCancelClicked = false;
     m_bEnableCancel = pRange->m_bAllowCancel;
 
-    wdProgressEvent e;
+    nsProgressEvent e;
     e.m_pProgressbar = this;
-    e.m_Type = wdProgressEvent::Type::ProgressStarted;
+    e.m_Type = nsProgressEvent::Type::ProgressStarted;
 
     m_Events.Broadcast(e);
   }
 
   if (m_pActiveRange != nullptr && pRange == nullptr)
   {
-    wdProgressEvent e;
+    nsProgressEvent e;
     e.m_pProgressbar = this;
-    e.m_Type = wdProgressEvent::Type::ProgressEnded;
+    e.m_Type = nsProgressEvent::Type::ProgressEnded;
 
     m_Events.Broadcast(e);
   }
@@ -65,7 +65,7 @@ void wdProgress::SetActiveRange(wdProgressRange* pRange)
   m_pActiveRange = pRange;
 }
 
-wdStringView wdProgress::GetMainDisplayText() const
+nsStringView nsProgress::GetMainDisplayText() const
 {
   if (m_pActiveRange == nullptr)
     return {};
@@ -73,7 +73,7 @@ wdStringView wdProgress::GetMainDisplayText() const
   return m_pActiveRange->m_sDisplayText;
 }
 
-wdStringView wdProgress::GetStepDisplayText() const
+nsStringView nsProgress::GetStepDisplayText() const
 {
   if (m_pActiveRange == nullptr)
     return {};
@@ -81,51 +81,51 @@ wdStringView wdProgress::GetStepDisplayText() const
   return m_pActiveRange->m_sStepDisplayText;
 }
 
-void wdProgress::UserClickedCancel()
+void nsProgress::UserClickedCancel()
 {
   if (m_bCancelClicked)
     return;
 
   m_bCancelClicked = true;
 
-  wdProgressEvent e;
-  e.m_Type = wdProgressEvent::Type::CancelClicked;
+  nsProgressEvent e;
+  e.m_Type = nsProgressEvent::Type::CancelClicked;
   e.m_pProgressbar = this;
 
   m_Events.Broadcast(e, 1);
 }
 
-bool wdProgress::WasCanceled() const
+bool nsProgress::WasCanceled() const
 {
   return m_bCancelClicked;
 }
 
-bool wdProgress::AllowUserCancel() const
+bool nsProgress::AllowUserCancel() const
 {
   return m_bEnableCancel;
 }
 
-wdProgress* wdProgress::GetGlobalProgressbar()
+nsProgress* nsProgress::GetGlobalProgressbar()
 {
   if (!s_pGlobal)
   {
-    static wdProgress s_Global;
+    static nsProgress s_Global;
     return &s_Global;
   }
 
   return s_pGlobal;
 }
 
-void wdProgress::SetGlobalProgressbar(wdProgress* pProgress)
+void nsProgress::SetGlobalProgressbar(nsProgress* pProgress)
 {
   s_pGlobal = pProgress;
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-wdProgressRange::wdProgressRange(wdStringView sDisplayText, wdUInt32 uiSteps, bool bAllowCancel, wdProgress* pProgressbar /*= nullptr*/)
+nsProgressRange::nsProgressRange(nsStringView sDisplayText, nsUInt32 uiSteps, bool bAllowCancel, nsProgress* pProgressbar /*= nullptr*/)
 {
-  WD_ASSERT_DEV(uiSteps > 0, "Every progress range must have at least one step to complete");
+  NS_ASSERT_DEV(uiSteps > 0, "Every progress range must have at least one step to complete");
 
   m_iCurrentStep = -1;
   m_fWeightedCompletion = -1.0;
@@ -134,19 +134,19 @@ wdProgressRange::wdProgressRange(wdStringView sDisplayText, wdUInt32 uiSteps, bo
   Init(sDisplayText, bAllowCancel, pProgressbar);
 }
 
-wdProgressRange::wdProgressRange(wdStringView sDisplayText, bool bAllowCancel, wdProgress* pProgressbar /*= nullptr*/)
+nsProgressRange::nsProgressRange(nsStringView sDisplayText, bool bAllowCancel, nsProgress* pProgressbar /*= nullptr*/)
 {
   Init(sDisplayText, bAllowCancel, pProgressbar);
 }
 
-void wdProgressRange::Init(wdStringView sDisplayText, bool bAllowCancel, wdProgress* pProgressbar)
+void nsProgressRange::Init(nsStringView sDisplayText, bool bAllowCancel, nsProgress* pProgressbar)
 {
   if (pProgressbar == nullptr)
-    m_pProgressbar = wdProgress::GetGlobalProgressbar();
+    m_pProgressbar = nsProgress::GetGlobalProgressbar();
   else
     m_pProgressbar = pProgressbar;
 
-  WD_ASSERT_DEV(m_pProgressbar != nullptr, "No global progress-bar context available.");
+  NS_ASSERT_DEV(m_pProgressbar != nullptr, "No global progress-bar context available.");
 
   m_bAllowCancel = bAllowCancel;
   m_sDisplayText = sDisplayText;
@@ -166,52 +166,52 @@ void wdProgressRange::Init(wdStringView sDisplayText, bool bAllowCancel, wdProgr
   m_pProgressbar->SetActiveRange(this);
 }
 
-wdProgressRange::~wdProgressRange()
+nsProgressRange::~nsProgressRange()
 {
   m_pProgressbar->SetCompletion((float)(m_fPercentageBase + m_fPercentageRange));
   m_pProgressbar->SetActiveRange(m_pParentRange);
 }
 
-wdProgress* wdProgressRange::GetProgressbar() const
+nsProgress* nsProgressRange::GetProgressbar() const
 {
   return m_pProgressbar;
 }
 
-void wdProgressRange::SetStepWeighting(wdUInt32 uiStep, float fWeight)
+void nsProgressRange::SetStepWeighting(nsUInt32 uiStep, float fWeight)
 {
-  WD_ASSERT_DEV(m_fSummedWeight > 0.0, "This function is only supported if ProgressRange was initialized with steps");
+  NS_ASSERT_DEV(m_fSummedWeight > 0.0, "This function is only supported if ProgressRange was initialized with steps");
 
   m_fSummedWeight -= GetStepWeight(uiStep);
   m_fSummedWeight += fWeight;
   m_StepWeights[uiStep] = fWeight;
 }
 
-float wdProgressRange::GetStepWeight(wdUInt32 uiStep) const
+float nsProgressRange::GetStepWeight(nsUInt32 uiStep) const
 {
   const float* pOldWeight = m_StepWeights.GetValue(uiStep);
   return pOldWeight != nullptr ? *pOldWeight : 1.0f;
 }
 
-void wdProgressRange::ComputeCurStepBaseAndRange(double& out_base, double& out_range)
+void nsProgressRange::ComputeCurStepBaseAndRange(double& out_base, double& out_range)
 {
-  const double internalBase = wdMath::Max(m_fWeightedCompletion, 0.0) / m_fSummedWeight;
-  const double internalRange = GetStepWeight(wdMath::Max(m_iCurrentStep, 0)) / m_fSummedWeight;
+  const double internalBase = nsMath::Max(m_fWeightedCompletion, 0.0) / m_fSummedWeight;
+  const double internalRange = GetStepWeight(nsMath::Max(m_iCurrentStep, 0)) / m_fSummedWeight;
 
   out_range = internalRange * m_fPercentageRange;
   out_base = m_fPercentageBase + (internalBase * m_fPercentageRange);
 
-  WD_ASSERT_DEBUG(out_base <= 1.0f, "Invalid range");
-  WD_ASSERT_DEBUG(out_range <= 1.0f, "Invalid range");
-  WD_ASSERT_DEBUG(out_base + out_range <= 1.0f, "Invalid range");
+  NS_ASSERT_DEBUG(out_base <= 1.0f, "Invalid range");
+  NS_ASSERT_DEBUG(out_range <= 1.0f, "Invalid range");
+  NS_ASSERT_DEBUG(out_base + out_range <= 1.0f, "Invalid range");
 }
 
-bool wdProgressRange::BeginNextStep(wdStringView sStepDisplayText, wdUInt32 uiNumSteps)
+bool nsProgressRange::BeginNextStep(nsStringView sStepDisplayText, nsUInt32 uiNumSteps)
 {
-  WD_ASSERT_DEV(m_fSummedWeight > 0.0, "This function is only supported if ProgressRange was initialized with steps");
+  NS_ASSERT_DEV(m_fSummedWeight > 0.0, "This function is only supported if ProgressRange was initialized with steps");
 
   m_sStepDisplayText = sStepDisplayText;
 
-  for (wdUInt32 i = 0; i < uiNumSteps; ++i)
+  for (nsUInt32 i = 0; i < uiNumSteps; ++i)
   {
     m_fWeightedCompletion += GetStepWeight(m_iCurrentStep + i);
   }
@@ -225,9 +225,9 @@ bool wdProgressRange::BeginNextStep(wdStringView sStepDisplayText, wdUInt32 uiNu
   return !m_pProgressbar->WasCanceled();
 }
 
-bool wdProgressRange::SetCompletion(double fCompletionFactor)
+bool nsProgressRange::SetCompletion(double fCompletionFactor)
 {
-  WD_ASSERT_DEV(m_fSummedWeight == 0.0, "This function is only supported if ProgressRange was initialized without steps");
+  NS_ASSERT_DEV(m_fSummedWeight == 0.0, "This function is only supported if ProgressRange was initialized without steps");
 
   const double finalCompletion = m_fPercentageBase + fCompletionFactor * m_fPercentageRange;
 
@@ -236,12 +236,12 @@ bool wdProgressRange::SetCompletion(double fCompletionFactor)
   return !m_pProgressbar->WasCanceled();
 }
 
-bool wdProgressRange::WasCanceled() const
+bool nsProgressRange::WasCanceled() const
 {
   if (!m_pProgressbar->m_bCancelClicked)
     return false;
 
-  const wdProgressRange* pCur = this;
+  const nsProgressRange* pCur = this;
 
   // if there is any action in the stack above, that cannot be canceled
   // all sub actions should be fully executed, even if they could be canceled
@@ -255,7 +255,3 @@ bool wdProgressRange::WasCanceled() const
 
   return true;
 }
-
-
-
-WD_STATICLINK_FILE(Foundation, Foundation_Utilities_Implementation_Progress);

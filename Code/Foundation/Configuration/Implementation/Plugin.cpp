@@ -5,28 +5,36 @@
 #include <Foundation/IO/OSFile.h>
 #include <Foundation/Logging/Log.h>
 
-#if WD_ENABLED(WD_PLATFORM_WINDOWS)
+#if NS_ENABLED(NS_PLATFORM_WINDOWS)
 #  include <Foundation/Configuration/Implementation/Win/Plugin_Win.h>
-#elif WD_ENABLED(WD_PLATFORM_OSX) || WD_ENABLED(WD_PLATFORM_LINUX)
+#elif NS_ENABLED(NS_PLATFORM_OSX) || NS_ENABLED(NS_PLATFORM_LINUX)
 #  include <Foundation/Configuration/Implementation/Posix/Plugin_Posix.h>
-#elif WD_ENABLED(WD_PLATFORM_ANDROID)
+#elif NS_ENABLED(NS_PLATFORM_ANDROID)
 #  include <Foundation/Configuration/Implementation/Android/Plugin_Android.h>
+#elif NS_ENABLED(NS_PLATFORM_PLAYSTATION_5)
+#  include <Foundation/Configuration/Implementation/Prospero/Plugin_Prospero.h>
 #else
 #  error "Plugins not implemented on this Platform."
 #endif
 
-wdResult UnloadPluginModule(wdPluginModule& ref_pModule, const char* szPluginFile);
-wdResult LoadPluginModule(const char* szFileToLoad, wdPluginModule& ref_pModule, const char* szPluginFile);
+nsResult UnloadPluginModule(nsPluginModule& ref_pModule, nsStringView sPluginFile);
+nsResult LoadPluginModule(nsStringView sFileToLoad, nsPluginModule& ref_pModule, nsStringView sPluginFile);
+
+nsDynamicArray<nsString>& GetStaticPlugins()
+{
+  static nsDynamicArray<nsString> s_StaticPlugins;
+  return s_StaticPlugins;
+}
 
 struct ModuleData
 {
-  wdPluginModule m_hModule = 0;
-  wdUInt8 m_uiFileNumber = 0;
+  nsPluginModule m_hModule = 0;
+  nsUInt8 m_uiFileNumber = 0;
   bool m_bCalledOnLoad = false;
-  wdHybridArray<wdPluginInitCallback, 2> m_OnLoadCB;
-  wdHybridArray<wdPluginInitCallback, 2> m_OnUnloadCB;
-  wdHybridArray<wdString, 2> m_sPluginDependencies;
-  wdBitflags<wdPluginLoadFlags> m_LoadFlags;
+  nsHybridArray<nsPluginInitCallback, 2> m_OnLoadCB;
+  nsHybridArray<nsPluginInitCallback, 2> m_OnUnloadCB;
+  nsHybridArray<nsString, 2> m_sPluginDependencies;
+  nsBitflags<nsPluginLoadFlags> m_LoadFlags;
 
   void Initialize();
   void Uninitialize();
@@ -34,24 +42,40 @@ struct ModuleData
 
 static ModuleData g_StaticModule;
 static ModuleData* g_pCurrentlyLoadingModule = nullptr;
-static wdMap<wdString, ModuleData> g_LoadedModules;
-static wdDynamicArray<wdString> s_PluginLoadOrder;
-static wdUInt32 s_uiMaxParallelInstances = 32;
-static wdInt32 s_iPluginChangeRecursionCounter = 0;
+static nsMap<nsString, ModuleData> g_LoadedModules;
+static nsDynamicArray<nsString> s_PluginLoadOrder;
+static nsUInt32 s_uiMaxParallelInstances = 32;
+static nsInt32 s_iPluginChangeRecursionCounter = 0;
 
-wdCopyOnBroadcastEvent<const wdPluginEvent&> s_PluginEvents;
+nsCopyOnBroadcastEvent<const nsPluginEvent&> s_PluginEvents;
 
-void wdPlugin::SetMaxParallelInstances(wdUInt32 uiMaxParallelInstances)
+void nsPlugin::SetMaxParallelInstances(nsUInt32 uiMaxParallelInstances)
 {
-  s_uiMaxParallelInstances = wdMath::Max(1u, uiMaxParallelInstances);
+  s_uiMaxParallelInstances = nsMath::Max(1u, uiMaxParallelInstances);
 }
 
-void wdPlugin::InitializeStaticallyLinkedPlugins()
+void nsPlugin::InitializeStaticallyLinkedPlugins()
 {
-  g_StaticModule.Initialize();
+  if (!g_StaticModule.m_bCalledOnLoad)
+  {
+    // We need to trigger the nsPlugin events to make sure the sub-systems are initialized at least once.
+    nsPlugin::BeginPluginChanges();
+    NS_SCOPE_EXIT(nsPlugin::EndPluginChanges());
+    g_StaticModule.Initialize();
+
+#if NS_DISABLED(NS_COMPILE_ENGINE_AS_DLL)
+    NS_LOG_BLOCK("Initialize Statically Linked Plugins");
+    // Merely add dummy entries so plugins can be enumerated etc.
+    for (nsStringView sPlugin : GetStaticPlugins())
+    {
+      g_LoadedModules.FindOrAdd(sPlugin);
+      nsLog::Debug("Plugin '{0}' statically linked.", sPlugin);
+    }
+#endif
+  }
 }
 
-void wdPlugin::GetAllPluginInfos(wdDynamicArray<PluginInfo>& ref_infos)
+void nsPlugin::GetAllPluginInfos(nsDynamicArray<PluginInfo>& ref_infos)
 {
   ref_infos.Clear();
 
@@ -76,7 +100,7 @@ void ModuleData::Initialize()
   for (const auto& dep : m_sPluginDependencies)
   {
     // TODO: ignore ??
-    wdPlugin::LoadPlugin(dep).IgnoreResult();
+    nsPlugin::LoadPlugin(dep).IgnoreResult();
   }
 
   for (auto cb : m_OnLoadCB)
@@ -90,7 +114,7 @@ void ModuleData::Uninitialize()
   if (!m_bCalledOnLoad)
     return;
 
-  for (wdUInt32 i = m_OnUnloadCB.GetCount(); i > 0; --i)
+  for (nsUInt32 i = m_OnUnloadCB.GetCount(); i > 0; --i)
   {
     m_OnUnloadCB[i - 1]();
   }
@@ -98,125 +122,126 @@ void ModuleData::Uninitialize()
   m_bCalledOnLoad = false;
 }
 
-void wdPlugin::BeginPluginChanges()
+void nsPlugin::BeginPluginChanges()
 {
   if (s_iPluginChangeRecursionCounter == 0)
   {
-    wdPluginEvent e;
-    e.m_EventType = wdPluginEvent::BeforePluginChanges;
+    nsPluginEvent e;
+    e.m_EventType = nsPluginEvent::BeforePluginChanges;
     s_PluginEvents.Broadcast(e);
   }
 
   ++s_iPluginChangeRecursionCounter;
 }
 
-void wdPlugin::EndPluginChanges()
+void nsPlugin::EndPluginChanges()
 {
   --s_iPluginChangeRecursionCounter;
 
   if (s_iPluginChangeRecursionCounter == 0)
   {
-    wdPluginEvent e;
-    e.m_EventType = wdPluginEvent::AfterPluginChanges;
+    nsPluginEvent e;
+    e.m_EventType = nsPluginEvent::AfterPluginChanges;
     s_PluginEvents.Broadcast(e);
   }
 }
 
-static wdResult UnloadPluginInternal(const char* szPluginFile)
+static nsResult UnloadPluginInternal(nsStringView sPluginFile)
 {
-  auto thisMod = g_LoadedModules.Find(szPluginFile);
+  auto thisMod = g_LoadedModules.Find(sPluginFile);
 
   if (!thisMod.IsValid())
-    return WD_SUCCESS;
+    return NS_SUCCESS;
 
-  wdLog::Debug("Plugin to unload: \"{0}\"", szPluginFile);
+  nsLog::Debug("Plugin to unload: \"{0}\"", sPluginFile);
 
-  wdPlugin::BeginPluginChanges();
-  WD_SCOPE_EXIT(wdPlugin::EndPluginChanges());
+  nsPlugin::BeginPluginChanges();
+  NS_SCOPE_EXIT(nsPlugin::EndPluginChanges());
 
   // Broadcast event: Before unloading plugin
   {
-    wdPluginEvent e;
-    e.m_EventType = wdPluginEvent::BeforeUnloading;
-    e.m_szPluginBinary = szPluginFile;
+    nsPluginEvent e;
+    e.m_EventType = nsPluginEvent::BeforeUnloading;
+    e.m_sPluginBinary = sPluginFile;
     s_PluginEvents.Broadcast(e);
   }
 
   // Broadcast event: Startup Shutdown
   {
-    wdPluginEvent e;
-    e.m_EventType = wdPluginEvent::StartupShutdown;
-    e.m_szPluginBinary = szPluginFile;
+    nsPluginEvent e;
+    e.m_EventType = nsPluginEvent::StartupShutdown;
+    e.m_sPluginBinary = sPluginFile;
     s_PluginEvents.Broadcast(e);
   }
 
   // Broadcast event: After Startup Shutdown
   {
-    wdPluginEvent e;
-    e.m_EventType = wdPluginEvent::AfterStartupShutdown;
-    e.m_szPluginBinary = szPluginFile;
+    nsPluginEvent e;
+    e.m_EventType = nsPluginEvent::AfterStartupShutdown;
+    e.m_sPluginBinary = sPluginFile;
     s_PluginEvents.Broadcast(e);
   }
 
   thisMod.Value().Uninitialize();
 
   // unload the plugin module
-  if (UnloadPluginModule(thisMod.Value().m_hModule, szPluginFile) == WD_FAILURE)
+  if (UnloadPluginModule(thisMod.Value().m_hModule, sPluginFile) == NS_FAILURE)
   {
-    wdLog::Error("Unloading plugin module '{}' failed.", szPluginFile);
-    return WD_FAILURE;
+    nsLog::Error("Unloading plugin module '{}' failed.", sPluginFile);
+    return NS_FAILURE;
   }
 
   // delete the plugin copy that we had loaded
+  if (nsPlugin::PlatformNeedsPluginCopy())
   {
-    wdStringBuilder sOriginalFile, sCopiedFile;
-    wdPlugin::GetPluginPaths(szPluginFile, sOriginalFile, sCopiedFile, g_LoadedModules[szPluginFile].m_uiFileNumber);
+    nsStringBuilder sOriginalFile, sCopiedFile;
+    nsPlugin::GetPluginPaths(sPluginFile, sOriginalFile, sCopiedFile, g_LoadedModules[sPluginFile].m_uiFileNumber);
 
-    wdOSFile::DeleteFile(sCopiedFile).IgnoreResult();
+    nsOSFile::DeleteFile(sCopiedFile).IgnoreResult();
   }
 
   // Broadcast event: After unloading plugin
   {
-    wdPluginEvent e;
-    e.m_EventType = wdPluginEvent::AfterUnloading;
-    e.m_szPluginBinary = szPluginFile;
+    nsPluginEvent e;
+    e.m_EventType = nsPluginEvent::AfterUnloading;
+    e.m_sPluginBinary = sPluginFile;
     s_PluginEvents.Broadcast(e);
   }
 
-  wdLog::Success("Plugin '{0}' is unloaded.", szPluginFile);
+  nsLog::Success("Plugin '{0}' is unloaded.", sPluginFile);
   g_LoadedModules.Remove(thisMod);
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
-static wdResult LoadPluginInternal(const char* szPluginFile, wdBitflags<wdPluginLoadFlags> flags)
+static nsResult LoadPluginInternal(nsStringView sPluginFile, nsBitflags<nsPluginLoadFlags> flags)
 {
-  wdUInt8 uiFileNumber = 0;
+  nsUInt8 uiFileNumber = 0;
 
-  wdStringBuilder sOriginalFile, sCopiedFile;
-  wdPlugin::GetPluginPaths(szPluginFile, sOriginalFile, sCopiedFile, uiFileNumber);
+  nsStringBuilder sOriginalFile, sCopiedFile;
+  nsPlugin::GetPluginPaths(sPluginFile, sOriginalFile, sCopiedFile, uiFileNumber);
 
-  if (!wdOSFile::ExistsFile(sOriginalFile))
+  if (!nsOSFile::ExistsFile(sOriginalFile))
   {
-    wdLog::Error("The plugin '{0}' does not exist.", szPluginFile);
-    return WD_FAILURE;
+    nsLog::Error("The plugin '{0}' does not exist.", sPluginFile);
+    return NS_FAILURE;
   }
 
-  if (flags.IsSet(wdPluginLoadFlags::LoadCopy))
+  if (nsPlugin::PlatformNeedsPluginCopy() && flags.IsSet(nsPluginLoadFlags::LoadCopy))
   {
     // create a copy of the original plugin file
-    const wdUInt8 uiMaxParallelInstances = static_cast<wdUInt8>(s_uiMaxParallelInstances);
+    const nsUInt8 uiMaxParallelInstances = static_cast<nsUInt8>(s_uiMaxParallelInstances);
     for (uiFileNumber = 0; uiFileNumber < uiMaxParallelInstances; ++uiFileNumber)
     {
-      wdPlugin::GetPluginPaths(szPluginFile, sOriginalFile, sCopiedFile, uiFileNumber);
-      if (wdOSFile::CopyFile(sOriginalFile, sCopiedFile) == WD_SUCCESS)
+      nsPlugin::GetPluginPaths(sPluginFile, sOriginalFile, sCopiedFile, uiFileNumber);
+      if (nsOSFile::CopyFile(sOriginalFile, sCopiedFile) == NS_SUCCESS)
         goto success;
     }
 
-    wdLog::Error("Could not copy the plugin file '{0}' to '{1}' (and all previous file numbers). Plugin MaxParallelInstances is set to {2}.", sOriginalFile, sCopiedFile, s_uiMaxParallelInstances);
+    nsLog::Error("Could not copy the plugin file '{0}' to '{1}' (and all previous file numbers). Plugin MaxParallelInstances is set to {2}.", sOriginalFile, sCopiedFile, s_uiMaxParallelInstances);
 
     g_LoadedModules.Remove(sCopiedFile);
-    return WD_FAILURE;
+    return NS_FAILURE;
   }
   else
   {
@@ -225,30 +250,30 @@ static wdResult LoadPluginInternal(const char* szPluginFile, wdBitflags<wdPlugin
 
 success:
 
-  auto& thisMod = g_LoadedModules[szPluginFile];
+  auto& thisMod = g_LoadedModules[sPluginFile];
   thisMod.m_uiFileNumber = uiFileNumber;
   thisMod.m_LoadFlags = flags;
 
-  wdPlugin::BeginPluginChanges();
-  WD_SCOPE_EXIT(wdPlugin::EndPluginChanges());
+  nsPlugin::BeginPluginChanges();
+  NS_SCOPE_EXIT(nsPlugin::EndPluginChanges());
 
   // Broadcast Event: Before loading plugin
   {
-    wdPluginEvent e;
-    e.m_EventType = wdPluginEvent::BeforeLoading;
-    e.m_szPluginBinary = szPluginFile;
+    nsPluginEvent e;
+    e.m_EventType = nsPluginEvent::BeforeLoading;
+    e.m_sPluginBinary = sPluginFile;
     s_PluginEvents.Broadcast(e);
   }
 
   g_pCurrentlyLoadingModule = &thisMod;
 
-  if (LoadPluginModule(sCopiedFile, g_pCurrentlyLoadingModule->m_hModule, szPluginFile) == WD_FAILURE)
+  if (LoadPluginModule(sCopiedFile, g_pCurrentlyLoadingModule->m_hModule, sPluginFile) == NS_FAILURE)
   {
     // loaded, but failed
     g_pCurrentlyLoadingModule = nullptr;
     thisMod.m_hModule = 0;
 
-    return WD_FAILURE;
+    return NS_FAILURE;
   }
 
   g_pCurrentlyLoadingModule = nullptr;
@@ -256,9 +281,9 @@ success:
   {
     // Broadcast Event: After loading plugin, before init
     {
-      wdPluginEvent e;
-      e.m_EventType = wdPluginEvent::AfterLoadingBeforeInit;
-      e.m_szPluginBinary = szPluginFile;
+      nsPluginEvent e;
+      e.m_EventType = nsPluginEvent::AfterLoadingBeforeInit;
+      e.m_sPluginBinary = sPluginFile;
       s_PluginEvents.Broadcast(e);
     }
 
@@ -266,72 +291,76 @@ success:
 
     // Broadcast Event: After loading plugin
     {
-      wdPluginEvent e;
-      e.m_EventType = wdPluginEvent::AfterLoading;
-      e.m_szPluginBinary = szPluginFile;
+      nsPluginEvent e;
+      e.m_EventType = nsPluginEvent::AfterLoading;
+      e.m_sPluginBinary = sPluginFile;
       s_PluginEvents.Broadcast(e);
     }
   }
 
-  wdLog::Success("Plugin '{0}' is loaded.", szPluginFile);
-  return WD_SUCCESS;
+  nsLog::Success("Plugin '{0}' is loaded.", sPluginFile);
+  return NS_SUCCESS;
 }
 
-bool wdPlugin::ExistsPluginFile(const char* szPluginFile)
+bool nsPlugin::ExistsPluginFile(nsStringView sPluginFile)
 {
-  wdStringBuilder sOriginalFile, sCopiedFile;
-  GetPluginPaths(szPluginFile, sOriginalFile, sCopiedFile, 0);
+  nsStringBuilder sOriginalFile, sCopiedFile;
+  GetPluginPaths(sPluginFile, sOriginalFile, sCopiedFile, 0);
 
-  return wdOSFile::ExistsFile(sOriginalFile);
+  return nsOSFile::ExistsFile(sOriginalFile);
 }
 
-wdResult wdPlugin::LoadPlugin(const char* szPluginFile, wdBitflags<wdPluginLoadFlags> flags /*= wdPluginLoadFlags::Default*/)
+nsResult nsPlugin::LoadPlugin(nsStringView sPluginFile, nsBitflags<nsPluginLoadFlags> flags /*= nsPluginLoadFlags::Default*/)
 {
-  if (flags.IsSet(wdPluginLoadFlags::PluginIsOptional))
-  {
-    // early out without logging an error
-
-    if (!ExistsPluginFile(szPluginFile))
-      return WD_FAILURE;
-  }
-
-  WD_LOG_BLOCK("Loading Plugin", szPluginFile);
-
-  if (g_LoadedModules.Find(szPluginFile).IsValid())
-  {
-    wdLog::Debug("Plugin '{0}' already loaded.", szPluginFile);
-    return WD_SUCCESS;
-  }
+  NS_LOG_BLOCK("Loading Plugin", sPluginFile);
 
   // make sure this is done first
   InitializeStaticallyLinkedPlugins();
 
-  wdLog::Debug("Plugin to load: \"{0}\"", szPluginFile);
+  if (g_LoadedModules.Find(sPluginFile).IsValid())
+  {
+    nsLog::Debug("Plugin '{0}' already loaded.", sPluginFile);
+    return NS_SUCCESS;
+  }
+
+#if NS_DISABLED(NS_COMPILE_ENGINE_AS_DLL)
+  // #TODO NS_COMPILE_ENGINE_AS_DLL and being able to load plugins are not necessarily the same thing.
+  return NS_FAILURE;
+#endif
+
+  if (flags.IsSet(nsPluginLoadFlags::PluginIsOptional))
+  {
+    // early out without logging an error
+    if (!ExistsPluginFile(sPluginFile))
+      return NS_FAILURE;
+  }
+
+  nsLog::Debug("Plugin to load: \"{0}\"", sPluginFile);
 
   // make sure to use a static string pointer from now on, that stays where it is
-  szPluginFile = g_LoadedModules.FindOrAdd(szPluginFile).Key();
+  sPluginFile = g_LoadedModules.FindOrAdd(sPluginFile).Key();
 
-  wdResult res = LoadPluginInternal(szPluginFile, flags);
+  nsResult res = LoadPluginInternal(sPluginFile, flags);
 
   if (res.Succeeded())
   {
-    s_PluginLoadOrder.PushBack(szPluginFile);
+    s_PluginLoadOrder.PushBack(sPluginFile);
   }
   else
   {
     // If we failed to load the plugin, it shouldn't be in the loaded modules list
-    g_LoadedModules.Remove(szPluginFile);
+    g_LoadedModules.Remove(sPluginFile);
   }
 
   return res;
 }
 
-void wdPlugin::UnloadAllPlugins()
+void nsPlugin::UnloadAllPlugins()
 {
   BeginPluginChanges();
-  WD_SCOPE_EXIT(EndPluginChanges());
+  NS_SCOPE_EXIT(EndPluginChanges());
 
-  for (wdUInt32 i = s_PluginLoadOrder.GetCount(); i > 0; --i)
+  for (nsUInt32 i = s_PluginLoadOrder.GetCount(); i > 0; --i)
   {
     if (UnloadPluginInternal(s_PluginLoadOrder[i - 1]).Failed())
     {
@@ -339,7 +368,7 @@ void wdPlugin::UnloadAllPlugins()
     }
   }
 
-  WD_ASSERT_DEBUG(g_LoadedModules.IsEmpty(), "Not all plugins were unloaded somehow.");
+  NS_ASSERT_DEBUG(g_LoadedModules.IsEmpty(), "Not all plugins were unloaded somehow.");
 
   for (auto mod : g_LoadedModules)
   {
@@ -353,12 +382,12 @@ void wdPlugin::UnloadAllPlugins()
   g_LoadedModules.Clear();
 }
 
-const wdCopyOnBroadcastEvent<const wdPluginEvent&>& wdPlugin::Events()
+const nsCopyOnBroadcastEvent<const nsPluginEvent&>& nsPlugin::Events()
 {
   return s_PluginEvents;
 }
 
-wdPlugin::Init::Init(wdPluginInitCallback onLoadOrUnloadCB, bool bOnLoad)
+nsPlugin::Init::Init(nsPluginInitCallback onLoadOrUnloadCB, bool bOnLoad)
 {
   ModuleData* pMD = g_pCurrentlyLoadingModule ? g_pCurrentlyLoadingModule : &g_StaticModule;
 
@@ -368,11 +397,19 @@ wdPlugin::Init::Init(wdPluginInitCallback onLoadOrUnloadCB, bool bOnLoad)
     pMD->m_OnUnloadCB.PushBack(onLoadOrUnloadCB);
 }
 
-wdPlugin::Init::Init(const char* szAddPluginDependency)
+nsPlugin::Init::Init(const char* szAddPluginDependency)
 {
   ModuleData* pMD = g_pCurrentlyLoadingModule ? g_pCurrentlyLoadingModule : &g_StaticModule;
 
   pMD->m_sPluginDependencies.PushBack(szAddPluginDependency);
 }
 
-WD_STATICLINK_FILE(Foundation, Foundation_Configuration_Implementation_Plugin);
+#if NS_DISABLED(NS_COMPILE_ENGINE_AS_DLL)
+nsPluginRegister::nsPluginRegister(const char* szAddPlugin)
+{
+  if (g_pCurrentlyLoadingModule == nullptr)
+  {
+    GetStaticPlugins().PushBack(szAddPlugin);
+  }
+}
+#endif

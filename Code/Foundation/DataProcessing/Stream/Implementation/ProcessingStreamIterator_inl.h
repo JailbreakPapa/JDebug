@@ -1,39 +1,37 @@
 
 template <typename Type>
-wdProcessingStreamIterator<Type>::wdProcessingStreamIterator(const wdProcessingStream* pStream, wdUInt64 uiNumElements, wdUInt64 uiStartIndex)
-  : m_pCurrentPtr(nullptr)
-  , m_pEndPtr(nullptr)
-  , m_uiElementStride(0)
+nsProcessingStreamIterator<Type>::nsProcessingStreamIterator(const nsProcessingStream* pStream, nsUInt64 uiNumElements, nsUInt64 uiStartIndex)
+
 {
-  WD_ASSERT_DEV(pStream != nullptr, "Stream pointer may not be null!");
-  WD_ASSERT_DEV(pStream->GetElementSize() == sizeof(Type), "Data size missmatch");
+  NS_ASSERT_DEV(pStream != nullptr, "Stream pointer may not be null!");
+  NS_ASSERT_DEV(pStream->GetElementSize() == sizeof(Type), "Data size missmatch");
 
   m_uiElementStride = pStream->GetElementStride();
 
-  m_pCurrentPtr = wdMemoryUtils::AddByteOffset(pStream->GetWritableData(), static_cast<ptrdiff_t>(uiStartIndex * m_uiElementStride));
-  m_pEndPtr = wdMemoryUtils::AddByteOffset(pStream->GetWritableData(), static_cast<ptrdiff_t>((uiStartIndex + uiNumElements) * m_uiElementStride));
+  m_pCurrentPtr = nsMemoryUtils::AddByteOffset(pStream->GetWritableData(), static_cast<std::ptrdiff_t>(uiStartIndex * m_uiElementStride));
+  m_pEndPtr = nsMemoryUtils::AddByteOffset(pStream->GetWritableData(), static_cast<std::ptrdiff_t>((uiStartIndex + uiNumElements) * m_uiElementStride));
 }
 
 template <typename Type>
-WD_ALWAYS_INLINE Type& wdProcessingStreamIterator<Type>::Current() const
+NS_ALWAYS_INLINE Type& nsProcessingStreamIterator<Type>::Current() const
 {
   return *static_cast<Type*>(m_pCurrentPtr);
 }
 
 template <typename Type>
-WD_ALWAYS_INLINE bool wdProcessingStreamIterator<Type>::HasReachedEnd() const
+NS_ALWAYS_INLINE bool nsProcessingStreamIterator<Type>::HasReachedEnd() const
 {
   return m_pCurrentPtr >= m_pEndPtr;
 }
 
 template <typename Type>
-WD_ALWAYS_INLINE void wdProcessingStreamIterator<Type>::Advance()
+NS_ALWAYS_INLINE void nsProcessingStreamIterator<Type>::Advance()
 {
-  m_pCurrentPtr = wdMemoryUtils::AddByteOffset(m_pCurrentPtr, static_cast<ptrdiff_t>(m_uiElementStride));
+  m_pCurrentPtr = nsMemoryUtils::AddByteOffset(m_pCurrentPtr, static_cast<std::ptrdiff_t>(m_uiElementStride));
 }
 
 template <typename Type>
-WD_ALWAYS_INLINE void wdProcessingStreamIterator<Type>::Advance(wdUInt32 uiNumElements)
+NS_ALWAYS_INLINE void nsProcessingStreamIterator<Type>::Advance(nsUInt32 uiNumElements)
 {
-  m_pCurrentPtr = wdMemoryUtils::AddByteOffset(m_pCurrentPtr, static_cast<ptrdiff_t>(m_uiElementStride * uiNumElements));
+  m_pCurrentPtr = nsMemoryUtils::AddByteOffset(m_pCurrentPtr, static_cast<std::ptrdiff_t>(m_uiElementStride * uiNumElements));
 }

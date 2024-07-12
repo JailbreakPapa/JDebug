@@ -5,57 +5,59 @@
 #include <Foundation/Basics.h>
 #include <Foundation/Reflection/Implementation/RTTI.h>
 
-class wdMessage;
+class nsMessage;
 
 /// \brief The base class for all message handlers that a type provides.
-class WD_FOUNDATION_DLL wdAbstractMessageHandler
+class NS_FOUNDATION_DLL nsAbstractMessageHandler
 {
 public:
-  WD_ALWAYS_INLINE void operator()(void* pInstance, wdMessage& ref_msg) { (*m_DispatchFunc)(pInstance, ref_msg); }
+  virtual ~nsAbstractMessageHandler() = default;
 
-  WD_FORCE_INLINE void operator()(const void* pInstance, wdMessage& ref_msg)
+  NS_ALWAYS_INLINE void operator()(void* pInstance, nsMessage& ref_msg) { (*m_DispatchFunc)(this, pInstance, ref_msg); }
+
+  NS_FORCE_INLINE void operator()(const void* pInstance, nsMessage& ref_msg)
   {
-    WD_ASSERT_DEV(m_bIsConst, "Calling a non const message handler with a const instance.");
-    (*m_ConstDispatchFunc)(pInstance, ref_msg);
+    NS_ASSERT_DEV(m_bIsConst, "Calling a non const message handler with a const instance.");
+    (*m_ConstDispatchFunc)(this, pInstance, ref_msg);
   }
 
-  WD_ALWAYS_INLINE wdMessageId GetMessageId() const { return m_Id; }
+  NS_ALWAYS_INLINE nsMessageId GetMessageId() const { return m_Id; }
 
-  WD_ALWAYS_INLINE bool IsConst() const { return m_bIsConst; }
+  NS_ALWAYS_INLINE bool IsConst() const { return m_bIsConst; }
 
 protected:
-  using DispatchFunc = void (*)(void*, wdMessage&);
-  using ConstDispatchFunc = void (*)(const void*, wdMessage&);
+  using DispatchFunc = void (*)(nsAbstractMessageHandler* pSelf, void* pInstance, nsMessage&);
+  using ConstDispatchFunc = void (*)(nsAbstractMessageHandler* pSelf, const void* pInstance, nsMessage&);
 
   union
   {
-    DispatchFunc m_DispatchFunc;
+    DispatchFunc m_DispatchFunc = nullptr;
     ConstDispatchFunc m_ConstDispatchFunc;
   };
-  wdMessageId m_Id;
-  bool m_bIsConst;
+  nsMessageId m_Id = nsSmallInvalidIndex;
+  bool m_bIsConst = false;
 };
 
-struct wdMessageSenderInfo
+struct nsMessageSenderInfo
 {
   const char* m_szName;
-  const wdRTTI* m_pMessageType;
+  const nsRTTI* m_pMessageType;
 };
 
-namespace wdInternal
+namespace nsInternal
 {
   template <typename Class, typename MessageType>
   struct MessageHandlerTraits
   {
-    static wdCompileTimeTrueType IsConst(void (Class::*)(MessageType&) const);
-    static wdCompileTimeFalseType IsConst(...);
+    static nsCompileTimeTrueType IsConst(void (Class::*)(MessageType&) const);
+    static nsCompileTimeFalseType IsConst(...);
   };
 
   template <bool bIsConst>
   struct MessageHandler
   {
     template <typename Class, typename MessageType, void (Class::*Method)(MessageType&)>
-    class Impl : public wdAbstractMessageHandler
+    class Impl : public nsAbstractMessageHandler
     {
     public:
       Impl()
@@ -65,7 +67,7 @@ namespace wdInternal
         m_bIsConst = false;
       }
 
-      static void Dispatch(void* pInstance, wdMessage& ref_msg)
+      static void Dispatch(nsAbstractMessageHandler* pSelf, void* pInstance, nsMessage& ref_msg)
       {
         Class* pTargetInstance = static_cast<Class*>(pInstance);
         (pTargetInstance->*Method)(static_cast<MessageType&>(ref_msg));
@@ -77,7 +79,7 @@ namespace wdInternal
   struct MessageHandler<true>
   {
     template <typename Class, typename MessageType, void (Class::*Method)(MessageType&) const>
-    class Impl : public wdAbstractMessageHandler
+    class Impl : public nsAbstractMessageHandler
     {
     public:
       Impl()
@@ -88,14 +90,14 @@ namespace wdInternal
       }
 
       /// \brief Casts the given message to the type of this message handler, then passes that to the class instance.
-      static void Dispatch(const void* pInstance, wdMessage& ref_msg)
+      static void Dispatch(nsAbstractMessageHandler* pSelf, const void* pInstance, nsMessage& ref_msg)
       {
         const Class* pTargetInstance = static_cast<const Class*>(pInstance);
         (pTargetInstance->*Method)(static_cast<MessageType&>(ref_msg));
       }
     };
   };
-} // namespace wdInternal
+} // namespace nsInternal
 
-#define WD_IS_CONST_MESSAGE_HANDLER(Class, MessageType, Method) \
-  (sizeof(wdInternal::MessageHandlerTraits<Class, MessageType>::IsConst(Method)) == sizeof(wdCompileTimeTrueType))
+#define NS_IS_CONST_MESSAGE_HANDLER(Class, MessageType, Method) \
+  (sizeof(nsInternal::MessageHandlerTraits<Class, MessageType>::IsConst(Method)) == sizeof(nsCompileTimeTrueType))

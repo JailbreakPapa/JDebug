@@ -2,32 +2,35 @@
 
 #include <Foundation/Logging/ETWWriter.h>
 
-#if WD_ENABLED(WD_PLATFORM_WINDOWS)
-#  include <Foundation/Basics/Platform/Win/IncludeWindows.h>
-#  include <Foundation/Logging/Implementation/Win/ETWProvider_win.h>
+#if NS_ENABLED(NS_PLATFORM_WINDOWS) || (NS_ENABLED(NS_PLATFORM_LINUX) && defined(BUILDSYSTEM_ENABLE_TRACELOGGING_LTTNG_SUPPORT))
 
-void wdLogWriter::ETW::LogMessageHandler(const wdLoggingEventData& eventData)
+#  if NS_ENABLED(NS_PLATFORM_WINDOWS)
+#    include <Foundation/Basics/Platform/Win/IncludeWindows.h>
+#    include <Foundation/Platform/Win/ETWProvider_Win.h>
+#  else
+#    include <Foundation/Platform/Linux/ETWProvider_Linux.h>
+#  endif
+
+void nsLogWriter::ETW::LogMessageHandler(const nsLoggingEventData& eventData)
 {
-  if (eventData.m_EventType == wdLogMsgType::Flush)
+  if (eventData.m_EventType == nsLogMsgType::Flush)
     return;
 
-  wdETWProvider::GetInstance().LogMessge(eventData.m_EventType, eventData.m_uiIndentation, eventData.m_sText);
+  nsETWProvider::GetInstance().LogMessage(eventData.m_EventType, eventData.m_uiIndentation, eventData.m_sText);
 }
 
-void wdLogWriter::ETW::LogMessage(wdLogMsgType::Enum eventType, wdUInt8 uiIndentation, wdStringView sText)
+void nsLogWriter::ETW::LogMessage(nsLogMsgType::Enum eventType, nsUInt8 uiIndentation, nsStringView sText)
 {
-  if (eventType == wdLogMsgType::Flush)
+  if (eventType == nsLogMsgType::Flush)
     return;
 
-  wdETWProvider::GetInstance().LogMessge(eventType, uiIndentation, sText);
+  nsETWProvider::GetInstance().LogMessage(eventType, uiIndentation, sText);
 }
 
 #else
 
-void wdLogWriter::ETW::LogMessageHandler(const wdLoggingEventData& eventData) {}
+void nsLogWriter::ETW::LogMessageHandler(const nsLoggingEventData& eventData) {}
 
-void wdLogWriter::ETW::LogMessage(wdLogMsgType::Enum eventType, wdUInt8 uiIndentation, wdStringView sText) {}
+void nsLogWriter::ETW::LogMessage(nsLogMsgType::Enum eventType, nsUInt8 uiIndentation, nsStringView sText) {}
 
 #endif
-
-WD_STATICLINK_FILE(Foundation, Foundation_Logging_Implementation_ETWWriter);

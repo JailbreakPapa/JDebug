@@ -3,80 +3,77 @@
 #include <Foundation/Math/Mat4.h>
 
 template <typename Type>
-WD_FORCE_INLINE wdPlaneTemplate<Type>::wdPlaneTemplate()
+NS_FORCE_INLINE nsPlaneTemplate<Type>::nsPlaneTemplate()
 {
-#if WD_ENABLED(WD_COMPILE_FOR_DEBUG)
+#if NS_ENABLED(NS_MATH_CHECK_FOR_NAN)
   // Initialize all data to NaN in debug mode to find problems with uninitialized data easier.
-  const Type TypeNaN = wdMath::NaN<Type>();
+  const Type TypeNaN = nsMath::NaN<Type>();
   m_vNormal.Set(TypeNaN);
   m_fNegDistance = TypeNaN;
 #endif
 }
 
 template <typename Type>
-wdPlaneTemplate<Type>::wdPlaneTemplate(const wdVec3Template<Type>& vNormal, const wdVec3Template<Type>& vPointOnPlane)
+nsPlaneTemplate<Type> nsPlaneTemplate<Type>::MakeInvalid()
 {
-  SetFromNormalAndPoint(vNormal, vPointOnPlane);
+  nsPlaneTemplate<Type> res;
+  res.m_vNormal.Set(0);
+  res.m_fNegDistance = 0;
+  return res;
 }
 
 template <typename Type>
-wdPlaneTemplate<Type>::wdPlaneTemplate(const wdVec3Template<Type>& v1, const wdVec3Template<Type>& v2, const wdVec3Template<Type>& v3)
+nsPlaneTemplate<Type> nsPlaneTemplate<Type>::MakeFromNormalAndPoint(const nsVec3Template<Type>& vNormal, const nsVec3Template<Type>& vPointOnPlane)
 {
-  SetFromPoints(v1, v2, v3).IgnoreResult();
+  NS_ASSERT_DEV(vNormal.IsNormalized(), "Normal must be normalized.");
+
+  nsPlaneTemplate<Type> res;
+  res.m_vNormal = vNormal;
+  res.m_fNegDistance = -vNormal.Dot(vPointOnPlane);
+  return res;
 }
 
 template <typename Type>
-wdPlaneTemplate<Type>::wdPlaneTemplate(const wdVec3Template<Type>* const pVertices)
+nsPlaneTemplate<Type> nsPlaneTemplate<Type>::MakeFromPoints(const nsVec3Template<Type>& v1, const nsVec3Template<Type>& v2, const nsVec3Template<Type>& v3)
 {
-  SetFromPoints(pVertices).IgnoreResult();
+  nsPlaneTemplate<Type> res;
+  NS_VERIFY(res.m_vNormal.CalculateNormal(v1, v2, v3).Succeeded(), "The 3 provided points do not form a plane");
+
+  res.m_fNegDistance = -res.m_vNormal.Dot(v1);
+  return res;
 }
 
 template <typename Type>
-wdPlaneTemplate<Type>::wdPlaneTemplate(const wdVec3Template<Type>* const pVertices, wdUInt32 uiMaxVertices)
+nsVec4Template<Type> nsPlaneTemplate<Type>::GetAsVec4() const
 {
-  SetFromPoints(pVertices, uiMaxVertices).IgnoreResult();
+  return nsVec4(m_vNormal.x, m_vNormal.y, m_vNormal.z, m_fNegDistance);
 }
 
 template <typename Type>
-wdVec4Template<Type> wdPlaneTemplate<Type>::GetAsVec4() const
+nsResult nsPlaneTemplate<Type>::SetFromPoints(const nsVec3Template<Type>& v1, const nsVec3Template<Type>& v2, const nsVec3Template<Type>& v3)
 {
-  return wdVec4(m_vNormal.x, m_vNormal.y, m_vNormal.z, m_fNegDistance);
-}
-
-template <typename Type>
-void wdPlaneTemplate<Type>::SetFromNormalAndPoint(const wdVec3Template<Type>& vNormal, const wdVec3Template<Type>& vPointOnPlane)
-{
-  WD_ASSERT_DEBUG(vNormal.IsNormalized(), "Normal must be normalized.");
-
-  m_vNormal = vNormal;
-  m_fNegDistance = -m_vNormal.Dot(vPointOnPlane);
-}
-
-template <typename Type>
-wdResult wdPlaneTemplate<Type>::SetFromPoints(const wdVec3Template<Type>& v1, const wdVec3Template<Type>& v2, const wdVec3Template<Type>& v3)
-{
-  if (m_vNormal.CalculateNormal(v1, v2, v3) == WD_FAILURE)
-    return WD_FAILURE;
+  if (m_vNormal.CalculateNormal(v1, v2, v3) == NS_FAILURE)
+    return NS_FAILURE;
 
   m_fNegDistance = -m_vNormal.Dot(v1);
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
 template <typename Type>
-wdResult wdPlaneTemplate<Type>::SetFromPoints(const wdVec3Template<Type>* const pVertices)
+nsResult nsPlaneTemplate<Type>::SetFromPoints(const nsVec3Template<Type>* const pVertices)
 {
-  if (m_vNormal.CalculateNormal(pVertices[0], pVertices[1], pVertices[2]) == WD_FAILURE)
-    return WD_FAILURE;
+  if (m_vNormal.CalculateNormal(pVertices[0], pVertices[1], pVertices[2]) == NS_FAILURE)
+    return NS_FAILURE;
 
   m_fNegDistance = -m_vNormal.Dot(pVertices[0]);
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
 template <typename Type>
-wdResult wdPlaneTemplate<Type>::SetFromDirections(const wdVec3Template<Type>& vTangent1, const wdVec3Template<Type>& vTangent2, const wdVec3Template<Type>& vPointOnPlane)
+nsResult nsPlaneTemplate<Type>::SetFromDirections(const nsVec3Template<Type>& vTangent1, const nsVec3Template<Type>& vTangent2, const nsVec3Template<Type>& vPointOnPlane)
 {
-  wdVec3Template<Type> vNormal = vTangent1.CrossRH(vTangent2);
-  wdResult res = vNormal.NormalizeIfNotZero();
+  nsVec3Template<Type> vNormal = vTangent1.CrossRH(vTangent2);
+  nsResult res = vNormal.NormalizeIfNotZero();
 
   m_vNormal = vNormal;
   m_fNegDistance = -vNormal.Dot(vPointOnPlane);
@@ -84,126 +81,136 @@ wdResult wdPlaneTemplate<Type>::SetFromDirections(const wdVec3Template<Type>& vT
 }
 
 template <typename Type>
-void wdPlaneTemplate<Type>::Transform(const wdMat3Template<Type>& m)
+void nsPlaneTemplate<Type>::Transform(const nsMat3Template<Type>& m)
 {
-  wdVec3Template<Type> vPointOnPlane = m_vNormal * -m_fNegDistance;
+  nsVec3Template<Type> vPointOnPlane = m_vNormal * -m_fNegDistance;
 
-  // rotate the normal, translate the point
-  wdVec3Template<Type> vTransformedNormal = m.TransformDirection(m_vNormal);
+  // Transform the normal
+  nsVec3Template<Type> vTransformedNormal = m.TransformDirection(m_vNormal);
+
+  // Normalize the normal vector
+  const bool normalizeSucceeded = vTransformedNormal.NormalizeIfNotZero().Succeeded();
+  NS_ASSERT_DEBUG(normalizeSucceeded, "");
+  NS_IGNORE_UNUSED(normalizeSucceeded);
 
   // If the plane's distance is already infinite, there won't be any meaningful change
   // to it as a result of the transformation.
-  if (!wdMath::IsFinite(m_fNegDistance))
+  if (!nsMath::IsFinite(m_fNegDistance))
   {
     m_vNormal = vTransformedNormal;
   }
   else
   {
-    SetFromNormalAndPoint(vTransformedNormal, m * vPointOnPlane);
-  } 
+    *this = nsPlane::MakeFromNormalAndPoint(vTransformedNormal, m * vPointOnPlane);
+  }
 }
 
 template <typename Type>
-void wdPlaneTemplate<Type>::Transform(const wdMat4Template<Type>& m)
+void nsPlaneTemplate<Type>::Transform(const nsMat4Template<Type>& m)
 {
-  wdVec3Template<Type> vPointOnPlane = m_vNormal * -m_fNegDistance;
+  nsVec3Template<Type> vPointOnPlane = m_vNormal * -m_fNegDistance;
 
-  // rotate the normal, translate the point
-  wdVec3Template<Type> vTransformedNormal = m.TransformDirection(m_vNormal);
+  // Transform the normal
+  nsVec3Template<Type> vTransformedNormal = m.TransformDirection(m_vNormal);
+
+  // Normalize the normal vector
+  const bool normalizeSucceeded = vTransformedNormal.NormalizeIfNotZero().Succeeded();
+  NS_ASSERT_DEBUG(normalizeSucceeded, "");
+  NS_IGNORE_UNUSED(normalizeSucceeded);
 
   // If the plane's distance is already infinite, there won't be any meaningful change
   // to it as a result of the transformation.
-  if (!wdMath::IsFinite(m_fNegDistance))
+  if (!nsMath::IsFinite(m_fNegDistance))
   {
     m_vNormal = vTransformedNormal;
   }
   else
   {
-    SetFromNormalAndPoint(vTransformedNormal, m * vPointOnPlane);
+    *this = nsPlane::MakeFromNormalAndPoint(vTransformedNormal, m * vPointOnPlane);
   }
 }
 
 template <typename Type>
-WD_FORCE_INLINE void wdPlaneTemplate<Type>::Flip()
+NS_FORCE_INLINE void nsPlaneTemplate<Type>::Flip()
 {
   m_fNegDistance = -m_fNegDistance;
   m_vNormal = -m_vNormal;
 }
 
 template <typename Type>
-WD_FORCE_INLINE Type wdPlaneTemplate<Type>::GetDistanceTo(const wdVec3Template<Type>& vPoint) const
+NS_FORCE_INLINE Type nsPlaneTemplate<Type>::GetDistanceTo(const nsVec3Template<Type>& vPoint) const
 {
   return (m_vNormal.Dot(vPoint) + m_fNegDistance);
 }
 
 template <typename Type>
-WD_FORCE_INLINE wdPositionOnPlane::Enum wdPlaneTemplate<Type>::GetPointPosition(const wdVec3Template<Type>& vPoint) const
+NS_FORCE_INLINE nsPositionOnPlane::Enum nsPlaneTemplate<Type>::GetPointPosition(const nsVec3Template<Type>& vPoint) const
 {
-  return (m_vNormal.Dot(vPoint) < -m_fNegDistance ? wdPositionOnPlane::Back : wdPositionOnPlane::Front);
+  return (m_vNormal.Dot(vPoint) < -m_fNegDistance ? nsPositionOnPlane::Back : nsPositionOnPlane::Front);
 }
 
 template <typename Type>
-wdPositionOnPlane::Enum wdPlaneTemplate<Type>::GetPointPosition(const wdVec3Template<Type>& vPoint, Type fPlaneHalfWidth) const
+nsPositionOnPlane::Enum nsPlaneTemplate<Type>::GetPointPosition(const nsVec3Template<Type>& vPoint, Type fPlaneHalfWidth) const
 {
   const Type f = m_vNormal.Dot(vPoint);
 
   if (f + fPlaneHalfWidth < -m_fNegDistance)
-    return wdPositionOnPlane::Back;
+    return nsPositionOnPlane::Back;
 
   if (f - fPlaneHalfWidth > -m_fNegDistance)
-    return wdPositionOnPlane::Front;
+    return nsPositionOnPlane::Front;
 
-  return wdPositionOnPlane::OnPlane;
+  return nsPositionOnPlane::OnPlane;
 }
 
 template <typename Type>
-WD_FORCE_INLINE const wdVec3Template<Type> wdPlaneTemplate<Type>::ProjectOntoPlane(const wdVec3Template<Type>& vPoint) const
+NS_FORCE_INLINE const nsVec3Template<Type> nsPlaneTemplate<Type>::ProjectOntoPlane(const nsVec3Template<Type>& vPoint) const
 {
   return vPoint - m_vNormal * (m_vNormal.Dot(vPoint) + m_fNegDistance);
 }
 
 template <typename Type>
-WD_FORCE_INLINE const wdVec3Template<Type> wdPlaneTemplate<Type>::Mirror(const wdVec3Template<Type>& vPoint) const
+NS_FORCE_INLINE const nsVec3Template<Type> nsPlaneTemplate<Type>::Mirror(const nsVec3Template<Type>& vPoint) const
 {
   return vPoint - (Type)2 * GetDistanceTo(vPoint) * m_vNormal;
 }
 
 template <typename Type>
-const wdVec3Template<Type> wdPlaneTemplate<Type>::GetCoplanarDirection(const wdVec3Template<Type>& vDirection) const
+const nsVec3Template<Type> nsPlaneTemplate<Type>::GetCoplanarDirection(const nsVec3Template<Type>& vDirection) const
 {
-  wdVec3Template<Type> res = vDirection;
+  nsVec3Template<Type> res = vDirection;
   res.MakeOrthogonalTo(m_vNormal);
   return res;
 }
 
 template <typename Type>
-bool wdPlaneTemplate<Type>::IsIdentical(const wdPlaneTemplate& rhs) const
+bool nsPlaneTemplate<Type>::IsIdentical(const nsPlaneTemplate& rhs) const
 {
   return m_vNormal.IsIdentical(rhs.m_vNormal) && m_fNegDistance == rhs.m_fNegDistance;
 }
 
 template <typename Type>
-bool wdPlaneTemplate<Type>::IsEqual(const wdPlaneTemplate& rhs, Type fEpsilon) const
+bool nsPlaneTemplate<Type>::IsEqual(const nsPlaneTemplate& rhs, Type fEpsilon) const
 {
-  return m_vNormal.IsEqual(rhs.m_vNormal, fEpsilon) && wdMath::IsEqual(m_fNegDistance, rhs.m_fNegDistance, fEpsilon);
+  return m_vNormal.IsEqual(rhs.m_vNormal, fEpsilon) && nsMath::IsEqual(m_fNegDistance, rhs.m_fNegDistance, fEpsilon);
 }
 
 template <typename Type>
-WD_ALWAYS_INLINE bool operator==(const wdPlaneTemplate<Type>& lhs, const wdPlaneTemplate<Type>& rhs)
+NS_ALWAYS_INLINE bool operator==(const nsPlaneTemplate<Type>& lhs, const nsPlaneTemplate<Type>& rhs)
 {
   return lhs.IsIdentical(rhs);
 }
 
 template <typename Type>
-WD_ALWAYS_INLINE bool operator!=(const wdPlaneTemplate<Type>& lhs, const wdPlaneTemplate<Type>& rhs)
+NS_ALWAYS_INLINE bool operator!=(const nsPlaneTemplate<Type>& lhs, const nsPlaneTemplate<Type>& rhs)
 {
   return !lhs.IsIdentical(rhs);
 }
 
 template <typename Type>
-bool wdPlaneTemplate<Type>::FlipIfNecessary(const wdVec3Template<Type>& vPoint, bool bPlaneShouldFacePoint)
+bool nsPlaneTemplate<Type>::FlipIfNecessary(const nsVec3Template<Type>& vPoint, bool bPlaneShouldFacePoint)
 {
-  if ((GetPointPosition(vPoint) == wdPositionOnPlane::Front) != bPlaneShouldFacePoint)
+  if ((GetPointPosition(vPoint) == nsPositionOnPlane::Front) != bPlaneShouldFacePoint)
   {
     Flip();
     return true;
@@ -213,52 +220,45 @@ bool wdPlaneTemplate<Type>::FlipIfNecessary(const wdVec3Template<Type>& vPoint, 
 }
 
 template <typename Type>
-void wdPlaneTemplate<Type>::SetInvalid()
+bool nsPlaneTemplate<Type>::IsValid() const
 {
-  m_vNormal.Set(0);
-  m_fNegDistance = 0;
+  return !IsNaN() && m_vNormal.IsNormalized(nsMath::DefaultEpsilon<Type>());
 }
 
 template <typename Type>
-bool wdPlaneTemplate<Type>::IsValid() const
+bool nsPlaneTemplate<Type>::IsNaN() const
 {
-  return !IsNaN() && m_vNormal.IsNormalized(wdMath::DefaultEpsilon<Type>());
+  return nsMath::IsNaN(m_fNegDistance) || m_vNormal.IsNaN();
 }
 
 template <typename Type>
-bool wdPlaneTemplate<Type>::IsNaN() const
+bool nsPlaneTemplate<Type>::IsFinite() const
 {
-  return wdMath::IsNaN(m_fNegDistance) || m_vNormal.IsNaN();
-}
-
-template <typename Type>
-bool wdPlaneTemplate<Type>::IsFinite() const
-{
-  return m_vNormal.IsValid() && wdMath::IsFinite(m_fNegDistance);
+  return m_vNormal.IsValid() && nsMath::IsFinite(m_fNegDistance);
 }
 
 /*! The given vertices can be partially equal or lie on the same line. The algorithm will try to find 3 vertices, that
   form a plane, and deduce the normal from them. This algorithm is much slower, than all the other methods, so only
   use it, when you know, that your data can contain such configurations. */
 template <typename Type>
-wdResult wdPlaneTemplate<Type>::SetFromPoints(const wdVec3Template<Type>* const pVertices, wdUInt32 uiMaxVertices)
+nsResult nsPlaneTemplate<Type>::SetFromPoints(const nsVec3Template<Type>* const pVertices, nsUInt32 uiMaxVertices)
 {
-  wdInt32 iPoints[3];
+  nsInt32 iPoints[3];
 
-  if (FindSupportPoints(pVertices, uiMaxVertices, iPoints[0], iPoints[1], iPoints[2]) == WD_FAILURE)
+  if (FindSupportPoints(pVertices, uiMaxVertices, iPoints[0], iPoints[1], iPoints[2]) == NS_FAILURE)
   {
     SetFromPoints(pVertices).IgnoreResult();
-    return WD_FAILURE;
+    return NS_FAILURE;
   }
 
   SetFromPoints(pVertices[iPoints[0]], pVertices[iPoints[1]], pVertices[iPoints[2]]).IgnoreResult();
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
 template <typename Type>
-wdResult wdPlaneTemplate<Type>::FindSupportPoints(const wdVec3Template<Type>* const pVertices, int iMaxVertices, int& out_i1, int& out_i2, int& out_i3)
+nsResult nsPlaneTemplate<Type>::FindSupportPoints(const nsVec3Template<Type>* const pVertices, int iMaxVertices, int& out_i1, int& out_i2, int& out_i3)
 {
-  const wdVec3Template<Type> v1 = pVertices[0];
+  const nsVec3Template<Type> v1 = pVertices[0];
 
   bool bFoundSecond = false;
 
@@ -275,11 +275,11 @@ wdResult wdPlaneTemplate<Type>::FindSupportPoints(const wdVec3Template<Type>* co
   }
 
   if (!bFoundSecond)
-    return WD_FAILURE;
+    return NS_FAILURE;
 
-  const wdVec3Template<Type> v2 = pVertices[i];
+  const nsVec3Template<Type> v2 = pVertices[i];
 
-  const wdVec3Template<Type> vDir1 = (v1 - v2).GetNormalized();
+  const nsVec3Template<Type> vDir1 = (v1 - v2).GetNormalized();
 
   out_i1 = 0;
   out_i2 = i;
@@ -289,36 +289,36 @@ wdResult wdPlaneTemplate<Type>::FindSupportPoints(const wdVec3Template<Type>* co
   while (i < iMaxVertices)
   {
     // check for inequality, then for non-collinearity
-    if ((pVertices[i].IsEqual(v2, 0.001f) == false) && (wdMath::Abs((pVertices[i] - v2).GetNormalized().Dot(vDir1)) < (Type)0.999))
+    if ((pVertices[i].IsEqual(v2, 0.001f) == false) && (nsMath::Abs((pVertices[i] - v2).GetNormalized().Dot(vDir1)) < (Type)0.999))
     {
       out_i3 = i;
-      return WD_SUCCESS;
+      return NS_SUCCESS;
     }
 
     ++i;
   }
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
 template <typename Type>
-wdPositionOnPlane::Enum wdPlaneTemplate<Type>::GetObjectPosition(const wdVec3Template<Type>* const pPoints, wdUInt32 uiVertices) const
+nsPositionOnPlane::Enum nsPlaneTemplate<Type>::GetObjectPosition(const nsVec3Template<Type>* const pPoints, nsUInt32 uiVertices) const
 {
   bool bFront = false;
   bool bBack = false;
 
-  for (wdUInt32 i = 0; i < uiVertices; ++i)
+  for (nsUInt32 i = 0; i < uiVertices; ++i)
   {
     switch (GetPointPosition(pPoints[i]))
     {
-      case wdPositionOnPlane::Front:
+      case nsPositionOnPlane::Front:
         if (bBack)
-          return (wdPositionOnPlane::Spanning);
+          return (nsPositionOnPlane::Spanning);
         bFront = true;
         break;
-      case wdPositionOnPlane::Back:
+      case nsPositionOnPlane::Back:
         if (bFront)
-          return (wdPositionOnPlane::Spanning);
+          return (nsPositionOnPlane::Spanning);
         bBack = true;
         break;
 
@@ -327,27 +327,27 @@ wdPositionOnPlane::Enum wdPlaneTemplate<Type>::GetObjectPosition(const wdVec3Tem
     }
   }
 
-  return (bFront ? wdPositionOnPlane::Front : wdPositionOnPlane::Back);
+  return (bFront ? nsPositionOnPlane::Front : nsPositionOnPlane::Back);
 }
 
 template <typename Type>
-wdPositionOnPlane::Enum wdPlaneTemplate<Type>::GetObjectPosition(const wdVec3Template<Type>* const pPoints, wdUInt32 uiVertices, Type fPlaneHalfWidth) const
+nsPositionOnPlane::Enum nsPlaneTemplate<Type>::GetObjectPosition(const nsVec3Template<Type>* const pPoints, nsUInt32 uiVertices, Type fPlaneHalfWidth) const
 {
   bool bFront = false;
   bool bBack = false;
 
-  for (wdUInt32 i = 0; i < uiVertices; ++i)
+  for (nsUInt32 i = 0; i < uiVertices; ++i)
   {
     switch (GetPointPosition(pPoints[i], fPlaneHalfWidth))
     {
-      case wdPositionOnPlane::Front:
+      case nsPositionOnPlane::Front:
         if (bBack)
-          return (wdPositionOnPlane::Spanning);
+          return (nsPositionOnPlane::Spanning);
         bFront = true;
         break;
-      case wdPositionOnPlane::Back:
+      case nsPositionOnPlane::Back:
         if (bFront)
-          return (wdPositionOnPlane::Spanning);
+          return (nsPositionOnPlane::Spanning);
         bBack = true;
         break;
 
@@ -357,26 +357,26 @@ wdPositionOnPlane::Enum wdPlaneTemplate<Type>::GetObjectPosition(const wdVec3Tem
   }
 
   if (bFront)
-    return (wdPositionOnPlane::Front);
+    return (nsPositionOnPlane::Front);
   if (bBack)
-    return (wdPositionOnPlane::Back);
+    return (nsPositionOnPlane::Back);
 
-  return (wdPositionOnPlane::OnPlane);
+  return (nsPositionOnPlane::OnPlane);
 }
 
 template <typename Type>
-bool wdPlaneTemplate<Type>::GetRayIntersection(const wdVec3Template<Type>& vRayStartPos, const wdVec3Template<Type>& vRayDir, Type* out_pIntersectionDistance, wdVec3Template<Type>* out_pIntersection) const
+bool nsPlaneTemplate<Type>::GetRayIntersection(const nsVec3Template<Type>& vRayStartPos, const nsVec3Template<Type>& vRayDir, Type* out_pIntersectionDistance, nsVec3Template<Type>* out_pIntersection) const
 {
-  WD_ASSERT_DEBUG(vRayStartPos.IsValid(), "Ray start position must be valid.");
-  WD_ASSERT_DEBUG(vRayDir.IsValid(), "Ray direction must be valid.");
+  NS_ASSERT_DEBUG(vRayStartPos.IsValid(), "Ray start position must be valid.");
+  NS_ASSERT_DEBUG(vRayDir.IsValid(), "Ray direction must be valid.");
 
   const Type fPlaneSide = GetDistanceTo(vRayStartPos);
   const Type fCosAlpha = m_vNormal.Dot(vRayDir);
 
-  if (fCosAlpha == 0) // ray is orthogonal to plane
+  if (fCosAlpha == 0)                                      // ray is orthogonal to plane
     return false;
 
-  if (wdMath::Sign(fPlaneSide) == wdMath::Sign(fCosAlpha)) // ray points away from the plane
+  if (nsMath::Sign(fPlaneSide) == nsMath::Sign(fCosAlpha)) // ray points away from the plane
     return false;
 
   const Type fTime = -fPlaneSide / fCosAlpha;
@@ -391,10 +391,10 @@ bool wdPlaneTemplate<Type>::GetRayIntersection(const wdVec3Template<Type>& vRayS
 }
 
 template <typename Type>
-bool wdPlaneTemplate<Type>::GetRayIntersectionBiDirectional(const wdVec3Template<Type>& vRayStartPos, const wdVec3Template<Type>& vRayDir, Type* out_pIntersectionDistance, wdVec3Template<Type>* out_pIntersection) const
+bool nsPlaneTemplate<Type>::GetRayIntersectionBiDirectional(const nsVec3Template<Type>& vRayStartPos, const nsVec3Template<Type>& vRayDir, Type* out_pIntersectionDistance, nsVec3Template<Type>* out_pIntersection) const
 {
-  WD_ASSERT_DEBUG(vRayStartPos.IsValid(), "Ray start position must be valid.");
-  WD_ASSERT_DEBUG(vRayDir.IsValid(), "Ray direction must be valid.");
+  NS_ASSERT_DEBUG(vRayStartPos.IsValid(), "Ray start position must be valid.");
+  NS_ASSERT_DEBUG(vRayDir.IsValid(), "Ray direction must be valid.");
 
   const Type fPlaneSide = GetDistanceTo(vRayStartPos);
   const Type fCosAlpha = m_vNormal.Dot(vRayDir);
@@ -414,7 +414,7 @@ bool wdPlaneTemplate<Type>::GetRayIntersectionBiDirectional(const wdVec3Template
 }
 
 template <typename Type>
-bool wdPlaneTemplate<Type>::GetLineSegmentIntersection(const wdVec3Template<Type>& vLineStartPos, const wdVec3Template<Type>& vLineEndPos, Type* out_pHitFraction, wdVec3Template<Type>* out_pIntersection) const
+bool nsPlaneTemplate<Type>::GetLineSegmentIntersection(const nsVec3Template<Type>& vLineStartPos, const nsVec3Template<Type>& vLineEndPos, Type* out_pHitFraction, nsVec3Template<Type>* out_pIntersection) const
 {
   Type fTime = 0;
 
@@ -428,46 +428,46 @@ bool wdPlaneTemplate<Type>::GetLineSegmentIntersection(const wdVec3Template<Type
 }
 
 template <typename Type>
-Type wdPlaneTemplate<Type>::GetMinimumDistanceTo(const wdVec3Template<Type>* pPoints, wdUInt32 uiNumPoints, wdUInt32 uiStride /* = sizeof (wdVec3Template<Type>) */) const
+Type nsPlaneTemplate<Type>::GetMinimumDistanceTo(const nsVec3Template<Type>* pPoints, nsUInt32 uiNumPoints, nsUInt32 uiStride /* = sizeof (nsVec3Template<Type>) */) const
 {
-  WD_ASSERT_DEBUG(pPoints != nullptr, "Array may not be nullptr.");
-  WD_ASSERT_DEBUG(uiStride >= sizeof(wdVec3Template<Type>), "Stride must be at least sizeof(wdVec3Template) to not have overlapping data.");
-  WD_ASSERT_DEBUG(uiNumPoints >= 1, "Array must contain at least one point.");
+  NS_ASSERT_DEBUG(pPoints != nullptr, "Array may not be nullptr.");
+  NS_ASSERT_DEBUG(uiStride >= sizeof(nsVec3Template<Type>), "Stride must be at least sizeof(nsVec3Template) to not have overlapping data.");
+  NS_ASSERT_DEBUG(uiNumPoints >= 1, "Array must contain at least one point.");
 
-  Type fMinDist = wdMath::MaxValue<Type>();
+  Type fMinDist = nsMath::MaxValue<Type>();
 
-  const wdVec3Template<Type>* pCurPoint = pPoints;
+  const nsVec3Template<Type>* pCurPoint = pPoints;
 
-  for (wdUInt32 i = 0; i < uiNumPoints; ++i)
+  for (nsUInt32 i = 0; i < uiNumPoints; ++i)
   {
-    fMinDist = wdMath::Min(m_vNormal.Dot(*pCurPoint), fMinDist);
+    fMinDist = nsMath::Min(m_vNormal.Dot(*pCurPoint), fMinDist);
 
-    pCurPoint = wdMemoryUtils::AddByteOffset(pCurPoint, uiStride);
+    pCurPoint = nsMemoryUtils::AddByteOffset(pCurPoint, uiStride);
   }
 
   return fMinDist + m_fNegDistance;
 }
 
 template <typename Type>
-void wdPlaneTemplate<Type>::GetMinMaxDistanceTo(Type& out_fMin, Type& out_fMax, const wdVec3Template<Type>* pPoints, wdUInt32 uiNumPoints, wdUInt32 uiStride /* = sizeof (wdVec3Template<Type>) */) const
+void nsPlaneTemplate<Type>::GetMinMaxDistanceTo(Type& out_fMin, Type& out_fMax, const nsVec3Template<Type>* pPoints, nsUInt32 uiNumPoints, nsUInt32 uiStride /* = sizeof (nsVec3Template<Type>) */) const
 {
-  WD_ASSERT_DEBUG(pPoints != nullptr, "Array may not be nullptr.");
-  WD_ASSERT_DEBUG(uiStride >= sizeof(wdVec3Template<Type>), "Stride must be at least sizeof(wdVec3Template) to not have overlapping data.");
-  WD_ASSERT_DEBUG(uiNumPoints >= 1, "Array must contain at least one point.");
+  NS_ASSERT_DEBUG(pPoints != nullptr, "Array may not be nullptr.");
+  NS_ASSERT_DEBUG(uiStride >= sizeof(nsVec3Template<Type>), "Stride must be at least sizeof(nsVec3Template) to not have overlapping data.");
+  NS_ASSERT_DEBUG(uiNumPoints >= 1, "Array must contain at least one point.");
 
-  out_fMin = wdMath::MaxValue<Type>();
-  out_fMax = -wdMath::MaxValue<Type>();
+  out_fMin = nsMath::MaxValue<Type>();
+  out_fMax = -nsMath::MaxValue<Type>();
 
-  const wdVec3Template<Type>* pCurPoint = pPoints;
+  const nsVec3Template<Type>* pCurPoint = pPoints;
 
-  for (wdUInt32 i = 0; i < uiNumPoints; ++i)
+  for (nsUInt32 i = 0; i < uiNumPoints; ++i)
   {
     const Type f = m_vNormal.Dot(*pCurPoint);
 
-    out_fMin = wdMath::Min(f, out_fMin);
-    out_fMax = wdMath::Max(f, out_fMax);
+    out_fMin = nsMath::Min(f, out_fMin);
+    out_fMax = nsMath::Max(f, out_fMax);
 
-    pCurPoint = wdMemoryUtils::AddByteOffset(pCurPoint, uiStride);
+    pCurPoint = nsMemoryUtils::AddByteOffset(pCurPoint, uiStride);
   }
 
   out_fMin += m_fNegDistance;
@@ -475,20 +475,20 @@ void wdPlaneTemplate<Type>::GetMinMaxDistanceTo(Type& out_fMin, Type& out_fMax, 
 }
 
 template <typename Type>
-wdResult wdPlaneTemplate<Type>::GetPlanesIntersectionPoint(const wdPlaneTemplate& p0, const wdPlaneTemplate& p1, const wdPlaneTemplate& p2, wdVec3Template<Type>& out_vResult)
+nsResult nsPlaneTemplate<Type>::GetPlanesIntersectionPoint(const nsPlaneTemplate& p0, const nsPlaneTemplate& p1, const nsPlaneTemplate& p2, nsVec3Template<Type>& out_vResult)
 {
-  const wdVec3Template<Type> n1(p0.m_vNormal);
-  const wdVec3Template<Type> n2(p1.m_vNormal);
-  const wdVec3Template<Type> n3(p2.m_vNormal);
+  const nsVec3Template<Type> n1(p0.m_vNormal);
+  const nsVec3Template<Type> n2(p1.m_vNormal);
+  const nsVec3Template<Type> n3(p2.m_vNormal);
 
   const Type det = n1.Dot(n2.CrossRH(n3));
 
-  if (wdMath::IsZero<Type>(det, wdMath::LargeEpsilon<Type>()))
-    return WD_FAILURE;
+  if (nsMath::IsZero<Type>(det, nsMath::LargeEpsilon<Type>()))
+    return NS_FAILURE;
 
   out_vResult = (-p0.m_fNegDistance * n2.CrossRH(n3) + -p1.m_fNegDistance * n3.CrossRH(n1) + -p2.m_fNegDistance * n1.CrossRH(n2)) / det;
 
-  return WD_SUCCESS;
+  return NS_SUCCESS;
 }
 
 #include <Foundation/Math/Implementation/AllClasses_inl.h>

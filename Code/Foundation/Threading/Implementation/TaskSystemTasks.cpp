@@ -7,31 +7,34 @@
 #include <Foundation/Threading/Lock.h>
 #include <Foundation/Threading/TaskSystem.h>
 
-wdTaskGroupID wdTaskSystem::StartSingleTask(const wdSharedPtr<wdTask>& pTask, wdTaskPriority::Enum priority, wdTaskGroupID dependency,
-  wdOnTaskGroupFinishedCallback callback /*= wdOnTaskGroupFinishedCallback()*/)
+nsTaskGroupID nsTaskSystem::StartSingleTask(const nsSharedPtr<nsTask>& pTask, nsTaskPriority::Enum priority, nsTaskGroupID dependency,
+  nsOnTaskGroupFinishedCallback callback /*= nsOnTaskGroupFinishedCallback()*/)
 {
-  wdTaskGroupID Group = CreateTaskGroup(priority, callback);
+  nsTaskGroupID Group = CreateTaskGroup(priority, callback);
   AddTaskGroupDependency(Group, dependency);
   AddTaskToGroup(Group, pTask);
   StartTaskGroup(Group);
   return Group;
 }
 
-wdTaskGroupID wdTaskSystem::StartSingleTask(
-  const wdSharedPtr<wdTask>& pTask, wdTaskPriority::Enum priority, wdOnTaskGroupFinishedCallback callback /*= wdOnTaskGroupFinishedCallback()*/)
+nsTaskGroupID nsTaskSystem::StartSingleTask(
+  const nsSharedPtr<nsTask>& pTask, nsTaskPriority::Enum priority, nsOnTaskGroupFinishedCallback callback /*= nsOnTaskGroupFinishedCallback()*/)
 {
-  wdTaskGroupID Group = CreateTaskGroup(priority, callback);
+  nsTaskGroupID Group = CreateTaskGroup(priority, callback);
   AddTaskToGroup(Group, pTask);
   StartTaskGroup(Group);
   return Group;
 }
 
-void wdTaskSystem::TaskHasFinished(wdSharedPtr<wdTask>&& pTask, wdTaskGroup* pGroup)
+void nsTaskSystem::TaskHasFinished(nsSharedPtr<nsTask>&& pTask, nsTaskGroup* pGroup)
 {
   // call task finished callback and deallocate the task (if last reference)
-  if (pTask && pTask->m_OnTaskFinished.IsValid() && pTask->m_iRemainingRuns == 0)
+  if (pTask && pTask->m_iRemainingRuns == 0)
   {
-    pTask->m_OnTaskFinished(pTask);
+    if (pTask->m_OnTaskFinished.IsValid())
+    {
+      pTask->m_OnTaskFinished(pTask);
+    }
 
     // make sure to clear the task sharedptr BEFORE we mark the task (group) as finished,
     // so that if this is the last reference, the task gets deallocated first
@@ -42,12 +45,12 @@ void wdTaskSystem::TaskHasFinished(wdSharedPtr<wdTask>&& pTask, wdTaskGroup* pGr
   {
     // If this was the last task that had to be finished from this group, make sure all dependent groups are started
 
-    wdUInt32 groupCounter = 0;
+    nsUInt32 groupCounter = 0;
     {
-      // see wdTaskGroup::WaitForFinish() for why we need this lock here
+      // see nsTaskGroup::WaitForFinish() for why we need this lock here
       // without it, there would be a race condition between these two places, reading and writing m_uiGroupCounter and waiting/signaling
       // m_CondVarGroupFinished
-      WD_LOCK(pGroup->m_CondVarGroupFinished);
+      NS_LOCK(pGroup->m_CondVarGroupFinished);
 
       groupCounter = pGroup->m_uiGroupCounter;
 
@@ -55,24 +58,24 @@ void wdTaskSystem::TaskHasFinished(wdSharedPtr<wdTask>&& pTask, wdTaskGroup* pGr
       pGroup->m_uiGroupCounter += 2;
     }
 
-    // wake up all threads that are waiting for this group
-    pGroup->m_CondVarGroupFinished.SignalAll();
-
     {
-      WD_LOCK(s_TaskSystemMutex);
-
-      for (wdUInt32 dep = 0; dep < pGroup->m_OthersDependingOnMe.GetCount(); ++dep)
-      {
-        DependencyHasFinished(pGroup->m_OthersDependingOnMe[dep].m_pTaskGroup);
-      }
+      NS_LOCK(s_TaskSystemMutex);
 
       // unless an outside reference is held onto a task, this will deallocate the tasks
       pGroup->m_Tasks.Clear();
+
+      for (nsUInt32 dep = 0; dep < pGroup->m_OthersDependingOnMe.GetCount(); ++dep)
+      {
+        DependencyHasFinished(pGroup->m_OthersDependingOnMe[dep].m_pTaskGroup);
+      }
     }
+
+    // wake up all threads that are waiting for this group
+    pGroup->m_CondVarGroupFinished.SignalAll();
 
     if (pGroup->m_OnFinishedCallback.IsValid())
     {
-      wdTaskGroupID id;
+      nsTaskGroupID id;
       id.m_pTaskGroup = pGroup;
       id.m_uiGroupCounter = groupCounter;
       pGroup->m_OnFinishedCallback(id);
@@ -83,22 +86,22 @@ void wdTaskSystem::TaskHasFinished(wdSharedPtr<wdTask>&& pTask, wdTaskGroup* pGr
   }
 }
 
-wdTaskSystem::TaskData wdTaskSystem::GetNextTask(wdTaskPriority::Enum FirstPriority, wdTaskPriority::Enum LastPriority, bool bOnlyTasksThatNeverWait,
-  const wdTaskGroupID& WaitingForGroup, wdAtomicInteger32* pWorkerState)
+nsTaskSystem::TaskData nsTaskSystem::GetNextTask(nsTaskPriority::Enum FirstPriority, nsTaskPriority::Enum LastPriority, bool bOnlyTasksThatNeverWait,
+  const nsTaskGroupID& WaitingForGroup, nsAtomicInteger32* pWorkerState)
 {
   // this is the central function that selects tasks for the worker threads to work on
 
-  WD_ASSERT_DEV(FirstPriority >= wdTaskPriority::EarlyThisFrame && LastPriority < wdTaskPriority::ENUM_COUNT, "Priority Range is invalid: {0} to {1}",
+  NS_ASSERT_DEV(FirstPriority >= nsTaskPriority::EarlyThisFrame && LastPriority < nsTaskPriority::ENUM_COUNT, "Priority Range is invalid: {0} to {1}",
     FirstPriority, LastPriority);
 
-  WD_LOCK(s_TaskSystemMutex);
+  NS_LOCK(s_TaskSystemMutex);
 
   // go through all the task lists that this thread is willing to work on
-  for (wdUInt32 prio = FirstPriority; prio <= (wdUInt32)LastPriority; ++prio)
+  for (nsUInt32 prio = FirstPriority; prio <= (nsUInt32)LastPriority; ++prio)
   {
     for (auto it = s_pState->m_Tasks[prio].GetIterator(); it.IsValid(); ++it)
     {
-      if (!bOnlyTasksThatNeverWait || (it->m_pTask->m_NestingMode == wdTaskNesting::Never) || it->m_pBelongsToGroup == WaitingForGroup.m_pTaskGroup)
+      if (!bOnlyTasksThatNeverWait || (it->m_pTask->m_NestingMode == nsTaskNesting::Never) || it->m_pBelongsToGroup == WaitingForGroup.m_pTaskGroup)
       {
         TaskData td = *it;
 
@@ -110,29 +113,29 @@ wdTaskSystem::TaskData wdTaskSystem::GetNextTask(wdTaskPriority::Enum FirstPrior
 
   if (pWorkerState)
   {
-    WD_VERIFY(pWorkerState->Set((int)wdTaskWorkerState::Idle) == (int)wdTaskWorkerState::Active, "Corrupt Worker State");
+    NS_VERIFY(pWorkerState->Set((int)nsTaskWorkerState::Idle) == (int)nsTaskWorkerState::Active, "Corrupt Worker State");
   }
 
   return TaskData();
 }
 
-bool wdTaskSystem::ExecuteTask(wdTaskPriority::Enum FirstPriority, wdTaskPriority::Enum LastPriority, bool bOnlyTasksThatNeverWait,
-  const wdTaskGroupID& WaitingForGroup, wdAtomicInteger32* pWorkerState)
+bool nsTaskSystem::ExecuteTask(nsTaskPriority::Enum FirstPriority, nsTaskPriority::Enum LastPriority, bool bOnlyTasksThatNeverWait,
+  const nsTaskGroupID& WaitingForGroup, nsAtomicInteger32* pWorkerState)
 {
-  // const wdWorkerThreadType::Enum workerType = (tl_TaskWorkerInfo.m_WorkerType == wdWorkerThreadType::Unknown) ? wdWorkerThreadType::ShortTasks :
+  // const nsWorkerThreadType::Enum workerType = (tl_TaskWorkerInfo.m_WorkerType == nsWorkerThreadType::Unknown) ? nsWorkerThreadType::ShortTasks :
   // tl_TaskWorkerInfo.m_WorkerType;
 
-  wdTaskSystem::TaskData td = GetNextTask(FirstPriority, LastPriority, bOnlyTasksThatNeverWait, WaitingForGroup, pWorkerState);
+  nsTaskSystem::TaskData td = GetNextTask(FirstPriority, LastPriority, bOnlyTasksThatNeverWait, WaitingForGroup, pWorkerState);
 
   if (td.m_pTask == nullptr)
     return false;
 
-  if (bOnlyTasksThatNeverWait && td.m_pTask->m_NestingMode != wdTaskNesting::Never)
+  if (bOnlyTasksThatNeverWait && td.m_pTask->m_NestingMode != nsTaskNesting::Never)
   {
-    WD_ASSERT_DEV(td.m_pBelongsToGroup == WaitingForGroup.m_pTaskGroup, "");
+    NS_ASSERT_DEV(td.m_pBelongsToGroup == WaitingForGroup.m_pTaskGroup, "");
   }
 
-  tl_TaskWorkerInfo.m_bAllowNestedTasks = td.m_pTask->m_NestingMode != wdTaskNesting::Never;
+  tl_TaskWorkerInfo.m_bAllowNestedTasks = td.m_pTask->m_NestingMode != nsTaskNesting::Never;
   tl_TaskWorkerInfo.m_szTaskName = td.m_pTask->m_sTaskName;
   td.m_pTask->Run(td.m_uiInvocation);
   tl_TaskWorkerInfo.m_bAllowNestedTasks = true;
@@ -145,35 +148,35 @@ bool wdTaskSystem::ExecuteTask(wdTaskPriority::Enum FirstPriority, wdTaskPriorit
 }
 
 
-wdResult wdTaskSystem::CancelTask(const wdSharedPtr<wdTask>& pTask, wdOnTaskRunning::Enum onTaskRunning)
+nsResult nsTaskSystem::CancelTask(const nsSharedPtr<nsTask>& pTask, nsOnTaskRunning::Enum onTaskRunning)
 {
   if (pTask->IsTaskFinished())
-    return WD_SUCCESS;
+    return NS_SUCCESS;
 
   // pTask may actually finish between here and the lock below
   // in that case we will return failure, as in we had to 'wait' for a task,
   // but it will be handled correctly
 
-  WD_PROFILE_SCOPE("CancelTask");
+  NS_PROFILE_SCOPE("CancelTask");
 
   // we set the cancel flag, to make sure that tasks that support canceling will terminate asap
   pTask->m_bCancelExecution = true;
 
   {
-    WD_LOCK(s_TaskSystemMutex);
+    NS_LOCK(s_TaskSystemMutex);
 
     // if the task is still in the queue of its group, it had not yet been scheduled
     if (!pTask->m_bTaskIsScheduled && pTask->m_BelongsToGroup.m_pTaskGroup->m_Tasks.RemoveAndSwap(pTask))
     {
       // we set the task to finished, even though it was not executed
       pTask->m_iRemainingRuns = 0;
-      return WD_SUCCESS;
+      return NS_SUCCESS;
     }
 
     // check if the task has already been scheduled for execution
     // if so, remove it from the work queue
     {
-      for (wdUInt32 i = 0; i < wdTaskPriority::ENUM_COUNT; ++i)
+      for (nsUInt32 i = 0; i < nsTaskPriority::ENUM_COUNT; ++i)
       {
         auto it = s_pState->m_Tasks[i].GetIterator();
 
@@ -181,14 +184,14 @@ wdResult wdTaskSystem::CancelTask(const wdSharedPtr<wdTask>& pTask, wdOnTaskRunn
         {
           if (it->m_pTask == pTask)
           {
-            s_pState->m_Tasks[i].Remove(it);
-
             // we set the task to finished, even though it was not executed
             pTask->m_iRemainingRuns = 0;
 
             // tell the system that one task of that group is 'finished', to ensure its dependencies will get scheduled
             TaskHasFinished(std::move(it->m_pTask), it->m_pBelongsToGroup);
-            return WD_SUCCESS;
+
+            s_pState->m_Tasks[i].Remove(it);
+            return NS_SUCCESS;
           }
 
           ++it;
@@ -200,40 +203,40 @@ wdResult wdTaskSystem::CancelTask(const wdSharedPtr<wdTask>& pTask, wdOnTaskRunn
   // if we made it here, the task was already running
   // thus we just wait for it to finish
 
-  if (onTaskRunning == wdOnTaskRunning::WaitTillFinished)
+  if (onTaskRunning == nsOnTaskRunning::WaitTillFinished)
   {
     WaitForCondition([pTask]()
       { return pTask->IsTaskFinished(); });
   }
 
-  return WD_FAILURE;
+  return NS_FAILURE;
 }
 
 
-bool wdTaskSystem::HelpExecutingTasks(const wdTaskGroupID& WaitingForGroup)
+bool nsTaskSystem::HelpExecutingTasks(const nsTaskGroupID& WaitingForGroup)
 {
-  const bool bOnlyTasksThatNeverWait = tl_TaskWorkerInfo.m_WorkerType != wdWorkerThreadType::MainThread;
+  const bool bOnlyTasksThatNeverWait = tl_TaskWorkerInfo.m_WorkerType != nsWorkerThreadType::MainThread;
 
-  wdTaskPriority::Enum FirstPriority;
-  wdTaskPriority::Enum LastPriority;
+  nsTaskPriority::Enum FirstPriority;
+  nsTaskPriority::Enum LastPriority;
   DetermineTasksToExecuteOnThread(FirstPriority, LastPriority);
 
   return ExecuteTask(FirstPriority, LastPriority, bOnlyTasksThatNeverWait, WaitingForGroup, nullptr);
 }
 
-void wdTaskSystem::ReprioritizeFrameTasks()
+void nsTaskSystem::ReprioritizeFrameTasks()
 {
   // There should usually be no 'this frame tasks' left at this time
   // however, while we waited to enter the lock, such tasks might have appeared
   // In this case we move them into the highest-priority 'this frame' queue, to ensure they will be executed asap
-  for (wdUInt32 i = (wdUInt32)wdTaskPriority::ThisFrame; i <= (wdUInt32)wdTaskPriority::LateThisFrame; ++i)
+  for (nsUInt32 i = (nsUInt32)nsTaskPriority::ThisFrame; i <= (nsUInt32)nsTaskPriority::LateThisFrame; ++i)
   {
     auto it = s_pState->m_Tasks[i].GetIterator();
 
     // move all 'this frame' tasks into the 'early this frame' queue
     while (it.IsValid())
     {
-      s_pState->m_Tasks[wdTaskPriority::EarlyThisFrame].PushBack(*it);
+      s_pState->m_Tasks[nsTaskPriority::EarlyThisFrame].PushBack(*it);
 
       ++it;
     }
@@ -242,7 +245,7 @@ void wdTaskSystem::ReprioritizeFrameTasks()
     s_pState->m_Tasks[i].Clear();
   }
 
-  for (wdUInt32 i = (wdUInt32)wdTaskPriority::EarlyNextFrame; i <= (wdUInt32)wdTaskPriority::LateNextFrame; ++i)
+  for (nsUInt32 i = (nsUInt32)nsTaskPriority::EarlyNextFrame; i <= (nsUInt32)nsTaskPriority::LateNextFrame; ++i)
   {
     auto it = s_pState->m_Tasks[i].GetIterator();
 
@@ -258,7 +261,7 @@ void wdTaskSystem::ReprioritizeFrameTasks()
     s_pState->m_Tasks[i].Clear();
   }
 
-  for (wdUInt32 i = (wdUInt32)wdTaskPriority::In2Frames; i <= (wdUInt32)wdTaskPriority::In9Frames; ++i)
+  for (nsUInt32 i = (nsUInt32)nsTaskPriority::In2Frames; i <= (nsUInt32)nsTaskPriority::In9Frames; ++i)
   {
     auto it = s_pState->m_Tasks[i].GetIterator();
 
@@ -276,9 +279,9 @@ void wdTaskSystem::ReprioritizeFrameTasks()
   }
 }
 
-void wdTaskSystem::ExecuteSomeFrameTasks(wdTime smoothFrameTime)
+void nsTaskSystem::ExecuteSomeFrameTasks(nsTime smoothFrameTime)
 {
-  WD_PROFILE_SCOPE("ExecuteSomeFrameTasks");
+  NS_PROFILE_SCOPE("ExecuteSomeFrameTasks");
 
   // 'SomeFrameMainThread' tasks are usually used to upload resources that have been loaded in the background
   // they do not need to be executed right away, but the earlier, the better
@@ -290,31 +293,31 @@ void wdTaskSystem::ExecuteSomeFrameTasks(wdTime smoothFrameTime)
   // however in such instances, the 'frame time threshold' will increase and thus the chance that we skip this entirely becomes lower over
   // time that guarantees some progress, even if the frame rate is constantly low
 
-  static wdTime s_FrameTimeThreshold = smoothFrameTime;
-  static wdTime s_LastExecution; // initializes to zero -> very large frame time difference at first
+  static nsTime s_FrameTimeThreshold = smoothFrameTime;
+  static nsTime s_LastExecution; // initializes to zero -> very large frame time difference at first
 
-  wdTime CurTime = wdTime::Now();
-  wdTime LastTime = s_LastExecution;
+  nsTime CurTime = nsTime::Now();
+  nsTime LastTime = s_LastExecution;
   s_LastExecution = CurTime;
 
   // as long as we have a smooth frame rate, execute as many of these tasks, as possible
   while (CurTime - LastTime < smoothFrameTime)
   {
-    if (!ExecuteTask(wdTaskPriority::SomeFrameMainThread, wdTaskPriority::SomeFrameMainThread, false, wdTaskGroupID(), nullptr))
+    if (!ExecuteTask(nsTaskPriority::SomeFrameMainThread, nsTaskPriority::SomeFrameMainThread, false, nsTaskGroupID(), nullptr))
     {
       // nothing left to do, reset the threshold
       s_FrameTimeThreshold = smoothFrameTime;
       return;
     }
 
-    CurTime = wdTime::Now();
+    CurTime = nsTime::Now();
   }
 
-  wdUInt32 uiNumTasksTodo = 0;
+  nsUInt32 uiNumTasksTodo = 0;
 
   {
-    WD_LOCK(s_TaskSystemMutex);
-    uiNumTasksTodo = s_pState->m_Tasks[wdTaskPriority::SomeFrameMainThread].GetCount();
+    NS_LOCK(s_TaskSystemMutex);
+    uiNumTasksTodo = s_pState->m_Tasks[nsTaskPriority::SomeFrameMainThread].GetCount();
   }
 
   if (uiNumTasksTodo == 0)
@@ -324,7 +327,7 @@ void wdTaskSystem::ExecuteSomeFrameTasks(wdTime smoothFrameTime)
   {
     // don't reset the threshold, from now on we execute at least one task per frame
 
-    ExecuteTask(wdTaskPriority::SomeFrameMainThread, wdTaskPriority::SomeFrameMainThread, false, wdTaskGroupID(), nullptr);
+    ExecuteTask(nsTaskPriority::SomeFrameMainThread, nsTaskPriority::SomeFrameMainThread, false, nsTaskGroupID(), nullptr);
   }
   else
   {
@@ -335,39 +338,39 @@ void wdTaskSystem::ExecuteSomeFrameTasks(wdTime smoothFrameTime)
     // therefore at some point we will start executing these tasks, no matter how low the frame rate is
     //
     // this gives us some buffer to smooth out performance drops
-    s_FrameTimeThreshold += wdTime::Milliseconds(0.2);
+    s_FrameTimeThreshold += nsTime::MakeFromMilliseconds(0.2);
   }
 
   // if the queue is really full, we have to guarantee more progress
   {
     if (uiNumTasksTodo > 100)
-      ExecuteTask(wdTaskPriority::SomeFrameMainThread, wdTaskPriority::SomeFrameMainThread, false, wdTaskGroupID(), nullptr);
+      ExecuteTask(nsTaskPriority::SomeFrameMainThread, nsTaskPriority::SomeFrameMainThread, false, nsTaskGroupID(), nullptr);
 
     if (uiNumTasksTodo > 75)
-      ExecuteTask(wdTaskPriority::SomeFrameMainThread, wdTaskPriority::SomeFrameMainThread, false, wdTaskGroupID(), nullptr);
+      ExecuteTask(nsTaskPriority::SomeFrameMainThread, nsTaskPriority::SomeFrameMainThread, false, nsTaskGroupID(), nullptr);
 
     if (uiNumTasksTodo > 50)
-      ExecuteTask(wdTaskPriority::SomeFrameMainThread, wdTaskPriority::SomeFrameMainThread, false, wdTaskGroupID(), nullptr);
+      ExecuteTask(nsTaskPriority::SomeFrameMainThread, nsTaskPriority::SomeFrameMainThread, false, nsTaskGroupID(), nullptr);
   }
 }
 
 
-void wdTaskSystem::FinishFrameTasks()
+void nsTaskSystem::FinishFrameTasks()
 {
-  WD_ASSERT_DEV(wdThreadUtils::IsMainThread(), "This function must be executed on the main thread.");
+  NS_ASSERT_DEV(nsThreadUtils::IsMainThread(), "This function must be executed on the main thread.");
 
   // make sure all 'main thread' and 'short' tasks are either finished or being worked on by other threads already
   {
     while (true)
     {
       // Prefer to work on main-thread tasks
-      if (ExecuteTask(wdTaskPriority::ThisFrameMainThread, wdTaskPriority::ThisFrameMainThread, false, wdTaskGroupID(), nullptr))
+      if (ExecuteTask(nsTaskPriority::ThisFrameMainThread, nsTaskPriority::ThisFrameMainThread, false, nsTaskGroupID(), nullptr))
       {
         continue;
       }
 
       // if there are none, help out with the other tasks for this frame
-      if (ExecuteTask(wdTaskPriority::EarlyThisFrame, wdTaskPriority::LateThisFrame, false, wdTaskGroupID(), nullptr))
+      if (ExecuteTask(nsTaskPriority::EarlyThisFrame, nsTaskPriority::LateThisFrame, false, nsTaskGroupID(), nullptr))
       {
         continue;
       }
@@ -379,7 +382,7 @@ void wdTaskSystem::FinishFrameTasks()
   // all the important tasks for this frame should be finished or worked on by now
   // so we can now re-prioritize the tasks for the next frame
   {
-    WD_LOCK(s_TaskSystemMutex);
+    NS_LOCK(s_TaskSystemMutex);
 
     ReprioritizeFrameTasks();
   }
@@ -388,20 +391,20 @@ void wdTaskSystem::FinishFrameTasks()
 
   // Update the thread utilization
   {
-    const wdTime tNow = wdTime::Now();
-    static wdTime s_LastFrameUpdate = tNow;
-    const wdTime tDiff = tNow - s_LastFrameUpdate;
+    const nsTime tNow = nsTime::Now();
+    static nsTime s_LastFrameUpdate = tNow;
+    const nsTime tDiff = tNow - s_LastFrameUpdate;
 
     // prevent division by zero (inside ComputeThreadUtilization)
-    if (tDiff > wdTime::Seconds(0.0))
+    if (tDiff > nsTime::MakeFromSeconds(0.0))
     {
       s_LastFrameUpdate = tNow;
 
-      for (wdUInt32 type = 0; type < wdWorkerThreadType::ENUM_COUNT; ++type)
+      for (nsUInt32 type = 0; type < nsWorkerThreadType::ENUM_COUNT; ++type)
       {
-        const wdUInt32 uiNumWorkers = s_pThreadState->m_iAllocatedWorkers[type];
+        const nsUInt32 uiNumWorkers = s_pThreadState->m_iAllocatedWorkers[type];
 
-        for (wdUInt32 t = 0; t < uiNumWorkers; ++t)
+        for (nsUInt32 t = 0; t < uiNumWorkers; ++t)
         {
           s_pThreadState->m_Workers[type][t]->UpdateThreadUtilization(tDiff);
         }
@@ -409,6 +412,3 @@ void wdTaskSystem::FinishFrameTasks()
     }
   }
 }
-
-
-WD_STATICLINK_FILE(Foundation, Foundation_Threading_Implementation_TaskSystemTasks);

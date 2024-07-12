@@ -132,7 +132,7 @@ foreach(i RANGE ${retry_number})
         @INACTIVITY_TIMEOUT_ARGS@
         STATUS status
         LOG log
-        @USERPWD_ARGS@
+        @USERPNS_ARGS@
         @HTTP_HEADERS_ARGS@
         )
 

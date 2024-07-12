@@ -9,10 +9,10 @@
 #include <Foundation/Threading/ThreadUtils.h>
 
 /// \brief This struct represents a block of type T, typically 4kb.
-template <typename T, wdUInt32 SizeInBytes>
-struct wdDataBlock
+template <typename T, nsUInt32 SizeInBytes>
+struct nsDataBlock
 {
-  WD_DECLARE_POD_TYPE();
+  NS_DECLARE_POD_TYPE();
 
   enum
   {
@@ -20,7 +20,7 @@ struct wdDataBlock
     CAPACITY = SIZE_IN_BYTES / sizeof(T)
   };
 
-  wdDataBlock(T* pData, wdUInt32 uiCount);
+  nsDataBlock(T* pData, nsUInt32 uiCount);
 
   T* ReserveBack();
   T* PopBack();
@@ -28,46 +28,46 @@ struct wdDataBlock
   bool IsEmpty() const;
   bool IsFull() const;
 
-  T& operator[](wdUInt32 uiIndex) const;
+  T& operator[](nsUInt32 uiIndex) const;
 
   T* m_pData;
-  wdUInt32 m_uiCount;
+  nsUInt32 m_uiCount;
 };
 
 /// \brief A block allocator which can only allocates blocks of memory at once.
-template <wdUInt32 BlockSizeInByte>
-class wdLargeBlockAllocator
+template <nsUInt32 BlockSizeInByte>
+class nsLargeBlockAllocator
 {
 public:
-  wdLargeBlockAllocator(const char* szName, wdAllocatorBase* pParent, wdBitflags<wdMemoryTrackingFlags> flags = wdMemoryTrackingFlags::Default);
-  ~wdLargeBlockAllocator();
+  nsLargeBlockAllocator(nsStringView sName, nsAllocator* pParent, nsAllocatorTrackingMode mode = nsAllocatorTrackingMode::Default);
+  ~nsLargeBlockAllocator();
 
   template <typename T>
-  wdDataBlock<T, BlockSizeInByte> AllocateBlock();
+  nsDataBlock<T, BlockSizeInByte> AllocateBlock();
 
   template <typename T>
-  void DeallocateBlock(wdDataBlock<T, BlockSizeInByte>& ref_block);
+  void DeallocateBlock(nsDataBlock<T, BlockSizeInByte>& ref_block);
 
 
-  const char* GetName() const;
+  nsStringView GetName() const;
 
-  wdAllocatorId GetId() const;
+  nsAllocatorId GetId() const;
 
-  const wdAllocatorBase::Stats& GetStats() const;
+  const nsAllocator::Stats& GetStats() const;
 
 private:
   void* Allocate(size_t uiAlign);
   void Deallocate(void* ptr);
 
-  wdAllocatorId m_Id;
-  wdBitflags<wdMemoryTrackingFlags> m_TrackingFlags;
+  nsAllocatorId m_Id;
+  nsAllocatorTrackingMode m_TrackingMode;
 
-  wdMutex m_Mutex;
-  wdThreadID m_ThreadID;
+  nsMutex m_Mutex;
+  nsThreadID m_ThreadID;
 
   struct SuperBlock
   {
-    WD_DECLARE_POD_TYPE();
+    NS_DECLARE_POD_TYPE();
 
     enum
     {
@@ -77,11 +77,11 @@ private:
 
     void* m_pBasePtr;
 
-    wdUInt32 m_uiUsedBlocks;
+    nsUInt32 m_uiUsedBlocks;
   };
 
-  wdDynamicArray<SuperBlock> m_SuperBlocks;
-  wdDynamicArray<wdUInt32> m_FreeBlocks;
+  nsDynamicArray<SuperBlock> m_SuperBlocks;
+  nsDynamicArray<nsUInt32> m_FreeBlocks;
 };
 
 #include <Foundation/Memory/Implementation/LargeBlockAllocator_inl.h>

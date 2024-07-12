@@ -2,17 +2,17 @@
 
 #include <Foundation/Logging/Log.h>
 
-namespace wdLogWriter
+namespace nsLogWriter
 {
 
-  /// \brief A simple log writer that outputs all log messages to the wd ETW provider.
-  class WD_FOUNDATION_DLL ETW
+  /// \brief A simple log writer that outputs all log messages to the ns ETW provider.
+  class NS_FOUNDATION_DLL ETW
   {
   public:
-    /// \brief Register this at wdLog to write all log messages to ETW.
-    static void LogMessageHandler(const wdLoggingEventData& eventData);
+    /// \brief Register this at nsLog to write all log messages to ETW.
+    static void LogMessageHandler(const nsLoggingEventData& eventData);
 
     /// \brief Log Message to ETW.
-    static void LogMessage(wdLogMsgType::Enum eventType, wdUInt8 uiIndentation, wdStringView sText);
+    static void LogMessage(nsLogMsgType::Enum eventType, nsUInt8 uiIndentation, nsStringView sText);
   };
-} // namespace wdLogWriter
+} // namespace nsLogWriter

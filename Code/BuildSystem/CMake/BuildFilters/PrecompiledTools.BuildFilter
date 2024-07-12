@@ -1,4 +1,4 @@
-set_property(GLOBAL PROPERTY WD_BUILD_FILTER_PrecompiledTools
+set_property(GLOBAL PROPERTY NS_BUILD_FILTER_PrecompiledTools
 	
 	ArchiveTool
 	enet
@@ -27,4 +27,8 @@ set_property(GLOBAL PROPERTY WD_BUILD_FILTER_PrecompiledTools
 	Utilities
 	ads
 	tinyexr
+    DependencyAnalysis
+    Lua
+    Duktape
+    Imgui
 )

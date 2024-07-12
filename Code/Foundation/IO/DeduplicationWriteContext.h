@@ -8,37 +8,37 @@
 #include <Foundation/Types/SharedPtr.h>
 #include <Foundation/Types/UniquePtr.h>
 
-class wdStreamWriter;
+class nsStreamWriter;
 
 /// \brief Serialization Context that de-duplicates objects when writing to a stream. Duplicated objects are identified by their address and
 /// only the first occurrence is written to the stream while all subsequence occurrences are just written as an index.
-class WD_FOUNDATION_DLL wdDeduplicationWriteContext : public wdSerializationContext<wdDeduplicationWriteContext>
+class NS_FOUNDATION_DLL nsDeduplicationWriteContext : public nsSerializationContext<nsDeduplicationWriteContext>
 {
-  WD_DECLARE_SERIALIZATION_CONTEXT(wdDeduplicationWriteContext);
+  NS_DECLARE_SERIALIZATION_CONTEXT(nsDeduplicationWriteContext);
 
 public:
-  wdDeduplicationWriteContext();
-  ~wdDeduplicationWriteContext();
+  nsDeduplicationWriteContext();
+  ~nsDeduplicationWriteContext();
 
   /// \brief Writes a single object to the stream. Can be either a reference or a pointer to the object.
   template <typename T>
-  wdResult WriteObject(wdStreamWriter& inout_stream, const T& obj); // [tested]
+  nsResult WriteObject(nsStreamWriter& inout_stream, const T& obj); // [tested]
 
   /// \brief Writes a single object to the stream.
   template <typename T>
-  wdResult WriteObject(wdStreamWriter& inout_stream, const wdSharedPtr<T>& pObject); // [tested]
+  nsResult WriteObject(nsStreamWriter& inout_stream, const nsSharedPtr<T>& pObject); // [tested]
 
   /// \brief Writes a single object to the stream.
   template <typename T>
-  wdResult WriteObject(wdStreamWriter& inout_stream, const wdUniquePtr<T>& pObject); // [tested]
+  nsResult WriteObject(nsStreamWriter& inout_stream, const nsUniquePtr<T>& pObject); // [tested]
 
   /// \brief Writes an array of de-duplicated objects.
   template <typename ArrayType, typename ValueType>
-  wdResult WriteArray(wdStreamWriter& inout_stream, const wdArrayBase<ValueType, ArrayType>& array); // [tested]
+  nsResult WriteArray(nsStreamWriter& inout_stream, const nsArrayBase<ValueType, ArrayType>& array); // [tested]
 
   /// \brief Writes a set of de-duplicated objects.
   template <typename KeyType, typename Comparer>
-  wdResult WriteSet(wdStreamWriter& inout_stream, const wdSetBase<KeyType, Comparer>& set); // [tested]
+  nsResult WriteSet(nsStreamWriter& inout_stream, const nsSetBase<KeyType, Comparer>& set); // [tested]
 
   enum class WriteMapMode
   {
@@ -49,13 +49,13 @@ public:
 
   /// \brief Writes a map. Mode controls whether key or value or both should de-duplicated.
   template <typename KeyType, typename ValueType, typename Comparer>
-  wdResult WriteMap(wdStreamWriter& inout_stream, const wdMapBase<KeyType, ValueType, Comparer>& map, WriteMapMode mode); // [tested]
+  nsResult WriteMap(nsStreamWriter& inout_stream, const nsMapBase<KeyType, ValueType, Comparer>& map, WriteMapMode mode); // [tested]
 
 private:
   template <typename T>
-  wdResult WriteObjectInternal(wdStreamWriter& stream, const T* pObject);
+  nsResult WriteObjectInternal(nsStreamWriter& stream, const T* pObject);
 
-  wdHashTable<const void*, wdUInt32> m_Objects;
+  nsHashTable<const void*, nsUInt32> m_Objects;
 };
 
 #include <Foundation/IO/Implementation/DeduplicationWriteContext_inl.h>

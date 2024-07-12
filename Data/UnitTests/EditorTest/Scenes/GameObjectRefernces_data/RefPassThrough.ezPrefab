@@ -1,0 +1,348 @@
+HeaderV2
+{
+o
+{
+	Uuid %id{u4{15874962933486381608,3771887547151625158}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes
+		{
+			Uuid{u4{15680396320003401477,8246796677990779313}}
+		}
+		s %DefaultValue{"{ beb36fae-5c2a-4d58-b053-472dff605a0c }"}
+		s %Name{"RefPassThrough"}
+		s %Type{"nsVariant"}
+	}
+}
+o
+{
+	Uuid %id{u4{13163583169093482641,4460425750747562820}}
+	s %t{"nsExposedParameters"}
+	u3 %v{3}
+	p
+	{
+		VarArray %Parameters
+		{
+			Uuid{u4{15874962933486381608,3771887547151625158}}
+		}
+	}
+}
+o
+{
+	Uuid %id{u4{556703684036096655,4627194741452250715}}
+	s %t{"nsAssetDocumentInfo"}
+	u3 %v{2}
+	s %n{"Header"}
+	p
+	{
+		s %AssetType{"Prefab"}
+		VarArray %Dependencies{}
+		Uuid %DocumentID{u4{556703684036096655,4627194741452250715}}
+		u4 %Hash{4762350032736707336}
+		VarArray %MetaInfo
+		{
+			Uuid{u4{13163583169093482641,4460425750747562820}}
+		}
+		VarArray %Outputs{}
+		VarArray %References
+		{
+			s{"{ 7f582b67-fb9f-4705-9b99-95a5c6c7fedc }"}
+		}
+	}
+}
+o
+{
+	Uuid %id{u4{15680396320003401477,8246796677990779313}}
+	s %t{"nsExposedParametersAttribute"}
+	u3 %v{1}
+	p
+	{
+		s %ParametersSource{"Prefab"}
+	}
+}
+}
+Objects
+{
+o
+{
+	Uuid %id{u4{11331124478850702776,4973963522119567513}}
+	s %t{"nsGameObject"}
+	u3 %v{1}
+	p
+	{
+		b %Active{1}
+		VarArray %Children{}
+		VarArray %Components
+		{
+			Uuid{u4{164526631948643757,5108152514698140549}}
+		}
+		s %GlobalKey{""}
+		Vec3 %LocalPosition{f{0,0,0}}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
+		f %LocalUniformScaling{0x0000803F}
+		s %Mode{"nsObjectMode::Automatic"}
+		s %Name{""}
+		VarArray %Tags
+		{
+			s{"CastShadow"}
+			s{"AutoColMesh"}
+		}
+	}
+}
+o
+{
+	Uuid %id{u4{164526631948643757,5108152514698140549}}
+	s %t{"nsPrefabReferenceComponent"}
+	u3 %v{4}
+	p
+	{
+		b %Active{1}
+		VarDict %Parameters{}
+		s %Prefab{"{ 7f582b67-fb9f-4705-9b99-95a5c6c7fedc }"}
+	}
+}
+o
+{
+	Uuid %id{u4{3612347688401435778,5428628875885350611}}
+	s %t{"nsExposedSceneProperty"}
+	u3 %v{1}
+	p
+	{
+		s %Name{"RefPassThrough"}
+		Uuid %Object{u4{164526631948643757,5108152514698140549}}
+		s %PropertyPath{"Parameters[LineToExternal]"}
+	}
+}
+o
+{
+	Uuid %id{u4{15674427866617252264,5430821144939251526}}
+	s %t{"nsPrefabDocumentSettings"}
+	u3 %v{1}
+	p
+	{
+		VarArray %ExposedProperties
+		{
+			Uuid{u4{3612347688401435778,5428628875885350611}}
+		}
+	}
+}
+o
+{
+	Uuid %id{u4{18096612296587978288,6449934965513159559}}
+	s %t{"nsSceneDocumentRoot"}
+	u3 %v{2}
+	s %n{"ObjectTree"}
+	p
+	{
+		VarArray %Children
+		{
+			Uuid{u4{11331124478850702776,4973963522119567513}}
+		}
+		Uuid %Settings{u4{15674427866617252264,5430821144939251526}}
+	}
+}
+}
+Types
+{
+o
+{
+	Uuid %id{u4{6914292285925798136,1108246313736053318}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Abstract|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsReflectedClass"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsComponent"}
+		u3 %TypeSize{48}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{11638255232360359673,3108610646416571142}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsReflectedClass"}
+		s %PluginName{"nsEditorPluginScene"}
+		VarArray %Properties{}
+		s %TypeName{"nsExposedSceneProperty"}
+		u3 %TypeSize{152}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{14332645745114734426,3197497487504472660}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsSceneDocumentSettingsBase"}
+		s %PluginName{"nsEditorPluginScene"}
+		VarArray %Properties{}
+		s %TypeName{"nsPrefabDocumentSettings"}
+		u3 %TypeSize{32}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{1168477127324465164,3417260966341483024}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsComponent"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsPrefabReferenceComponent"}
+		u3 %TypeSize{96}
+		u3 %TypeVersion{4}
+	}
+}
+o
+{
+	Uuid %id{u4{13649880205026559927,7297274558339895637}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsGameObject"}
+		u3 %TypeSize{128}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{6089094783765586323,8705960867921430659}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsReflectedClass"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsDocumentRoot"}
+		u3 %TypeSize{72}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{3251891958765718680,9159887340540620231}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsDocumentRoot"}
+		s %PluginName{"nsEditorPluginScene"}
+		VarArray %Properties{}
+		s %TypeName{"nsSceneDocumentRoot"}
+		u3 %TypeSize{80}
+		u3 %TypeVersion{2}
+	}
+}
+o
+{
+	Uuid %id{u4{14543630447052729839,9459039542380974471}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::IsEnum|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsEnumBase"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsObjectMode"}
+		u3 %TypeSize{1}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{14700230518358869173,11472901527618371423}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsReflectedClass"}
+		s %PluginName{"nsEditorPluginScene"}
+		VarArray %Properties{}
+		s %TypeName{"nsSceneDocumentSettingsBase"}
+		u3 %TypeSize{8}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{2947336711354777548,15013008608905564043}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsEnumBase"}
+		u3 %TypeSize{1}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{983387834180907111,17935407260904399048}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsReflectedClass"}
+		u3 %TypeSize{8}
+		u3 %TypeVersion{1}
+	}
+}
+}

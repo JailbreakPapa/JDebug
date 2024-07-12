@@ -4,24 +4,24 @@
 
 #ifdef BUILDSYSTEM_ENABLE_ENET_SUPPORT
 
-/// \brief An implementation for wdRemoteInterface built on top of Enet
-class WD_FOUNDATION_DLL wdRemoteInterfaceEnet : public wdRemoteInterface
+/// \brief An implementation for nsRemoteInterface built on top of Enet
+class NS_FOUNDATION_DLL nsRemoteInterfaceEnet : public nsRemoteInterface
 {
 public:
-  ~wdRemoteInterfaceEnet();
+  ~nsRemoteInterfaceEnet();
 
   /// \brief Allocates a new instance with the given allocator
-  static wdInternal::NewInstance<wdRemoteInterfaceEnet> Make(wdAllocatorBase* pAllocator = wdFoundation::GetDefaultAllocator());
+  static nsInternal::NewInstance<nsRemoteInterfaceEnet> Make(nsAllocator* pAllocator = nsFoundation::GetDefaultAllocator());
 
   /// \brief The port through which the connection was started
-  wdUInt16 GetPort() const { return m_uiPort; }
+  nsUInt16 GetPort() const { return m_uiPort; }
 
 private:
-  wdRemoteInterfaceEnet();
-  friend class wdRemoteInterfaceEnetImpl;
+  nsRemoteInterfaceEnet();
+  friend class nsRemoteInterfaceEnetImpl;
 
 protected:
-  wdUInt16 m_uiPort = 0;
+  nsUInt16 m_uiPort = 0;
 };
 
 #endif

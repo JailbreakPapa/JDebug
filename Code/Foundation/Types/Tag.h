@@ -3,39 +3,39 @@
 
 #include <Foundation/Strings/HashedString.h>
 
-typedef wdUInt64 wdTagSetBlockStorage;
+using nsTagSetBlockStorage = nsUInt64;
 
 /// \brief The tag class stores the necessary lookup information for a single tag which can be used in conjunction with the tag set.
 ///
 /// A tag is the storage for a small amount of lookup information for a single tag. Instances
-/// of wdTag can be used in checks with the tag set. Note that fetching information for the tag needs to access
+/// of nsTag can be used in checks with the tag set. Note that fetching information for the tag needs to access
 /// the global tag registry which involves a mutex lock. It is thus
 /// recommended to fetch tag instances early and reuse them for the actual tests and to avoid querying the tag registry
 /// all the time (e.g. due to tag instances being kept on the stack).
-class WD_FOUNDATION_DLL wdTag
+class NS_FOUNDATION_DLL nsTag
 {
 public:
-  WD_ALWAYS_INLINE wdTag();
+  NS_ALWAYS_INLINE nsTag();
 
-  WD_ALWAYS_INLINE bool operator==(const wdTag& rhs) const; // [tested]
+  NS_ALWAYS_INLINE bool operator==(const nsTag& rhs) const; // [tested]
 
-  WD_ALWAYS_INLINE bool operator!=(const wdTag& rhs) const; // [tested]
+  NS_ALWAYS_INLINE bool operator!=(const nsTag& rhs) const; // [tested]
 
-  WD_ALWAYS_INLINE bool operator<(const wdTag& rhs) const;
+  NS_ALWAYS_INLINE bool operator<(const nsTag& rhs) const;
 
-  WD_ALWAYS_INLINE const wdString& GetTagString() const; // [tested]
+  NS_ALWAYS_INLINE const nsString& GetTagString() const; // [tested]
 
-  WD_ALWAYS_INLINE bool IsValid() const; // [tested]
+  NS_ALWAYS_INLINE bool IsValid() const;                 // [tested]
 
 private:
   template <typename BlockStorageAllocator>
-  friend class wdTagSetTemplate;
-  friend class wdTagRegistry;
+  friend class nsTagSetTemplate;
+  friend class nsTagRegistry;
 
-  wdHashedString m_sTagString;
+  nsHashedString m_sTagString;
 
-  wdUInt32 m_uiBitIndex;
-  wdUInt32 m_uiBlockIndex;
+  nsUInt32 m_uiBitIndex = 0xFFFFFFFEu;
+  nsUInt32 m_uiBlockIndex = 0xFFFFFFFEu;
 };
 
 #include <Foundation/Types/TagSet.h>

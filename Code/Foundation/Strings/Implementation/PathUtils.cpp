@@ -3,14 +3,14 @@
 #include <Foundation/Strings/Implementation/StringIterator.h>
 #include <Foundation/Strings/StringBuilder.h>
 
-const char* wdPathUtils::FindPreviousSeparator(const char* szPathStart, const char* szStartSearchAt)
+const char* nsPathUtils::FindPreviousSeparator(const char* szPathStart, const char* szStartSearchAt)
 {
-  if (wdStringUtils::IsNullOrEmpty(szPathStart))
+  if (nsStringUtils::IsNullOrEmpty(szPathStart))
     return nullptr;
 
   while (szStartSearchAt > szPathStart)
   {
-    wdUnicodeUtils::MoveToPriorUtf8(szStartSearchAt);
+    nsUnicodeUtils::MoveToPriorUtf8(szStartSearchAt, szPathStart).AssertSuccess();
 
     if (IsPathSeparator(*szStartSearchAt))
       return szStartSearchAt;
@@ -19,81 +19,93 @@ const char* wdPathUtils::FindPreviousSeparator(const char* szPathStart, const ch
   return nullptr;
 }
 
-bool wdPathUtils::HasAnyExtension(wdStringView sPath)
+bool nsPathUtils::HasAnyExtension(nsStringView sPath)
 {
-  const char* szDot = wdStringUtils::FindLastSubString(sPath.GetStartPointer(), ".", nullptr, sPath.GetEndPointer());
+  return !GetFileExtension(sPath, true).IsEmpty();
+}
 
-  if (szDot == nullptr)
+bool nsPathUtils::HasExtension(nsStringView sPath, nsStringView sExtension)
+{
+  sPath = GetFileNameAndExtension(sPath);
+  nsStringView fullExt = GetFileExtension(sPath, true);
+
+  if (sExtension.IsEmpty() && fullExt.IsEmpty())
+    return true;
+
+  // if there is a single dot at the start of the extension, remove it
+  if (sExtension.StartsWith("."))
+    sExtension.ChopAwayFirstCharacterAscii();
+
+  if (!fullExt.EndsWith_NoCase(sExtension))
     return false;
 
-  // find the last separator in the string
-  const char* szSeparator = FindPreviousSeparator(sPath.GetStartPointer(), sPath.GetEndPointer());
+  // remove the checked extension
+  sPath = nsStringView(sPath.GetStartPointer(), sPath.GetEndPointer() - sExtension.GetElementCount());
 
-  return (szSeparator < szDot);
+  // checked extension didn't start with a dot -> make sure there is one at the end of sPath
+  if (!sPath.EndsWith("."))
+    return false;
+
+  // now make sure the rest isn't just the dot
+  return sPath.GetElementCount() > 1;
 }
 
-bool wdPathUtils::HasExtension(wdStringView sPath, wdStringView sExtension)
+nsStringView nsPathUtils::GetFileExtension(nsStringView sPath, bool bFullExtension)
 {
-  if (wdStringUtils::StartsWith(sExtension.GetStartPointer(), ".", sExtension.GetEndPointer()))
-    return wdStringUtils::EndsWith_NoCase(sPath.GetStartPointer(), sExtension.GetStartPointer(), sPath.GetEndPointer(), sExtension.GetEndPointer());
+  // get rid of any path before the filename
+  sPath = GetFileNameAndExtension(sPath);
 
-  wdStringBuilder sExt;
-  sExt.Append(".", sExtension);
+  // ignore all dots that the file name may start with (".", "..", ".file", "..file", etc)
+  // filename may be empty afterwards, which means no dot will be found -> no extension
+  while (sPath.StartsWith("."))
+    sPath.ChopAwayFirstCharacterAscii();
 
-  return wdStringUtils::EndsWith_NoCase(sPath.GetStartPointer(), sExt.GetData(), sPath.GetEndPointer());
-}
+  const char* szDot;
 
-wdStringView wdPathUtils::GetFileExtension(wdStringView sPath)
-{
-  const char* szDot = wdStringUtils::FindLastSubString(sPath.GetStartPointer(), ".", nullptr, sPath.GetEndPointer());
+  if (bFullExtension)
+  {
+    szDot = sPath.FindSubString(".");
+  }
+  else
+  {
+    szDot = sPath.FindLastSubString(".");
+  }
 
+  // no dot at all -> no extension
   if (szDot == nullptr)
-    return wdStringView(nullptr);
+    return nsStringView();
 
-  // find the last separator in the string
-  const char* szSeparator = FindPreviousSeparator(sPath.GetStartPointer(), sPath.GetEndPointer());
+  // dot at the very end of the string -> not an extension
+  if (szDot + 1 == sPath.GetEndPointer())
+    return nsStringView();
 
-  if (szSeparator > szDot)
-    return wdStringView(nullptr);
-
-  return wdStringView(szDot + 1, sPath.GetEndPointer());
+  return nsStringView(szDot + 1, sPath.GetEndPointer());
 }
 
-wdStringView wdPathUtils::GetFileNameAndExtension(wdStringView sPath)
+nsStringView nsPathUtils::GetFileNameAndExtension(nsStringView sPath)
 {
   const char* szSeparator = FindPreviousSeparator(sPath.GetStartPointer(), sPath.GetEndPointer());
 
   if (szSeparator == nullptr)
     return sPath;
 
-  return wdStringView(szSeparator + 1, sPath.GetEndPointer());
+  return nsStringView(szSeparator + 1, sPath.GetEndPointer());
 }
 
-wdStringView wdPathUtils::GetFileName(wdStringView sPath)
+nsStringView nsPathUtils::GetFileName(nsStringView sPath, bool bRemoveFullExtension)
 {
-  const char* szSeparator = FindPreviousSeparator(sPath.GetStartPointer(), sPath.GetEndPointer());
+  // reduce the problem to just the filename + extension
+  sPath = GetFileNameAndExtension(sPath);
 
-  const char* szDot = wdStringUtils::FindLastSubString(sPath.GetStartPointer(), ".", sPath.GetEndPointer());
+  nsStringView ext = GetFileExtension(sPath, bRemoveFullExtension);
 
-  if (szDot < szSeparator) // includes (szDot == nullptr), szSeparator will never be nullptr here -> no extension
-  {
-    return wdStringView(szSeparator + 1, sPath.GetEndPointer());
-  }
+  if (ext.IsEmpty())
+    return sPath;
 
-  if (szSeparator == nullptr)
-  {
-    if (szDot == nullptr) // no folder, no extension -> the entire thing is just a name
-      return sPath;
-
-    return wdStringView(sPath.GetStartPointer(), szDot); // no folder, but an extension -> remove the extension
-  }
-
-  // now: there is a separator AND an extension
-
-  return wdStringView(szSeparator + 1, szDot);
+  return nsStringView(sPath.GetStartPointer(), sPath.GetEndPointer() - ext.GetElementCount() - 1);
 }
 
-wdStringView wdPathUtils::GetFileDirectory(wdStringView sPath)
+nsStringView nsPathUtils::GetFileDirectory(nsStringView sPath)
 {
   auto it = rbegin(sPath);
 
@@ -106,22 +118,22 @@ wdStringView wdPathUtils::GetFileDirectory(wdStringView sPath)
 
   // no path separator -> root dir -> return the empty path
   if (szSeparator == nullptr)
-    return wdStringView(nullptr);
+    return nsStringView(nullptr);
 
-  return wdStringView(sPath.GetStartPointer(), szSeparator + 1);
+  return nsStringView(sPath.GetStartPointer(), szSeparator + 1);
 }
 
-#if WD_ENABLED(WD_PLATFORM_WINDOWS)
-const char wdPathUtils::OsSpecificPathSeparator = '\\';
-#elif WD_ENABLED(WD_PLATFORM_LINUX) || WD_ENABLED(WD_PLATFORM_ANDROID)
-const char wdPathUtils::OsSpecificPathSeparator = '/';
-#elif WD_ENABLED(WD_PLATFORM_OSX)
-const char wdPathUtils::OsSpecificPathSeparator = '/';
+#if NS_ENABLED(NS_PLATFORM_WINDOWS)
+const char nsPathUtils::OsSpecificPathSeparator = '\\';
+#elif NS_ENABLED(NS_PLATFORM_LINUX) || NS_ENABLED(NS_PLATFORM_ANDROID) || NS_ENABLED(NS_PLATFORM_PLAYSTATION_5)
+const char nsPathUtils::OsSpecificPathSeparator = '/';
+#elif NS_ENABLED(NS_PLATFORM_OSX)
+const char nsPathUtils::OsSpecificPathSeparator = '/';
 #else
 #  error "Unknown platform."
 #endif
 
-bool wdPathUtils::IsAbsolutePath(wdStringView sPath)
+bool nsPathUtils::IsAbsolutePath(nsStringView sPath)
 {
   if (sPath.GetElementCount() < 2)
     return false;
@@ -130,40 +142,40 @@ bool wdPathUtils::IsAbsolutePath(wdStringView sPath)
 
   // szPath[0] will not be \0 -> so we can access szPath[1] without problems
 
-#if WD_ENABLED(WD_PLATFORM_WINDOWS)
+#if NS_ENABLED(NS_PLATFORM_WINDOWS)
   /// if it is an absolute path, character 0 must be ASCII (A - Z)
   /// checks for local paths, i.e. 'C:\stuff' and UNC paths, i.e. '\\server\stuff'
   /// not sure if we should handle '//' identical to '\\' (currently we do)
   return ((szPath[1] == ':') || (IsPathSeparator(szPath[0]) && IsPathSeparator(szPath[1])));
-#elif WD_ENABLED(WD_PLATFORM_LINUX) || WD_ENABLED(WD_PLATFORM_ANDROID)
+#elif NS_ENABLED(NS_PLATFORM_LINUX) || NS_ENABLED(NS_PLATFORM_ANDROID) || NS_ENABLED(NS_PLATFORM_PLAYSTATION_5)
   return (szPath[0] == '/');
-#elif WD_ENABLED(WD_PLATFORM_OSX)
+#elif NS_ENABLED(NS_PLATFORM_OSX)
   return (szPath[0] == '/');
 #else
 #  error "Unknown platform."
 #endif
 }
 
-bool wdPathUtils::IsRelativePath(wdStringView sPath)
+bool nsPathUtils::IsRelativePath(nsStringView sPath)
 {
   if (sPath.IsEmpty())
     return true;
 
   // if it starts with a separator, it is not a relative path, ever
-  if (wdPathUtils::IsPathSeparator(*sPath.GetStartPointer()))
+  if (nsPathUtils::IsPathSeparator(*sPath.GetStartPointer()))
     return false;
 
   return !IsAbsolutePath(sPath) && !IsRootedPath(sPath);
 }
 
-bool wdPathUtils::IsRootedPath(wdStringView sPath)
+bool nsPathUtils::IsRootedPath(nsStringView sPath)
 {
   return !sPath.IsEmpty() && *sPath.GetStartPointer() == ':';
 }
 
-void wdPathUtils::GetRootedPathParts(wdStringView sPath, wdStringView& ref_sRoot, wdStringView& ref_sRelPath)
+void nsPathUtils::GetRootedPathParts(nsStringView sPath, nsStringView& ref_sRoot, nsStringView& ref_sRelPath)
 {
-  ref_sRoot = wdStringView();
+  ref_sRoot = nsStringView();
   ref_sRelPath = sPath;
 
   if (!IsRootedPath(sPath))
@@ -174,7 +186,7 @@ void wdPathUtils::GetRootedPathParts(wdStringView sPath, wdStringView& ref_sRoot
 
   do
   {
-    wdUnicodeUtils::MoveToNextUtf8(szStart, szPathEnd);
+    nsUnicodeUtils::MoveToNextUtf8(szStart, szPathEnd).AssertSuccess();
 
     if (*szStart == '\0')
       return;
@@ -182,32 +194,32 @@ void wdPathUtils::GetRootedPathParts(wdStringView sPath, wdStringView& ref_sRoot
   } while (IsPathSeparator(*szStart));
 
   const char* szEnd = szStart;
-  wdUnicodeUtils::MoveToNextUtf8(szEnd, szPathEnd);
+  nsUnicodeUtils::MoveToNextUtf8(szEnd, szPathEnd).AssertSuccess();
 
   while (*szEnd != '\0' && !IsPathSeparator(*szEnd))
-    wdUnicodeUtils::MoveToNextUtf8(szEnd, szPathEnd);
+    nsUnicodeUtils::MoveToNextUtf8(szEnd, szPathEnd).AssertSuccess();
 
-  ref_sRoot = wdStringView(szStart, szEnd);
+  ref_sRoot = nsStringView(szStart, szEnd);
   if (*szEnd == '\0')
   {
-    ref_sRelPath = wdStringView();
+    ref_sRelPath = nsStringView();
   }
   else
   {
     // skip path separator for the relative path
-    wdUnicodeUtils::MoveToNextUtf8(szEnd, szPathEnd);
-    ref_sRelPath = wdStringView(szEnd, szPathEnd);
+    nsUnicodeUtils::MoveToNextUtf8(szEnd, szPathEnd).AssertSuccess();
+    ref_sRelPath = nsStringView(szEnd, szPathEnd);
   }
 }
 
-wdStringView wdPathUtils::GetRootedPathRootName(wdStringView sPath)
+nsStringView nsPathUtils::GetRootedPathRootName(nsStringView sPath)
 {
-  wdStringView root, relPath;
+  nsStringView root, relPath;
   GetRootedPathParts(sPath, root, relPath);
   return root;
 }
 
-bool wdPathUtils::IsValidFilenameChar(wdUInt32 uiCharacter)
+bool nsPathUtils::IsValidFilenameChar(nsUInt32 uiCharacter)
 {
   /// \test Not tested yet
 
@@ -215,9 +227,9 @@ bool wdPathUtils::IsValidFilenameChar(wdUInt32 uiCharacter)
   // Unix: https://en.wikipedia.org/wiki/Filename#Reserved_characters_and_words
   // Details can be more complicated (there might be reserved names depending on the filesystem), but in general all platforms behave like
   // this:
-  static const wdUInt32 forbiddenFilenameChars[] = {'<', '>', ':', '"', '|', '?', '*', '\\', '/', '\t', '\b', '\n', '\r', '\0'};
+  static const nsUInt32 forbiddenFilenameChars[] = {'<', '>', ':', '"', '|', '?', '*', '\\', '/', '\t', '\b', '\n', '\r', '\0'};
 
-  for (int i = 0; i < WD_ARRAY_SIZE(forbiddenFilenameChars); ++i)
+  for (int i = 0; i < NS_ARRAY_SIZE(forbiddenFilenameChars); ++i)
   {
     if (forbiddenFilenameChars[i] == uiCharacter)
       return false;
@@ -226,11 +238,11 @@ bool wdPathUtils::IsValidFilenameChar(wdUInt32 uiCharacter)
   return true;
 }
 
-bool wdPathUtils::ContainsInvalidFilenameChars(wdStringView sPath)
+bool nsPathUtils::ContainsInvalidFilenameChars(nsStringView sPath)
 {
   /// \test Not tested yet
 
-  wdStringIterator it = sPath.GetIteratorFront();
+  nsStringIterator it = sPath.GetIteratorFront();
 
   for (; it.IsValid(); ++it)
   {
@@ -241,15 +253,15 @@ bool wdPathUtils::ContainsInvalidFilenameChars(wdStringView sPath)
   return false;
 }
 
-void wdPathUtils::MakeValidFilename(wdStringView sFilename, wdUInt32 uiReplacementCharacter, wdStringBuilder& out_sFilename)
+void nsPathUtils::MakeValidFilename(nsStringView sFilename, nsUInt32 uiReplacementCharacter, nsStringBuilder& out_sFilename)
 {
-  WD_ASSERT_DEBUG(IsValidFilenameChar(uiReplacementCharacter), "Given replacement character is not allowed for filenames.");
+  NS_ASSERT_DEBUG(IsValidFilenameChar(uiReplacementCharacter), "Given replacement character is not allowed for filenames.");
 
   out_sFilename.Clear();
 
   for (auto it = sFilename.GetIteratorFront(); it.IsValid(); ++it)
   {
-    wdUInt32 currentChar = it.GetCharacter();
+    nsUInt32 currentChar = it.GetCharacter();
 
     if (IsValidFilenameChar(currentChar) == false)
       out_sFilename.Append(uiReplacementCharacter);
@@ -258,15 +270,48 @@ void wdPathUtils::MakeValidFilename(wdStringView sFilename, wdUInt32 uiReplaceme
   }
 }
 
-bool wdPathUtils::IsSubPath(wdStringView sPrefixPath, wdStringView sFullPath)
+bool nsPathUtils::IsSubPath(nsStringView sPrefixPath, nsStringView sFullPath0)
 {
-  /// \test this is new
+  if (sPrefixPath.IsEmpty())
+  {
+    if (sFullPath0.IsAbsolutePath())
+      return true;
 
-  wdStringBuilder tmp = sPrefixPath;
+    NS_REPORT_FAILURE("Prefixpath is empty and checked path is not absolute.");
+    return false;
+  }
+
+  nsStringBuilder tmp = sPrefixPath;
   tmp.MakeCleanPath();
-  tmp.AppendPath("");
+  tmp.Trim("", "/");
 
-  return sFullPath.StartsWith_NoCase(tmp);
+  nsStringBuilder sFullPath = sFullPath0;
+  sFullPath.MakeCleanPath();
+
+  if (sFullPath.StartsWith(tmp))
+  {
+    if (tmp.GetElementCount() == sFullPath.GetElementCount())
+      return true;
+
+    return sFullPath.GetData()[tmp.GetElementCount()] == '/';
+  }
+
+  return false;
 }
 
-WD_STATICLINK_FILE(Foundation, Foundation_Strings_Implementation_PathUtils);
+bool nsPathUtils::IsSubPath_NoCase(nsStringView sPrefixPath, nsStringView sFullPath)
+{
+  nsStringBuilder tmp = sPrefixPath;
+  tmp.MakeCleanPath();
+  tmp.Trim("", "/");
+
+  if (sFullPath.StartsWith_NoCase(tmp))
+  {
+    if (tmp.GetElementCount() == sFullPath.GetElementCount())
+      return true;
+
+    return sFullPath.GetStartPointer()[tmp.GetElementCount()] == '/';
+  }
+
+  return false;
+}

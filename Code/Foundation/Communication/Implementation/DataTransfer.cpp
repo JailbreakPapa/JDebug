@@ -2,29 +2,29 @@
 
 #include <Foundation/Communication/DataTransfer.h>
 
-bool wdDataTransfer::s_bInitialized = false;
-wdSet<wdDataTransfer*> wdDataTransfer::s_AllTransfers;
+bool nsDataTransfer::s_bInitialized = false;
+nsSet<nsDataTransfer*> nsDataTransfer::s_AllTransfers;
 
-wdDataTransferObject::wdDataTransferObject(wdDataTransfer& ref_belongsTo, const char* szObjectName, const char* szMimeType, const char* szFileExtension)
+nsDataTransferObject::nsDataTransferObject(nsDataTransfer& ref_belongsTo, nsStringView sObjectName, nsStringView sMimeType, nsStringView sFileExtension)
   : m_BelongsTo(ref_belongsTo)
 {
   m_bHasBeenTransferred = false;
 
   m_Msg.SetMessageID('TRAN', 'DATA');
   m_Msg.GetWriter() << ref_belongsTo.m_sDataName;
-  m_Msg.GetWriter() << szObjectName;
-  m_Msg.GetWriter() << szMimeType;
-  m_Msg.GetWriter() << szFileExtension;
+  m_Msg.GetWriter() << sObjectName;
+  m_Msg.GetWriter() << sMimeType;
+  m_Msg.GetWriter() << sFileExtension;
 }
 
-wdDataTransferObject::~wdDataTransferObject()
+nsDataTransferObject::~nsDataTransferObject()
 {
-  WD_ASSERT_DEV(m_bHasBeenTransferred, "The data transfer object has never been transmitted.");
+  NS_ASSERT_DEV(m_bHasBeenTransferred, "The data transfer object has never been transmitted.");
 }
 
-void wdDataTransferObject::Transmit()
+void nsDataTransferObject::Transmit()
 {
-  WD_ASSERT_DEV(!m_bHasBeenTransferred, "The data transfer object has been transmitted already.");
+  NS_ASSERT_DEV(!m_bHasBeenTransferred, "The data transfer object has been transmitted already.");
 
   if (m_bHasBeenTransferred)
     return;
@@ -34,23 +34,23 @@ void wdDataTransferObject::Transmit()
   m_BelongsTo.Transfer(*this);
 }
 
-wdDataTransfer::wdDataTransfer()
+nsDataTransfer::nsDataTransfer()
 {
   m_bTransferRequested = false;
   m_bEnabled = false;
 }
 
-wdDataTransfer::~wdDataTransfer()
+nsDataTransfer::~nsDataTransfer()
 {
   DisableDataTransfer();
 }
 
-void wdDataTransfer::SendStatus()
+void nsDataTransfer::SendStatus()
 {
-  if (!wdTelemetry::IsConnectedToClient())
+  if (!nsTelemetry::IsConnectedToClient())
     return;
 
-  wdTelemetryMessage msg;
+  nsTelemetryMessage msg;
   msg.GetWriter() << m_sDataName;
 
   if (m_bEnabled)
@@ -62,15 +62,15 @@ void wdDataTransfer::SendStatus()
     msg.SetMessageID('TRAN', 'DSBL');
   }
 
-  wdTelemetry::Broadcast(wdTelemetry::Reliable, msg);
+  nsTelemetry::Broadcast(nsTelemetry::Reliable, msg);
 }
 
-void wdDataTransfer::DisableDataTransfer()
+void nsDataTransfer::DisableDataTransfer()
 {
   if (!m_bEnabled)
     return;
 
-  wdDataTransfer::s_AllTransfers.Remove(this);
+  nsDataTransfer::s_AllTransfers.Remove(this);
 
   m_bEnabled = false;
   SendStatus();
@@ -79,26 +79,26 @@ void wdDataTransfer::DisableDataTransfer()
   m_sDataName.Clear();
 }
 
-void wdDataTransfer::EnableDataTransfer(const char* szDataName)
+void nsDataTransfer::EnableDataTransfer(nsStringView sDataName)
 {
-  if (m_bEnabled && m_sDataName == szDataName)
+  if (m_bEnabled && m_sDataName == sDataName)
     return;
 
   DisableDataTransfer();
 
   Initialize();
 
-  wdDataTransfer::s_AllTransfers.Insert(this);
+  nsDataTransfer::s_AllTransfers.Insert(this);
 
-  m_sDataName = szDataName;
+  m_sDataName = sDataName;
 
-  WD_ASSERT_DEV(!m_sDataName.IsEmpty(), "The name for the data transfer must not be empty.");
+  NS_ASSERT_DEV(!m_sDataName.IsEmpty(), "The name for the data transfer must not be empty.");
 
   m_bEnabled = true;
   SendStatus();
 }
 
-void wdDataTransfer::RequestDataTransfer()
+void nsDataTransfer::RequestDataTransfer()
 {
   if (!m_bEnabled)
   {
@@ -106,14 +106,14 @@ void wdDataTransfer::RequestDataTransfer()
     return;
   }
 
-  wdLog::Dev("Data Transfer Request: {0}", m_sDataName);
+  nsLog::Dev("Data Transfer Request: {0}", m_sDataName);
 
   m_bTransferRequested = true;
 
   OnTransferRequest();
 }
 
-bool wdDataTransfer::IsTransferRequested(bool bReset)
+bool nsDataTransfer::IsTransferRequested(bool bReset)
 {
   const bool bRes = m_bTransferRequested;
 
@@ -123,37 +123,37 @@ bool wdDataTransfer::IsTransferRequested(bool bReset)
   return bRes;
 }
 
-void wdDataTransfer::Transfer(wdDataTransferObject& Object)
+void nsDataTransfer::Transfer(nsDataTransferObject& Object)
 {
   if (!m_bEnabled)
     return;
 
-  wdTelemetry::Broadcast(wdTelemetry::Reliable, Object.m_Msg);
+  nsTelemetry::Broadcast(nsTelemetry::Reliable, Object.m_Msg);
 }
 
-void wdDataTransfer::Initialize()
+void nsDataTransfer::Initialize()
 {
   if (s_bInitialized)
     return;
 
   s_bInitialized = true;
 
-  wdTelemetry::AddEventHandler(TelemetryEventsHandler);
-  wdTelemetry::AcceptMessagesForSystem('DTRA', true, TelemetryMessage, nullptr);
+  nsTelemetry::AddEventHandler(TelemetryEventsHandler);
+  nsTelemetry::AcceptMessagesForSystem('DTRA', true, TelemetryMessage, nullptr);
 }
 
-void wdDataTransfer::TelemetryMessage(void* pPassThrough)
+void nsDataTransfer::TelemetryMessage(void* pPassThrough)
 {
-  wdTelemetryMessage Msg;
+  nsTelemetryMessage Msg;
 
-  while (wdTelemetry::RetrieveMessage('DTRA', Msg) == WD_SUCCESS)
+  while (nsTelemetry::RetrieveMessage('DTRA', Msg) == NS_SUCCESS)
   {
-    if (Msg.GetMessageID() == 'REQ')
+    if (Msg.GetMessageID() == ' REQ')
     {
-      wdStringBuilder sName;
+      nsStringBuilder sName;
       Msg.GetReader() >> sName;
 
-      wdLog::Dev("Requested data transfer '{0}'", sName);
+      nsLog::Dev("Requested data transfer '{0}'", sName);
 
       for (auto it = s_AllTransfers.GetIterator(); it.IsValid(); ++it)
       {
@@ -167,14 +167,14 @@ void wdDataTransfer::TelemetryMessage(void* pPassThrough)
   }
 }
 
-void wdDataTransfer::TelemetryEventsHandler(const wdTelemetry::TelemetryEventData& e)
+void nsDataTransfer::TelemetryEventsHandler(const nsTelemetry::TelemetryEventData& e)
 {
-  if (!wdTelemetry::IsConnectedToClient())
+  if (!nsTelemetry::IsConnectedToClient())
     return;
 
   switch (e.m_EventType)
   {
-    case wdTelemetry::TelemetryEventData::ConnectedToClient:
+    case nsTelemetry::TelemetryEventData::ConnectedToClient:
       SendAllDataTransfers();
       break;
 
@@ -183,18 +183,14 @@ void wdDataTransfer::TelemetryEventsHandler(const wdTelemetry::TelemetryEventDat
   }
 }
 
-void wdDataTransfer::SendAllDataTransfers()
+void nsDataTransfer::SendAllDataTransfers()
 {
-  wdTelemetryMessage msg;
+  nsTelemetryMessage msg;
   msg.SetMessageID('TRAN', ' CLR');
-  wdTelemetry::Broadcast(wdTelemetry::Reliable, msg);
+  nsTelemetry::Broadcast(nsTelemetry::Reliable, msg);
 
   for (auto it = s_AllTransfers.GetIterator(); it.IsValid(); ++it)
   {
     it.Key()->SendStatus();
   }
 }
-
-
-
-WD_STATICLINK_FILE(Foundation, Foundation_Communication_Implementation_DataTransfer);

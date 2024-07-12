@@ -25,6 +25,7 @@
 			"immintrin.h",
 			"array",
 			"tuple",
+			"span",
 			"corewrappers.h",
 			"future",
 			"stdexcept",
@@ -37,7 +38,10 @@
 			"time.h",
 			"unistd.h",
 			"jni.h",
-			"float.h"
+			"float.h",
+			"arm_neon.h",
+			"signal.h",
+			"string_view"
 		]
 	},
 	"includeSource" : 
@@ -47,8 +51,9 @@
 			"UWPUtils.h",
 			"ThreadingDeclarations_posix.h",
 			"xxhash.h",
-			"cpp11.h",
-			"WinRTUtils.h"
+			"core.h",
+			"WinRTUtils.h",
+			"Profiling_Tracy.h"
 		]
 	}
 }

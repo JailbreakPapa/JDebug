@@ -3,11 +3,11 @@
 #include <Foundation/Basics.h>
 
 /// \brief This helper class can reserve and allocate whole memory pages.
-class WD_FOUNDATION_DLL wdPageAllocator
+class NS_FOUNDATION_DLL nsPageAllocator
 {
 public:
   static void* AllocatePage(size_t uiSize);
   static void DeallocatePage(void* pPtr);
 
-  static wdAllocatorId GetId();
+  static nsAllocatorId GetId();
 };

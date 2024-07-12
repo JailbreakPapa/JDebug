@@ -1,6 +1,6 @@
 #pragma once
 
-#if WD_DISABLED(WD_PLATFORM_OSX)
+#if NS_DISABLED(NS_PLATFORM_OSX)
 #  error "This header should only be included on OSX"
 #endif
 
@@ -15,6 +15,7 @@
 
 #include <Foundation/Basics/Compiler/Clang/Clang.h>
 #include <Foundation/Basics/Compiler/GCC/GCC.h>
+#include <Foundation/Basics/Compiler/MSVC/MSVC.h>
 
-#undef WD_PLATFORM_LITTLE_ENDIAN
-#define WD_PLATFORM_LITTLE_ENDIAN WD_ON
+#undef NS_PLATFORM_LITTLE_ENDIAN
+#define NS_PLATFORM_LITTLE_ENDIAN NS_ON

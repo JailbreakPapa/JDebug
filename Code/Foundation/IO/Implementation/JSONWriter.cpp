@@ -2,344 +2,344 @@
 
 #include <Foundation/IO/JSONWriter.h>
 
-wdJSONWriter::wdJSONWriter() = default;
-wdJSONWriter::~wdJSONWriter() = default;
+nsJSONWriter::nsJSONWriter() = default;
+nsJSONWriter::~nsJSONWriter() = default;
 
-void wdJSONWriter::AddVariableBool(const char* szName, bool value)
+void nsJSONWriter::AddVariableBool(nsStringView sName, bool value)
 {
-  BeginVariable(szName);
+  BeginVariable(sName);
   WriteBool(value);
   EndVariable();
 }
 
-void wdJSONWriter::AddVariableInt32(const char* szName, wdInt32 value)
+void nsJSONWriter::AddVariableInt32(nsStringView sName, nsInt32 value)
 {
-  BeginVariable(szName);
+  BeginVariable(sName);
   WriteInt32(value);
   EndVariable();
 }
 
-void wdJSONWriter::AddVariableUInt32(const char* szName, wdUInt32 value)
+void nsJSONWriter::AddVariableUInt32(nsStringView sName, nsUInt32 value)
 {
-  BeginVariable(szName);
+  BeginVariable(sName);
   WriteUInt32(value);
   EndVariable();
 }
 
-void wdJSONWriter::AddVariableInt64(const char* szName, wdInt64 value)
+void nsJSONWriter::AddVariableInt64(nsStringView sName, nsInt64 value)
 {
-  BeginVariable(szName);
+  BeginVariable(sName);
   WriteInt64(value);
   EndVariable();
 }
 
-void wdJSONWriter::AddVariableUInt64(const char* szName, wdUInt64 value)
+void nsJSONWriter::AddVariableUInt64(nsStringView sName, nsUInt64 value)
 {
-  BeginVariable(szName);
+  BeginVariable(sName);
   WriteUInt64(value);
   EndVariable();
 }
 
-void wdJSONWriter::AddVariableFloat(const char* szName, float value)
+void nsJSONWriter::AddVariableFloat(nsStringView sName, float value)
 {
-  BeginVariable(szName);
+  BeginVariable(sName);
   WriteFloat(value);
   EndVariable();
 }
 
-void wdJSONWriter::AddVariableDouble(const char* szName, double value)
+void nsJSONWriter::AddVariableDouble(nsStringView sName, double value)
 {
-  BeginVariable(szName);
+  BeginVariable(sName);
   WriteDouble(value);
   EndVariable();
 }
 
-void wdJSONWriter::AddVariableString(const char* szName, wdStringView value)
+void nsJSONWriter::AddVariableString(nsStringView sName, nsStringView value)
 {
-  BeginVariable(szName);
+  BeginVariable(sName);
   WriteString(value);
   EndVariable();
 }
 
-void wdJSONWriter::AddVariableNULL(const char* szName)
+void nsJSONWriter::AddVariableNULL(nsStringView sName)
 {
-  BeginVariable(szName);
+  BeginVariable(sName);
   WriteNULL();
   EndVariable();
 }
 
-void wdJSONWriter::AddVariableTime(const char* szName, wdTime value)
+void nsJSONWriter::AddVariableTime(nsStringView sName, nsTime value)
 {
-  BeginVariable(szName);
+  BeginVariable(sName);
   WriteTime(value);
   EndVariable();
 }
 
-void wdJSONWriter::AddVariableUuid(const char* szName, wdUuid value)
+void nsJSONWriter::AddVariableUuid(nsStringView sName, nsUuid value)
 {
-  BeginVariable(szName);
+  BeginVariable(sName);
   WriteUuid(value);
   EndVariable();
 }
 
-void wdJSONWriter::AddVariableAngle(const char* szName, wdAngle value)
+void nsJSONWriter::AddVariableAngle(nsStringView sName, nsAngle value)
 {
-  BeginVariable(szName);
+  BeginVariable(sName);
   WriteAngle(value);
   EndVariable();
 }
 
-void wdJSONWriter::AddVariableColor(const char* szName, const wdColor& value)
+void nsJSONWriter::AddVariableColor(nsStringView sName, const nsColor& value)
 {
-  BeginVariable(szName);
+  BeginVariable(sName);
   WriteColor(value);
   EndVariable();
 }
 
-void wdJSONWriter::AddVariableColorGamma(const char* szName, const wdColorGammaUB& value)
+void nsJSONWriter::AddVariableColorGamma(nsStringView sName, const nsColorGammaUB& value)
 {
-  BeginVariable(szName);
+  BeginVariable(sName);
   WriteColorGamma(value);
   EndVariable();
 }
 
-void wdJSONWriter::AddVariableVec2(const char* szName, const wdVec2& value)
+void nsJSONWriter::AddVariableVec2(nsStringView sName, const nsVec2& value)
 {
-  BeginVariable(szName);
+  BeginVariable(sName);
   WriteVec2(value);
   EndVariable();
 }
 
-void wdJSONWriter::AddVariableVec3(const char* szName, const wdVec3& value)
+void nsJSONWriter::AddVariableVec3(nsStringView sName, const nsVec3& value)
 {
-  BeginVariable(szName);
+  BeginVariable(sName);
   WriteVec3(value);
   EndVariable();
 }
 
-void wdJSONWriter::AddVariableVec4(const char* szName, const wdVec4& value)
+void nsJSONWriter::AddVariableVec4(nsStringView sName, const nsVec4& value)
 {
-  BeginVariable(szName);
+  BeginVariable(sName);
   WriteVec4(value);
   EndVariable();
 }
 
-void wdJSONWriter::AddVariableVec2I32(const char* szName, const wdVec2I32& value)
+void nsJSONWriter::AddVariableVec2I32(nsStringView sName, const nsVec2I32& value)
 {
-  BeginVariable(szName);
+  BeginVariable(sName);
   WriteVec2I32(value);
   EndVariable();
 }
 
-void wdJSONWriter::AddVariableVec3I32(const char* szName, const wdVec3I32& value)
+void nsJSONWriter::AddVariableVec3I32(nsStringView sName, const nsVec3I32& value)
 {
-  BeginVariable(szName);
+  BeginVariable(sName);
   WriteVec3I32(value);
   EndVariable();
 }
 
-void wdJSONWriter::AddVariableVec4I32(const char* szName, const wdVec4I32& value)
+void nsJSONWriter::AddVariableVec4I32(nsStringView sName, const nsVec4I32& value)
 {
-  BeginVariable(szName);
+  BeginVariable(sName);
   WriteVec4I32(value);
   EndVariable();
 }
 
-void wdJSONWriter::AddVariableQuat(const char* szName, const wdQuat& value)
+void nsJSONWriter::AddVariableQuat(nsStringView sName, const nsQuat& value)
 {
-  BeginVariable(szName);
+  BeginVariable(sName);
   WriteQuat(value);
   EndVariable();
 }
 
-void wdJSONWriter::AddVariableMat3(const char* szName, const wdMat3& value)
+void nsJSONWriter::AddVariableMat3(nsStringView sName, const nsMat3& value)
 {
-  BeginVariable(szName);
+  BeginVariable(sName);
   WriteMat3(value);
   EndVariable();
 }
 
-void wdJSONWriter::AddVariableMat4(const char* szName, const wdMat4& value)
+void nsJSONWriter::AddVariableMat4(nsStringView sName, const nsMat4& value)
 {
-  BeginVariable(szName);
+  BeginVariable(sName);
   WriteMat4(value);
   EndVariable();
 }
 
-void wdJSONWriter::AddVariableDataBuffer(const char* szName, const wdDataBuffer& value)
+void nsJSONWriter::AddVariableDataBuffer(nsStringView sName, const nsDataBuffer& value)
 {
-  BeginVariable(szName);
+  BeginVariable(sName);
   WriteDataBuffer(value);
   EndVariable();
 }
 
-void wdJSONWriter::AddVariableVariant(const char* szName, const wdVariant& value)
+void nsJSONWriter::AddVariableVariant(nsStringView sName, const nsVariant& value)
 {
-  BeginVariable(szName);
+  BeginVariable(sName);
   WriteVariant(value);
   EndVariable();
 }
 
-void wdJSONWriter::WriteColor(const wdColor& value)
+void nsJSONWriter::WriteColor(const nsColor& value)
 {
-  WD_REPORT_FAILURE("The complex data type wdColor is not supported by this JSON writer.");
+  NS_REPORT_FAILURE("The complex data type nsColor is not supported by this JSON writer.");
 }
 
-void wdJSONWriter::WriteColorGamma(const wdColorGammaUB& value)
+void nsJSONWriter::WriteColorGamma(const nsColorGammaUB& value)
 {
-  WD_REPORT_FAILURE("The complex data type wdColorGammaUB is not supported by this JSON writer.");
+  NS_REPORT_FAILURE("The complex data type nsColorGammaUB is not supported by this JSON writer.");
 }
 
-void wdJSONWriter::WriteVec2(const wdVec2& value)
+void nsJSONWriter::WriteVec2(const nsVec2& value)
 {
-  WD_REPORT_FAILURE("The complex data type wdVec2 is not supported by this JSON writer.");
+  NS_REPORT_FAILURE("The complex data type nsVec2 is not supported by this JSON writer.");
 }
 
-void wdJSONWriter::WriteVec3(const wdVec3& value)
+void nsJSONWriter::WriteVec3(const nsVec3& value)
 {
-  WD_REPORT_FAILURE("The complex data type wdVec3 is not supported by this JSON writer.");
+  NS_REPORT_FAILURE("The complex data type nsVec3 is not supported by this JSON writer.");
 }
 
-void wdJSONWriter::WriteVec4(const wdVec4& value)
+void nsJSONWriter::WriteVec4(const nsVec4& value)
 {
-  WD_REPORT_FAILURE("The complex data type wdVec4 is not supported by this JSON writer.");
+  NS_REPORT_FAILURE("The complex data type nsVec4 is not supported by this JSON writer.");
 }
 
-void wdJSONWriter::WriteVec2I32(const wdVec2I32& value)
+void nsJSONWriter::WriteVec2I32(const nsVec2I32& value)
 {
-  WD_REPORT_FAILURE("The complex data type wdVec2I32 is not supported by this JSON writer.");
+  NS_REPORT_FAILURE("The complex data type nsVec2I32 is not supported by this JSON writer.");
 }
 
-void wdJSONWriter::WriteVec3I32(const wdVec3I32& value)
+void nsJSONWriter::WriteVec3I32(const nsVec3I32& value)
 {
-  WD_REPORT_FAILURE("The complex data type wdVec3I32 is not supported by this JSON writer.");
+  NS_REPORT_FAILURE("The complex data type nsVec3I32 is not supported by this JSON writer.");
 }
 
-void wdJSONWriter::WriteVec4I32(const wdVec4I32& value)
+void nsJSONWriter::WriteVec4I32(const nsVec4I32& value)
 {
-  WD_REPORT_FAILURE("The complex data type wdVec4I32 is not supported by this JSON writer.");
+  NS_REPORT_FAILURE("The complex data type nsVec4I32 is not supported by this JSON writer.");
 }
 
-void wdJSONWriter::WriteQuat(const wdQuat& value)
+void nsJSONWriter::WriteQuat(const nsQuat& value)
 {
-  WD_REPORT_FAILURE("The complex data type wdQuat is not supported by this JSON writer.");
+  NS_REPORT_FAILURE("The complex data type nsQuat is not supported by this JSON writer.");
 }
 
-void wdJSONWriter::WriteMat3(const wdMat3& value)
+void nsJSONWriter::WriteMat3(const nsMat3& value)
 {
-  WD_REPORT_FAILURE("The complex data type wdMat3 is not supported by this JSON writer.");
+  NS_REPORT_FAILURE("The complex data type nsMat3 is not supported by this JSON writer.");
 }
 
-void wdJSONWriter::WriteMat4(const wdMat4& value)
+void nsJSONWriter::WriteMat4(const nsMat4& value)
 {
-  WD_REPORT_FAILURE("The complex data type wdMat4 is not supported by this JSON writer.");
+  NS_REPORT_FAILURE("The complex data type nsMat4 is not supported by this JSON writer.");
 }
 
-void wdJSONWriter::WriteDataBuffer(const wdDataBuffer& value)
+void nsJSONWriter::WriteDataBuffer(const nsDataBuffer& value)
 {
-  WD_REPORT_FAILURE("The complex data type wdDateBuffer is not supported by this JSON writer.");
+  NS_REPORT_FAILURE("The complex data type nsDateBuffer is not supported by this JSON writer.");
 }
 
-void wdJSONWriter::WriteVariant(const wdVariant& value)
+void nsJSONWriter::WriteVariant(const nsVariant& value)
 {
   switch (value.GetType())
   {
-    case wdVariant::Type::Invalid:
-      // WD_REPORT_FAILURE("Variant of Type 'Invalid' cannot be written as JSON.");
+    case nsVariant::Type::Invalid:
+      // NS_REPORT_FAILURE("Variant of Type 'Invalid' cannot be written as JSON.");
       WriteNULL();
       return;
-    case wdVariant::Type::Bool:
+    case nsVariant::Type::Bool:
       WriteBool(value.Get<bool>());
       return;
-    case wdVariant::Type::Int8:
-      WriteInt32(value.Get<wdInt8>());
+    case nsVariant::Type::Int8:
+      WriteInt32(value.Get<nsInt8>());
       return;
-    case wdVariant::Type::UInt8:
-      WriteUInt32(value.Get<wdUInt8>());
+    case nsVariant::Type::UInt8:
+      WriteUInt32(value.Get<nsUInt8>());
       return;
-    case wdVariant::Type::Int16:
-      WriteInt32(value.Get<wdInt16>());
+    case nsVariant::Type::Int16:
+      WriteInt32(value.Get<nsInt16>());
       return;
-    case wdVariant::Type::UInt16:
-      WriteUInt32(value.Get<wdUInt16>());
+    case nsVariant::Type::UInt16:
+      WriteUInt32(value.Get<nsUInt16>());
       return;
-    case wdVariant::Type::Int32:
-      WriteInt32(value.Get<wdInt32>());
+    case nsVariant::Type::Int32:
+      WriteInt32(value.Get<nsInt32>());
       return;
-    case wdVariant::Type::UInt32:
-      WriteUInt32(value.Get<wdUInt32>());
+    case nsVariant::Type::UInt32:
+      WriteUInt32(value.Get<nsUInt32>());
       return;
-    case wdVariant::Type::Int64:
-      WriteInt64(value.Get<wdInt64>());
+    case nsVariant::Type::Int64:
+      WriteInt64(value.Get<nsInt64>());
       return;
-    case wdVariant::Type::UInt64:
-      WriteUInt64(value.Get<wdUInt64>());
+    case nsVariant::Type::UInt64:
+      WriteUInt64(value.Get<nsUInt64>());
       return;
-    case wdVariant::Type::Float:
+    case nsVariant::Type::Float:
       WriteFloat(value.Get<float>());
       return;
-    case wdVariant::Type::Double:
+    case nsVariant::Type::Double:
       WriteDouble(value.Get<double>());
       return;
-    case wdVariant::Type::Color:
-      WriteColor(value.Get<wdColor>());
+    case nsVariant::Type::Color:
+      WriteColor(value.Get<nsColor>());
       return;
-    case wdVariant::Type::ColorGamma:
-      WriteColorGamma(value.Get<wdColorGammaUB>());
+    case nsVariant::Type::ColorGamma:
+      WriteColorGamma(value.Get<nsColorGammaUB>());
       return;
-    case wdVariant::Type::Vector2:
-      WriteVec2(value.Get<wdVec2>());
+    case nsVariant::Type::Vector2:
+      WriteVec2(value.Get<nsVec2>());
       return;
-    case wdVariant::Type::Vector3:
-      WriteVec3(value.Get<wdVec3>());
+    case nsVariant::Type::Vector3:
+      WriteVec3(value.Get<nsVec3>());
       return;
-    case wdVariant::Type::Vector4:
-      WriteVec4(value.Get<wdVec4>());
+    case nsVariant::Type::Vector4:
+      WriteVec4(value.Get<nsVec4>());
       return;
-    case wdVariant::Type::Vector2I:
-      WriteVec2I32(value.Get<wdVec2I32>());
+    case nsVariant::Type::Vector2I:
+      WriteVec2I32(value.Get<nsVec2I32>());
       return;
-    case wdVariant::Type::Vector3I:
-      WriteVec3I32(value.Get<wdVec3I32>());
+    case nsVariant::Type::Vector3I:
+      WriteVec3I32(value.Get<nsVec3I32>());
       return;
-    case wdVariant::Type::Vector4I:
-      WriteVec4I32(value.Get<wdVec4I32>());
+    case nsVariant::Type::Vector4I:
+      WriteVec4I32(value.Get<nsVec4I32>());
       return;
-    case wdVariant::Type::Quaternion:
-      WriteQuat(value.Get<wdQuat>());
+    case nsVariant::Type::Quaternion:
+      WriteQuat(value.Get<nsQuat>());
       return;
-    case wdVariant::Type::Matrix3:
-      WriteMat3(value.Get<wdMat3>());
+    case nsVariant::Type::Matrix3:
+      WriteMat3(value.Get<nsMat3>());
       return;
-    case wdVariant::Type::Matrix4:
-      WriteMat4(value.Get<wdMat4>());
+    case nsVariant::Type::Matrix4:
+      WriteMat4(value.Get<nsMat4>());
       return;
-    case wdVariant::Type::String:
-      WriteString(value.Get<wdString>().GetData());
+    case nsVariant::Type::String:
+      WriteString(value.Get<nsString>().GetData());
       return;
-    case wdVariant::Type::StringView:
+    case nsVariant::Type::StringView:
     {
-      wdStringBuilder s = value.Get<wdStringView>();
+      nsStringBuilder s = value.Get<nsStringView>();
       WriteString(s.GetData());
       return;
     }
-    case wdVariant::Type::Time:
-      WriteTime(value.Get<wdTime>());
+    case nsVariant::Type::Time:
+      WriteTime(value.Get<nsTime>());
       return;
-    case wdVariant::Type::Uuid:
-      WriteUuid(value.Get<wdUuid>());
+    case nsVariant::Type::Uuid:
+      WriteUuid(value.Get<nsUuid>());
       return;
-    case wdVariant::Type::Angle:
-      WriteAngle(value.Get<wdAngle>());
+    case nsVariant::Type::Angle:
+      WriteAngle(value.Get<nsAngle>());
       return;
-    case wdVariant::Type::DataBuffer:
-      WriteDataBuffer(value.Get<wdDataBuffer>());
+    case nsVariant::Type::DataBuffer:
+      WriteDataBuffer(value.Get<nsDataBuffer>());
       return;
-    case wdVariant::Type::VariantArray:
+    case nsVariant::Type::VariantArray:
     {
       BeginArray();
 
-      const auto& ar = value.Get<wdVariantArray>();
+      const auto& ar = value.Get<nsVariantArray>();
 
       for (const auto& val : ar)
       {
@@ -349,23 +349,34 @@ void wdJSONWriter::WriteVariant(const wdVariant& value)
       EndArray();
     }
       return;
+    case nsVariant::Type::VariantDictionary:
+    {
+      BeginObject();
+
+      const auto& dict = value.Get<nsVariantDictionary>();
+
+      for (auto& kv : dict)
+      {
+        AddVariableVariant(kv.Key(), kv.Value());
+      }
+      EndObject();
+    }
+      return;
 
     default:
       break;
   }
 
-  WD_REPORT_FAILURE("The Variant Type {0} is not supported by wdJSONWriter::WriteVariant.", value.GetType());
+  NS_REPORT_FAILURE("The Variant Type {0} is not supported by nsJSONWriter::WriteVariant.", value.GetType());
 }
 
 
-bool wdJSONWriter::HadWriteError() const
+bool nsJSONWriter::HadWriteError() const
 {
   return m_bHadWriteError;
 }
 
-void wdJSONWriter::SetWriteErrorState()
+void nsJSONWriter::SetWriteErrorState()
 {
   m_bHadWriteError = true;
 }
-
-WD_STATICLINK_FILE(Foundation, Foundation_IO_Implementation_JSONWriter);

@@ -10,37 +10,40 @@
 // Warning: 'this' used in member initialization list (is fine here since it is just stored and not
 // accessed in the constructor (so no operations on a not completely initialized object happen)
 
-#define WD_MSVC_WARNING_NUMBER 4355
-#include <Foundation/Basics/Compiler/MSVC/DisableWarning_MSVC.h>
+NS_WARNING_PUSH()
+NS_WARNING_DISABLE_MSVC(4355)
 
-#ifndef WD_THREAD_CLASS_ENTRY_POINT
-#  error "Definition for wdThreadClassEntryPoint is missing on this platform!"
+#ifndef NS_THREAD_CLASS_ENTRY_POINT
+#  error "Definition for nsThreadClassEntryPoint is missing on this platform!"
 #endif
 
-WD_THREAD_CLASS_ENTRY_POINT;
+NS_THREAD_CLASS_ENTRY_POINT;
 
-struct wdThreadEvent
+struct nsThreadEvent
 {
   enum class Type
   {
-    ThreadCreated,     ///< Called on the thread that creates the wdThread instance
-    ThreadDestroyed,   ///< Called on the thread that destroys the wdThread instance
-    StartingExecution, ///< Called on the thread that executes the wdThread instance
-    FinishedExecution, ///< Called on the thread that executes the wdThread instance
+    ThreadCreated,     ///< Called on the thread that creates the nsThread instance
+    ThreadDestroyed,   ///< Called on the thread that destroys the nsThread instance
+    StartingExecution, ///< Called on the thread that executes the nsThread instance
+    FinishedExecution, ///< Called on the thread that executes the nsThread instance
   };
 
   Type m_Type;
-  wdThread* m_pThread = nullptr;
+  nsThread* m_pThread = nullptr;
 };
 
 /// \brief This class is the base class for platform independent long running threads
 ///
 /// Used by deriving from this class and overriding the Run() method.
-class WD_FOUNDATION_DLL wdThread : public wdOSThread
+class NS_FOUNDATION_DLL nsThread : public nsOSThread
 {
 public:
+  /// \brief Returns the current nsThread if the current platform thread is an nsThread. Returns nullptr otherwise.
+  static const nsThread* GetCurrentThread();
+
   /// \brief Describes the thread status
-  enum wdThreadStatus
+  enum nsThreadStatus
   {
     Created = 0,
     Running,
@@ -48,13 +51,13 @@ public:
   };
 
   /// \brief Initializes the runnable class
-  wdThread(const char* szName = "wdThread", wdUInt32 uiStackSize = 128 * 1024);
+  nsThread(nsStringView sName = "nsThread", nsUInt32 uiStackSize = 128 * 1024);
 
   /// \brief Destructor checks if the thread is deleted while still running, which is not allowed as this is a data hazard
-  virtual ~wdThread();
+  virtual ~nsThread();
 
   /// \brief Returns the thread status
-  inline wdThreadStatus GetThreadStatus() const { return m_ThreadStatus; }
+  inline nsThreadStatus GetThreadStatus() const { return m_ThreadStatus; }
 
   /// \brief Helper function to determine if the thread is running
   inline bool IsRunning() const { return m_ThreadStatus == Running; }
@@ -66,18 +69,18 @@ public:
   ///
   /// The events are raised on the executing thread! That means thread-specific code may be executed during the event callback,
   /// e.g. to set up thread-local functionality.
-  static wdEvent<const wdThreadEvent&, wdMutex> s_ThreadEvents;
+  static nsEvent<const nsThreadEvent&, nsMutex> s_ThreadEvents;
 
 private:
   /// \brief The run function can be used to implement a long running task in a thread in a platform independent way
-  virtual wdUInt32 Run() = 0;
+  virtual nsUInt32 Run() = 0;
 
 
-  volatile wdThreadStatus m_ThreadStatus;
+  volatile nsThreadStatus m_ThreadStatus = Created;
 
-  wdString m_sName;
+  nsString m_sName;
 
-  friend wdUInt32 RunThread(wdThread* pThread);
+  friend nsUInt32 RunThread(nsThread* pThread);
 };
 
-#include <Foundation/Basics/Compiler/MSVC/RestoreWarning_MSVC.h>
+NS_WARNING_POP()

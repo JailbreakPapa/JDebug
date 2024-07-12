@@ -14,20 +14,20 @@
 #  undef CopyFile
 #endif
 
-#if WD_DISABLED(WD_USE_POSIX_FILE_API)
+#if NS_DISABLED(NS_USE_POSIX_FILE_API)
 
 #  include <Foundation/Basics/Platform/Win/MinWindows.h>
 
-struct wdOSFileData
+struct nsOSFileData
 {
-  wdOSFileData() { m_pFileHandle = WD_WINDOWS_INVALID_HANDLE_VALUE; }
+  nsOSFileData() { m_pFileHandle = NS_WINDOWS_INVALID_HANDLE_VALUE; }
 
-  wdMinWindows::HANDLE m_pFileHandle;
+  nsMinWindows::HANDLE m_pFileHandle;
 };
 
-struct wdFileIterationData
+struct nsFileIterationData
 {
-  wdHybridArray<wdMinWindows::HANDLE, 16> m_Handles;
+  nsHybridArray<nsMinWindows::HANDLE, 16> m_Handles;
 };
 
 #endif

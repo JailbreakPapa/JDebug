@@ -1,21 +1,21 @@
 #pragma once
 
 #include <Foundation/FoundationInternal.h>
-WD_FOUNDATION_INTERNAL_HEADER
+NS_FOUNDATION_INTERNAL_HEADER
 
 #include <CoreFoundation/CoreFoundation.h>
 
 /// \brief Helper class to release references of core foundation objects correctly.
 template <typename T>
-class wdScopedCFRef
+class nsScopedCFRef
 {
 public:
-  wdScopedCFRef(T Ref)
+  nsScopedCFRef(T Ref)
     : m_Ref(Ref)
   {
   }
 
-  ~wdScopedCFRef()
+  ~nsScopedCFRef()
   {
     CFRelease(m_Ref);
   }

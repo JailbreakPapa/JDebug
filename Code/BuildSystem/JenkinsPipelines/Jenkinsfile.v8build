@@ -1,0 +1,141 @@
+pipeline {
+    agent any
+    environment {
+        GITHUB_WORKSPACE = "${WORKSPACE}"
+    }
+    parameters {
+        /// This should usually be the latest(stable) version of V8.
+        string(name: 'BUNDLE_TAG', description: 'package version tag', defaultValue: 'latest-stable')
+        string(name: 'GITHUB_BRANCH', description: 'branch to build', defaultValue: 'main')
+    }
+    stages {
+        stage('v8_macos_arm64') {
+            steps {
+                checkout([$class: 'GitSCM', branches: [[name: '*/${GITHUB_BRANCH}']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'Scripts']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/WatchDogStudios/APUI.git']]])
+                script {
+                    withEnv(["PATH+DEPOT=${GITHUB_WORKSPACE}/depot_tools"]) {
+                        sh '''
+                        cd ${GITHUB_WORKSPACE}
+                        pwd
+
+                        git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+                        cd depot_tools
+                        gclient
+                        mkdir ${GITHUB_WORKSPACE}/Code/ThirdParty/v8
+                        cd ${GITHUB_WORKSPACE}/Code/ThirdParty/v8
+                        fetch v8
+                        cd v8
+                        git checkout refs/tags/12.4.254.20
+                        gclient sync
+
+                        cd ${GITHUB_WORKSPACE}/Code/ThirdParty/v8/v8
+                        python3 ./tools/dev/v8gen.py arm64.release
+                        cp ${GITHUB_WORKSPACE}/Core/BuildSystem/Scripts/v8.macos_arm64.args.gn ${GITHUB_WORKSPACE}/Code/ThirdParty/v8/v8/out.gn/arm64.release/args.gn
+                        ninja -C ./out.gn/arm64.release v8_monolith
+
+                        cd ${GITHUB_WORKSPACE}
+                        mkdir -p staging/v8/macos.arm64.release
+                        cp ${GITHUB_WORKSPACE}/Code/ThirdParty/v8/v8/out.gn/arm64.release/obj/libv8_monolith.a staging/v8/macos.arm64.release/
+                        '''
+                    }
+                }
+                archiveArtifacts artifacts: 'staging/v8/macos.arm64.release/**', fingerprint: true
+            }
+        }
+        stage('v8_linux_x64') {
+            steps {
+                checkout([$class: 'GitSCM', branches: [[name: '*/main']], doGenerateSubmoduleConfigurations: false, submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/your/repo.git']]])
+                script {
+                    withEnv(["PATH+DEPOT=${GITHUB_WORKSPACE}/depot_tools"]) {
+                        sh '''
+                        sudo apt-get update
+                        sudo apt-get install -y ninja-build generate-ninja pkg-config
+
+                        cd ${GITHUB_WORKSPACE}
+                        git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+                        cd depot_tools
+                        gclient
+                        mkdir ${GITHUB_WORKSPACE}/Code/ThirdParty/v8
+                        cd ${GITHUB_WORKSPACE}/Code/ThirdParty/v8
+                        fetch v8
+                        cd v8
+                        git checkout refs/tags/12.4.254.20
+                        gclient sync
+
+                        cd ${GITHUB_WORKSPACE}/Code/ThirdParty/v8/v8
+                        sh ./build/install-build-deps.sh
+                        python3 ./tools/dev/v8gen.py x64.release
+                        cp ${GITHUB_WORKSPACE}/Code/BuildSystem/Scripts/v8.linux_x64.args.gn ${GITHUB_WORKSPACE}/v8/v8/out.gn/x64.release/args.gn
+                        ninja -C ./out.gn/x64.release v8_monolith
+
+                        cd ${GITHUB_WORKSPACE}
+                        mkdir -p staging/v8/linux.x86_64.release
+                        cp ${GITHUB_WORKSPACE}/v8/v8/out.gn/x64.release/obj/libv8_monolith.a staging/v8/linux.x86_64.release/
+                        '''
+                    }
+                }
+                archiveArtifacts artifacts: 'staging/v8/linux.x86_64.release/**', fingerprint: true
+            }
+        }
+        stage('v8_windows_x64') {
+            steps {
+                checkout([$class: 'GitSCM', branches: [[name: '*/main']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'Scripts']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/your/repo.git']]])
+                script {
+                    withEnv(["PATH+DEPOT=${GITHUB_WORKSPACE}/depot_tools", "DEPOT_TOOLS_WIN_TOOLCHAIN=0"]) {
+                        bat '''
+                        cd %GITHUB_WORKSPACE%
+                        echo %GITHUB_WORKSPACE%
+                        echo %PATH%
+
+                        git config --global core.autocrlf false
+                        git config --global core.filemode false
+                        git config --global branch.autosetuprebase always
+                        git config --global core.longpaths true
+
+                        curl https://storage.googleapis.com/chrome-infra/depot_tools.zip --output ./depot_tools.zip
+                        7z x -odepot_tools depot_tools.zip
+
+                        cd depot_tools
+                        call gclient
+
+                        cd ..
+                        mkdir v8
+                        cd v8
+                        call fetch v8
+                        cd v8
+                        call git checkout refs/tags/12.4.254.20
+                        call gclient sync
+
+                        call gn gen .\\out.gn\\x64.release -args="is_component_build=true is_debug=false target_cpu=\"x64\" target_os=\"win\" v8_enable_i18n_support=false v8_monolithic=true v8_use_external_startup_data=false v8_enable_pointer_compression=true v8_jitless=false use_custom_libcxx=false treat_warnings_as_errors=false v8_symbol_level=0 v8_enable_sandbox=false"
+                        call ninja -C .\\out.gn\\x64.release v8_monolith
+
+                        mkdir staging\\v8\\include
+                        mkdir staging\\v8\\windows.x86_64.release
+                        xcopy %GITHUB_WORKSPACE%\\v8\\v8\\include staging\\v8\\include\\ /Q /R /S /F /Y
+                        copy %GITHUB_WORKSPACE%\\v8\\v8\\out.gn\\x64.release\\obj\\v8_monolith.lib staging\\v8\\windows.x86_64.release\\v8_monolith.lib /Y /B
+                        '''
+                    }
+                }
+                archiveArtifacts artifacts: 'staging/v8/windows.x86_64.release/**', fingerprint: true
+            }
+        }
+        stage('publish') {
+            steps {
+                script {
+                    sh '''
+                    sudo apt-get install zip unzip
+
+                    cd ${GITHUB_WORKSPACE}/staging
+                    zip -r v8_${BUNDLE_TAG}.zip v8/
+                    '''
+                }
+                withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_TOKEN')]) {
+                    sh '''
+                    curl -H "Authorization: token ${GITHUB_TOKEN}" -d '{"tag_name": "v8_${BUNDLE_TAG}", "target_commitish": "main", "name": "v8_${BUNDLE_TAG}", "body": "update v8", "draft": false, "prerelease": false}' https://api.github.com/repos/WatchDogStudios/WD_THIRDPARTY_INTERNAL/releases
+                    curl -H "Authorization: token ${GITHUB_TOKEN}" -H "Content-Type: application/zip" --data-binary @staging/v8_${BUNDLE_TAG}.zip https://github.com/WatchDogStudios/THIRDPARTY/releases/latest/assets?name=v8_${BUNDLE_TAG}.zip
+                    '''
+                }
+            }
+        }
+    }
+}

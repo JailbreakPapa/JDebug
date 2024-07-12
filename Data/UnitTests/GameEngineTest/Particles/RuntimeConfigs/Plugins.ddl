@@ -1,5 +1,5 @@
 Plugin
 {
-	string %Path{"wdParticlePlugin"}
+	string %Path{"nsParticlePlugin"}
 	bool %LoadCopy{false}
 }

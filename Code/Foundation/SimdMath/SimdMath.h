@@ -2,22 +2,22 @@
 
 #include <Foundation/SimdMath/SimdVec4i.h>
 
-struct wdSimdMath
+struct nsSimdMath
 {
-  static wdSimdVec4f Exp(const wdSimdVec4f& f);
-  static wdSimdVec4f Ln(const wdSimdVec4f& f);
-  static wdSimdVec4f Log2(const wdSimdVec4f& f);
-  static wdSimdVec4i Log2i(const wdSimdVec4i& i);
-  static wdSimdVec4f Log10(const wdSimdVec4f& f);
-  static wdSimdVec4f Pow2(const wdSimdVec4f& f);
+  static nsSimdVec4f Exp(const nsSimdVec4f& f);
+  static nsSimdVec4f Ln(const nsSimdVec4f& f);
+  static nsSimdVec4f Log2(const nsSimdVec4f& f);
+  static nsSimdVec4i Log2i(const nsSimdVec4i& i);
+  static nsSimdVec4f Log10(const nsSimdVec4f& f);
+  static nsSimdVec4f Pow2(const nsSimdVec4f& f);
 
-  static wdSimdVec4f Sin(const wdSimdVec4f& f);
-  static wdSimdVec4f Cos(const wdSimdVec4f& f);
-  static wdSimdVec4f Tan(const wdSimdVec4f& f);
+  static nsSimdVec4f Sin(const nsSimdVec4f& f);
+  static nsSimdVec4f Cos(const nsSimdVec4f& f);
+  static nsSimdVec4f Tan(const nsSimdVec4f& f);
 
-  static wdSimdVec4f ASin(const wdSimdVec4f& f);
-  static wdSimdVec4f ACos(const wdSimdVec4f& f);
-  static wdSimdVec4f ATan(const wdSimdVec4f& f);
+  static nsSimdVec4f ASin(const nsSimdVec4f& f);
+  static nsSimdVec4f ACos(const nsSimdVec4f& f);
+  static nsSimdVec4f ATan(const nsSimdVec4f& f);
 };
 
 #include <Foundation/SimdMath/Implementation/SimdMath_inl.h>

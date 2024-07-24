@@ -30,12 +30,7 @@
 // #elif defined(...)
 //   #undef NS_PLATFORM_LINUX
 //   #define NS_PLATFORM_LINUX NS_ON
-#elif defined(__PROSPERO__)
 
-#  undef NS_PLATFORM_CONSOLE
-#  undef NS_PLATFORM_PLAYSTATION_5
-#  define NS_PLATFORM_CONSOLE NS_ON
-#  define NS_PLATFORM_PLAYSTATION_5 NS_ON
 
 #else
 #  error "Unknown Platform."

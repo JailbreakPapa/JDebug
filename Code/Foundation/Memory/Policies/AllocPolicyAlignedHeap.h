@@ -21,8 +21,6 @@ public:
 #  include <Foundation/Memory/Policies/Win/AllocPolicyAlignedHeap_win.h>
 #elif NS_ENABLED(NS_PLATFORM_OSX) || NS_ENABLED(NS_PLATFORM_LINUX) || NS_ENABLED(NS_PLATFORM_ANDROID)
 #  include <Foundation/Memory/Policies/Posix/AllocPolicyAlignedHeap_posix.h>
-#elif NS_ENABLED(NS_PLATFORM_PLAYSTATION_5)
-#  include <Foundation/Memory/Policies/Prospero/AllocPolicyAlignedHeap_prospero.h>
 #else
 #  error "nsAllocPolicyAlignedHeap is not implemented on current platform"
 #endif

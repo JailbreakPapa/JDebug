@@ -11,8 +11,6 @@
 #  include <Foundation/Configuration/Implementation/Posix/Plugin_Posix.h>
 #elif NS_ENABLED(NS_PLATFORM_ANDROID)
 #  include <Foundation/Configuration/Implementation/Android/Plugin_Android.h>
-#elif NS_ENABLED(NS_PLATFORM_PLAYSTATION_5)
-#  include <Foundation/Configuration/Implementation/Prospero/Plugin_Prospero.h>
 #else
 #  error "Plugins not implemented on this Platform."
 #endif

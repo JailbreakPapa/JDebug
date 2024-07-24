@@ -64,8 +64,6 @@ public:
 #  include <Foundation/Threading/Implementation/Win/Mutex_win.h>
 #elif NS_ENABLED(NS_PLATFORM_OSX) || NS_ENABLED(NS_PLATFORM_LINUX) || NS_ENABLED(NS_PLATFORM_ANDROID)
 #  include <Foundation/Threading/Implementation/Posix/Mutex_posix.h>
-#elif NS_ENABLED(NS_PLATFORM_PLAYSTATION_5)
-#  include <Foundation/Threading/Implementation/Prospero/Mutex_prospero.h>
 #else
 #  error "Mutex is not implemented on current platform"
 #endif

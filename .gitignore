@@ -362,7 +362,7 @@ v8_prebuilt/**
 Code/ThirdParty/v8/v8_prebuilt/**
 Code/ThirdParty/V8-LocalBuild/
 Code/ThirdParty/hermes/**
-Code/ThirdParty/hermes_prospero_build/**
+
 Code/ThirdParty/v8/v8_prebuilt/v8_prebuilt/**
 Code/ThirdParty/v8/v8_prebuiltzip/**
 CPMCache/**

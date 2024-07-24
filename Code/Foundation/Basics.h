@@ -32,8 +32,6 @@
 #  include <Foundation/Basics/Platform/OSX/Platform_OSX.h>
 #elif NS_ENABLED(NS_PLATFORM_LINUX) || NS_ENABLED(NS_PLATFORM_ANDROID)
 #  include <Foundation/Basics/Platform/Linux/Platform_Linux.h>
-#elif NS_ENABLED(NS_PLATFORM_PLAYSTATION_5) && NS_ENABLED(NS_PLATFORM_CONSOLE)
-#  include <Foundation/Basics/Platform/Prospero/Platform_Prospero.h>
 #elif NS_ENABLED(NS_PLATFORM_XBOXSERIESCONSOLE) && NS_ENABLED(NS_PLATFORM_CONSOLE)
 #  include <Foundation/Basics/Platform/Scarlett/Platform_Scarlett.h>
 #elif NS_ENABLED(NS_PLATFORM_NINTENDO) && NS_ENABLED(NS_PLATFORM_CONSOLE)

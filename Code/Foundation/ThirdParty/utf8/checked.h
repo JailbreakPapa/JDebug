@@ -31,11 +31,8 @@ DEALINGS IN THE SOFTWARE.
 #include "core.h"
 #include <stdexcept>
 
-#ifdef __PROSPERO__
-#define THROW
-#else
 #define THROW throw
-#endif
+
 namespace utf8
 {
     // Base for the exceptions that may be thrown from the library

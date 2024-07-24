@@ -111,9 +111,6 @@ struct NS_FOUNDATION_DLL nsAtomicUtils
 #  include <Foundation/Threading/Implementation/Win/AtomicUtils_win.h>
 #elif NS_ENABLED(NS_PLATFORM_OSX) || NS_ENABLED(NS_PLATFORM_LINUX) || NS_ENABLED(NS_PLATFORM_ANDROID)
 #  include <Foundation/Threading/Implementation/Posix/AtomicUtils_posix.h>
-#elif NS_ENABLED(NS_PLATFORM_PLAYSTATION_5)
-#  include <Foundation/Threading/Implementation/Prospero/AtomicUtils_prospero.h>
-
 #else
 #  error "Atomics are not implemented on current platform"
 #endif

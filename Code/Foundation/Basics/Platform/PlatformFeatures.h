@@ -14,8 +14,6 @@
 #  include <Foundation/Basics/Platform/Linux/PlatformFeatures_Linux.h>
 #elif NS_ENABLED(NS_PLATFORM_ANDROID)
 #  include <Foundation/Basics/Platform/Android/PlatformFeatures_Android.h>
-#elif NS_ENABLED(NS_PLATFORM_PLAYSTATION_5)
-#  include <Foundation/Basics/Platform/Prospero/PlatformFeatures_Prospero.h>
 #else
 #  error "Undefined platform!"
 #endif

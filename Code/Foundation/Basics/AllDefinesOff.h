@@ -48,7 +48,6 @@
 #define NS_COMPILER_MSVC_CLANG NS_OFF // Clang front-end with MSVC CodeGen
 #define NS_COMPILER_MSVC_PURE NS_OFF  // MSVC front-end and CodeGen, no mixed compilers
 #define NS_COMPILER_CLANG NS_OFF
-#define NS_COMPILER_PROSPERO_CLANG NS_OFF
 #define NS_COMPILER_GCC NS_OFF
 
 // How to compile the engine

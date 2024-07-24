@@ -1,6 +1,6 @@
 param 
 (
-    [Parameter(Mandatory = $True)] [ValidateSet('Win64vs2022', 'Uwp64vs2022', 'Prospero', 'Scarlett', 'PCGDK', 'Nintendo')][string] $Target,
+    [Parameter(Mandatory = $True)] [ValidateSet('Win64vs2022', 'Uwp64vs2022', 'Scarlett', 'PCGDK', 'Nintendo')][string] $Target,
     [switch]$NoUnityBuild,
     [switch]$NoSubmoduleUpdate,
     [string]$SolutionName

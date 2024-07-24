@@ -170,7 +170,7 @@ LICENSE
 // Configure the DLL Import/Export Define
 #undef STBIWDEF
 #ifdef BUILDSYSTEM_COMPILE_ENGINE_AS_DLL
-# if defined _WIN32 || defined __PROSPERO__
+# if defined _WIN32 
 #    ifdef BUILDSYSTEM_BUILDING_STB_IMAGE_LIB
 #      define STBIWDEF __declspec(dllexport)
 #    else

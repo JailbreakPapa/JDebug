@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>904</width>
+    <height>728</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>nsInspector</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="resources.qrc">
+    <normaloff>:/Icons/Icons/Search.svg</normaloff>:/Icons/Icons/Search.svg</iconset>
+  </property>
+  <property name="documentMode">
+   <bool>false</bool>
+  </property>
+  <property name="dockNestingEnabled">
+   <bool>true</bool>
+  </property>
+  <property name="dockOptions">
+   <set>QMainWindow::AllowNestedDocks|QMainWindow::AllowTabbedDocks|QMainWindow::AnimatedDocks|QMainWindow::GroupedDragging</set>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <property name="sizeIncrement">
+    <size>
+     <width>1</width>
+     <height>1</height>
+    </size>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_4"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>904</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuWindows">
+    <property name="title">
+     <string>Panels</string>
+    </property>
+    <addaction name="ActionShowWindowCVar"/>
+    <addaction name="ActionShowWindowData"/>
+    <addaction name="ActionShowWindowFile"/>
+    <addaction name="ActionShowWindowGlobalEvents"/>
+    <addaction name="ActionShowWindowInput"/>
+    <addaction name="ActionShowWindowLog"/>
+    <addaction name="ActionShowWindowMemory"/>
+    <addaction name="ActionShowWindowPlugins"/>
+    <addaction name="ActionShowWindowReflection"/>
+    <addaction name="ActionShowWindowResource"/>
+    <addaction name="ActionShowWindowSubsystems"/>
+    <addaction name="ActionShowWindowTime"/>
+   </widget>
+   <widget class="QMenu" name="menuWindow">
+    <property name="title">
+     <string>Window</string>
+    </property>
+    <widget class="QMenu" name="menuIn_Foreground">
+     <property name="title">
+      <string>In Foreground</string>
+     </property>
+     <addaction name="ActionOnTopWhenConnected"/>
+     <addaction name="ActionAlwaysOnTop"/>
+     <addaction name="ActionNeverOnTop"/>
+    </widget>
+    <addaction name="menuIn_Foreground"/>
+   </widget>
+   <addaction name="menuWindows"/>
+   <addaction name="menuWindow"/>
+  </widget>
+  <action name="ActionShowWindowLog">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/Icons/Icons/Log.svg</normaloff>:/Icons/Icons/Log.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Log</string>
+   </property>
+  </action>
+  <action name="ActionShowWindowMemory">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/Icons/Icons/Memory.svg</normaloff>:/Icons/Icons/Memory.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Memory</string>
+   </property>
+  </action>
+  <action name="ActionShowWindowInput">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/Icons/Icons/InputActions.svg</normaloff>:/Icons/Icons/InputActions.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Input</string>
+   </property>
+  </action>
+  <action name="ActionShowWindowCVar">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>:/GuiFoundation/Icons/CVar.svg</normaloff>:/GuiFoundation/Icons/CVar.svg</iconset>
+   </property>
+   <property name="text">
+    <string>CVars</string>
+   </property>
+  </action>
+  <action name="ActionShowWindowSubsystems">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/Icons/Icons/Subsystem.svg</normaloff>:/Icons/Icons/Subsystem.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Subsystems</string>
+   </property>
+   <property name="toolTip">
+    <string>Subsystems</string>
+   </property>
+  </action>
+  <action name="ActionShowWindowFile">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/Icons/Icons/File.svg</normaloff>:/Icons/Icons/File.svg</iconset>
+   </property>
+   <property name="text">
+    <string>File Operations</string>
+   </property>
+  </action>
+  <action name="ActionShowWindowPlugins">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/Icons/Icons/Plugin.svg</normaloff>:/Icons/Icons/Plugin.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Plugins</string>
+   </property>
+  </action>
+  <action name="ActionShowWindowGlobalEvents">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/Icons/Icons/GlobalEvent.svg</normaloff>:/Icons/Icons/GlobalEvent.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Global Events</string>
+   </property>
+  </action>
+  <action name="ActionShowWindowTime">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/Icons/Icons/Time.svg</normaloff>:/Icons/Icons/Time.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Time</string>
+   </property>
+  </action>
+  <action name="ActionOnTopWhenConnected">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>When Connected</string>
+   </property>
+  </action>
+  <action name="ActionAlwaysOnTop">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Always</string>
+   </property>
+  </action>
+  <action name="ActionNeverOnTop">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Never</string>
+   </property>
+  </action>
+  <action name="ActionShowWindowReflection">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/Icons/Icons/Type.svg</normaloff>:/Icons/Icons/Type.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Reflection</string>
+   </property>
+   <property name="toolTip">
+    <string>Reflection</string>
+   </property>
+  </action>
+  <action name="ActionShowWindowData">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Data</string>
+   </property>
+  </action>
+  <action name="ActionShowWindowResource">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/Icons/Icons/Resources.svg</normaloff>:/Icons/Icons/Resources.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Resources</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="resources.qrc"/>
+  <include location="../Libs/GuiFoundation/QtResources/resources.qrc"/>
+ </resources>
+ <connections/>
+</ui>

@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #pragma once
 
 class nsDocument;
@@ -29,6 +24,7 @@ struct nsDocumentFlags
     StorageType RequestWindow : 1;
     StorageType AddToRecentFilesList : 1;
     StorageType AsyncSave : 1;
+    StorageType EmptyDocument : 1;
   };
 };
 

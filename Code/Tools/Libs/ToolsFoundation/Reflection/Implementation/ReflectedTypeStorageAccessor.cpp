@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <ToolsFoundation/ToolsFoundationPCH.h>
 
 #include <Foundation/Types/Status.h>
@@ -336,7 +331,7 @@ bool nsReflectedTypeStorageAccessor::InsertValue(nsStringView sProperty, nsVaria
             nsVariantArray changedValues = values;
             if (pProp->GetSpecificType() == nsGetStaticRTTI<nsVariant>())
             {
-              changedValues.Insert(value, uiIndex);
+              changedValues.InsertAt(uiIndex, value);
               m_Data[storageInfo->m_uiIndex] = changedValues;
               return true;
             }
@@ -344,7 +339,7 @@ bool nsReflectedTypeStorageAccessor::InsertValue(nsStringView sProperty, nsVaria
             {
               // We are lenient here regarding the type, as we may have stored values in the undo-redo stack
               // that may have a different type now as someone reloaded the type information and replaced a type.
-              changedValues.Insert(value.ConvertTo(SpecVarType), uiIndex);
+              changedValues.InsertAt(uiIndex, value.ConvertTo(SpecVarType));
               m_Data[storageInfo->m_uiIndex] = changedValues;
               return true;
             }
@@ -465,7 +460,7 @@ bool nsReflectedTypeStorageAccessor::MoveValue(nsStringView sProperty, nsVariant
             {
               uiNewIndex -= 1;
             }
-            changedValues.Insert(value, uiNewIndex);
+            changedValues.InsertAt(uiNewIndex, value);
 
             m_Data[storageInfo->m_uiIndex] = changedValues;
             return true;

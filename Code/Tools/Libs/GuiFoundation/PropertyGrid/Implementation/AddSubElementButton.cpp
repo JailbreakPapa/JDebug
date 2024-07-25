@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <GuiFoundation/GuiFoundationPCH.h>
 
 #include <Foundation/Strings/TranslationLookup.h>
@@ -122,7 +117,7 @@ QMenu* nsQtAddSubElementButton::CreateCategoryMenu(const char* szCategory, nsMap
   sPath = szCategory;
   sPath = sPath.GetFileName();
 
-  QMenu* pNewMenu = pParentMenu->addMenu(nsTranslate(sPath));
+  QMenu* pNewMenu = pParentMenu->addMenu(nsMakeQString(nsTranslate(sPath)));
   existingMenus[szCategory] = pNewMenu;
 
   return pNewMenu;
@@ -144,32 +139,17 @@ void nsQtAddSubElementButton::onMenuAboutToShow()
     }
     m_SupportedTypes.Insert(pProp->GetSpecificType());
 
-    // remove all types that are marked as hidden
-    for (auto it = m_SupportedTypes.GetIterator(); it.IsValid();)
-    {
-      if (it.Key()->GetAttributeByType<nsHiddenAttribute>() != nullptr)
-      {
-        it = m_SupportedTypes.Remove(it);
-        continue;
-      }
-
-      if (!s_bShowInDevelopmentFeatures)
-      {
-        if (auto pInDev = it.Key()->GetAttributeByType<nsInDevelopmentAttribute>())
-        {
-          it = m_SupportedTypes.Remove(it);
-          continue;
-        }
-      }
-
-      ++it;
-    }
-
-    // Make category-sorted array of types
+    // Make category-sorted array of types and skip all abstract, hidden or in development types
     nsDynamicArray<const nsRTTI*> supportedTypes;
     for (const nsRTTI* pRtti : m_SupportedTypes)
     {
       if (pRtti->GetTypeFlags().IsAnySet(nsTypeFlags::Abstract))
+        continue;
+
+      if (pRtti->GetAttributeByType<nsHiddenAttribute>() != nullptr)
+        continue;
+
+      if (!s_bShowInDevelopmentFeatures && pRtti->GetAttributeByType<nsInDevelopmentAttribute>() != nullptr)
         continue;
 
       supportedTypes.PushBack(pRtti);
@@ -267,14 +247,16 @@ void nsQtAddSubElementButton::onMenuAboutToShow()
 
     if (m_pSearchableMenu != nullptr)
     {
-      connect(m_pSearchableMenu, &nsQtSearchableMenu::MenuItemTriggered, m_pMenu, [this](const QString& sName, const QVariant& variant) {
+      connect(m_pSearchableMenu, &nsQtSearchableMenu::MenuItemTriggered, m_pMenu, [this](const QString& sName, const QVariant& variant)
+        {
         const nsRTTI* pRtti = static_cast<const nsRTTI*>(variant.value<void*>());
 
         OnAction(pRtti);
         m_pMenu->close(); });
 
       connect(m_pSearchableMenu, &nsQtSearchableMenu::SearchTextChanged, m_pMenu,
-        [this](const QString& sText) { s_sLastMenuSearch = sText.toUtf8().data(); });
+        [this](const QString& sText)
+        { s_sLastMenuSearch = sText.toUtf8().data(); });
 
       m_pMenu->addAction(m_pSearchableMenu);
 
@@ -411,24 +393,40 @@ void nsQtAddSubElementButton::OnAction(const nsRTTI* pRtti)
   {
     for (auto& item : m_Items)
     {
-      res = m_pObjectAccessor->InsertValue(item.m_pObject, m_pProp, nsReflectionUtils::GetDefaultValue(GetProperty(), index), index);
-      if (res.m_Result.Failed())
+      if (m_uiMaxElements > 0 && m_pObjectAccessor->GetCount(item.m_pObject, m_pProp) >= m_uiMaxElements)
+      {
+        res = nsStatus("Maximum number of allowed elements reached.");
         break;
+      }
+      else
+      {
+        res = m_pObjectAccessor->InsertValue(item.m_pObject, m_pProp, nsReflectionUtils::GetDefaultValue(GetProperty(), index), index);
+        if (res.m_Result.Failed())
+          break;
+      }
     }
   }
   else if (GetProperty()->GetFlags().IsSet(nsPropertyFlags::Class))
   {
     for (auto& item : m_Items)
     {
-      nsUuid guid;
-      res = m_pObjectAccessor->AddObject(item.m_pObject, m_pProp, index, pRtti, guid);
-      if (res.m_Result.Failed())
+      if (m_uiMaxElements > 0 && m_pObjectAccessor->GetCount(item.m_pObject, m_pProp) >= m_uiMaxElements)
+      {
+        res = nsStatus("Maximum number of allowed elements reached.");
         break;
+      }
+      else
+      {
+        nsUuid guid;
+        res = m_pObjectAccessor->AddObject(item.m_pObject, m_pProp, index, pRtti, guid);
+        if (res.m_Result.Failed())
+          break;
 
-      nsHybridArray<nsPropertySelection, 1> selection;
-      selection.PushBack({m_pObjectAccessor->GetObject(guid), nsVariant()});
-      nsDefaultObjectState defaultState(m_pObjectAccessor, selection);
-      defaultState.RevertObject().AssertSuccess();
+        nsHybridArray<nsPropertySelection, 1> selection;
+        selection.PushBack({m_pObjectAccessor->GetObject(guid), nsVariant()});
+        nsDefaultObjectState defaultState(m_pObjectAccessor, selection);
+        defaultState.RevertObject().AssertSuccess();
+      }
     }
   }
 

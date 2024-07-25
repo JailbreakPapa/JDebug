@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <ToolsFoundation/ToolsFoundationPCH.h>
 
 #include <ToolsFoundation/Command/NodeCommands.h>
@@ -67,7 +62,8 @@ nsStatus nsRemoveNodeCommand::DoInternal(bool bRedo)
   nsDocument* pDocument = GetDocument();
   nsDocumentNodeManager* pManager = static_cast<nsDocumentNodeManager*>(pDocument->GetObjectManager());
 
-  auto RemoveConnections = [&](const nsPin& pin) {
+  auto RemoveConnections = [&](const nsPin& pin)
+  {
     while (true)
     {
       auto connections = pManager->GetConnections(pin);
@@ -283,25 +279,45 @@ nsStatus nsDisconnectNodePinsCommand::UndoInternal(bool bFireEvents)
 // static
 nsStatus nsNodeCommands::AddAndConnectCommand(nsCommandHistory* pHistory, const nsRTTI* pConnectionType, const nsPin& sourcePin, const nsPin& targetPin)
 {
-  nsAddObjectCommand cmd;
-  cmd.m_pType = pConnectionType;
-  cmd.m_NewObjectGuid = nsUuid::MakeUuid();
-  cmd.m_Index = -1;
+  nsAddObjectCommand addCmd;
+  addCmd.m_pType = pConnectionType;
+  addCmd.m_NewObjectGuid = nsUuid::MakeUuid();
+  addCmd.m_Index = -1;
 
-  nsStatus res = pHistory->AddCommand(cmd);
-  if (res.m_Result.Succeeded())
+  NS_SUCCEED_OR_RETURN(pHistory->AddCommand(addCmd));
+
+  constexpr nsStringView propertyNames[] = {
+    "Source"_nssv,
+    "Target"_nssv,
+    "SourcePin"_nssv,
+    "TargetPin"_nssv,
+  };
+  nsVariant propertyValues[] = {
+    sourcePin.GetParent()->GetGuid(),
+    targetPin.GetParent()->GetGuid(),
+    sourcePin.GetName(),
+    targetPin.GetName(),
+  };
+  static_assert(NS_ARRAY_SIZE(propertyNames) == NS_ARRAY_SIZE(propertyValues));
+
+  for (nsUInt32 i = 0; i < NS_ARRAY_SIZE(propertyNames); ++i)
   {
-    nsConnectNodePinsCommand connect;
-    connect.m_ConnectionObject = cmd.m_NewObjectGuid;
-    connect.m_ObjectSource = sourcePin.GetParent()->GetGuid();
-    connect.m_ObjectTarget = targetPin.GetParent()->GetGuid();
-    connect.m_sSourcePin = sourcePin.GetName();
-    connect.m_sTargetPin = targetPin.GetName();
+    nsSetObjectPropertyCommand propCmd;
+    propCmd.m_Object = addCmd.m_NewObjectGuid;
+    propCmd.m_sProperty = propertyNames[i];
+    propCmd.m_NewValue = propertyValues[i];
 
-    res = pHistory->AddCommand(connect);
+    NS_SUCCEED_OR_RETURN(pHistory->AddCommand(propCmd));
   }
 
-  return res;
+  nsConnectNodePinsCommand connectCmd;
+  connectCmd.m_ConnectionObject = addCmd.m_NewObjectGuid;
+  connectCmd.m_ObjectSource = sourcePin.GetParent()->GetGuid();
+  connectCmd.m_ObjectTarget = targetPin.GetParent()->GetGuid();
+  connectCmd.m_sSourcePin = sourcePin.GetName();
+  connectCmd.m_sTargetPin = targetPin.GetName();
+
+  return pHistory->AddCommand(connectCmd);
 }
 
 // static

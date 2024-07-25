@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #pragma once
 
 #include <GuiFoundation/GuiFoundationDLL.h>
@@ -29,4 +24,3 @@ private:
   ElementAction m_Action;
   nsQtPropertyWidget* m_pGroupWidget;
 };
-

@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <GuiFoundation/GuiFoundationPCH.h>
 
 #include <GuiFoundation/Models/LogModel.moc.h>
@@ -118,9 +113,18 @@ QVariant nsQtLogModel::data(const QModelIndex& index, int iRole) const
   switch (iRole)
   {
     case Qt::DisplayRole:
+    {
+      if (msg.m_sMsg.FindSubString("\n") != nullptr)
+      {
+        nsStringBuilder sTemp = msg.m_sMsg;
+        sTemp.ReplaceAll("\n", " ");
+        return nsMakeQString(sTemp);
+      }
+      return nsMakeQString(msg.m_sMsg);
+    }
     case Qt::ToolTipRole:
     {
-      return QString::fromUtf8(msg.m_sMsg.GetData());
+      return nsMakeQString(msg.m_sMsg);
     }
     case Qt::ForegroundRole:
     {
@@ -209,7 +213,7 @@ void nsQtLogModel::ProcessNewMessages()
 
       if (msg.m_Type == nsLogMsgType::BeginGroup || msg.m_Type == nsLogMsgType::EndGroup)
       {
-        s.Printf("%*s<<< %s", msg.m_uiIndentation, "", msg.m_sMsg.GetData());
+        s.SetPrintf("%*s<<< %s", msg.m_uiIndentation, "", msg.m_sMsg.GetData());
 
         if (msg.m_Type == nsLogMsgType::EndGroup)
         {
@@ -228,7 +232,7 @@ void nsQtLogModel::ProcessNewMessages()
       }
       else
       {
-        s.Printf("%*s%s", 4 * msg.m_uiIndentation, "", msg.m_sMsg.GetData());
+        s.SetPrintf("%*s%s", 4 * msg.m_uiIndentation, "", msg.m_sMsg.GetData());
         m_AllMessages.PeekBack().m_sMsg = s;
 
         if (msg.m_Type == nsLogMsgType::ErrorMsg)

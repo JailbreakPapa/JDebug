@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <GuiFoundation/GuiFoundationPCH.h>
 
 #include <Foundation/Configuration/Startup.h>
@@ -119,9 +114,17 @@ const QIcon& nsQtUiServices::GetCachedIconResource(nsStringView sIdentifier, nsC
       const nsColorGammaUB color8 = svgTintColor;
 
       nsStringBuilder rep;
-      rep.Format("#{}{}{}", nsArgI((int)color8.r, 2, true, 16), nsArgI((int)color8.g, 2, true, 16), nsArgI((int)color8.b, 2, true, 16));
+      rep.SetFormat("#{}{}{}", nsArgI((int)color8.r, 2, true, 16), nsArgI((int)color8.g, 2, true, 16), nsArgI((int)color8.b, 2, true, 16));
 
       sContent.ReplaceAll_NoCase("#ffffff", rep);
+
+      rep.Append(";");
+      sContent.ReplaceAll_NoCase("#fff;", rep);
+      rep.Shrink(0, 1);
+
+      rep.Prepend("\"");
+      rep.Append("\"");
+      sContent.ReplaceAll_NoCase("\"#fff\"", rep);
     }
 
     // hash the content AFTER the color replacement, so it includes the custom color change
@@ -387,7 +390,9 @@ void nsQtUiServices::OpenInExplorer(const char* szPath, bool bIsFile)
 
 nsStatus nsQtUiServices::OpenInVsCode(const QStringList& arguments)
 {
-  QString sVsCodeExe =
+  QString sVsCodeExe;
+#if NS_ENABLED(NS_PLATFORM_WINDOWS)
+  sVsCodeExe =
     QStandardPaths::locate(QStandardPaths::GenericDataLocation, "Programs/Microsoft VS Code/Code.exe", QStandardPaths::LocateOption::LocateFile);
 
   if (!QFile().exists(sVsCodeExe))
@@ -401,11 +406,20 @@ nsStatus nsQtUiServices::OpenInVsCode(const QStringList& arguments)
       sVsCodeExe = sVsCodeExeKey.left(sVsCodeExeKey.length() - 5).replace("\\", "/").replace("\"", "");
     }
   }
+#endif
 
-  if (!QFile().exists(sVsCodeExe))
+  if (sVsCodeExe.isEmpty() || !QFile().exists(sVsCodeExe))
   {
-    return nsStatus("Installation of Visual Studio Code could not be located.\n"
-                    "Please visit 'https://code.visualstudio.com/download' to download the 'User Installer' of Visual Studio Code.");
+    // Try code executable in PATH
+    if (QProcess::execute("code", {"--version"}) == 0)
+    {
+      sVsCodeExe = "code";
+    }
+    else
+    {
+      return nsStatus("Installation of Visual Studio Code could not be located.\n"
+                      "Please visit 'https://code.visualstudio.com/download' to download the 'User Installer' of Visual Studio Code.");
+    }
   }
 
   QProcess proc;

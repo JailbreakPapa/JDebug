@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #pragma once
 
 #include <ToolsFoundation/ToolsFoundationDLL.h>
@@ -194,8 +189,6 @@ private:
   void FireFileChangedEvent(const nsDataDirPath& file, nsFileStatus fileStatus, nsFileChangedEvent::Type type);
   void FireFolderChangedEvent(const nsDataDirPath& file, nsFolderChangedEvent::Type type);
 
-  int FindDataDir(const nsStringView path);
-
 private:
   // Immutable data after Initialize
   nsApplicationFileSystemConfig m_FileSystemConfig;
@@ -207,8 +200,8 @@ private:
   mutable nsMutex m_FilesMutex;
   nsAtomicBool m_bInitialized = false;
 
-  FilesMap m_ReferencedFiles;     // Absolute path to stat map
-  FoldersMap m_ReferencedFolders; // Absolute path to status map
+  FilesMap m_ReferencedFiles;                     // Absolute path to stat map
+  FoldersMap m_ReferencedFolders;                 // Absolute path to status map
   nsSet<nsString> m_LockedFiles;
   nsMap<nsString, nsFileStatus> m_TransiendFiles; // Absolute path to stat for files outside the data directories.
 };

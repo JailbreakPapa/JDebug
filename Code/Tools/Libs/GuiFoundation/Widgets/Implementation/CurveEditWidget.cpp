@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <GuiFoundation/GuiFoundationPCH.h>
 
 #include <Foundation/Math/Color.h>
@@ -1074,7 +1069,7 @@ void nsQtCurveEditWidget::PaintSelectedTangentHandles(QPainter* painter) const
 
     if (bDrawLeft && tmLeft != nsCurveTangentMode::Linear && tmLeft != nsCurveTangentMode::Auto)
     {
-      if (tmLeft == nsCurveTangentMode::Bezier)
+      if (tmLeft == nsCurveTangentMode::Bnsier)
       {
         const nsVec2d leftHandlePos = cp.m_Position + nsVec2d(cp.m_LeftTangent.x, cp.m_LeftTangent.y);
         const QPointF ptPosLeft = MapFromScene(QPointF(leftHandlePos.x, leftHandlePos.y));
@@ -1092,7 +1087,7 @@ void nsQtCurveEditWidget::PaintSelectedTangentHandles(QPainter* painter) const
 
     if (bDrawRight && tmRight != nsCurveTangentMode::Linear && tmRight != nsCurveTangentMode::Auto)
     {
-      if (tmRight == nsCurveTangentMode::Bezier)
+      if (tmRight == nsCurveTangentMode::Bnsier)
       {
         const nsVec2d rightHandlePos = cp.m_Position + nsVec2d(cp.m_RightTangent.x, cp.m_RightTangent.y);
         const QPointF ptPosRight = MapFromScene(QPointF(rightHandlePos.x, rightHandlePos.y));
@@ -1292,7 +1287,7 @@ void nsQtCurveEditWidget::RenderSideLinesAndText(QPainter* painter, const QRectF
       const QPoint pos = MapFromScene(QPointF(0, y));
 
       textRect.setRect(0, pos.y() - 15, areaRect.width(), 15);
-      tmp.Format("{0}", nsArgF(y));
+      tmp.SetFormat("{0}", nsArgF(y));
 
       painter->drawText(textRect, tmp.GetData(), textOpt);
     }
@@ -1370,12 +1365,12 @@ nsQtCurveEditWidget::ClickTarget nsQtCurveEditWidget::DetectClickTarget(const QP
     nsVec2d ptLeft;
     nsVec2d ptRight;
 
-    // if (cp.m_LeftTangentMode == nsCurveTangentMode::Bezier)
+    // if (cp.m_LeftTangentMode == nsCurveTangentMode::Bnsier)
     ptLeft = ToVec(MapFromScene(point + nsVec2d(cp.m_LeftTangent.x, cp.m_LeftTangent.y)));
     // else
     // ptLeft = ToVec(MapFromScene(cp.m_Point)) + MapDirFromScene(cp.m_LeftTangent).GetNormalized() * 50.0f;
 
-    // if (cp.m_RightTangentMode == nsCurveTangentMode::Bezier)
+    // if (cp.m_RightTangentMode == nsCurveTangentMode::Bnsier)
     ptRight = ToVec(MapFromScene(point + nsVec2d(cp.m_RightTangent.x, cp.m_RightTangent.y)));
     // else
     // ptRight = ToVec(MapFromScene(cp.m_Point)) + MapDirFromScene(cp.m_RightTangent).GetNormalized() * 50.0f;

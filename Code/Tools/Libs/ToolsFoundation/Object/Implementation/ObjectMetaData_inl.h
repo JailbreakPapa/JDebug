@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #pragma once
 
 template <typename KEY, typename VALUE>
@@ -132,7 +127,7 @@ void nsObjectMetaData<KEY, VALUE>::AttachMetaDataToAbstractGraph(nsAbstractObjec
 
       const VALUE* pMeta = nullptr;
       if (!m_pMetaStorage->m_MetaData.TryGetValue(guid, pMeta)) // TryGetValue is not const correct with the second parameter
-        continue;                               // it is the default object, so all values are default -> skip
+        continue;                                               // it is the default object, so all values are default -> skip
 
       for (const auto& pProp : pMeta->GetDynamicRTTI()->GetProperties())
       {
@@ -200,7 +195,8 @@ nsSharedPtr<typename nsObjectMetaData<KEY, VALUE>::Storage> nsObjectMetaData<KEY
 
   m_pMetaStorage = pNewStorage;
 
-  m_pMetaStorage->m_DataModifiedEvent.AddEventHandler([this](const EventData& e) { m_DataModifiedEvent.Broadcast(e); }, m_EventsUnsubscriber);
+  m_pMetaStorage->m_DataModifiedEvent.AddEventHandler([this](const EventData& e)
+    { m_DataModifiedEvent.Broadcast(e); }, m_EventsUnsubscriber);
 
   return retVal;
 }

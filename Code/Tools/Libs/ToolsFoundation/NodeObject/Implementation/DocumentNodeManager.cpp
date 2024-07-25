@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <ToolsFoundation/ToolsFoundationPCH.h>
 
 #include <Foundation/Serialization/AbstractObjectGraph.h>
@@ -46,6 +41,8 @@ struct DocumentNodeManager_ConnectionMetaData
   nsUuid m_Target;
   nsString m_SourcePin;
   nsString m_TargetPin;
+
+  bool IsValid() const { return m_Source.IsValid() && m_Target.IsValid(); }
 };
 NS_DECLARE_REFLECTABLE_TYPE(NS_NO_LINKAGE, DocumentNodeManager_ConnectionMetaData);
 
@@ -75,6 +72,25 @@ NS_END_DYNAMIC_REFLECTED_TYPE;
 // clang-format on
 
 ////////////////////////////////////////////////////////////////////////
+// nsDocumentObject_ConnectionBase
+////////////////////////////////////////////////////////////////////////
+
+// clang-format off
+NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsDocumentObject_ConnectionBase, 1, nsRTTIDefaultAllocator<nsDocumentObject_ConnectionBase>)
+{
+  NS_BEGIN_PROPERTIES
+  {
+    NS_MEMBER_PROPERTY("Source", m_Source)->AddAttributes(new nsHiddenAttribute()),
+    NS_MEMBER_PROPERTY("Target", m_Target)->AddAttributes(new nsHiddenAttribute()),
+    NS_MEMBER_PROPERTY("SourcePin", m_SourcePin)->AddAttributes(new nsHiddenAttribute()),
+    NS_MEMBER_PROPERTY("TargetPin", m_TargetPin)->AddAttributes(new nsHiddenAttribute()),
+  }
+  NS_END_PROPERTIES;
+}
+NS_END_DYNAMIC_REFLECTED_TYPE;
+// clang-format on
+
+////////////////////////////////////////////////////////////////////////
 // nsDocumentNodeManager
 ////////////////////////////////////////////////////////////////////////
 
@@ -92,9 +108,21 @@ nsDocumentNodeManager::~nsDocumentNodeManager()
   m_PropertyEvents.RemoveEventHandler(nsMakeDelegate(&nsDocumentNodeManager::PropertyEventsHandler, this));
 }
 
+void nsDocumentNodeManager::GetNodeCreationTemplates(nsDynamicArray<nsNodeCreationTemplate>& out_templates) const
+{
+  nsHybridArray<const nsRTTI*, 32> types;
+  GetCreateableTypes(types);
+
+  for (auto pType : types)
+  {
+    auto& nodeTemplate = out_templates.ExpandAndGetRef();
+    nodeTemplate.m_pType = pType;
+  }
+}
+
 const nsRTTI* nsDocumentNodeManager::GetConnectionType() const
 {
-  return nsGetStaticRTTI<DocumentNodeManager_DefaultConnection>();
+  return nsGetStaticRTTI<nsDocumentObject_ConnectionBase>();
 }
 
 nsVec2 nsDocumentNodeManager::GetNodePos(const nsDocumentObject* pObject) const
@@ -111,6 +139,13 @@ const nsConnection& nsDocumentNodeManager::GetConnection(const nsDocumentObject*
   auto it = m_ObjectToConnection.Find(pObject->GetGuid());
   NS_ASSERT_DEV(it.IsValid(), "Can't get connection for objects that aren't connections!");
   return *it.Value();
+}
+
+const nsConnection* nsDocumentNodeManager::GetConnectionIfExists(const nsDocumentObject* pObject) const
+{
+  NS_ASSERT_DEV(pObject != nullptr, "Invalid input!");
+  auto it = m_ObjectToConnection.Find(pObject->GetGuid());
+  return it.IsValid() ? it.Value().Borrow() : nullptr;
 }
 
 const nsPin* nsDocumentNodeManager::GetInputPinByName(const nsDocumentObject* pObject, nsStringView sName) const
@@ -273,6 +308,11 @@ void nsDocumentNodeManager::Connect(const nsDocumentObject* pObject, const nsPin
   NS_IGNORE_UNUSED(res);
   NS_ASSERT_DEBUG(CanConnect(pObject->GetType(), source, target, res).m_Result.Succeeded(), "Connect: Sanity check failed!");
 
+  NS_ASSERT_DEBUG(pObject->GetTypeAccessor().GetValue("Source") == source.GetParent()->GetGuid(), "Property should have been set at this point already");
+  NS_ASSERT_DEBUG(pObject->GetTypeAccessor().GetValue("Target") == target.GetParent()->GetGuid(), "Property should have been set at this point already");
+  NS_ASSERT_DEBUG(pObject->GetTypeAccessor().GetValue("SourcePin") == source.GetName(), "Property should have been set at this point already");
+  NS_ASSERT_DEBUG(pObject->GetTypeAccessor().GetValue("TargetPin") == target.GetName(), "Property should have been set at this point already");
+
   auto pConnection = NS_DEFAULT_NEW(nsConnection, source, target, pObject);
   m_ObjectToConnection.Insert(pObject->GetGuid(), pConnection);
 
@@ -341,23 +381,6 @@ void nsDocumentNodeManager::AttachMetaDataBeforeSaving(nsAbstractObjectGraph& re
         rttiConverter.AddProperties(pAbstractObject, pNodeMetaDataType, &nodeMetaData);
       }
     }
-
-    {
-      auto it2 = m_ObjectToConnection.Find(guid);
-      if (it2.IsValid())
-      {
-        const nsConnection& connection = *it2.Value();
-        const nsPin& sourcePin = connection.GetSourcePin();
-        const nsPin& targetPin = connection.GetTargetPin();
-
-        DocumentNodeManager_ConnectionMetaData connectionMetaData;
-        connectionMetaData.m_Source = sourcePin.GetParent()->GetGuid();
-        connectionMetaData.m_Target = targetPin.GetParent()->GetGuid();
-        connectionMetaData.m_SourcePin = sourcePin.GetName();
-        connectionMetaData.m_TargetPin = targetPin.GetName();
-        rttiConverter.AddProperties(pAbstractObject, pConnectionMetaDataType, &connectionMetaData);
-      }
-    }
   }
 }
 
@@ -370,6 +393,21 @@ void nsDocumentNodeManager::RestoreMetaDataAfterLoading(const nsAbstractObjectGr
 
   nsRttiConverterContext context;
   nsRttiConverterReader rttiConverter(&graph, &context);
+
+  // Ensure that all nodes have their pins created
+  for (auto it : graph.GetAllNodes())
+  {
+    auto pAbstractObject = it.Value();
+    nsDocumentObject* pObject = GetObject(pAbstractObject->GetGuid());
+    if (pObject != nullptr && IsNode(pObject))
+    {
+      auto& nodeInternal = m_ObjectToNode[pObject->GetGuid()];
+      if (nodeInternal.m_Inputs.IsEmpty() && nodeInternal.m_Outputs.IsEmpty())
+      {
+        InternalCreatePins(pObject, nodeInternal);
+      }
+    }
+  }
 
   for (auto it : graph.GetAllNodes())
   {
@@ -398,67 +436,90 @@ void nsDocumentNodeManager::RestoreMetaDataAfterLoading(const nsAbstractObjectGr
         }
       }
 
-      // Backwards compatibility to old file format
-      if (auto pOldConnections = pAbstractObject->FindProperty("Node::Connections"))
-      {
-        NS_ASSERT_DEV(bUndoable == false, "Undo not supported for old file format");
-        RestoreOldMetaDataAfterLoading(graph, *pOldConnections, pObject);
-      }
+      NS_ASSERT_DEV(pAbstractObject->FindProperty("Node::Connections") == nullptr, "Old file format detected that is not supported anymore. Re-save the document with a previous version of ns. ({})", GetDocument()->GetDocumentPath());
     }
     else if (IsConnection(pObject))
+    {
+      nsVariant sourceVar = pObject->GetTypeAccessor().GetValue("Source");
+      nsVariant targetVar = pObject->GetTypeAccessor().GetValue("Target");
+      nsVariant sourcePinVar = pObject->GetTypeAccessor().GetValue("SourcePin");
+      nsVariant targetPinVar = pObject->GetTypeAccessor().GetValue("TargetPin");
+      NS_ASSERT_DEV(sourceVar.IsA<nsUuid>() && targetVar.IsA<nsUuid>() && sourcePinVar.IsA<nsString>() && targetPinVar.IsA<nsString>(), "Invalid connection object");
+
+      nsUuid source = sourceVar.Get<nsUuid>();
+      nsUuid target = targetVar.Get<nsUuid>();
+      nsStringView sourcePin = sourcePinVar.Get<nsString>();
+      nsStringView targetPin = targetPinVar.Get<nsString>();
+
+      const nsPin* pSourcePin = nullptr;
+      const nsPin* pTargetPin = nullptr;
+      if (ResolveConnection(source, target, sourcePin, targetPin, pSourcePin, pTargetPin).Failed())
+      {
+        // Try to restore from metadata
+        DocumentNodeManager_ConnectionMetaData connectionMetaData;
+        rttiConverter.ApplyPropertiesToObject(pAbstractObject, pConnectionMetaDataType, &connectionMetaData);
+        if (connectionMetaData.IsValid())
+        {
+          pObject->GetTypeAccessor().SetValue("Source", connectionMetaData.m_Source);
+          pObject->GetTypeAccessor().SetValue("Target", connectionMetaData.m_Target);
+          pObject->GetTypeAccessor().SetValue("SourcePin", connectionMetaData.m_SourcePin);
+          pObject->GetTypeAccessor().SetValue("TargetPin", connectionMetaData.m_TargetPin);
+
+          source = connectionMetaData.m_Source;
+          target = connectionMetaData.m_Target;
+          sourcePin = connectionMetaData.m_SourcePin;
+          targetPin = connectionMetaData.m_TargetPin;
+        }
+      }
+
+      if (ResolveConnection(source, target, sourcePin, targetPin, pSourcePin, pTargetPin).Succeeded())
+      {
+        if (bUndoable)
+        {
+          nsConnectNodePinsCommand cmd;
+          cmd.m_ConnectionObject = pObject->GetGuid();
+          cmd.m_ObjectSource = pSourcePin->GetParent()->GetGuid();
+          cmd.m_ObjectTarget = pTargetPin->GetParent()->GetGuid();
+          cmd.m_sSourcePin = pSourcePin->GetName();
+          cmd.m_sTargetPin = pTargetPin->GetName();
+          history->AddCommand(cmd).LogFailure();
+        }
+        else
+        {
+          Connect(pObject, *pSourcePin, *pTargetPin);
+        }
+      }
+      else
+      {
+        RemoveObject(pObject);
+        DestroyObject(pObject);
+      }
+    }
+    else
     {
       DocumentNodeManager_ConnectionMetaData connectionMetaData;
       rttiConverter.ApplyPropertiesToObject(pAbstractObject, pConnectionMetaDataType, &connectionMetaData);
 
-      nsDocumentObject* pSource = GetObject(connectionMetaData.m_Source);
-      nsDocumentObject* pTarget = GetObject(connectionMetaData.m_Target);
-      if (pSource == nullptr || pTarget == nullptr)
-      {
-        RemoveObject(pObject);
-        DestroyObject(pObject);
+      if (connectionMetaData.IsValid() == false)
         continue;
+
+      const nsPin* pSourcePin = nullptr;
+      const nsPin* pTargetPin = nullptr;
+      if (ResolveConnection(connectionMetaData.m_Source, connectionMetaData.m_Target, connectionMetaData.m_SourcePin, connectionMetaData.m_TargetPin, pSourcePin, pTargetPin).Succeeded())
+      {
+        nsDocumentObject* pNewConnectionObject = CreateObject(GetConnectionType());
+        pNewConnectionObject->GetTypeAccessor().SetValue("Source", connectionMetaData.m_Source);
+        pNewConnectionObject->GetTypeAccessor().SetValue("Target", connectionMetaData.m_Target);
+        pNewConnectionObject->GetTypeAccessor().SetValue("SourcePin", connectionMetaData.m_SourcePin);
+        pNewConnectionObject->GetTypeAccessor().SetValue("TargetPin", connectionMetaData.m_TargetPin);
+        AddObject(pNewConnectionObject, nullptr, "", -1);
+
+        NS_ASSERT_DEV(bUndoable == false, "This code path should only be taken by document loading code");
+        Connect(pNewConnectionObject, *pSourcePin, *pTargetPin);
       }
 
-      const nsPin* pSourcePin = GetOutputPinByName(pSource, connectionMetaData.m_SourcePin);
-      if (pSourcePin == nullptr)
-      {
-        nsLog::Error("Unknown output pin '{}' on '{}'. The connection has been removed.", connectionMetaData.m_SourcePin, pSource->GetType()->GetTypeName());
-        RemoveObject(pObject);
-        DestroyObject(pObject);
-        continue;
-      }
-
-      const nsPin* pTargetPin = GetInputPinByName(pTarget, connectionMetaData.m_TargetPin);
-      if (pTargetPin == nullptr)
-      {
-        nsLog::Error("Unknown input pin '{}' on '{}'. The connection has been removed.", connectionMetaData.m_TargetPin, pTarget->GetType()->GetTypeName());
-        RemoveObject(pObject);
-        DestroyObject(pObject);
-        continue;
-      }
-
-      nsDocumentNodeManager::CanConnectResult res;
-      if (CanConnect(pObject->GetType(), *pSourcePin, *pTargetPin, res).m_Result.Failed())
-      {
-        RemoveObject(pObject);
-        DestroyObject(pObject);
-        continue;
-      }
-
-      if (bUndoable)
-      {
-        nsConnectNodePinsCommand cmd;
-        cmd.m_ConnectionObject = pObject->GetGuid();
-        cmd.m_ObjectSource = connectionMetaData.m_Source;
-        cmd.m_ObjectTarget = connectionMetaData.m_Target;
-        cmd.m_sSourcePin = connectionMetaData.m_SourcePin;
-        cmd.m_sTargetPin = connectionMetaData.m_TargetPin;
-        history->AddCommand(cmd).LogFailure();
-      }
-      else
-      {
-        Connect(pObject, *pSourcePin, *pTargetPin);
-      }
+      RemoveObject(pObject);
+      DestroyObject(pObject);
     }
   }
 }
@@ -628,6 +689,34 @@ bool nsDocumentNodeManager::WouldConnectionCreateCircle(const nsPin& source, con
   return CanReachNode(pTargetNode, pSourceNode, Visited);
 }
 
+nsResult nsDocumentNodeManager::ResolveConnection(const nsUuid& sourceObject, const nsUuid& targetObject, nsStringView sourcePin, nsStringView targetPin, const nsPin*& out_pSourcePin, const nsPin*& out_pTargetPin) const
+{
+  const nsDocumentObject* pSource = GetObject(sourceObject);
+  const nsDocumentObject* pTarget = GetObject(targetObject);
+  if (pSource == nullptr || pTarget == nullptr)
+  {
+    return NS_FAILURE;
+  }
+
+  const nsPin* pSourcePin = GetOutputPinByName(pSource, sourcePin);
+  if (pSourcePin == nullptr)
+  {
+    nsLog::Error("Unknown output pin '{}' on '{}'. The connection has been removed.", sourcePin, pSource->GetType()->GetTypeName());
+    return NS_FAILURE;
+  }
+
+  const nsPin* pTargetPin = GetInputPinByName(pTarget, targetPin);
+  if (pTargetPin == nullptr)
+  {
+    nsLog::Error("Unknown input pin '{}' on '{}'. The connection has been removed.", targetPin, pTarget->GetType()->GetTypeName());
+    return NS_FAILURE;
+  }
+
+  out_pSourcePin = pSourcePin;
+  out_pTargetPin = pTargetPin;
+  return NS_SUCCESS;
+}
+
 void nsDocumentNodeManager::GetDynamicPinNames(const nsDocumentObject* pObject, nsStringView sPropertyName, nsStringView sPinName, nsDynamicArray<nsString>& out_Names) const
 {
   out_Names.Clear();
@@ -649,7 +738,7 @@ void nsDocumentNodeManager::GetDynamicPinNames(const nsDocumentObject* pObject, 
       nsUInt32 uiCount = value.ConvertTo<nsUInt32>();
       for (nsUInt32 i = 0; i < uiCount; ++i)
       {
-        sTemp.Format("{}[{}]", sPinName, i);
+        sTemp.SetFormat("{}[{}]", sPinName, i);
         out_Names.PushBack(sTemp);
       }
     }
@@ -666,7 +755,7 @@ void nsDocumentNodeManager::GetDynamicPinNames(const nsDocumentObject* pObject, 
     {
       for (nsUInt32 i = 0; i < uiCount; ++i)
       {
-        sTemp.Format("{}", a[i]);
+        sTemp.SetFormat("{}", a[i]);
         out_Names.PushBack(sTemp);
       }
     }
@@ -677,11 +766,31 @@ void nsDocumentNodeManager::GetDynamicPinNames(const nsDocumentObject* pObject, 
         out_Names.PushBack(a[i].ConvertTo<nsString>());
       }
     }
+    else if (pArrayProp->GetSpecificType()->GetTypeFlags().IsSet(nsTypeFlags::Class))
+    {
+      for (nsUInt32 i = 0; i < uiCount; ++i)
+      {
+        auto pInnerObject = GetObject(a[i].Get<nsUuid>());
+        if (pInnerObject == nullptr)
+          continue;
+
+        nsVariant nameVar = pInnerObject->GetTypeAccessor().GetValue("Name");
+        if (nameVar.IsString() || nameVar.IsHashedString())
+        {
+          out_Names.PushBack(nameVar.ConvertTo<nsString>());
+        }
+        else
+        {
+          sTemp.SetFormat("{}[{}]", sPinName, i);
+          out_Names.PushBack(sTemp);
+        }
+      }
+    }
     else
     {
       for (nsUInt32 i = 0; i < uiCount; ++i)
       {
-        sTemp.Format("{}[{}]", sPinName, i);
+        sTemp.SetFormat("{}[{}]", sPinName, i);
         out_Names.PushBack(sTemp);
       }
     }
@@ -698,13 +807,19 @@ bool nsDocumentNodeManager::TryRecreatePins(const nsDocumentObject* pObject)
   for (auto& pPin : nodeInternal.m_Inputs)
   {
     if (HasConnections(*pPin))
+    {
+      nsLog::Error("Can't re-create pins if they are still connected");
       return false;
+    }
   }
 
   for (auto& pPin : nodeInternal.m_Outputs)
   {
     if (HasConnections(*pPin))
+    {
+      nsLog::Error("Can't re-create pins if they are still connected");
       return false;
+    }
   }
 
   {
@@ -805,6 +920,10 @@ void nsDocumentNodeManager::StructureEventHandler(const nsDocumentObjectStructur
         nsDocumentNodeManagerEvent e2(nsDocumentNodeManagerEvent::Type::AfterNodeAdded, e.m_pObject);
         m_NodeEvents.Broadcast(e2);
       }
+      else
+      {
+        HandlePotentialDynamicPinPropertyChanged(e.m_pNewParent, e.m_sParentProperty);
+      }
     }
     break;
     case nsDocumentObjectStructureEvent::Type::BeforeObjectRemoved:
@@ -823,6 +942,10 @@ void nsDocumentNodeManager::StructureEventHandler(const nsDocumentObjectStructur
         nsDocumentNodeManagerEvent e2(nsDocumentNodeManagerEvent::Type::AfterNodeRemoved, e.m_pObject);
         m_NodeEvents.Broadcast(e2);
       }
+      else
+      {
+        HandlePotentialDynamicPinPropertyChanged(e.m_pPreviousParent, e.m_sParentProperty);
+      }
     }
     break;
 
@@ -836,58 +959,25 @@ void nsDocumentNodeManager::PropertyEventsHandler(const nsDocumentObjectProperty
   if (e.m_pObject == nullptr)
     return;
 
-  const nsAbstractProperty* pProp = e.m_pObject->GetType()->FindPropertyByName(e.m_sProperty);
-  if (pProp == nullptr)
-    return;
+  HandlePotentialDynamicPinPropertyChanged(e.m_pObject, e.m_sProperty);
 
-  if (IsDynamicPinProperty(e.m_pObject, pProp))
+  if (const nsDocumentObject* pParent = e.m_pObject->GetParent())
   {
-    TryRecreatePins(e.m_pObject);
+    HandlePotentialDynamicPinPropertyChanged(pParent, e.m_pObject->GetParentProperty());
   }
 }
 
-void nsDocumentNodeManager::RestoreOldMetaDataAfterLoading(const nsAbstractObjectGraph& graph, const nsAbstractObjectNode::Property& connectionsProperty, const nsDocumentObject* pSourceObject)
+void nsDocumentNodeManager::HandlePotentialDynamicPinPropertyChanged(const nsDocumentObject* pObject, nsStringView sPropertyName)
 {
-  if (connectionsProperty.m_Value.IsA<nsVariantArray>() == false)
+  if (pObject == nullptr)
     return;
 
-  const nsVariantArray& array = connectionsProperty.m_Value.Get<nsVariantArray>();
-  for (const nsVariant& var : array)
+  const nsAbstractProperty* pProp = pObject->GetType()->FindPropertyByName(sPropertyName);
+  if (pProp == nullptr)
+    return;
+
+  if (IsDynamicPinProperty(pObject, pProp))
   {
-    if (var.IsA<nsUuid>() == false)
-      continue;
-
-    auto pOldConnectionAbstractObject = graph.GetNode(var.Get<nsUuid>());
-    auto pTargetProperty = pOldConnectionAbstractObject->FindProperty("Target");
-    if (pTargetProperty == nullptr || pTargetProperty->m_Value.IsA<nsUuid>() == false)
-      continue;
-
-    nsDocumentObject* pTargetObject = GetObject(pTargetProperty->m_Value.Get<nsUuid>());
-    if (pTargetObject == nullptr)
-      continue;
-
-    auto pSourcePinProperty = pOldConnectionAbstractObject->FindProperty("SourcePin");
-    if (pSourcePinProperty == nullptr || pSourcePinProperty->m_Value.IsA<nsString>() == false)
-      continue;
-
-    auto pTargetPinProperty = pOldConnectionAbstractObject->FindProperty("TargetPin");
-    if (pTargetPinProperty == nullptr || pTargetPinProperty->m_Value.IsA<nsString>() == false)
-      continue;
-
-    const nsPin* pSourcePin = GetOutputPinByName(pSourceObject, pSourcePinProperty->m_Value.Get<nsString>());
-    const nsPin* pTargetPin = GetInputPinByName(pTargetObject, pTargetPinProperty->m_Value.Get<nsString>());
-    if (pSourcePin == nullptr || pTargetPin == nullptr)
-      continue;
-
-    const nsRTTI* pConnectionType = GetConnectionType();
-    nsDocumentNodeManager::CanConnectResult res;
-    if (CanConnect(pConnectionType, *pSourcePin, *pTargetPin, res).m_Result.Succeeded())
-    {
-      nsDocumentObject* pConnectionObject = CreateObject(pConnectionType, nsUuid::MakeUuid());
-
-      AddObject(pConnectionObject, nullptr, "", -1);
-
-      Connect(pConnectionObject, *pSourcePin, *pTargetPin);
-    }
+    TryRecreatePins(pObject);
   }
 }

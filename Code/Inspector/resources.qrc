@@ -1,0 +1,40 @@
+<RCC>
+  <qresource prefix="Icons">
+    <file>Icons/Resource.svg</file>
+    <file>Icons/ResourceDeleted.svg</file>
+    <file>Icons/ResourceFallback.svg</file>
+    <file>Icons/ResourceCreated.svg</file>
+    <file>Icons/ResourceMissing.svg</file>
+    <file>Icons/Resources.svg</file>
+    <file>Icons/database_refresh.svg</file>
+    <file>Icons/StatHistory.svg</file>
+    <file>Icons/Server.svg</file>
+    <file>Icons/Search.svg</file>
+    <file>Icons/Log.svg</file>
+    <file>Icons/Monitor.svg</file>
+    <file>Icons/Save.svg</file>
+    <file>Icons/Plugin.svg</file>
+    <file>Icons/ClearList.svg</file>
+    <file>Icons/InputActions.svg</file>
+    <file>Icons/InputSlots.svg</file>
+    <file>Icons/Subsystem.svg</file>
+    <file>Icons/File.svg</file>
+    <file>Icons/AllThreads.svg</file>
+    <file>Icons/LoadingThread.svg</file>
+    <file>Icons/MainThread.svg</file>
+    <file>Icons/Map.svg</file>
+    <file>Icons/OtherThread.svg</file>
+    <file>Icons/GlobalEvent.svg</file>
+    <file>Icons/Time.svg</file>
+    <file>Icons/Set.svg</file>
+    <file>Icons/StatFavourite.svg</file>
+    <file>Icons/Stat.svg</file>
+    <file>Icons/StatGroup.svg</file>
+    <file>Icons/Message.svg</file>
+    <file>Icons/Memory.svg</file>
+    <file>Icons/Array.svg</file>
+    <file>Icons/Function.svg</file>
+    <file>Icons/Member.svg</file>
+    <file>Icons/Type.svg</file>
+  </qresource>
+</RCC>

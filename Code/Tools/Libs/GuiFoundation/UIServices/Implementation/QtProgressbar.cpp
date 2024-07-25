@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <GuiFoundation/GuiFoundationPCH.h>
 
 #include <Foundation/Utilities/Progress.h>
@@ -100,7 +95,8 @@ void nsQtProgressbar::EnsureCreated()
   if (!m_pProgress->AllowUserCancel())
     m_pDialog->setCancelButton(nullptr);
 
-  auto ClearDialog = [this]() {
+  auto ClearDialog = [this]()
+  {
     // this can happen during tests
     m_pDialog = nullptr;
   };

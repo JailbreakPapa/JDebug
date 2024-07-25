@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #pragma once
 
 #include <Foundation/Containers/Map.h>
@@ -31,7 +26,7 @@ public:
   nsQtSearchableMenu(QObject* pParent);
 
   /// \brief Use slashes in the szInternalPath to separate sub-items.
-  void AddItem(const char* szDisplayName, const char* szInternalPath, const QVariant& variant, QIcon icon = QIcon());
+  void AddItem(nsStringView sDisplayName, const char* szInternalPath, const QVariant& variant, QIcon icon = QIcon());
 
   /// \brief Returns the currently entered search text.
   QString GetSearchText() const;
@@ -67,4 +62,3 @@ private:
   QStandardItemModel* m_pItemModel;
   nsMap<nsString, QStandardItem*> m_Hierarchy;
 };
-

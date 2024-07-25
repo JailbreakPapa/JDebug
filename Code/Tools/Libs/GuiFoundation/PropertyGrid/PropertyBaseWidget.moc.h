@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #pragma once
 
 #include <Foundation/Communication/Event.h>
@@ -66,6 +61,9 @@ public:
   nsVariant GetCommonValue(const nsHybridArray<nsPropertySelection, 8>& items, const nsAbstractProperty* pProperty);
   void PrepareToDie();
 
+  /// \brief By default disables the widget, but can be overridden to make a widget more interactable (for example to be able to copy text from it).
+  virtual void SetReadOnly(bool bReadOnly = true);
+
 public:
   static const nsRTTI* GetCommonBaseType(const nsHybridArray<nsPropertySelection, 8>& items);
   static QColor SetPaletteBackgroundColor(nsColorGammaUB inputColor, QPalette& ref_palette);
@@ -93,7 +91,7 @@ protected:
   bool m_bIsDefault; ///< Whether the variable that the widget represents is currently set to the default value or has been modified.
 
 private:
-  bool m_bUndead; ///< Widget is being destroyed
+  bool m_bUndead;    ///< Widget is being destroyed
 };
 
 
@@ -190,9 +188,9 @@ protected:
   virtual void DoPrepareToDie() override;
 
 protected:
-  QHBoxLayout* m_pLayout;
+  QVBoxLayout* m_pLayout;
   nsQtGroupBoxBase* m_pGroup;
-  QHBoxLayout* m_pGroupLayout;
+  QVBoxLayout* m_pGroupLayout;
   nsQtTypeWidget* m_pTypeWidget;
 };
 

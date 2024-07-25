@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #pragma once
 
 #include <Foundation/Reflection/ReflectionUtils.h>
@@ -18,6 +13,9 @@ class nsAbstractObjectGraph;
 class NS_TOOLSFOUNDATION_DLL nsToolsReflectionUtils
 {
 public:
+  /// \brief Returns the type under which the property is stored on the editor side.
+  static nsVariantType::Enum GetStorageType(const nsAbstractProperty* pProperty);
+
   /// \brief Returns the default value for the entire property as it is stored on the editor side.
   static nsVariant GetStorageDefault(const nsAbstractProperty* pProperty);
 

@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <ToolsFoundation/ToolsFoundationDLL.h>
 
 #if NS_ENABLED(NS_SUPPORTS_DIRECTORY_WATCHER) && NS_ENABLED(NS_SUPPORTS_FILE_ITERATORS)
@@ -53,9 +48,9 @@ NS_END_SUBSYSTEM_DECLARATION;
 
 namespace
 {
-  thread_local nsHybridArray<nsFileChangedEvent, 2, nsStaticAllocatorWrapper> g_PostponedFiles;
+  thread_local nsHybridArray<nsFileChangedEvent, 2, nsStaticsAllocatorWrapper> g_PostponedFiles;
   thread_local bool g_bInFileBroadcast = false;
-  thread_local nsHybridArray<nsFolderChangedEvent, 2, nsStaticAllocatorWrapper> g_PostponedFolders;
+  thread_local nsHybridArray<nsFolderChangedEvent, 2, nsStaticsAllocatorWrapper> g_PostponedFolders;
   thread_local bool g_bInFolderBroadcast = false;
 } // namespace
 
@@ -482,8 +477,8 @@ nsResult nsFileSystemModel::HashFile(nsStringView sAbsolutePath, nsFileStatus& o
     if (!out_stat.m_LastModified.Compare(statDep.m_LastModificationTime, nsTimestamp::CompareMode::Identical) || out_stat.m_uiHash == 0)
     {
       FILESYSTEM_PROFILE(sAbsolutePath2);
-      nsFileReader file;
-      if (file.Open(sAbsolutePath2).Failed())
+      nsFileReader modifiedFile;
+      if (modifiedFile.Open(sAbsolutePath2).Failed())
       {
         nsLog::Error("Failed to hash file '{0}', open failed", sAbsolutePath2);
         return NS_FAILURE;
@@ -496,7 +491,7 @@ nsResult nsFileSystemModel::HashFile(nsStringView sAbsolutePath, nsFileStatus& o
         return NS_FAILURE;
       }
       out_stat.m_LastModified = statDep.m_LastModificationTime;
-      out_stat.m_uiHash = nsFileSystemModel::HashFile(file, nullptr);
+      out_stat.m_uiHash = nsFileSystemModel::HashFile(modifiedFile, nullptr);
       out_stat.m_Status = nsFileStatus::Status::Valid;
 
       // Update state. No need to compare timestamps we hold a lock on the file via the reader.
@@ -719,7 +714,7 @@ void nsFileSystemModel::CheckFolder(nsStringView sAbsolutePath)
     // As we are using nsCompareDataDirPath, entries of different casing interleave but we are only interested in the ones with matching casing so we skip the rest.
     for (auto it = m_ReferencedFiles.LowerBound(sAbsolutePath2.GetView()); it.IsValid(); ++it)
     {
-      if (it.Key().GetAbsolutePath().StartsWith(sAbsolutePath2) && !visitedFiles.Contains(it.Key().GetAbsolutePath()))
+      if (nsPathUtils::IsSubPath(sAbsolutePath2, it.Key().GetAbsolutePath()) && !visitedFiles.Contains(it.Key().GetAbsolutePath()))
         missingFiles.PushBack(it.Key().GetAbsolutePath());
       if (!it.Key().GetAbsolutePath().StartsWith_NoCase(sAbsolutePath2))
         break;
@@ -727,7 +722,7 @@ void nsFileSystemModel::CheckFolder(nsStringView sAbsolutePath)
 
     for (auto it = m_ReferencedFolders.LowerBound(sAbsolutePath2.GetView()); it.IsValid(); ++it)
     {
-      if (it.Key().GetAbsolutePath().StartsWith(sAbsolutePath2) && !visitedFolders.Contains(it.Key().GetAbsolutePath()))
+      if (nsPathUtils::IsSubPath(sAbsolutePath2, it.Key().GetAbsolutePath()) && !visitedFolders.Contains(it.Key().GetAbsolutePath()))
         missingFolders.PushBack(it.Key().GetAbsolutePath());
       if (!it.Key().GetAbsolutePath().StartsWith_NoCase(sAbsolutePath2))
         break;
@@ -741,7 +736,8 @@ void nsFileSystemModel::CheckFolder(nsStringView sAbsolutePath)
   }
 
   // Delete sub-folders before parent folders.
-  missingFolders.Sort([](const nsString& lhs, const nsString& rhs) -> bool { return nsStringUtils::Compare(lhs, rhs) > 0; });
+  missingFolders.Sort([](const nsString& lhs, const nsString& rhs) -> bool
+    { return nsStringUtils::Compare(lhs, rhs) > 0; });
   for (nsString& sFolder : missingFolders)
   {
     nsDataDirPath path(std::move(sFolder), m_DataDirRoots, folder.GetDataDirIndex());
@@ -892,7 +888,7 @@ void nsFileSystemModel::RemoveFileOrFolder(const nsDataDirPath& absolutePath, bo
         auto itlowerBound = m_ReferencedFiles.LowerBound(absolutePath);
         while (itlowerBound.IsValid())
         {
-          if (itlowerBound.Key().GetAbsolutePath().StartsWith(absolutePath.GetAbsolutePath()))
+          if (nsPathUtils::IsSubPath(absolutePath, itlowerBound.Key().GetAbsolutePath()))
           {
             previouslyKnownFiles.Insert(itlowerBound.Key());
           }
@@ -977,18 +973,6 @@ void nsFileSystemModel::FireFolderChangedEvent(const nsDataDirPath& file, nsFold
     m_FolderChangedEvents.Broadcast(tempEvent);
   }
   g_PostponedFolders.Clear();
-}
-
-nsInt32 nsFileSystemModel::FindDataDir(const nsStringView path)
-{
-  for (nsUInt32 i = 0; i < m_DataDirRoots.GetCount(); ++i)
-  {
-    if (path.StartsWith(m_DataDirRoots[i]))
-    {
-      return (nsInt32)i;
-    }
-  }
-  return -1;
 }
 
 #endif

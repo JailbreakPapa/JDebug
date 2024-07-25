@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #pragma once
 
 #include <Foundation/Math/Vec2.h>
@@ -28,9 +23,13 @@ protected:
   virtual void wheelEvent(QWheelEvent* event) override;
   virtual void contextMenuEvent(QContextMenuEvent* event) override;
   virtual void resizeEvent(QResizeEvent*) override;
+  virtual void drawBackground(QPainter* painter, const QRectF& r) override;
+
 
 private:
   void UpdateView();
+
+  void DrawGrid(QPainter* painter, const double gridStep);
 
 private:
   nsQtNodeScene* m_pScene = nullptr;

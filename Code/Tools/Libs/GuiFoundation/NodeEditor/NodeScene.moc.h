@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #pragma once
 
 #include <Foundation/Containers/Map.h>
@@ -25,7 +20,8 @@ public:
   {
     Node = QGraphicsItem::UserType + 1,
     Pin,
-    Connection
+    Connection,
+		Comment
   };
 
   explicit nsQtNodeScene(QObject* pParent = nullptr);
@@ -46,10 +42,11 @@ public:
 
     enum Enum
     {
-      BezierCurve,
+      BnsierCurve,
       StraightLine,
+      SubwayLines,
 
-      Default = BezierCurve
+      Default = BnsierCurve
     };
   };
 
@@ -63,6 +60,7 @@ public:
     enum Enum
     {
       DirectionArrows = NS_BIT(0), ///< Draw an arrow to indicate the connection's direction. Only works with straight lines atm.
+      DrawDebugging = NS_BIT(1),   ///< Draw animated effect to denote debugging.
 
       Default = 0
     };
@@ -70,6 +68,7 @@ public:
     struct Bits
     {
       StorageType DirectionArrows : 1;
+      StorageType DrawDebugging : 1;
     };
   };
 
@@ -90,7 +89,7 @@ private:
   void CreateQtConnection(const nsDocumentObject* pObject);
   void DeleteQtConnection(const nsDocumentObject* pObject);
   void RecreateQtPins(const nsDocumentObject* pObject);
-  void CreateNodeObject(const nsRTTI* pRtti);
+  void CreateNodeObject(const nsNodeCreationTemplate& nodeTemplate);
   void NodeEventsHandler(const nsDocumentNodeManagerEvent& e);
   void PropertyEventsHandler(const nsDocumentObjectPropertyEvent& e);
   void SelectionEventsHandler(const nsSelectionManagerEvent& e);
@@ -125,12 +124,15 @@ private:
   bool m_bIgnoreSelectionChange = false;
   nsQtPin* m_pStartPin = nullptr;
   nsQtConnection* m_pTempConnection = nullptr;
+  nsQtNode* m_pTempNode = nullptr;
   nsDeque<const nsDocumentObject*> m_Selection;
   nsVec2 m_vMousePos = nsVec2::MakeZero();
   QString m_sContextMenuSearchText;
   nsDynamicArray<const nsQtPin*> m_ConnectablePins;
   nsEnum<ConnectionStyle> m_ConnectionStyle;
   nsBitflags<ConnectionDecorationFlags> m_ConnectionDecorationFlags;
+
+  nsDynamicArray<nsNodeCreationTemplate> m_NodeCreationTemplates;
 
   static nsVec2 s_vLastMouseInteraction;
 };

@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #pragma once
 
 #include <GuiFoundation/Action/Action.h>
@@ -50,7 +45,7 @@ public:
   {
     nsTreeNode<T>* pNode = NS_DEFAULT_NEW(nsTreeNode<T>, data);
     pNode->m_Guid = nsUuid::MakeUuid();
-    m_Children.Insert(pNode, uiIndex);
+    m_Children.InsertAt(uiIndex, pNode);
     pNode->m_pParent = this;
     return pNode;
   }

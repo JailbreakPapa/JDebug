@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <ToolsFoundation/ToolsFoundationPCH.h>
 
 #include <Foundation/IO/FileSystem/FileReader.h>
@@ -23,7 +18,7 @@ nsString ToBinary(const nsUuid& guid)
 
   for (nsUInt32 i = 0; i < sizeof(nsUuid); ++i)
   {
-    s.Format("{0}", nsArgU((nsUInt32)*pBytes, 2, true, 16, true));
+    s.SetFormat("{0}", nsArgU((nsUInt32)*pBytes, 2, true, 16, true));
     ++pBytes;
 
     sResult.Append(s.GetData());

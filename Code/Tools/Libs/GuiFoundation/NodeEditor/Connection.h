@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #pragma once
 
 #include <GuiFoundation/GuiFoundationDLL.h>
@@ -39,6 +34,9 @@ public:
 
 protected:
   virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
+
+  // Draws connections following the rules of subway maps (angles of 45 degrees only).
+  void DrawSubwayPath(QPainterPath& path, const QPointF& startPoint, const QPointF& endPoint);
 
   const nsDocumentObject* m_pObject = nullptr;
   const nsConnection* m_pConnection = nullptr;

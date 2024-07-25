@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #pragma once
 
 #include <GuiFoundation/GuiFoundationDLL.h>
@@ -134,6 +129,8 @@ public:
   nsQtPropertyEditorIntSpinboxWidget(nsInt8 iNumComponents, nsInt32 iMinValue, nsInt32 iMaxValue);
   ~nsQtPropertyEditorIntSpinboxWidget();
 
+  void SetReadOnly(bool bReadOnly = true) override;
+
 private Q_SLOTS:
   void SlotValueChanged();
   void SlotSliderValueChanged(int value);
@@ -150,6 +147,65 @@ protected:
   QHBoxLayout* m_pLayout = nullptr;
   nsQtDoubleSpinBox* m_pWidget[4] = {};
   QSlider* m_pSlider = nullptr;
+};
+
+/// *** SLIDER ***
+
+class NS_GUIFOUNDATION_DLL nsQtImageSliderWidget : public QWidget
+{
+  Q_OBJECT
+public:
+  using ImageGeneratorFunc = QImage (*)(nsUInt32 uiWidth, nsUInt32 uiHeight, double fMinValue, double fMaxValue);
+
+  nsQtImageSliderWidget(ImageGeneratorFunc generator, double fMinValue, double fMaxValue, QWidget* pParent);
+
+  static nsMap<nsString, ImageGeneratorFunc> s_ImageGenerators;
+
+  double GetValue() const { return m_fValue; }
+  void SetValue(double fValue);
+
+Q_SIGNALS:
+  void valueChanged(double x);
+  void sliderReleased();
+
+protected:
+  virtual void paintEvent(QPaintEvent*) override;
+  virtual void mouseMoveEvent(QMouseEvent*) override;
+  virtual void mousePressEvent(QMouseEvent*) override;
+  virtual void mouseReleaseEvent(QMouseEvent*) override;
+
+  void UpdateImage();
+
+  ImageGeneratorFunc m_Generator = nullptr;
+  QImage m_Image;
+  double m_fValue = 0;
+  double m_fMinValue = 0;
+  double m_fMaxValue = 0;
+};
+
+class NS_GUIFOUNDATION_DLL nsQtPropertyEditorSliderWidget : public nsQtStandardPropertyWidget
+{
+  Q_OBJECT
+
+public:
+  nsQtPropertyEditorSliderWidget();
+  ~nsQtPropertyEditorSliderWidget();
+
+private Q_SLOTS:
+  void SlotSliderValueChanged(double fValue);
+  void on_EditingFinished_triggered();
+
+protected:
+  virtual void OnInit() override;
+  virtual void InternalSetValue(const nsVariant& value) override;
+
+  bool m_bTemporaryCommand = false;
+  nsEnum<nsVariantType> m_OriginalType;
+  QHBoxLayout* m_pLayout = nullptr;
+  nsQtImageSliderWidget* m_pSlider = nullptr;
+
+  double m_fMinValue = 0;
+  double m_fMaxValue = 0;
 };
 
 /// *** QUATERNION ***
@@ -184,6 +240,8 @@ class NS_GUIFOUNDATION_DLL nsQtPropertyEditorLineEditWidget : public nsQtStandar
 
 public:
   nsQtPropertyEditorLineEditWidget();
+
+  void SetReadOnly(bool bReadOnly = true) override;
 
 protected Q_SLOTS:
   void on_TextChanged_triggered(const QString& value);

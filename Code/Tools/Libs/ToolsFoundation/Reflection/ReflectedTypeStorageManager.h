@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #pragma once
 
 #include <Foundation/Containers/Set.h>
@@ -52,8 +47,6 @@ private:
 
     void UpdateInstances(nsUInt32 uiIndex, const nsAbstractProperty* pProperty, nsSet<const nsDocumentObject*>& ref_requiresPatchingEmbeddedClass);
     void AddPropertyToInstances(nsUInt32 uiIndex, const nsAbstractProperty* pProperty, nsSet<const nsDocumentObject*>& ref_requiresPatchingEmbeddedClass);
-
-    nsVariantType::Enum GetStorageType(const nsAbstractProperty* pProperty);
 
     nsSet<nsReflectedTypeStorageAccessor*> m_Instances;
     nsHashTable<nsString, StorageInfo> m_PathToStorageInfoTable;

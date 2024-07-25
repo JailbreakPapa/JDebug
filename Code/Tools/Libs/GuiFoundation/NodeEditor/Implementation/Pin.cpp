@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <GuiFoundation/GuiFoundationPCH.h>
 
 #include <Foundation/Strings/TranslationLookup.h>
@@ -55,7 +50,15 @@ void nsQtPin::SetPin(const nsPin& pin)
 {
   m_pPin = &pin;
 
-  m_pLabel->setPlainText(nsTranslate(pin.GetName()));
+  if (m_bTranslatePinName)
+  {
+    m_pLabel->setPlainText(nsMakeQString(nsTranslate(pin.GetName())));
+  }
+  else
+  {
+    m_pLabel->setPlainText(pin.GetName());
+  }
+
   auto rectLabel = m_pLabel->boundingRect();
 
   const int iRadus = rectLabel.height();

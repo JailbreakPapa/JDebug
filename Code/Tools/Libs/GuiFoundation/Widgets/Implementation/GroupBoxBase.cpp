@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <GuiFoundation/GuiFoundationPCH.h>
 
 #include <GuiFoundation/UIServices/UIServices.moc.h>
@@ -20,9 +15,9 @@ nsQtGroupBoxBase::nsQtGroupBoxBase(QWidget* pParent, bool bCollapsible)
   m_bCollapsible = bCollapsible;
 }
 
-void nsQtGroupBoxBase::SetTitle(const char* szTitle)
+void nsQtGroupBoxBase::SetTitle(nsStringView sTitle)
 {
-  m_sTitle = szTitle;
+  m_sTitle = nsMakeQString(sTitle);
 }
 
 QString nsQtGroupBoxBase::GetTitle() const

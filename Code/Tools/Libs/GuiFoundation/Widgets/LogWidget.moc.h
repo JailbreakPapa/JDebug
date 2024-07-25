@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #pragma once
 
 #include <Foundation/Basics.h>
@@ -32,13 +27,20 @@ public:
 
   virtual bool eventFilter(QObject* pObject, QEvent* pEvent) override;
 
+  using LogItemContextActionCallback = nsDelegate<void(const nsStringView& sLogText)>;
+  static bool AddLogItemContextActionCallback(const nsStringView& sName, const LogItemContextActionCallback& logCallback);
+  static bool RemoveLogItemContextActionCallback(const nsStringView& sName);
+
 private Q_SLOTS:
   void on_ButtonClearLog_clicked();
   void on_Search_textChanged(const QString& text);
   void on_ComboFilter_currentIndexChanged(int index);
+  void OnItemDoubleClicked(QModelIndex idx);
 
 private:
   nsQtLogModel* m_pLog;
   void ScrollToBottomIfAtEnd(int iNumElements);
-};
 
+  /// \brief List of callbacks invoked when the user double clicks a log message
+  static nsMap<nsString, LogItemContextActionCallback> s_LogCallbacks;
+};

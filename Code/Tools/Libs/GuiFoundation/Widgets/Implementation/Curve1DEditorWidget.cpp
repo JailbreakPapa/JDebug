@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <GuiFoundation/GuiFoundationPCH.h>
 
 #include <Foundation/IO/FileSystem/FileReader.h>
@@ -545,14 +540,17 @@ void nsQtCurve1DEditorWidget::onContextMenu(QPoint pos, QPointF scenePos)
   if (bIsCurveNonEmpty)
   {
     QMenu* cmSel = m.addMenu("Selection");
-    cmSel->addAction("Select All\tCtrl+A", this, [this]() { CurveEdit->SelectAll(); });
+    cmSel->addAction("Select All\tCtrl+A", this, [this]()
+      { CurveEdit->SelectAll(); });
 
     if (!selection.IsEmpty())
     {
-      cmSel->addAction("Clear Selection\tESC", this, [this]() { CurveEdit->ClearSelection(); });
+      cmSel->addAction("Clear Selection\tESC", this, [this]()
+        { CurveEdit->ClearSelection(); });
 
       cmSel->addAction(
-        "Frame Selection\tShift+F", this, [this]() { FrameSelection(); });
+        "Frame Selection\tShift+F", this, [this]()
+        { FrameSelection(); });
 
       cmSel->addSeparator();
 
@@ -568,8 +566,8 @@ void nsQtCurve1DEditorWidget::onContextMenu(QPoint pos, QPointF scenePos)
 
       cmLT->addAction("Auto", this, [this]()
         { SetTangentMode(nsCurveTangentMode::Auto, true, false); });
-      cmLT->addAction("Bezier", this, [this]()
-        { SetTangentMode(nsCurveTangentMode::Bezier, true, false); });
+      cmLT->addAction("Bnsier", this, [this]()
+        { SetTangentMode(nsCurveTangentMode::Bnsier, true, false); });
       cmLT->addAction("Fixed Length", this, [this]()
         { SetTangentMode(nsCurveTangentMode::FixedLength, true, false); });
       cmLT->addAction("Linear", this, [this]()
@@ -577,8 +575,8 @@ void nsQtCurve1DEditorWidget::onContextMenu(QPoint pos, QPointF scenePos)
 
       cmRT->addAction("Auto", this, [this]()
         { SetTangentMode(nsCurveTangentMode::Auto, false, true); });
-      cmRT->addAction("Bezier", this, [this]()
-        { SetTangentMode(nsCurveTangentMode::Bezier, false, true); });
+      cmRT->addAction("Bnsier", this, [this]()
+        { SetTangentMode(nsCurveTangentMode::Bnsier, false, true); });
       cmRT->addAction("Fixed Length", this, [this]()
         { SetTangentMode(nsCurveTangentMode::FixedLength, false, true); });
       cmRT->addAction("Linear", this, [this]()
@@ -586,8 +584,8 @@ void nsQtCurve1DEditorWidget::onContextMenu(QPoint pos, QPointF scenePos)
 
       cmBT->addAction("Auto", this, [this]()
         { SetTangentMode(nsCurveTangentMode::Auto, true, true); });
-      cmBT->addAction("Bezier", this, [this]()
-        { SetTangentMode(nsCurveTangentMode::Bezier, true, true); });
+      cmBT->addAction("Bnsier", this, [this]()
+        { SetTangentMode(nsCurveTangentMode::Bnsier, true, true); });
       cmBT->addAction("Fixed Length", this, [this]()
         { SetTangentMode(nsCurveTangentMode::FixedLength, true, true); });
       cmBT->addAction("Linear", this, [this]()
@@ -597,15 +595,23 @@ void nsQtCurve1DEditorWidget::onContextMenu(QPoint pos, QPointF scenePos)
     {
       QMenu* cm = m.addMenu("Curve");
       cm->addSeparator();
-      cm->addAction("Mirror Horizontally", this, [this]() { MirrorHorizontally(0); });
-      cm->addAction("Mirror Vertically", this, [this]() { MirrorVertically(0); });
-      cm->addAction("Normalize X", this, [this]() { NormalizeCurveX(0); });
-      cm->addAction("Normalize Y", this, [this]() { NormalizeCurveY(0); });
-      cm->addAction("Loop: Adjust Last Point", this, [this]() { MakeRepeatable(true); });
-      cm->addAction("Loop: Adjust First Point", this, [this]() { MakeRepeatable(false); });
-      cm->addAction("Clear Curve", this, [this]() { ClearAllPoints(); });
+      cm->addAction("Mirror Horizontally", this, [this]()
+        { MirrorHorizontally(0); });
+      cm->addAction("Mirror Vertically", this, [this]()
+        { MirrorVertically(0); });
+      cm->addAction("Normalize X", this, [this]()
+        { NormalizeCurveX(0); });
+      cm->addAction("Normalize Y", this, [this]()
+        { NormalizeCurveY(0); });
+      cm->addAction("Loop: Adjust Last Point", this, [this]()
+        { MakeRepeatable(true); });
+      cm->addAction("Loop: Adjust First Point", this, [this]()
+        { MakeRepeatable(false); });
+      cm->addAction("Clear Curve", this, [this]()
+        { ClearAllPoints(); });
 
-      cm->addAction("Frame Curve\tCtrl+F", this, [this]() { FrameCurve(); });
+      cm->addAction("Frame Curve\tCtrl+F", this, [this]()
+        { FrameCurve(); });
     }
   }
 
@@ -737,7 +743,8 @@ void nsQtCurve1DEditorWidget::onContextMenu(QPoint pos, QPointF scenePos)
     nsMap<nsString, QMenu*> subMenus;
     subMenus[""] = presentsMenu;
 
-    auto GetSubMenu = [&](const nsStringBuilder& sPath, auto getSubMenu2) {
+    auto GetSubMenu = [&](const nsStringBuilder& sPath, auto getSubMenu2)
+    {
       auto it = subMenus.Find(sPath);
       if (it.IsValid())
         return it.Value();
@@ -761,7 +768,8 @@ void nsQtCurve1DEditorWidget::onContextMenu(QPoint pos, QPointF scenePos)
 
       sPresetPath.Trim("/");
 
-      GetSubMenu(sPresetPath, GetSubMenu)->addAction(sPresetName.GetData(), [this, preset]() { LoadCurvePreset(preset).IgnoreResult(); });
+      GetSubMenu(sPresetPath, GetSubMenu)->addAction(sPresetName.GetData(), [this, preset]()
+        { LoadCurvePreset(preset).IgnoreResult(); });
     }
   }
 
@@ -962,7 +970,8 @@ void nsQtCurve1DEditorWidget::onGenerateCurve(nsCurveFunction::Enum function, bo
     samples[i].m_fCorrectValue = nsCurveFunction::GetValue(function, x, inverse);
   }
 
-  auto AddPt = [&](nsUInt32 uiIdx) {
+  auto AddPt = [&](nsUInt32 uiIdx)
+  {
     samples[uiIdx].m_bInserted = true;
     const double x = samples[uiIdx].m_fPos;
     const double y = samples[uiIdx].m_fCorrectValue;
@@ -1266,7 +1275,7 @@ void nsQtCurve1DEditorWidget::on_LinePosition_editingFinished()
   {
     const auto& cp = m_Curves.m_Curves[cpSel.m_uiCurve]->m_ControlPoints[cpSel.m_uiPoint];
 
-    nsInt32 iTick = m_Curves.TickFromTime(nsTime::MakeFromSeconds(value));
+    const nsInt64 iTick = m_Curves.TickFromTime(nsTime::MakeFromSeconds(value));
     if (cp.m_iTick != iTick)
       Q_EMIT CpMovedEvent(cpSel.m_uiCurve, cpSel.m_uiPoint, iTick, cp.m_fValue);
   }

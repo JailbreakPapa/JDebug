@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <GuiFoundation/GuiFoundationPCH.h>
 
 #include <Foundation/Utilities/ConversionUtils.h>
@@ -148,12 +143,12 @@ void nsQtColorDialog::ApplyColor()
 
   if (m_bAlpha)
   {
-    s.Format("{0}{1}{2}{3}", nsArgU(m_uiGammaRed, 2, true, 16, true), nsArgU(m_uiGammaGreen, 2, true, 16, true), nsArgU(m_uiGammaBlue, 2, true, 16, true),
+    s.SetFormat("{0}{1}{2}{3}", nsArgU(m_uiGammaRed, 2, true, 16, true), nsArgU(m_uiGammaGreen, 2, true, 16, true), nsArgU(m_uiGammaBlue, 2, true, 16, true),
       nsArgU(m_uiAlpha, 2, true, 16, true));
   }
   else
   {
-    s.Format("{0}{1}{2}", nsArgU(m_uiGammaRed, 2, true, 16, true), nsArgU(m_uiGammaGreen, 2, true, 16, true), nsArgU(m_uiGammaBlue, 2, true, 16, true));
+    s.SetFormat("{0}{1}{2}", nsArgU(m_uiGammaRed, 2, true, 16, true), nsArgU(m_uiGammaGreen, 2, true, 16, true), nsArgU(m_uiGammaBlue, 2, true, 16, true));
   }
 
   LineHEX->setText(s.GetData());

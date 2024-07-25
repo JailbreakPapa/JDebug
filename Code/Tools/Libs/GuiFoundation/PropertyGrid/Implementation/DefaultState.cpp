@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <GuiFoundation/GuiFoundationPCH.h>
 
 #include <Foundation/Configuration/SubSystem.h>
@@ -59,7 +54,8 @@ nsDefaultObjectState::nsDefaultObjectState(nsObjectAccessorBase* pAccessor, cons
       {
         pProviders.PushBack(std::move(pProvider));
       }
-      pProviders.Sort([](const nsSharedPtr<nsDefaultStateProvider>& pA, const nsSharedPtr<nsDefaultStateProvider>& pB) -> bool { return pA->GetRootDepth() > pB->GetRootDepth(); });
+      pProviders.Sort([](const nsSharedPtr<nsDefaultStateProvider>& pA, const nsSharedPtr<nsDefaultStateProvider>& pB) -> bool
+        { return pA->GetRootDepth() > pB->GetRootDepth(); });
     }
   }
 }
@@ -165,7 +161,8 @@ nsDefaultContainerState::nsDefaultContainerState(nsObjectAccessorBase* pAccessor
       {
         pProviders.PushBack(std::move(pProvider));
       }
-      pProviders.Sort([](const nsSharedPtr<nsDefaultStateProvider>& pA, const nsSharedPtr<nsDefaultStateProvider>& pB) -> bool { return pA->GetRootDepth() > pB->GetRootDepth(); });
+      pProviders.Sort([](const nsSharedPtr<nsDefaultStateProvider>& pA, const nsSharedPtr<nsDefaultStateProvider>& pB) -> bool
+        { return pA->GetRootDepth() > pB->GetRootDepth(); });
     }
   }
 }
@@ -260,7 +257,7 @@ bool nsDefaultStateProvider::IsDefaultValue(SuperArray superPtr, nsObjectAccesso
   const bool bIsValueType = nsReflectionUtils::IsValueType(pProp) || pProp->GetFlags().IsAnySet(nsPropertyFlags::IsEnum | nsPropertyFlags::Bitflags);
   if (index.IsValid() && !bIsValueType)
   {
-    //#TODO we do not support reverting entire objects just yet.
+    // #TODO we do not support reverting entire objects just yet.
     return true;
   }
 
@@ -341,7 +338,8 @@ bool nsDefaultStateProvider::DoesVariantMatchProperty(const nsVariant& value, co
   if (pProp->GetSpecificType() == nsGetStaticRTTI<nsVariant>())
     return true;
 
-  auto MatchesElementType = [&](const nsVariant& value2) -> bool {
+  auto MatchesElementType = [&](const nsVariant& value2) -> bool
+  {
     if (pProp->GetFlags().IsAnySet(nsPropertyFlags::IsEnum | nsPropertyFlags::Bitflags))
     {
       return value2.IsNumber() && !value2.IsFloatingPoint();
@@ -395,7 +393,8 @@ bool nsDefaultStateProvider::DoesVariantMatchProperty(const nsVariant& value, co
         if (value.IsA<nsVariantDictionary>())
         {
           const nsVariantDictionary& valueDict = value.Get<nsVariantDictionary>();
-          return std::all_of(cbegin(valueDict), cend(valueDict), [&](const auto& it) { return MatchesElementType(it.Value()); });
+          return std::all_of(cbegin(valueDict), cend(valueDict), [&](const auto& it)
+            { return MatchesElementType(it.Value()); });
         }
       }
     }

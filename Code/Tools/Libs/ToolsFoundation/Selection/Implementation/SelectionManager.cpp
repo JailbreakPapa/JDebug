@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <ToolsFoundation/ToolsFoundationPCH.h>
 
 #include <ToolsFoundation/Document/Document.h>
@@ -189,7 +184,7 @@ void nsSelectionManager::ToggleObject(const nsDocumentObject* pObject)
 
 const nsDocumentObject* nsSelectionManager::GetCurrentObject() const
 {
-  return m_pSelectionStorage->m_SelectionList.IsEmpty() ? nullptr : m_pSelectionStorage->m_SelectionList[m_pSelectionStorage->m_SelectionList.GetCount() - 1];
+  return m_pSelectionStorage->m_SelectionList.IsEmpty() ? nullptr : m_pSelectionStorage->m_SelectionList.PeekBack();
 }
 
 bool nsSelectionManager::IsSelected(const nsDocumentObject* pObject) const
@@ -229,7 +224,9 @@ nsSharedPtr<nsSelectionManager::Storage> nsSelectionManager::SwapStorage(nsShare
   m_pSelectionStorage = pNewStorage;
 
   m_pSelectionStorage->m_pObjectManager->m_StructureEvents.AddEventHandler(nsMakeDelegate(&nsSelectionManager::TreeEventHandler, this), m_ObjectStructureUnsubscriber);
-  m_pSelectionStorage->m_Events.AddEventHandler([this](const nsSelectionManagerEvent& e) { m_Events.Broadcast(e); }, m_EventsUnsubscriber);
+  m_pSelectionStorage->m_Events.AddEventHandler([this](const nsSelectionManagerEvent& e)
+    { m_Events.Broadcast(e); },
+    m_EventsUnsubscriber);
 
   return retVal;
 }
@@ -237,10 +234,13 @@ nsSharedPtr<nsSelectionManager::Storage> nsSelectionManager::SwapStorage(nsShare
 struct nsObjectHierarchyComparor
 {
   using Tree = nsHybridArray<const nsDocumentObject*, 4>;
-  nsObjectHierarchyComparor(nsDeque<const nsDocumentObject*>& ref_items)
+
+  nsObjectHierarchyComparor(nsArrayPtr<nsSelectionEntry> items)
   {
-    for (const nsDocumentObject* pObject : ref_items)
+    for (const nsSelectionEntry& e : items)
     {
+      const nsDocumentObject* pObject = e.m_pObject;
+
       Tree& tree = lookup[pObject];
       while (pObject)
       {
@@ -251,10 +251,10 @@ struct nsObjectHierarchyComparor
     }
   }
 
-  NS_ALWAYS_INLINE bool Less(const nsDocumentObject* lhs, const nsDocumentObject* rhs) const
+  NS_ALWAYS_INLINE bool Less(const nsSelectionEntry& lhs, const nsSelectionEntry& rhs) const
   {
-    const Tree& A = *lookup.GetValue(lhs);
-    const Tree& B = *lookup.GetValue(rhs);
+    const Tree& A = *lookup.GetValue(lhs.m_pObject);
+    const Tree& B = *lookup.GetValue(rhs.m_pObject);
 
     const nsUInt32 minSize = nsMath::Min(A.GetCount(), B.GetCount());
     for (nsUInt32 i = 0; i < minSize; i++)
@@ -271,32 +271,38 @@ struct nsObjectHierarchyComparor
     return A.GetCount() < B.GetCount();
   }
 
-  NS_ALWAYS_INLINE bool Equal(const nsDocumentObject* lhs, const nsDocumentObject* rhs) const { return lhs == rhs; }
+  NS_ALWAYS_INLINE bool Equal(const nsSelectionEntry& lhs, const nsSelectionEntry& rhs) const { return lhs.m_pObject == rhs.m_pObject; }
 
   nsMap<const nsDocumentObject*, Tree> lookup;
 };
 
-const nsDeque<const nsDocumentObject*> nsSelectionManager::GetTopLevelSelection() const
+void nsSelectionManager::GetTopLevelSelection(nsDynamicArray<nsSelectionEntry>& out_entries) const
 {
-  nsDeque<const nsDocumentObject*> items;
+  out_entries.Clear();
+  out_entries.Reserve(m_pSelectionStorage->m_SelectionList.GetCount());
+
+  nsUInt32 order = 0;
 
   for (const auto* pObj : m_pSelectionStorage->m_SelectionList)
   {
     if (!IsParentSelected(pObj))
     {
-      items.PushBack(pObj);
+      auto& e = out_entries.ExpandAndGetRef();
+      e.m_pObject = pObj;
+      e.m_uiSelectionOrder = order++;
     }
   }
 
-  nsObjectHierarchyComparor c(items);
-  items.Sort(c);
-
-  return items;
+  nsObjectHierarchyComparor c(out_entries);
+  out_entries.Sort(c);
 }
 
-const nsDeque<const nsDocumentObject*> nsSelectionManager::GetTopLevelSelection(const nsRTTI* pBase) const
+void nsSelectionManager::GetTopLevelSelectionOfType(const nsRTTI* pBase, nsDynamicArray<nsSelectionEntry>& out_entries) const
 {
-  nsDeque<const nsDocumentObject*> items;
+  out_entries.Clear();
+  out_entries.Reserve(m_pSelectionStorage->m_SelectionList.GetCount());
+
+  nsUInt32 order = 0;
 
   for (const auto* pObj : m_pSelectionStorage->m_SelectionList)
   {
@@ -305,12 +311,12 @@ const nsDeque<const nsDocumentObject*> nsSelectionManager::GetTopLevelSelection(
 
     if (!IsParentSelected(pObj))
     {
-      items.PushBack(pObj);
+      auto& e = out_entries.ExpandAndGetRef();
+      e.m_pObject = pObj;
+      e.m_uiSelectionOrder = order++;
     }
   }
 
-  nsObjectHierarchyComparor c(items);
-  items.Sort(c);
-
-  return items;
+  nsObjectHierarchyComparor c(out_entries);
+  out_entries.Sort(c);
 }

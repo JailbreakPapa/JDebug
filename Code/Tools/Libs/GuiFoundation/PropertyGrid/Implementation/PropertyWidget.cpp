@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <GuiFoundation/GuiFoundationPCH.h>
 
 #include <Foundation/Strings/TranslationLookup.h>
@@ -518,7 +513,6 @@ void nsQtPropertyEditorAngleWidget::SlotValueChanged()
 
 /// *** INT SPINBOX ***
 
-
 nsQtPropertyEditorIntSpinboxWidget::nsQtPropertyEditorIntSpinboxWidget(nsInt8 iNumComponents, nsInt32 iMinValue, nsInt32 iMaxValue)
   : nsQtStandardPropertyWidget()
 {
@@ -549,8 +543,21 @@ nsQtPropertyEditorIntSpinboxWidget::nsQtPropertyEditorIntSpinboxWidget(nsInt8 iN
   }
 }
 
-
 nsQtPropertyEditorIntSpinboxWidget::~nsQtPropertyEditorIntSpinboxWidget() = default;
+
+void nsQtPropertyEditorIntSpinboxWidget::SetReadOnly(bool bReadOnly /*= true*/)
+{
+  for (nsUInt32 i = 0; i < 4; ++i)
+  {
+    if (m_pWidget[i])
+      m_pWidget[i]->setReadOnly(bReadOnly);
+  }
+
+  if (m_pSlider)
+  {
+    m_pSlider->setDisabled(bReadOnly);
+  }
+}
 
 void nsQtPropertyEditorIntSpinboxWidget::OnInit()
 {
@@ -822,6 +829,200 @@ void nsQtPropertyEditorIntSpinboxWidget::on_EditingFinished_triggered()
   m_bTemporaryCommand = false;
 }
 
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+
+nsMap<nsString, nsQtImageSliderWidget::ImageGeneratorFunc> nsQtImageSliderWidget::s_ImageGenerators;
+
+nsQtImageSliderWidget::nsQtImageSliderWidget(ImageGeneratorFunc generator, double fMinValue, double fMaxValue, QWidget* pParent)
+  : QWidget(pParent)
+{
+  m_Generator = generator;
+  m_fMinValue = fMinValue;
+  m_fMaxValue = fMaxValue;
+
+  setAutoFillBackground(false);
+}
+
+void nsQtImageSliderWidget::SetValue(double fValue)
+{
+  if (m_fValue == fValue)
+    return;
+
+  m_fValue = fValue;
+  update();
+}
+
+void nsQtImageSliderWidget::paintEvent(QPaintEvent* event)
+{
+  QPainter painter(this);
+  painter.setRenderHint(QPainter::RenderHint::Antialiasing);
+
+  const QRect area = rect();
+
+  if (area.width() != m_Image.width())
+    UpdateImage();
+
+  painter.drawTiledPixmap(area, QPixmap::fromImage(m_Image));
+
+  const float factor = nsMath::Unlerp(m_fMinValue, m_fMaxValue, m_fValue);
+
+  const double pos = (int)(factor * area.width()) + 0.5f;
+
+  const double top = area.top() + 0.5;
+  const double bot = area.bottom() + 0.5;
+  const double len = 5.0;
+  const double wid = 2.0;
+
+  const QColor col = qRgb(80, 80, 80);
+
+  painter.setPen(col);
+  painter.setBrush(col);
+
+  {
+    QPainterPath path;
+    path.moveTo(QPointF(pos - wid, top));
+    path.lineTo(QPointF(pos, top + len));
+    path.lineTo(QPointF(pos + wid, top));
+    path.closeSubpath();
+
+    painter.drawPath(path);
+  }
+
+  {
+    QPainterPath path;
+    path.moveTo(QPointF(pos - wid, bot));
+    path.lineTo(QPointF(pos, bot - len));
+    path.lineTo(QPointF(pos + wid, bot));
+    path.closeSubpath();
+
+    painter.drawPath(path);
+  }
+}
+
+void nsQtImageSliderWidget::UpdateImage()
+{
+  const int width = rect().width();
+
+  if (m_Generator)
+  {
+    m_Image = m_Generator(rect().width(), rect().height(), m_fMinValue, m_fMaxValue);
+  }
+  else
+  {
+    m_Image = QImage(width, 1, QImage::Format::Format_RGB32);
+
+    nsColorGammaUB cg = nsColor::HotPink;
+    for (int x = 0; x < width; ++x)
+    {
+      m_Image.setPixel(x, 0, qRgb(cg.r, cg.g, cg.b));
+    }
+  }
+}
+
+void nsQtImageSliderWidget::mouseMoveEvent(QMouseEvent* event)
+{
+  if (event->buttons().testFlag(Qt::LeftButton))
+  {
+    const int width = rect().width();
+    const int height = rect().height();
+
+    QPoint coord = event->pos();
+    const int x = nsMath::Clamp(coord.x(), 0, width - 1);
+
+    const double fx = (double)x / (width - 1);
+    const double val = nsMath::Lerp(m_fMinValue, m_fMaxValue, fx);
+
+    valueChanged(val);
+  }
+
+  event->accept();
+}
+
+void nsQtImageSliderWidget::mousePressEvent(QMouseEvent* event)
+{
+  mouseMoveEvent(event);
+  event->accept();
+}
+
+void nsQtImageSliderWidget::mouseReleaseEvent(QMouseEvent* event)
+{
+  if (event->button() == Qt::LeftButton)
+  {
+    Q_EMIT sliderReleased();
+  }
+  event->accept();
+}
+
+/// *** SLIDER ***
+
+nsQtPropertyEditorSliderWidget::nsQtPropertyEditorSliderWidget()
+  : nsQtStandardPropertyWidget()
+{
+  m_pLayout = new QHBoxLayout(this);
+  m_pLayout->setContentsMargins(0, 0, 0, 0);
+  setLayout(m_pLayout);
+}
+
+nsQtPropertyEditorSliderWidget::~nsQtPropertyEditorSliderWidget() = default;
+
+void nsQtPropertyEditorSliderWidget::OnInit()
+{
+  const nsImageSliderUiAttribute* pSliderAttr = m_pProp->GetAttributeByType<nsImageSliderUiAttribute>();
+  const nsClampValueAttribute* pRange = m_pProp->GetAttributeByType<nsClampValueAttribute>();
+  NS_ASSERT_DEV(pRange != nullptr, "nsImageSliderUiAttribute always has to be compined with nsClampValueAttribute to specify the valid range.");
+  NS_ASSERT_DEV(pRange->GetMinValue().IsValid() && pRange->GetMaxValue().IsValid(), "The min and max values used with nsImageSliderUiAttribute both have to be valid.");
+
+  m_fMinValue = pRange->GetMinValue().ConvertTo<double>();
+  m_fMaxValue = pRange->GetMaxValue().ConvertTo<double>();
+
+  m_pSlider = new nsQtImageSliderWidget(nsQtImageSliderWidget::s_ImageGenerators[pSliderAttr->m_sImageGenerator], m_fMinValue, m_fMaxValue, this);
+
+  m_pLayout->insertWidget(0, m_pSlider);
+  connect(m_pSlider, SIGNAL(valueChanged(double)), this, SLOT(SlotSliderValueChanged(double)));
+  connect(m_pSlider, SIGNAL(sliderReleased()), this, SLOT(on_EditingFinished_triggered()));
+
+  if (const nsDefaultValueAttribute* pDefault = m_pProp->GetAttributeByType<nsDefaultValueAttribute>())
+  {
+    nsQtScopedBlockSignals bs(m_pSlider);
+
+    if (pDefault->GetValue().CanConvertTo<double>())
+    {
+      m_pSlider->SetValue(pDefault->GetValue().ConvertTo<double>());
+    }
+  }
+}
+
+void nsQtPropertyEditorSliderWidget::InternalSetValue(const nsVariant& value)
+{
+  nsQtScopedBlockSignals bs(m_pSlider);
+
+  m_OriginalType = value.GetType();
+
+  m_pSlider->SetValue(value.ConvertTo<double>());
+}
+
+void nsQtPropertyEditorSliderWidget::SlotSliderValueChanged(double fValue)
+{
+  if (!m_bTemporaryCommand)
+    Broadcast(nsPropertyEvent::Type::BeginTemporary);
+
+  m_bTemporaryCommand = true;
+
+  BroadcastValueChanged(nsVariant(fValue).ConvertTo(m_OriginalType));
+
+  m_pSlider->SetValue(fValue);
+}
+
+void nsQtPropertyEditorSliderWidget::on_EditingFinished_triggered()
+{
+  if (m_bTemporaryCommand)
+    Broadcast(nsPropertyEvent::Type::EndTemporary);
+
+  m_bTemporaryCommand = false;
+}
+
 
 /// *** QUATERNION ***
 
@@ -933,12 +1134,16 @@ nsQtPropertyEditorLineEditWidget::nsQtPropertyEditorLineEditWidget()
   connect(m_pWidget, SIGNAL(editingFinished()), this, SLOT(on_TextFinished_triggered()));
 }
 
+void nsQtPropertyEditorLineEditWidget::SetReadOnly(bool bReadOnly /*= true*/)
+{
+  m_pWidget->setReadOnly(bReadOnly);
+}
+
 void nsQtPropertyEditorLineEditWidget::OnInit()
 {
   if (m_pProp->GetAttributeByType<nsReadOnlyAttribute>() != nullptr || m_pProp->GetFlags().IsSet(nsPropertyFlags::ReadOnly))
   {
     setEnabled(true);
-
     nsQtScopedBlockSignals bs(m_pWidget);
 
     m_pWidget->setReadOnly(true);
@@ -1146,7 +1351,7 @@ void nsQtPropertyEditorEnumWidget::OnInit()
 
     const nsAbstractConstantProperty* pConstant = static_cast<const nsAbstractConstantProperty*>(pProp);
 
-    m_pWidget->addItem(QString::fromUtf8(nsTranslate(pConstant->GetPropertyName())), pConstant->GetConstant().ConvertTo<nsInt64>());
+    m_pWidget->addItem(nsMakeQString(nsTranslate(pConstant->GetPropertyName())), pConstant->GetConstant().ConvertTo<nsInt64>());
   }
 }
 
@@ -1216,7 +1421,7 @@ void nsQtPropertyEditorBitflagsWidget::OnInit()
     const nsAbstractConstantProperty* pConstant = static_cast<const nsAbstractConstantProperty*>(pProp);
 
     QWidgetAction* pAction = new QWidgetAction(m_pMenu);
-    QCheckBox* pCheckBox = new QCheckBox(QString::fromUtf8(nsTranslate(pConstant->GetPropertyName())), m_pMenu);
+    QCheckBox* pCheckBox = new QCheckBox(nsMakeQString(nsTranslate(pConstant->GetPropertyName())), m_pMenu);
     pCheckBox->setCheckable(true);
     pCheckBox->setCheckState(Qt::Unchecked);
     pAction->setDefaultWidget(pCheckBox);
@@ -1229,13 +1434,15 @@ void nsQtPropertyEditorBitflagsWidget::OnInit()
   {
     QWidgetAction* pAllAction = new QWidgetAction(m_pMenu);
     m_pAllButton = new QPushButton(QString::fromUtf8("All"), m_pMenu);
-    connect(m_pAllButton, &QPushButton::clicked, this, [this](bool bChecked){ SetAllChecked(true); });
+    connect(m_pAllButton, &QPushButton::clicked, this, [this](bool bChecked)
+      { SetAllChecked(true); });
     pAllAction->setDefaultWidget(m_pAllButton);
     m_pMenu->addAction(pAllAction);
 
     QWidgetAction* pClearAction = new QWidgetAction(m_pMenu);
     m_pClearButton = new QPushButton(QString::fromUtf8("Clear"), m_pMenu);
-    connect(m_pClearButton, &QPushButton::clicked, this, [this](bool bChecked){ SetAllChecked(false); });
+    connect(m_pClearButton, &QPushButton::clicked, this, [this](bool bChecked)
+      { SetAllChecked(false); });
     pClearAction->setDefaultWidget(m_pClearButton);
     m_pMenu->addAction(pClearAction);
   }
@@ -1364,7 +1571,8 @@ void nsQtCurve1DButtonWidget::UpdatePreview(nsObjectAccessorBase* pObjectAccesso
 
   if (!points.IsEmpty())
   {
-    points.Sort([](const nsVec2d& lhs, const nsVec2d& rhs) -> bool { return lhs.x < rhs.x; });
+    points.Sort([](const nsVec2d& lhs, const nsVec2d& rhs) -> bool
+      { return lhs.x < rhs.x; });
 
     const double normX = 1.0 / (maxX - minX);
     const double normY = 1.0 / (maxY - minY);

@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #pragma once
 
 #include <GuiFoundation/Action/BaseActions.h>
@@ -25,6 +20,9 @@ public:
   static nsActionDescriptorHandle s_hSaveAll;
 
   static nsActionDescriptorHandle s_hClose;
+  static nsActionDescriptorHandle s_hCloseAll;
+  static nsActionDescriptorHandle s_hCloseAllButThis;
+
   static nsActionDescriptorHandle s_hOpenContainingFolder;
   static nsActionDescriptorHandle s_hCopyAssetGuid;
 
@@ -44,6 +42,8 @@ public:
     SaveAs,
     SaveAll,
     Close,
+    CloseAll,
+    CloseAllButThis,
     OpenContainingFolder,
     UpdatePrefabs,
     CopyAssetGuid,

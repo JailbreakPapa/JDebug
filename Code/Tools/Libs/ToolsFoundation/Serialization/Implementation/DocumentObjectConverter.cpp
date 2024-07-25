@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <ToolsFoundation/ToolsFoundationPCH.h>
 
 #include <Foundation/Logging/Log.h>
@@ -422,16 +417,19 @@ void nsDocumentObjectConverterReader::ApplyProperty(nsDocumentObject* pObject, c
       {
         if (pProp->GetFlags().IsSet(nsPropertyFlags::PointerOwner))
         {
-          const nsUuid guid = pSource->m_Value.Get<nsUuid>();
-          if (guid.IsValid())
+          if (pSource->m_Value.IsA<nsUuid>())
           {
-            auto* pSubNode = m_pGraph->GetNode(guid);
-            NS_ASSERT_DEV(pSubNode != nullptr, "invalid document");
-
-            if (auto* pSubObject = CreateObjectFromNode(pSubNode))
+            const nsUuid guid = pSource->m_Value.Get<nsUuid>();
+            if (guid.IsValid())
             {
-              ApplyPropertiesToObject(pSubNode, pSubObject);
-              AddObject(pSubObject, pObject, pProp->GetPropertyName(), nsVariant());
+              auto* pSubNode = m_pGraph->GetNode(guid);
+              NS_ASSERT_DEV(pSubNode != nullptr, "invalid document");
+
+              if (auto* pSubObject = CreateObjectFromNode(pSubNode))
+              {
+                ApplyPropertiesToObject(pSubNode, pSubObject);
+                AddObject(pSubObject, pObject, pProp->GetPropertyName(), nsVariant());
+              }
             }
           }
         }
@@ -446,17 +444,19 @@ void nsDocumentObjectConverterReader::ApplyProperty(nsDocumentObject* pObject, c
         {
           pObject->GetTypeAccessor().SetValue(pProp->GetPropertyName(), pSource->m_Value);
         }
-        else // nsPropertyFlags::Class
+        else if (pSource->m_Value.IsA<nsUuid>()) // nsPropertyFlags::Class
         {
           const nsUuid& nodeGuid = pSource->m_Value.Get<nsUuid>();
+          if (nodeGuid.IsValid())
+          {
+            const nsUuid subObjectGuid = pObject->GetTypeAccessor().GetValue(pProp->GetPropertyName()).Get<nsUuid>();
+            nsDocumentObject* pEmbeddedClassObject = pObject->GetChild(subObjectGuid);
+            NS_ASSERT_DEV(pEmbeddedClassObject != nullptr, "CreateObject should have created all embedded classes!");
+            auto* pSubNode = m_pGraph->GetNode(nodeGuid);
+            NS_ASSERT_DEV(pSubNode != nullptr, "invalid document");
 
-          const nsUuid subObjectGuid = pObject->GetTypeAccessor().GetValue(pProp->GetPropertyName()).Get<nsUuid>();
-          nsDocumentObject* pEmbeddedClassObject = pObject->GetChild(subObjectGuid);
-          NS_ASSERT_DEV(pEmbeddedClassObject != nullptr, "CreateObject should have created all embedded classes!");
-          auto* pSubNode = m_pGraph->GetNode(nodeGuid);
-          NS_ASSERT_DEV(pSubNode != nullptr, "invalid document");
-
-          ApplyPropertiesToObject(pSubNode, pEmbeddedClassObject);
+            ApplyPropertiesToObject(pSubNode, pEmbeddedClassObject);
+          }
         }
       }
       break;

@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <ToolsFoundation/ToolsFoundationPCH.h>
 
 #include <Foundation/IO/OSFile.h>
@@ -297,7 +292,7 @@ const nsString nsToolsProject::GetProjectName(bool bSanitize) const
   if (!bAnyAscii)
   {
     const nsUInt32 uiHash = nsHashingUtils::xxHash32String(sTemp);
-    sTemp.Format("Project{}", uiHash);
+    sTemp.SetFormat("Project{}", uiHash);
   }
 
   if (sTemp.IsEmpty())

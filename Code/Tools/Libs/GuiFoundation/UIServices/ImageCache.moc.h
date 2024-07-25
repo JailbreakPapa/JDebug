@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #pragma once
 
 #include <Foundation/Communication/Event.h>
@@ -98,13 +93,13 @@ private:
         return false;
 
       // not supported in Qt 5.15 anymore, but doesn't look like it's vital
-      //if (m_UserData1 < rhs.m_UserData1)
+      // if (m_UserData1 < rhs.m_UserData1)
       //  return true;
-      //if (rhs.m_UserData1 < m_UserData1)
+      // if (rhs.m_UserData1 < m_UserData1)
       //  return false;
-      //if (m_UserData2 < rhs.m_UserData2)
+      // if (m_UserData2 < rhs.m_UserData2)
       //  return true;
-      //if (rhs.m_UserData2 < m_UserData2)
+      // if (rhs.m_UserData2 < m_UserData2)
       //  return false;
 
       return false;

@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <ToolsFoundation/ToolsFoundationDLL.h>
 
 #if NS_ENABLED(NS_SUPPORTS_DIRECTORY_WATCHER)
@@ -52,19 +47,22 @@ void nsFileSystemWatcher::Initialize()
     m_Watchers.PushBack(pWatcher);
   }
 
-  m_pWatcherTask = NS_DEFAULT_NEW(nsDelegateTask<void>, "Watcher Changes", nsTaskNesting::Never, [this]() {
-    nsHybridArray<WatcherResult, 16> watcherResults;
-    for (nsDirectoryWatcher* pWatcher : m_Watchers)
+  m_pWatcherTask = NS_DEFAULT_NEW(nsDelegateTask<void>, "Watcher Changes", nsTaskNesting::Never, [this]()
     {
-      pWatcher->EnumerateChanges([pWatcher, &watcherResults](nsStringView sFilename, nsDirectoryWatcherAction action, nsDirectoryWatcherType type) { watcherResults.PushBack({sFilename, action, type}); });
-    }
-    for (const WatcherResult& res : watcherResults)
-    {
-      HandleWatcherChange(res);
-    } //
-  });
+      nsHybridArray<WatcherResult, 16> watcherResults;
+      for (nsDirectoryWatcher* pWatcher : m_Watchers)
+      {
+        pWatcher->EnumerateChanges([pWatcher, &watcherResults](nsStringView sFilename, nsDirectoryWatcherAction action, nsDirectoryWatcherType type)
+          { watcherResults.PushBack({sFilename, action, type}); });
+      }
+      for (const WatcherResult& res : watcherResults)
+      {
+        HandleWatcherChange(res);
+      } //
+    });
   // This is a separate task as these trigger callbacks which can potentially take a long time and we can't have the watcher changes task be blocked for so long or notifications might get lost.
-  m_pNotifyTask = NS_DEFAULT_NEW(nsDelegateTask<void>, "Watcher Notify", nsTaskNesting::Never, [this]() { NotifyChanges(); });
+  m_pNotifyTask = NS_DEFAULT_NEW(nsDelegateTask<void>, "Watcher Notify", nsTaskNesting::Never, [this]()
+    { NotifyChanges(); });
 }
 
 void nsFileSystemWatcher::Deinitialize()
@@ -108,7 +106,8 @@ void nsFileSystemWatcher::MainThreadTick()
 
 void nsFileSystemWatcher::NotifyChanges()
 {
-  auto NotifyChange = [this](const nsString& sAbsPath, nsFileSystemWatcherEvent::Type type) {
+  auto NotifyChange = [this](const nsString& sAbsPath, nsFileSystemWatcherEvent::Type type)
+  {
     nsFileSystemWatcherEvent e;
     e.m_sPath = sAbsPath;
     e.m_Type = type;

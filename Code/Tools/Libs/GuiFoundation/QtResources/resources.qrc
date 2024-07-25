@@ -1,6 +1,6 @@
 <RCC>
   <qresource prefix="GuiFoundation">
-    <file>EZ-logo.svg</file>
+    <file>NS-logo.svg</file>
     <file>Icons/Add.svg</file>
     <file>Icons/NoEntry.svg</file>
     <file>Icons/CVar.svg</file>

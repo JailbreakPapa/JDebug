@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #pragma once
 
 
@@ -16,7 +11,7 @@ class NS_GUIFOUNDATION_DLL nsQtCollapsibleGroupBox : public nsQtGroupBoxBase, pr
 public:
   explicit nsQtCollapsibleGroupBox(QWidget* pParent);
 
-  virtual void SetTitle(const char* szTitle) override;
+  virtual void SetTitle(nsStringView sTitle) override;
   virtual void SetIcon(const QIcon& icon) override;
   virtual void SetFillColor(const QColor& color) override;
 
@@ -33,4 +28,3 @@ protected:
 protected:
   bool m_bCollapsed = false;
 };
-

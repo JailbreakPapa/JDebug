@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <GuiFoundation/GuiFoundationPCH.h>
 
 #include <Foundation/Application/Application.h>
@@ -208,7 +203,8 @@ void nsQtContainerWindow::RestoreWindowLayout()
   if (m_iWindowLayoutRestoreScheduled > 0)
     return;
 
-  show();
+  bool bCreteDefaultLayout = true;
+  NS_SCOPE_EXIT(bCreteDefaultLayout ? showMaximized() : show(););
 
   nsStringBuilder sFile;
   if (!GetProjectLayoutPath(sFile, false))
@@ -224,19 +220,51 @@ void nsQtContainerWindow::RestoreWindowLayout()
     QSettings Settings(sFile.GetData(), QSettings::IniFormat);
     Settings.beginGroup(QString::fromUtf8("ContainerWnd_nsEditor"));
     {
-      restoreGeometry(Settings.value("WindowGeometry", saveGeometry()).toByteArray());
-      restoreState(Settings.value("WindowState", saveState()).toByteArray());
-      auto dockState = Settings.value("DockManagerState");
-      if (dockState.isValid() && dockState.typeId() == QMetaType::QByteArray)
+      QByteArray geom = Settings.value("WindowGeometry", QByteArray()).toByteArray();
+      if (!geom.isEmpty())
       {
-        m_pDockManager->restoreState(dockState.toByteArray(), 1);
-        // As document windows can't be in a closed state (as pressing x destroys them),
-        // we need to fix any document window that was accidentally saved in its closed state.
-        for (ads::CDockWidget* dock : m_DocumentDocks)
+        bCreteDefaultLayout = false;
+        restoreGeometry(geom);
+        restoreState(Settings.value("WindowState", saveState()).toByteArray());
+        auto dockState = Settings.value("DockManagerState");
+        if (dockState.isValid() && dockState.typeId() == QMetaType::QByteArray)
         {
-          if (dock->isClosed())
+          m_pDockManager->restoreState(dockState.toByteArray(), 1);
+          // As document windows can't be in a closed state (as pressing x destroys them),
+          // we need to fix any document window that was accidentally saved in its closed state.
+          for (ads::CDockWidget* dock : m_DocumentDocks)
           {
-            dock->toggleView();
+            if (dock->isClosed())
+            {
+              if (dock->dockContainer() == nullptr)
+              {
+                if (m_DocumentDocks.GetCount() >= 2)
+                {
+                  // If we can (we are not the only dock window), we are going to attach to a window that isn't us, ideally the settings window.
+                  nsUInt32 uiBestIndex = 0;
+                  for (nsUInt32 i = 0; i < m_DocumentDocks.GetCount(); i++)
+                  {
+                    if (nsStringUtils::IsEqual(m_DocumentWindows[i]->GetUniqueName(), "Settings"))
+                    {
+                      uiBestIndex = i;
+                      break;
+                    }
+                    else if (m_DocumentDocks[i] != dock)
+                    {
+                      uiBestIndex = i;
+                    }
+                  }
+
+                  ads::CDockAreaWidget* dockArea = m_DocumentDocks[uiBestIndex]->dockAreaWidget();
+                  m_pDockManager->addDockWidgetTabToArea(dock, dockArea);
+                }
+                else
+                {
+                  m_pDockManager->addDockWidgetTab(ads::LeftDockWidgetArea, dock);
+                }
+              }
+              dock->toggleView();
+            }
           }
         }
       }
@@ -536,7 +564,8 @@ void nsQtContainerWindow::SlotDocumentTabCloseRequested()
   if (!pDocWindow->CanCloseWindow())
   {
     // TODO: There is no CloseRequested event so we just reopen on a timer.
-    QTimer::singleShot(1, [dock]() { dock->toggleView(); });
+    QTimer::singleShot(1, [dock]()
+      { dock->toggleView(); });
     return;
   }
   pDocWindow->CloseDocumentWindow();

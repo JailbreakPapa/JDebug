@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <ToolsFoundation/ToolsFoundationPCH.h>
 
 #include <Foundation/Configuration/Startup.h>
@@ -101,10 +96,9 @@ namespace
 // nsToolsReflectionUtils public functions
 ////////////////////////////////////////////////////////////////////////
 
-nsVariant nsToolsReflectionUtils::GetStorageDefault(const nsAbstractProperty* pProperty)
+nsVariantType::Enum nsToolsReflectionUtils::GetStorageType(const nsAbstractProperty* pProperty)
 {
-  const nsDefaultValueAttribute* pAttrib = pProperty->GetAttributeByType<nsDefaultValueAttribute>();
-  auto type = pProperty->GetFlags().IsSet(nsPropertyFlags::StandardType) ? pProperty->GetSpecificType()->GetVariantType() : nsVariantType::Uuid;
+  nsVariantType::Enum type = nsVariantType::Uuid;
 
   const bool bIsValueType = nsReflectionUtils::IsValueType(pProperty);
 
@@ -112,7 +106,51 @@ nsVariant nsToolsReflectionUtils::GetStorageDefault(const nsAbstractProperty* pP
   {
     case nsPropertyCategory::Member:
     {
-      return nsReflectionUtils::GetDefaultValue(pProperty);
+      if (bIsValueType)
+        type = pProperty->GetSpecificType()->GetVariantType();
+      else if (pProperty->GetFlags().IsAnySet(nsPropertyFlags::IsEnum | nsPropertyFlags::Bitflags))
+        type = nsVariantType::Int64;
+    }
+    break;
+    case nsPropertyCategory::Array:
+    case nsPropertyCategory::Set:
+    {
+      type = nsVariantType::VariantArray;
+    }
+    break;
+    case nsPropertyCategory::Map:
+    {
+      type = nsVariantType::VariantDictionary;
+    }
+    break;
+    default:
+      break;
+  }
+
+  // We can't 'store' a string view as it has no ownership of its own. Thus, all string views are stored as strings instead.
+  if (type == nsVariantType::StringView)
+    type = nsVariantType::String;
+
+  return type;
+}
+
+nsVariant nsToolsReflectionUtils::GetStorageDefault(const nsAbstractProperty* pProperty)
+{
+  const nsDefaultValueAttribute* pAttrib = pProperty->GetAttributeByType<nsDefaultValueAttribute>();
+  const bool bIsValueType = nsReflectionUtils::IsValueType(pProperty);
+
+  switch (pProperty->GetCategory())
+  {
+    case nsPropertyCategory::Member:
+    {
+      const nsVariantType::Enum memberType = GetStorageType(pProperty);
+      nsVariant value = nsReflectionUtils::GetDefaultValue(pProperty);
+      // Sometimes, the default value does not match the storage type, e.g. nsStringView is stored as nsString as it needs to be stored in the editor representation, but the reflection can still return default values matching nsStringView (constants for example).
+      if (bIsValueType && value.GetType() != memberType)
+        value = value.ConvertTo(memberType);
+
+      NS_ASSERT_DEBUG(!value.IsValid() || memberType == value.GetType(), "Default value type does not match the storage type of the property");
+      return value;
     }
     break;
     case nsPropertyCategory::Array:
@@ -120,12 +158,14 @@ nsVariant nsToolsReflectionUtils::GetStorageDefault(const nsAbstractProperty* pP
     {
       if (bIsValueType && pAttrib && pAttrib->GetValue().IsA<nsVariantArray>())
       {
+        auto elementType = pProperty->GetFlags().IsSet(nsPropertyFlags::StandardType) ? pProperty->GetSpecificType()->GetVariantType() : nsVariantType::Uuid;
+
         const nsVariantArray& value = pAttrib->GetValue().Get<nsVariantArray>();
         nsVariantArray ret;
         ret.SetCount(value.GetCount());
         for (nsUInt32 i = 0; i < value.GetCount(); i++)
         {
-          ret[i] = value[i].ConvertTo(type);
+          ret[i] = value[i].ConvertTo(elementType);
         }
         return ret;
       }

@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <GuiFoundation/GuiFoundationPCH.h>
 
 #include <GuiFoundation/UIServices/UIServices.moc.h>
@@ -25,23 +20,35 @@ nsQtColorGradientEditorWidget::nsQtColorGradientEditorWidget(QWidget* pParent)
   on_GradientWidget_selectionChanged(-1, -1, -1);
 
   connect(
-    GradientWidget, &nsQtColorGradientWidget::addColorCp, this, [this](double x, const nsColorGammaUB& color) { Q_EMIT ColorCpAdded(x, color); });
-  connect(GradientWidget, &nsQtColorGradientWidget::moveColorCpToPos, this, [this](nsInt32 iIdx, double x) { Q_EMIT ColorCpMoved(iIdx, x); });
-  connect(GradientWidget, &nsQtColorGradientWidget::deleteColorCp, this, [this](nsInt32 iIdx) { Q_EMIT ColorCpDeleted(iIdx); });
+    GradientWidget, &nsQtColorGradientWidget::addColorCp, this, [this](double x, const nsColorGammaUB& color)
+    { Q_EMIT ColorCpAdded(x, color); });
+  connect(GradientWidget, &nsQtColorGradientWidget::moveColorCpToPos, this, [this](nsInt32 iIdx, double x)
+    { Q_EMIT ColorCpMoved(iIdx, x); });
+  connect(GradientWidget, &nsQtColorGradientWidget::deleteColorCp, this, [this](nsInt32 iIdx)
+    { Q_EMIT ColorCpDeleted(iIdx); });
 
-  connect(GradientWidget, &nsQtColorGradientWidget::addAlphaCp, this, [this](double x, nsUInt8 uiAlpha) { Q_EMIT AlphaCpAdded(x, uiAlpha); });
-  connect(GradientWidget, &nsQtColorGradientWidget::moveAlphaCpToPos, this, [this](nsInt32 iIdx, double x) { Q_EMIT AlphaCpMoved(iIdx, x); });
-  connect(GradientWidget, &nsQtColorGradientWidget::deleteAlphaCp, this, [this](nsInt32 iIdx) { Q_EMIT AlphaCpDeleted(iIdx); });
+  connect(GradientWidget, &nsQtColorGradientWidget::addAlphaCp, this, [this](double x, nsUInt8 uiAlpha)
+    { Q_EMIT AlphaCpAdded(x, uiAlpha); });
+  connect(GradientWidget, &nsQtColorGradientWidget::moveAlphaCpToPos, this, [this](nsInt32 iIdx, double x)
+    { Q_EMIT AlphaCpMoved(iIdx, x); });
+  connect(GradientWidget, &nsQtColorGradientWidget::deleteAlphaCp, this, [this](nsInt32 iIdx)
+    { Q_EMIT AlphaCpDeleted(iIdx); });
 
   connect(
-    GradientWidget, &nsQtColorGradientWidget::addIntensityCp, this, [this](double x, float fIntensity) { Q_EMIT IntensityCpAdded(x, fIntensity); });
-  connect(GradientWidget, &nsQtColorGradientWidget::moveIntensityCpToPos, this, [this](nsInt32 iIdx, double x) { Q_EMIT IntensityCpMoved(iIdx, x); });
-  connect(GradientWidget, &nsQtColorGradientWidget::deleteIntensityCp, this, [this](nsInt32 iIdx) { Q_EMIT IntensityCpDeleted(iIdx); });
+    GradientWidget, &nsQtColorGradientWidget::addIntensityCp, this, [this](double x, float fIntensity)
+    { Q_EMIT IntensityCpAdded(x, fIntensity); });
+  connect(GradientWidget, &nsQtColorGradientWidget::moveIntensityCpToPos, this, [this](nsInt32 iIdx, double x)
+    { Q_EMIT IntensityCpMoved(iIdx, x); });
+  connect(GradientWidget, &nsQtColorGradientWidget::deleteIntensityCp, this, [this](nsInt32 iIdx)
+    { Q_EMIT IntensityCpDeleted(iIdx); });
 
-  connect(GradientWidget, &nsQtColorGradientWidget::beginOperation, this, [this]() { Q_EMIT BeginOperation(); });
-  connect(GradientWidget, &nsQtColorGradientWidget::endOperation, this, [this](bool bCommit) { Q_EMIT EndOperation(bCommit); });
+  connect(GradientWidget, &nsQtColorGradientWidget::beginOperation, this, [this]()
+    { Q_EMIT BeginOperation(); });
+  connect(GradientWidget, &nsQtColorGradientWidget::endOperation, this, [this](bool bCommit)
+    { Q_EMIT EndOperation(bCommit); });
 
-  connect(GradientWidget, &nsQtColorGradientWidget::triggerPickColor, this, [this]() { on_ButtonColor_clicked(); });
+  connect(GradientWidget, &nsQtColorGradientWidget::triggerPickColor, this, [this]()
+    { on_ButtonColor_clicked(); });
 }
 
 

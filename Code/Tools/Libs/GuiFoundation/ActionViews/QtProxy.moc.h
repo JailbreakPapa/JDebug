@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #pragma once
 
 #include <Foundation/Containers/HybridArray.h>
@@ -42,11 +37,15 @@ public:
   /// \brief Converts the QKeyEvent into a shortcut and tries to find a matching action in the document and global action list.
   ///
   /// Document actions are not mapped as ShortcutContext::WindowShortcut because docking allows for multiple documents to be mapped into the same window. Instead, ShortcutContext::WidgetWithChildrenShortcut is used to prevent ambiguous action shortcuts and the actions are executed manually via filtering QEvent::ShortcutOverride at the dock widget level.
+  /// The function always has to be called two times:
+  /// A: QEvent::ShortcutOverride: Only check with bTestOnly = true that we want to override the shortcut. This will instruct Qt to send the event as a regular key press event to the widget that accepted the override.
+  /// B: QEvent::keyPressEvent: Execute the actual action with bTestOnly = false;
   ///
   /// \param pDocument The document for which matching actions should be searched for. If null, only global actions are searched.
-  /// \param event The key event that should be converted into a shortcut.
+  /// \param pEvent The key event that should be converted into a shortcut.
+  /// \param bTestOnly Accept the event and return true but don't execute the action. Use this inside QEvent::ShortcutOverride.
   /// \return Whether the key event was consumed and an action executed.
-  static bool TriggerDocumentAction(nsDocument* pDocument, QKeyEvent* pEvent);
+  static bool TriggerDocumentAction(nsDocument* pDocument, QKeyEvent* pEvent, bool bTestOnly);
 
   static nsRttiMappedObjectFactory<nsQtProxy>& GetFactory();
   static QSharedPointer<nsQtProxy> GetProxy(nsActionContext& ref_context, nsActionDescriptorHandle hAction);
@@ -216,4 +215,3 @@ private:
 private:
   QPointer<nsQtSliderWidgetAction> m_pQtAction;
 };
-

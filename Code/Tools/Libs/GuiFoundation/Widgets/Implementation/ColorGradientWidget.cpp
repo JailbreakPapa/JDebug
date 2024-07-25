@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <GuiFoundation/GuiFoundationPCH.h>
 
 #include <Foundation/Math/Color8UNorm.h>
@@ -375,7 +370,7 @@ void nsQtColorGradientWidget::PaintCoordinateLines(QPainter& p)
     lines.push_back(QLine(QPoint(xPos, area.top()), QPoint(xPos, area.top() + iLineHeight)));
     lines.push_back(QLine(QPoint(xPos, area.bottom()), QPoint(xPos, area.bottom() - iLineHeight)));
   }
-  p.drawLines(lines.data(), lines.size());
+  p.drawLines(lines.data(), static_cast<int>(lines.size()));
   p.restore();
 }
 

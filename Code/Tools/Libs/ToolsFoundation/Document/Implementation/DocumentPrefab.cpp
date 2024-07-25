@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <ToolsFoundation/ToolsFoundationPCH.h>
 
 #include <ToolsFoundation/Command/TreeCommands.h>
@@ -24,7 +19,7 @@ void nsDocument::UpdatePrefabs()
   SetModified(true);
 }
 
-void nsDocument::RevertPrefabs(const nsDeque<const nsDocumentObject*>& selection)
+void nsDocument::RevertPrefabs(nsArrayPtr<const nsDocumentObject*> selection)
 {
   if (selection.IsEmpty())
     return;
@@ -41,7 +36,7 @@ void nsDocument::RevertPrefabs(const nsDeque<const nsDocumentObject*>& selection
   pHistory->FinishTransaction();
 }
 
-void nsDocument::UnlinkPrefabs(const nsDeque<const nsDocumentObject*>& selection)
+void nsDocument::UnlinkPrefabs(nsArrayPtr<const nsDocumentObject*> selection)
 {
   if (selection.IsEmpty())
     return;
@@ -62,16 +57,17 @@ void nsDocument::UnlinkPrefabs(const nsDeque<const nsDocumentObject*>& selection
 
 nsStatus nsDocument::CreatePrefabDocumentFromSelection(nsStringView sFile, const nsRTTI* pRootType, nsDelegate<void(nsAbstractObjectNode*)> adjustGraphNodeCB, nsDelegate<void(nsDocumentObject*)> adjustNewNodesCB, nsDelegate<void(nsAbstractObjectGraph& graph, nsDynamicArray<nsAbstractObjectNode*>& graphRootNodes)> finalizeGraphCB)
 {
-  auto Selection = GetSelectionManager()->GetTopLevelSelection(pRootType);
+  nsHybridArray<nsSelectionEntry, 64> selection;
+  GetSelectionManager()->GetTopLevelSelectionOfType(pRootType, selection);
 
-  if (Selection.IsEmpty())
+  if (selection.IsEmpty())
     return nsStatus("To create a prefab, the selection must not be empty");
 
   nsHybridArray<const nsDocumentObject*, 32> nodes;
-  nodes.Reserve(Selection.GetCount());
-  for (auto pNode : Selection)
+  nodes.Reserve(selection.GetCount());
+  for (const auto& e : selection)
   {
-    nodes.PushBack(pNode);
+    nodes.PushBack(e.m_pObject);
   }
 
   nsUuid PrefabGuid, SeedGuid;

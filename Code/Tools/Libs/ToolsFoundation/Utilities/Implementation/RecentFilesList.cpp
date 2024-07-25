@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <ToolsFoundation/ToolsFoundationPCH.h>
 
 #include <Foundation/IO/FileSystem/DeferredFileWriter.h>
@@ -36,16 +31,13 @@ void nsRecentFilesList::Insert(nsStringView sFile, nsInt32 iContainerWindow)
 
 void nsRecentFilesList::Save(nsStringView sFile)
 {
-  if (m_Files.IsEmpty())
-    return;
-
   nsDeferredFileWriter File;
   File.SetOutput(sFile);
 
   for (const RecentFile& file : m_Files)
   {
     nsStringBuilder sTemp;
-    sTemp.Format("{0}|{1}", file.m_File, file.m_iContainerWindow);
+    sTemp.SetFormat("{0}|{1}", file.m_File, file.m_iContainerWindow);
     File.WriteBytes(sTemp.GetData(), sTemp.GetElementCount()).IgnoreResult();
     File.WriteBytes("\n", sizeof(char)).IgnoreResult();
   }

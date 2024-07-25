@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <ToolsFoundation/ToolsFoundationPCH.h>
 
 #include <ToolsFoundation/Document/DocumentManager.h>
@@ -14,7 +9,7 @@ nsStatus nsDocumentUtils::IsValidSaveLocationForDocument(nsStringView sDocument,
   if (nsDocumentManager::FindDocumentTypeFromPath(sDocument, true, pTypeDesc).Failed())
   {
     nsStringBuilder sTemp;
-    sTemp.Format("The selected file extension '{0}' is not registered with any known type.\nCannot create file '{1}'",
+    sTemp.SetFormat("The selected file extension '{0}' is not registered with any known type.\nCannot create file '{1}'",
       nsPathUtils::GetFileExtension(sDocument), sDocument);
     return nsStatus(sTemp.GetData());
   }

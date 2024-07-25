@@ -1,26 +1,23 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <GuiFoundation/GuiFoundationPCH.h>
 
-#include <Foundation/Algorithm/HashingUtils.h>
-#include <Foundation/Configuration/Startup.h>
-#include <Foundation/Types/VarianceTypes.h>
-#include <Foundation/Types/VariantTypeRegistry.h>
+#include <GuiFoundation/PropertyGrid/Implementation/ExpressionPropertyWidget.moc.h>
 #include <GuiFoundation/PropertyGrid/Implementation/PropertyWidget.moc.h>
 #include <GuiFoundation/PropertyGrid/Implementation/TagSetPropertyWidget.moc.h>
 #include <GuiFoundation/PropertyGrid/Implementation/VarianceWidget.moc.h>
 #include <GuiFoundation/PropertyGrid/PropertyGridWidget.moc.h>
 #include <GuiFoundation/PropertyGrid/PropertyMetaState.h>
 #include <GuiFoundation/Widgets/CollapsibleGroupBox.moc.h>
+#include <GuiFoundation/Widgets/CurveEditData.h>
+
 #include <ToolsFoundation/Document/Document.h>
 
+#include <Foundation/Algorithm/HashingUtils.h>
+#include <Foundation/CodeUtils/Expression/ExpressionDeclarations.h>
+#include <Foundation/Configuration/Startup.h>
 #include <Foundation/Profiling/Profiling.h>
-#include <GuiFoundation/Widgets/CurveEditData.h>
-#include <QLayout>
-#include <QScrollArea>
+#include <Foundation/Types/VarianceTypes.h>
+#include <Foundation/Types/VariantTypeRegistry.h>
+
 
 nsRttiMappedObjectFactory<nsQtPropertyWidget> nsQtPropertyGridWidget::s_Factory;
 
@@ -96,6 +93,7 @@ static nsQtPropertyWidget* StandardTypeCreator(const nsRTTI* pRtti)
       return new nsQtPropertyEditorIntSpinboxWidget(1, 0, 2147483645);
 
     case nsVariant::Type::String:
+    case nsVariant::Type::StringView:
       return new nsQtPropertyEditorLineEditWidget();
 
     case nsVariant::Type::Color:
@@ -139,6 +137,11 @@ static nsQtPropertyWidget* Curve1DTypeCreator(const nsRTTI* pRtti)
   return new nsQtPropertyEditorCurve1DWidget();
 }
 
+static nsQtPropertyWidget* ExpressionTypeCreator(const nsRTTI* pRtti)
+{
+  return new nsQtPropertyEditorExpressionWidget();
+}
+
 // clang-format off
 NS_BEGIN_SUBSYSTEM_DECLARATION(GuiFoundation, PropertyGrid)
 
@@ -171,6 +174,7 @@ NS_BEGIN_SUBSYSTEM_DECLARATION(GuiFoundation, PropertyGrid)
     nsQtPropertyGridWidget::GetFactory().RegisterCreator(nsGetStaticRTTI<nsUInt64>(), StandardTypeCreator);
     nsQtPropertyGridWidget::GetFactory().RegisterCreator(nsGetStaticRTTI<nsConstCharPtr>(), StandardTypeCreator);
     nsQtPropertyGridWidget::GetFactory().RegisterCreator(nsGetStaticRTTI<nsString>(), StandardTypeCreator);
+    nsQtPropertyGridWidget::GetFactory().RegisterCreator(nsGetStaticRTTI<nsStringView>(), StandardTypeCreator);
     nsQtPropertyGridWidget::GetFactory().RegisterCreator(nsGetStaticRTTI<nsTime>(), StandardTypeCreator);
     nsQtPropertyGridWidget::GetFactory().RegisterCreator(nsGetStaticRTTI<nsColor>(), StandardTypeCreator);
     nsQtPropertyGridWidget::GetFactory().RegisterCreator(nsGetStaticRTTI<nsColorGammaUB>(), StandardTypeCreator);
@@ -185,8 +189,7 @@ NS_BEGIN_SUBSYSTEM_DECLARATION(GuiFoundation, PropertyGrid)
     nsQtPropertyGridWidget::GetFactory().RegisterCreator(nsGetStaticRTTI<nsTagSetWidgetAttribute>(), TagSetCreator);
     nsQtPropertyGridWidget::GetFactory().RegisterCreator(nsGetStaticRTTI<nsVarianceTypeBase>(), VarianceTypeCreator);
     nsQtPropertyGridWidget::GetFactory().RegisterCreator(nsGetStaticRTTI<nsSingleCurveData>(), Curve1DTypeCreator);
-
-
+    nsQtPropertyGridWidget::GetFactory().RegisterCreator(nsGetStaticRTTI<nsExpressionWidgetAttribute>(), ExpressionTypeCreator);
   }
 
   ON_CORESYSTEMS_SHUTDOWN
@@ -214,6 +217,7 @@ NS_BEGIN_SUBSYSTEM_DECLARATION(GuiFoundation, PropertyGrid)
     nsQtPropertyGridWidget::GetFactory().UnregisterCreator(nsGetStaticRTTI<nsUInt64>());
     nsQtPropertyGridWidget::GetFactory().UnregisterCreator(nsGetStaticRTTI<nsConstCharPtr>());
     nsQtPropertyGridWidget::GetFactory().UnregisterCreator(nsGetStaticRTTI<nsString>());
+    nsQtPropertyGridWidget::GetFactory().UnregisterCreator(nsGetStaticRTTI<nsStringView>());
     nsQtPropertyGridWidget::GetFactory().UnregisterCreator(nsGetStaticRTTI<nsTime>());
     nsQtPropertyGridWidget::GetFactory().UnregisterCreator(nsGetStaticRTTI<nsColor>());
     nsQtPropertyGridWidget::GetFactory().UnregisterCreator(nsGetStaticRTTI<nsColorGammaUB>());
@@ -225,6 +229,7 @@ NS_BEGIN_SUBSYSTEM_DECLARATION(GuiFoundation, PropertyGrid)
     nsQtPropertyGridWidget::GetFactory().UnregisterCreator(nsGetStaticRTTI<nsTagSetWidgetAttribute>());
     nsQtPropertyGridWidget::GetFactory().UnregisterCreator(nsGetStaticRTTI<nsVarianceTypeBase>());
     nsQtPropertyGridWidget::GetFactory().UnregisterCreator(nsGetStaticRTTI<nsSingleCurveData>());
+    nsQtPropertyGridWidget::GetFactory().UnregisterCreator(nsGetStaticRTTI<nsExpressionWidgetAttribute>());
   }
 
 NS_END_SUBSYSTEM_DECLARATION;

@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <GuiFoundation/GuiFoundationPCH.h>
 
 #include <GuiFoundation/PropertyGrid/PrefabDefaultStateProvider.h>
@@ -175,22 +170,24 @@ nsStatus nsPrefabDefaultStateProvider::CreateRevertContainerDiff(SuperArray supe
     // We create a sub-graph of only the parent node in both re-mapped prefab as well as from the actually object. We limit the graph to only the container property.
     auto pNode = pGraph->GetNode(objectPrefabGuid);
     nsAbstractObjectGraph prefabSubGraph;
-    pGraph->Clone(prefabSubGraph, pNode, [pRootNode = pNode, pRootProp = pProp](const nsAbstractObjectNode* pNode, const nsAbstractObjectNode::Property* pProp) {
-      if (pNode == pRootNode && pProp->m_sPropertyName != pRootProp->GetPropertyName())
-        return false;
+    pGraph->Clone(prefabSubGraph, pNode, [pRootNode = pNode, pRootProp = pProp](const nsAbstractObjectNode* pNode, const nsAbstractObjectNode::Property* pProp)
+      {
+        if (pNode == pRootNode && pProp->m_sPropertyName != pRootProp->GetPropertyName())
+          return false;
 
-      return true; //
-    });
+        return true; //
+      });
 
     prefabSubGraph.ReMapNodeGuids(m_PrefabSeedGuid);
 
     nsAbstractObjectGraph instanceSubGraph;
-    nsDocumentObjectConverterWriter writer(&instanceSubGraph, pObject->GetDocumentObjectManager(), [pRootObject = pObject, pRootProp = pProp](const nsDocumentObject* pObject, const nsAbstractProperty* pProp) {
-      if (pObject == pRootObject && pProp != pRootProp)
-        return false;
+    nsDocumentObjectConverterWriter writer(&instanceSubGraph, pObject->GetDocumentObjectManager(), [pRootObject = pObject, pRootProp = pProp](const nsDocumentObject* pObject, const nsAbstractProperty* pProp)
+      {
+        if (pObject == pRootObject && pProp != pRootProp)
+          return false;
 
-      return true; //
-    });
+        return true; //
+      });
 
     writer.AddObjectToGraph(pObject);
 

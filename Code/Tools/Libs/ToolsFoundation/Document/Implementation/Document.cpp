@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <ToolsFoundation/ToolsFoundationPCH.h>
 
 #include <Foundation/IO/FileSystem/DeferredFileWriter.h>
@@ -152,7 +147,8 @@ nsStatus nsDocument::SaveDocument(bool bForce)
     m_ActiveSaveTask.Invalidate();
   }
   nsStatus result;
-  m_ActiveSaveTask = InternalSaveDocument([&result](nsDocument* pDoc, nsStatus res) { result = res; });
+  m_ActiveSaveTask = InternalSaveDocument([&result](nsDocument* pDoc, nsStatus res)
+    { result = res; });
   nsTaskSystem::WaitForGroup(m_ActiveSaveTask);
   m_ActiveSaveTask.Invalidate();
   return result;
@@ -406,7 +402,8 @@ void nsDocument::BroadcastInterDocumentMessage(nsReflectedClass* pMessage, nsDoc
 
 void nsDocument::DeleteSelectedObjects() const
 {
-  auto objects = GetSelectionManager()->GetTopLevelSelection();
+  nsHybridArray<nsSelectionEntry, 64> objects;
+  GetSelectionManager()->GetTopLevelSelection(objects);
 
   // make sure the whole selection is cleared, otherwise each delete command would reduce the selection one by one
   GetSelectionManager()->Clear();
@@ -416,9 +413,9 @@ void nsDocument::DeleteSelectedObjects() const
 
   nsRemoveObjectCommand cmd;
 
-  for (const nsDocumentObject* pObject : objects)
+  for (const nsSelectionEntry& entry : objects)
   {
-    cmd.m_Object = pObject->GetGuid();
+    cmd.m_Object = entry.m_pObject->GetGuid();
 
     if (history->AddCommand(cmd).m_Result.Failed())
     {

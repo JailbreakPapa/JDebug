@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <GuiFoundation/GuiFoundationPCH.h>
 
 #include <Foundation/Logging/Log.h>
@@ -141,7 +136,7 @@ void nsQtDocumentWindow::UIServicesTickEventHandler(const nsQtUiServices::TickEv
 
     // if the application does not have focus, drastically reduce the update rate to limit CPU draw etc.
     if (QApplication::activeWindow() == nullptr)
-      iTargetFramerate = nsMath::Min(10, iTargetFramerate / 4);
+      iTargetFramerate = nsMath::Max(10, iTargetFramerate / 4);
 
     // We do not hit the requested framerate directly if the system framerate can't be evenly divided. We will chose the next higher framerate.
     if (iTargetFramerate < iSystemFramerate)
@@ -302,26 +297,35 @@ void nsQtDocumentWindow::hideEvent(QHideEvent* event)
 
 bool nsQtDocumentWindow::eventFilter(QObject* obj, QEvent* e)
 {
-  if (e->type() == QEvent::ShortcutOverride)
+  if (e->type() == QEvent::ShortcutOverride || e->type() == QEvent::KeyPress)
   {
     // This filter is added by nsQtContainerWindow::AddDocumentWindow as that ones is the ony code path that can connect dock container to their content.
     // This filter is necessary as clicking any action in a menu bar sets the focus to the parent CDockWidget at which point further shortcuts would stop working.
     if (qobject_cast<ads::CDockWidget*>(obj))
     {
       QKeyEvent* keyEvent = static_cast<QKeyEvent*>(e);
-      if (nsQtProxy::TriggerDocumentAction(m_pDocument, keyEvent))
+      if (nsQtProxy::TriggerDocumentAction(m_pDocument, keyEvent, e->type() == QEvent::ShortcutOverride))
+        return true;
+    }
+
+    // Some central widgets consume the shortcut (or any key press for that matter) instead of passing it up the parent hierarchy. For example a QGraphicsView will forward any key-press to the QGraphicsScene which will consume every event. As a workaround, we overrule the central widget by default when it comes to shortcuts.
+    if (obj == centralWidget())
+    {
+      QKeyEvent* keyEvent = static_cast<QKeyEvent*>(e);
+      if (nsQtProxy::TriggerDocumentAction(m_pDocument, keyEvent, e->type() == QEvent::ShortcutOverride))
         return true;
     }
   }
+
   return false;
 }
 
 bool nsQtDocumentWindow::event(QEvent* event)
 {
-  if (event->type() == QEvent::ShortcutOverride)
+  if (event->type() == QEvent::ShortcutOverride || event->type() == QEvent::KeyPress)
   {
     QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
-    if (nsQtProxy::TriggerDocumentAction(m_pDocument, keyEvent))
+    if (nsQtProxy::TriggerDocumentAction(m_pDocument, keyEvent, event->type() == QEvent::ShortcutOverride))
       return true;
   }
   return QMainWindow::event(event);
@@ -329,6 +333,9 @@ bool nsQtDocumentWindow::event(QEvent* event)
 
 void nsQtDocumentWindow::FinishWindowCreation()
 {
+  if (centralWidget())
+    centralWidget()->installEventFilter(this);
+
   ScheduleRestoreWindowLayout();
 }
 
@@ -357,7 +364,7 @@ void nsQtDocumentWindow::SaveWindowLayout()
     showNormal();
 
   nsStringBuilder sGroup;
-  sGroup.Format("DocumentWnd_{0}", GetWindowLayoutGroupName());
+  sGroup.SetFormat("DocumentWnd_{0}", GetWindowLayoutGroupName());
 
   QSettings Settings;
   Settings.beginGroup(QString::fromUtf8(sGroup, sGroup.GetElementCount()));
@@ -376,7 +383,7 @@ void nsQtDocumentWindow::RestoreWindowLayout()
   nsQtScopedUpdatesDisabled _(this);
 
   nsStringBuilder sGroup;
-  sGroup.Format("DocumentWnd_{0}", GetWindowLayoutGroupName());
+  sGroup.SetFormat("DocumentWnd_{0}", GetWindowLayoutGroupName());
 
   {
     QSettings Settings;
@@ -427,8 +434,8 @@ nsStatus nsQtDocumentWindow::SaveDocument()
     nsStatus res = m_pDocument->SaveDocument();
 
     nsStringBuilder s, s2;
-    s.Format("Failed to save document:\n'{0}'", m_pDocument->GetDocumentPath());
-    s2.Format("Successfully saved document:\n'{0}'", m_pDocument->GetDocumentPath());
+    s.SetFormat("Failed to save document:\n'{0}'", m_pDocument->GetDocumentPath());
+    s2.SetFormat("Successfully saved document:\n'{0}'", m_pDocument->GetDocumentPath());
 
     nsQtUiServices::MessageBoxStatus(res, s, s2);
 

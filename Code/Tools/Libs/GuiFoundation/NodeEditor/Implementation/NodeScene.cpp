@@ -1,11 +1,7 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <GuiFoundation/GuiFoundationPCH.h>
 
 #include <Foundation/Strings/TranslationLookup.h>
+#include <GuiFoundation/GuiFoundationDLL.h>
 #include <GuiFoundation/NodeEditor/Connection.h>
 #include <GuiFoundation/NodeEditor/Node.h>
 #include <GuiFoundation/NodeEditor/Pin.h>
@@ -225,13 +221,35 @@ void nsQtNodeScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
         const nsPin* pSourcePin = startWasInput ? pPin->GetPin() : m_pStartPin->GetPin();
         const nsPin* pTargetPin = startWasInput ? m_pStartPin->GetPin() : pPin->GetPin();
         ConnectPinsAction(*pSourcePin, *pTargetPin);
-        break;
+        goto cleanup;
       }
     }
 
+    OpenSearchMenu(QCursor::pos());
+
+    if (m_pTempNode)
+    {
+      const auto Pins = startWasInput ? m_pTempNode->GetOutputPins() : m_pTempNode->GetInputPins();
+
+      for (auto& pPin : Pins)
+      {
+        const nsPin* pSourcePin = startWasInput ? pPin->GetPin() : m_pStartPin->GetPin();
+        const nsPin* pTargetPin = startWasInput ? m_pStartPin->GetPin() : pPin->GetPin();
+        nsDocumentNodeManager::CanConnectResult connect;
+        nsStatus res = m_pManager->CanConnect(m_pManager->GetConnectionType(), *pSourcePin, *pTargetPin, connect);
+        if (res.Succeeded())
+        {
+          ConnectPinsAction(*pSourcePin, *pTargetPin);
+          break;
+        }
+      }
+    }
+
+  cleanup:
     delete m_pTempConnection;
     m_pTempConnection = nullptr;
     m_pStartPin = nullptr;
+    m_pTempNode = nullptr;
 
     ResetConnectablePinMarkup();
     return;
@@ -293,7 +311,8 @@ void nsQtNodeScene::contextMenuEvent(QGraphicsSceneContextMenuEvent* contextMenu
     nsQtPin* pPin = static_cast<nsQtPin*>(pItem);
     QAction* pAction = new QAction("Disconnect Pin", &menu);
     menu.addAction(pAction);
-    connect(pAction, &QAction::triggered, this, [this, pPin](bool bChecked) { DisconnectPinsAction(pPin); });
+    connect(pAction, &QAction::triggered, this, [this, pPin](bool bChecked)
+      { DisconnectPinsAction(pPin); });
 
     pPin->ExtendContextMenu(menu);
   }
@@ -312,7 +331,8 @@ void nsQtNodeScene::contextMenuEvent(QGraphicsSceneContextMenuEvent* contextMenu
     {
       QAction* pAction = new QAction("Remove", &menu);
       menu.addAction(pAction);
-      connect(pAction, &QAction::triggered, this, [this](bool bChecked) { RemoveSelectedNodesAction(); });
+      connect(pAction, &QAction::triggered, this, [this](bool bChecked)
+        { RemoveSelectedNodesAction(); });
     }
 
     pNode->ExtendContextMenu(menu);
@@ -322,7 +342,8 @@ void nsQtNodeScene::contextMenuEvent(QGraphicsSceneContextMenuEvent* contextMenu
     nsQtConnection* pConnection = static_cast<nsQtConnection*>(pItem);
     QAction* pAction = new QAction("Delete Connection", &menu);
     menu.addAction(pAction);
-    connect(pAction, &QAction::triggered, this, [this, pConnection](bool bChecked) { DisconnectPinsAction(pConnection); });
+    connect(pAction, &QAction::triggered, this, [this, pConnection](bool bChecked)
+      { DisconnectPinsAction(pConnection); });
 
     pConnection->ExtendContextMenu(menu);
   }
@@ -388,6 +409,12 @@ void nsQtNodeScene::CreateQtNode(const nsDocumentObject* pObject)
   pNode->setPos(vPos.x, vPos.y);
 
   pNode->ResetFlags();
+
+  // Note: We dont create connections here as it can cause recusion issues
+  if (m_pTempConnection)
+  {
+    m_pTempNode = pNode;
+  }
 }
 
 void nsQtNodeScene::DeleteQtNode(const nsDocumentObject* pObject)
@@ -464,7 +491,7 @@ void nsQtNodeScene::RecreateQtPins(const nsDocumentObject* pObject)
   pNode->UpdateGeometry();
 }
 
-void nsQtNodeScene::CreateNodeObject(const nsRTTI* pRtti)
+void nsQtNodeScene::CreateNodeObject(const nsNodeCreationTemplate& nodeTemplate)
 {
   nsCommandHistory* history = m_pManager->GetDocument()->GetCommandHistory();
   history->StartTransaction("Add Node");
@@ -472,7 +499,7 @@ void nsQtNodeScene::CreateNodeObject(const nsRTTI* pRtti)
   nsStatus res;
   {
     nsAddObjectCommand cmd;
-    cmd.m_pType = pRtti;
+    cmd.m_pType = nodeTemplate.m_pType;
     cmd.m_NewObjectGuid = nsUuid::MakeUuid();
     cmd.m_Index = -1;
 
@@ -483,6 +510,18 @@ void nsQtNodeScene::CreateNodeObject(const nsRTTI* pRtti)
       move.m_Object = cmd.m_NewObjectGuid;
       move.m_NewPos = m_vMousePos;
       res = history->AddCommand(move);
+    }
+
+    for (auto& propValue : nodeTemplate.m_PropertyValues)
+    {
+      if (res.m_Result.Failed())
+        break;
+
+      nsSetObjectPropertyCommand setCmd;
+      setCmd.m_Object = cmd.m_NewObjectGuid;
+      setCmd.m_sProperty = propValue.m_sPropertyName.GetString();
+      setCmd.m_NewValue = propValue.m_Value;
+      res = history->AddCommand(setCmd);
     }
   }
 
@@ -701,17 +740,20 @@ void nsQtNodeScene::OpenSearchMenu(QPoint screenPos)
   menu.addAction(pSearchMenu);
 
   connect(pSearchMenu, &nsQtSearchableMenu::MenuItemTriggered, this, &nsQtNodeScene::OnMenuItemTriggered);
-  connect(pSearchMenu, &nsQtSearchableMenu::MenuItemTriggered, this, [&menu]() { menu.close(); });
+  connect(pSearchMenu, &nsQtSearchableMenu::MenuItemTriggered, this, [&menu]()
+    { menu.close(); });
 
   nsStringBuilder tmp;
   nsStringBuilder sFullPath;
 
-  nsHybridArray<const nsRTTI*, 32> types;
-  m_pManager->GetCreateableTypes(types);
+  m_NodeCreationTemplates.Clear();
+  m_pManager->GetNodeCreationTemplates(m_NodeCreationTemplates);
 
-  for (const nsRTTI* pRtti : types)
+  for (nsUInt32 i = 0; i < m_NodeCreationTemplates.GetCount(); ++i)
   {
-    nsStringView sCleanName = pRtti->GetTypeName();
+    const nsNodeCreationTemplate& nodeTemplate = m_NodeCreationTemplates[i];
+    const nsRTTI* pRtti = nodeTemplate.m_pType;
+    nsStringView sCleanName = nodeTemplate.m_sTypeName.IsEmpty() ? pRtti->GetTypeName() : nodeTemplate.m_sTypeName;
 
     if (const char* szUnderscore = sCleanName.FindLastSubString("_"))
     {
@@ -723,8 +765,7 @@ void nsQtNodeScene::OpenSearchMenu(QPoint screenPos)
       sCleanName = nsStringView(sCleanName.GetStartPointer(), szBracket);
     }
 
-    sFullPath = m_pManager->GetTypeCategory(pRtti);
-
+    sFullPath = nodeTemplate.m_sCategory.GetString();
     if (sFullPath.IsEmpty())
     {
       if (auto pAttr = pRtti->GetAttributeByType<nsCategoryAttribute>())
@@ -735,7 +776,7 @@ void nsQtNodeScene::OpenSearchMenu(QPoint screenPos)
 
     sFullPath.AppendPath(sCleanName);
 
-    pSearchMenu->AddItem(nsTranslate(sCleanName.GetData(tmp)), sFullPath, QVariant::fromValue((void*)pRtti));
+    pSearchMenu->AddItem(nsTranslate(sCleanName.GetData(tmp)), sFullPath, QVariant::fromValue(i));
   }
 
   pSearchMenu->Finalize(m_sContextMenuSearchText);
@@ -879,9 +920,11 @@ void nsQtNodeScene::DisconnectPinsAction(nsQtPin* pPin)
 
 void nsQtNodeScene::OnMenuItemTriggered(const QString& sName, const QVariant& variant)
 {
-  const nsRTTI* pRtti = static_cast<const nsRTTI*>(variant.value<void*>());
+  nsUInt32 uiTypeIndex = variant.value<nsUInt32>();
+  if (uiTypeIndex >= m_NodeCreationTemplates.GetCount())
+    return;
 
-  CreateNodeObject(pRtti);
+  CreateNodeObject(m_NodeCreationTemplates[uiTypeIndex]);
 }
 
 void nsQtNodeScene::OnSelectionChanged()

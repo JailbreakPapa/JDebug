@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <GuiFoundation/GuiFoundationPCH.h>
 
 #include <Foundation/Strings/TranslationLookup.h>
@@ -26,7 +21,7 @@ nsQtModifiedDocumentsDlg::nsQtModifiedDocumentsDlg(QWidget* pParent, const nsHyb
   Headers.append(" Document ");
   Headers.append("");
 
-  TableDocuments->setColumnCount(Headers.size());
+  TableDocuments->setColumnCount(static_cast<int>(Headers.size()));
 
   TableDocuments->setSelectionBehavior(QAbstractItemView::SelectionBehavior::SelectRows);
   TableDocuments->setSelectionMode(QAbstractItemView::SelectionMode::SingleSelection);
@@ -60,7 +55,7 @@ nsQtModifiedDocumentsDlg::nsQtModifiedDocumentsDlg(QWidget* pParent, const nsHyb
     TableDocuments->setCellWidget(iRow, 2, pButtonSave);
 
     QTableWidgetItem* pItem0 = new QTableWidgetItem();
-    pItem0->setData(Qt::DisplayRole, QString::fromUtf8(nsTranslate(pDoc->GetDocumentTypeDescriptor()->m_sDocumentTypeName)));
+    pItem0->setData(Qt::DisplayRole, nsMakeQString(nsTranslate(pDoc->GetDocumentTypeDescriptor()->m_sDocumentTypeName)));
     pItem0->setIcon(nsQtUiServices::GetCachedIconResource(pDoc->GetDocumentTypeDescriptor()->m_sIcon));
     TableDocuments->setItem(iRow, 0, pItem0);
 
@@ -96,8 +91,8 @@ nsResult nsQtModifiedDocumentsDlg::SaveDocument(nsDocument* pDoc)
   if (res.m_Result.Failed())
   {
     nsStringBuilder s, s2;
-    s.Format("Failed to save document:\n'{0}'", pDoc->GetDocumentPath());
-    s2.Format("Successfully saved document:\n'{0}'", pDoc->GetDocumentPath());
+    s.SetFormat("Failed to save document:\n'{0}'", pDoc->GetDocumentPath());
+    s2.SetFormat("Successfully saved document:\n'{0}'", pDoc->GetDocumentPath());
 
     nsQtUiServices::MessageBoxStatus(res, s, s2);
 

@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <GuiFoundation/GuiFoundationPCH.h>
 
 #include <Foundation/Containers/HybridArray.h>
@@ -332,7 +327,8 @@ void nsQtEventTrackWidget::paintEvent(QPaintEvent* e)
 
   if (m_pGridBar)
   {
-    m_pGridBar->SetConfig(viewportSceneRect, fRoughGridDensity, fFineGridDensity, [this](const QPointF& pt) -> QPoint { return MapFromScene(pt); });
+    m_pGridBar->SetConfig(viewportSceneRect, fRoughGridDensity, fFineGridDensity, [this](const QPointF& pt) -> QPoint
+      { return MapFromScene(pt); });
   }
 
   PaintOutsideAreaOverlay(&painter);

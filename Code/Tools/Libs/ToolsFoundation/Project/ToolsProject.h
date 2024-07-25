@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #pragma once
 
 #include <Foundation/Communication/Event.h>
@@ -49,7 +44,7 @@ struct nsToolsProjectRequest
   bool m_bCanClose;                        ///< When the event is sent, interested code can set this to false to prevent closing.
   nsDynamicArray<nsDocument*> m_Documents; ///< In case of 'CanCloseDocuments', these will be the documents in question.
   nsInt32
-    m_iContainerWindowUniqueIdentifier; ///< In case of 'SuggestContainerWindow', the ID of the container to be used for the docs in m_Documents.
+    m_iContainerWindowUniqueIdentifier;    ///< In case of 'SuggestContainerWindow', the ID of the container to be used for the docs in m_Documents.
 
   nsUuid m_documentGuid;
   nsStringBuilder m_sAbsDocumentPath;

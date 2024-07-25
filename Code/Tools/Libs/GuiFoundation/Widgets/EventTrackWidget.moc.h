@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #pragma once
 
 #include <Foundation/Containers/DynamicArray.h>
@@ -36,6 +31,7 @@ public:
   void SetGridBarWidget(nsQGridBarWidget* pGridBar) { m_pGridBar = pGridBar; }
 
   void SetScrubberPosition(double fPosition);
+  double GetScrubberPosition() const { return m_fScrubberPosition; }
 
   void FrameCurve();
 
@@ -156,4 +152,3 @@ private:
   nsHybridArray<PointCategory, 8> m_Categories;
   nsHybridArray<SelectedPoint, 32> m_SelectedPoints;
 };
-

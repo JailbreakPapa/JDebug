@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <ToolsFoundation/ToolsFoundationPCH.h>
 
 #include <Foundation/Configuration/Startup.h>
@@ -81,7 +76,7 @@ void nsReflectedTypeStorageManager::ReflectedTypeStorageMapping::AddPropertiesRe
     if (m_PathToStorageInfoTable.TryGetValue(path, storageInfo))
     {
       // Value already present, update type and instances
-      storageInfo->m_Type = GetStorageType(pProperty);
+      storageInfo->m_Type = nsToolsReflectionUtils::GetStorageType(pProperty);
       storageInfo->m_DefaultValue = nsToolsReflectionUtils::GetStorageDefault(pProperty);
       UpdateInstances(storageInfo->m_uiIndex, pProperty, ref_requiresPatchingEmbeddedClass);
     }
@@ -90,7 +85,7 @@ void nsReflectedTypeStorageManager::ReflectedTypeStorageMapping::AddPropertiesRe
       const nsUInt16 uiIndex = (nsUInt16)m_PathToStorageInfoTable.GetCount();
 
       // Add value, new entries are appended
-      m_PathToStorageInfoTable.Insert(path, StorageInfo(uiIndex, GetStorageType(pProperty), nsToolsReflectionUtils::GetStorageDefault(pProperty)));
+      m_PathToStorageInfoTable.Insert(path, StorageInfo(uiIndex, nsToolsReflectionUtils::GetStorageType(pProperty), nsToolsReflectionUtils::GetStorageDefault(pProperty)));
       AddPropertyToInstances(uiIndex, pProperty, ref_requiresPatchingEmbeddedClass);
     }
   }
@@ -105,7 +100,7 @@ void nsReflectedTypeStorageManager::ReflectedTypeStorageMapping::UpdateInstances
     NS_ASSERT_DEV(uiIndex < data.GetCount(), "nsReflectedTypeStorageAccessor found with fewer properties that is should have!");
     nsVariant& value = data[uiIndex];
 
-    const auto SpecVarType = GetStorageType(pProperty);
+    const auto SpecVarType = nsToolsReflectionUtils::GetStorageType(pProperty);
 
     switch (pProperty->GetCategory())
     {
@@ -240,41 +235,6 @@ void nsReflectedTypeStorageManager::ReflectedTypeStorageMapping::AddPropertyToIn
       ref_requiresPatchingEmbeddedClass.Insert(it.Key()->GetOwner());
     }
   }
-}
-
-
-nsVariantType::Enum nsReflectedTypeStorageManager::ReflectedTypeStorageMapping::GetStorageType(const nsAbstractProperty* pProperty)
-{
-  nsVariantType::Enum type = nsVariantType::Uuid;
-
-  const bool bIsValueType = nsReflectionUtils::IsValueType(pProperty);
-
-  switch (pProperty->GetCategory())
-  {
-    case nsPropertyCategory::Member:
-    {
-      if (bIsValueType)
-        type = pProperty->GetSpecificType()->GetVariantType();
-      else if (pProperty->GetFlags().IsAnySet(nsPropertyFlags::IsEnum | nsPropertyFlags::Bitflags))
-        type = nsVariantType::Int64;
-    }
-    break;
-    case nsPropertyCategory::Array:
-    case nsPropertyCategory::Set:
-    {
-      type = nsVariantType::VariantArray;
-    }
-    break;
-    case nsPropertyCategory::Map:
-    {
-      type = nsVariantType::VariantDictionary;
-    }
-    break;
-    default:
-      break;
-  }
-
-  return type;
 }
 
 ////////////////////////////////////////////////////////////////////////

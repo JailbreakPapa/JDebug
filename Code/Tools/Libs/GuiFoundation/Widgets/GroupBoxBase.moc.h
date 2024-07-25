@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #pragma once
 
 #include <GuiFoundation/GuiFoundationDLL.h>
@@ -17,7 +12,7 @@ class NS_GUIFOUNDATION_DLL nsQtGroupBoxBase : public QWidget
 public:
   nsQtGroupBoxBase(QWidget* pParent, bool bCollapsible);
 
-  virtual void SetTitle(const char* szTitle);
+  virtual void SetTitle(nsStringView sTitle);
   QString GetTitle() const;
 
   virtual void SetBoldTitle(bool bBold);
@@ -64,4 +59,3 @@ protected:
   QString m_sTitle;
   QIcon m_Icon;
 };
-

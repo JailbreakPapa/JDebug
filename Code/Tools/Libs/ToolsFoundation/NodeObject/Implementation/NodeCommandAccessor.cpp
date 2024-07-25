@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <ToolsFoundation/ToolsFoundationPCH.h>
 
 #include <ToolsFoundation/Command/NodeCommands.h>
@@ -18,21 +13,35 @@ nsNodeCommandAccessor::~nsNodeCommandAccessor() = default;
 
 nsStatus nsNodeCommandAccessor::SetValue(const nsDocumentObject* pObject, const nsAbstractProperty* pProp, const nsVariant& newValue, nsVariant index /*= nsVariant()*/)
 {
-  if (m_pHistory->InTemporaryTransaction() == false && IsDynamicPinProperty(pObject, pProp))
+  if (m_pHistory->InTemporaryTransaction() == false)
   {
-    nsHybridArray<ConnectionInfo, 16> oldConnections;
-    NS_SUCCEED_OR_RETURN(DisconnectAllPins(pObject, oldConnections));
+    auto pNodeObject = pObject;
+    auto pDynamicPinProperty = pProp;
 
-    // TODO: remap oldConnections
+    if (IsNode(pObject) == false)
+    {
+      auto pParent = pObject->GetParent();
+      if (pParent != nullptr && IsNode(pParent))
+      {
+        pNodeObject = pParent;
+        pDynamicPinProperty = pParent->GetType()->FindPropertyByName(pObject->GetParentProperty());
+      }
+    }
 
-    NS_SUCCEED_OR_RETURN(nsObjectCommandAccessor::SetValue(pObject, pProp, newValue, index));
+    if (IsDynamicPinProperty(pNodeObject, pDynamicPinProperty))
+    {
+      nsHybridArray<ConnectionInfo, 16> oldConnections;
+      NS_SUCCEED_OR_RETURN(DisconnectAllPins(pNodeObject, oldConnections));
 
-    return TryReconnectAllPins(pObject, oldConnections);
+      // TODO: remap oldConnections
+
+      NS_SUCCEED_OR_RETURN(nsObjectCommandAccessor::SetValue(pObject, pProp, newValue, index));
+
+      return TryReconnectAllPins(pNodeObject, oldConnections);
+    }
   }
-  else
-  {
-    return nsObjectCommandAccessor::SetValue(pObject, pProp, newValue, index);
-  }
+
+  return nsObjectCommandAccessor::SetValue(pObject, pProp, newValue, index);
 }
 
 nsStatus nsNodeCommandAccessor::InsertValue(const nsDocumentObject* pObject, const nsAbstractProperty* pProp, const nsVariant& newValue, nsVariant index /*= nsVariant()*/)
@@ -88,6 +97,54 @@ nsStatus nsNodeCommandAccessor::MoveValue(const nsDocumentObject* pObject, const
   }
 }
 
+nsStatus nsNodeCommandAccessor::AddObject(const nsDocumentObject* pParent, const nsAbstractProperty* pParentProp, const nsVariant& index, const nsRTTI* pType, nsUuid& inout_objectGuid)
+{
+  if (IsDynamicPinProperty(pParent, pParentProp))
+  {
+    nsHybridArray<ConnectionInfo, 16> oldConnections;
+    NS_SUCCEED_OR_RETURN(DisconnectAllPins(pParent, oldConnections));
+
+    // TODO: remap oldConnections
+
+    NS_SUCCEED_OR_RETURN(nsObjectCommandAccessor::AddObject(pParent, pParentProp, index, pType, inout_objectGuid));
+
+    return TryReconnectAllPins(pParent, oldConnections);
+  }
+  else
+  {
+    return nsObjectCommandAccessor::AddObject(pParent, pParentProp, index, pType, inout_objectGuid);
+  }
+}
+
+nsStatus nsNodeCommandAccessor::RemoveObject(const nsDocumentObject* pObject)
+{
+  if (const nsDocumentObject* pParent = pObject->GetParent())
+  {
+    const nsAbstractProperty* pProp = pParent->GetType()->FindPropertyByName(pObject->GetParentProperty());
+    if (IsDynamicPinProperty(pParent, pProp))
+    {
+      nsHybridArray<ConnectionInfo, 16> oldConnections;
+      NS_SUCCEED_OR_RETURN(DisconnectAllPins(pParent, oldConnections));
+
+      // TODO: remap oldConnections
+
+      NS_SUCCEED_OR_RETURN(nsObjectCommandAccessor::RemoveObject(pObject));
+
+      return TryReconnectAllPins(pParent, oldConnections);
+    }
+  }
+
+  return nsObjectCommandAccessor::RemoveObject(pObject);
+}
+
+
+bool nsNodeCommandAccessor::IsNode(const nsDocumentObject* pObject) const
+{
+  auto pManager = static_cast<const nsDocumentNodeManager*>(pObject->GetDocumentObjectManager());
+
+  return pManager->IsNode(pObject);
+}
+
 bool nsNodeCommandAccessor::IsDynamicPinProperty(const nsDocumentObject* pObject, const nsAbstractProperty* pProp) const
 {
   auto pManager = static_cast<const nsDocumentNodeManager*>(pObject->GetDocumentObjectManager());
@@ -99,7 +156,8 @@ nsStatus nsNodeCommandAccessor::DisconnectAllPins(const nsDocumentObject* pObjec
 {
   auto pManager = static_cast<const nsDocumentNodeManager*>(pObject->GetDocumentObjectManager());
 
-  auto Disconnect = [&](nsArrayPtr<const nsConnection* const> connections) -> nsStatus {
+  auto Disconnect = [&](nsArrayPtr<const nsConnection* const> connections) -> nsStatus
+  {
     for (const nsConnection* pConnection : connections)
     {
       auto& connectionInfo = out_oldConnections.ExpandAndGetRef();

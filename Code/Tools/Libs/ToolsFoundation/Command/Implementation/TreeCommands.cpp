@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <ToolsFoundation/ToolsFoundationPCH.h>
 
 #include <Foundation/IO/MemoryStream.h>
@@ -271,7 +266,8 @@ nsStatus nsPasteObjectsCommand::DoInternal(bool bRedo)
       }
     }
 
-    RootNodes.Sort([](const nsAbstractObjectNode* a, const nsAbstractObjectNode* b) {
+    RootNodes.Sort([](const nsAbstractObjectNode* a, const nsAbstractObjectNode* b)
+      {
       auto* pOrderA = a->FindProperty("__Order");
       auto* pOrderB = b->FindProperty("__Order");
       if (pOrderA && pOrderB && pOrderA->m_Value.CanConvertTo<nsUInt32>() && pOrderB->m_Value.CanConvertTo<nsUInt32>())
@@ -706,6 +702,8 @@ nsStatus nsSetObjectPropertyCommand::DoInternal(bool bRedo)
 
   if (!bRedo)
   {
+    NS_ASSERT_DEBUG(m_NewValue.GetType() != nsVariantType::StringView && m_NewValue.GetType() != nsVariantType::TypedPointer, "Variants that are stored in the command history must hold ownership of their value.");
+
     if (m_Object.IsValid())
     {
       m_pObject = pDocument->GetObjectManager()->GetObject(m_Object);

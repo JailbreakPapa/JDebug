@@ -1,14 +1,11 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <GuiFoundation/GuiFoundationPCH.h>
 
 #include <GuiFoundation/Models/LogModel.moc.h>
 #include <GuiFoundation/Widgets/LogWidget.moc.h>
 #include <QClipboard>
 #include <QKeyEvent>
+
+nsMap<nsString, nsQtLogWidget::LogItemContextActionCallback> nsQtLogWidget::s_LogCallbacks;
 
 nsQtLogWidget::nsQtLogWidget(QWidget* pParent)
   : QWidget(pParent)
@@ -19,7 +16,9 @@ nsQtLogWidget::nsQtLogWidget(QWidget* pParent)
   ListViewLog->setModel(m_pLog);
   ListViewLog->setUniformItemSizes(true);
   ListViewLog->installEventFilter(this);
-  connect(m_pLog, &QAbstractItemModel::rowsInserted, this, [this](const QModelIndex& parent, int iFirst, int iLast) { ScrollToBottomIfAtEnd(iFirst); });
+  connect(m_pLog, &QAbstractItemModel::rowsInserted, this, [this](const QModelIndex& parent, int iFirst, int iLast)
+    { ScrollToBottomIfAtEnd(iFirst); });
+  connect(ListViewLog, &QAbstractItemView::doubleClicked, this, &nsQtLogWidget::OnItemDoubleClicked);
 
   const int logIndex = ((int)nsLogMsgType::All - (int)nsLogMsgType::InfoMsg);
   ComboFilter->setCurrentIndex(logIndex);
@@ -96,6 +95,26 @@ bool nsQtLogWidget::eventFilter(QObject* pObject, QEvent* pEvent)
   return false;
 }
 
+bool nsQtLogWidget::AddLogItemContextActionCallback(const nsStringView& sName, const LogItemContextActionCallback& logCallback)
+{
+  if (sName.IsEmpty())
+    return false;
+
+  if (s_LogCallbacks.Contains(sName))
+    return false;
+
+  s_LogCallbacks[sName] = logCallback;
+  return true;
+}
+
+bool nsQtLogWidget::RemoveLogItemContextActionCallback(const nsStringView& sName)
+{
+  if (sName.IsEmpty())
+    return false;
+
+  return s_LogCallbacks.Remove(sName);
+}
+
 void nsQtLogWidget::ScrollToBottomIfAtEnd(int iNumElements)
 {
   if (ListViewLog->selectionModel()->hasSelection())
@@ -124,4 +143,14 @@ void nsQtLogWidget::on_ComboFilter_currentIndexChanged(int index)
 {
   const nsLogMsgType::Enum LogLevel = (nsLogMsgType::Enum)((int)nsLogMsgType::All - index);
   m_pLog->SetLogLevel(LogLevel);
+}
+
+void nsQtLogWidget::OnItemDoubleClicked(QModelIndex idx)
+{
+  const nsString sLine(m_pLog->data(idx, Qt::DisplayRole).toString().toUtf8().data());
+
+  for (auto const& callback : s_LogCallbacks)
+  {
+    callback.Value()(sLine);
+  }
 }

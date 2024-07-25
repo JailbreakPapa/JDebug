@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <GuiFoundation/GuiFoundationPCH.h>
 
 #include <Foundation/Logging/Log.h>
@@ -21,6 +16,9 @@ nsQtEventTrackEditorWidget::nsQtEventTrackEditorWidget(QWidget* pParent)
   setupUi(this);
 
   EventTrackEdit->SetGridBarWidget(GridBarWidget);
+
+  // make sure the track is visible and not completely squashed
+  EventTrackEdit->setMinimumHeight(50);
 
   connect(EventTrackEdit, &nsQtEventTrackWidget::DeleteControlPointsEvent, this, &nsQtEventTrackEditorWidget::onDeleteControlPoints);
   connect(EventTrackEdit, &nsQtEventTrackWidget::DoubleClickEvent, this, &nsQtEventTrackEditorWidget::onDoubleClick);
@@ -83,6 +81,14 @@ void nsQtEventTrackEditorWidget::on_AddEventButton_clicked()
   }
 }
 
+void nsQtEventTrackEditorWidget::on_InsertEventButton_clicked()
+{
+  int curveIdx = 0, cpIdx = 0;
+  double posX = nsMath::Max(EventTrackEdit->GetScrubberPosition(), 0.0);
+
+  Q_EMIT InsertCpEvent(m_pData->TickFromTime(nsTime::MakeFromSeconds(posX)), ComboType->currentText().toUtf8().data());
+}
+
 void nsQtEventTrackEditorWidget::onDeleteControlPoints()
 {
   nsHybridArray<nsUInt32, 32> selection;
@@ -95,7 +101,8 @@ void nsQtEventTrackEditorWidget::onDeleteControlPoints()
 
   Q_EMIT BeginCpChangesEvent("Delete Events");
 
-  selection.Sort([](nsUInt32 lhs, nsUInt32 rhs) -> bool { return lhs > rhs; });
+  selection.Sort([](nsUInt32 lhs, nsUInt32 rhs) -> bool
+    { return lhs > rhs; });
 
   // delete sorted from back to front to prevent point indices becoming invalidated
   for (nsUInt32 pt : selection)
@@ -191,7 +198,8 @@ void nsQtEventTrackEditorWidget::onContextMenu(QPoint pos, QPointF scenePos)
 
   m.addSeparator();
 
-  m.addAction("Frame", QKeySequence(Qt::ControlModifier | Qt::Key_F), this, [this]() { FrameCurve(); });
+  m.addAction("Frame", QKeySequence(Qt::ControlModifier | Qt::Key_F), this, [this]()
+    { FrameCurve(); });
 
   m.exec(pos);
 }

@@ -99,13 +99,13 @@ void nsIpcChannelEnet::EnetEventHandler(const nsRemoteEvent& e)
 {
   if (e.m_Type == nsRemoteEvent::DisconnectedFromServer)
   {
-    nsLog::Info("Disconnected from remote engine process.");
+    nsLog::Info("Disconnected from engine process.");
     Disconnect();
   }
 
   if (e.m_Type == nsRemoteEvent::ConnectedToServer)
   {
-    nsLog::Info("Connected to remote engine process.");
+    nsLog::Info("Connected to engine process.");
   }
 }
 

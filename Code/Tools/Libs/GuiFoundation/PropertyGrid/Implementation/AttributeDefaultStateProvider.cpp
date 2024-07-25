@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <GuiFoundation/GuiFoundationPCH.h>
 
 #include <GuiFoundation/PropertyGrid/AttributeDefaultStateProvider.h>
@@ -40,7 +35,8 @@ nsVariant nsAttributeDefaultStateProvider::GetDefaultValue(SuperArray superPtr, 
 
 nsStatus nsAttributeDefaultStateProvider::CreateRevertContainerDiff(SuperArray superPtr, nsObjectAccessorBase* pAccessor, const nsDocumentObject* pObject, const nsAbstractProperty* pProp, nsDeque<nsAbstractGraphDiffOperation>& out_diff)
 {
-  auto RemoveObject = [&](const nsUuid& object) {
+  auto RemoveObject = [&](const nsUuid& object)
+  {
     auto& op = out_diff.ExpandAndGetRef();
     op.m_Node = object;
     op.m_Operation = nsAbstractGraphDiffOperation::Op::NodeRemoved;
@@ -48,7 +44,8 @@ nsStatus nsAttributeDefaultStateProvider::CreateRevertContainerDiff(SuperArray s
     op.m_sProperty = pAccessor->GetObject(object)->GetType()->GetTypeName();
   };
 
-  auto SetProperty = [&](const nsVariant& newValue) {
+  auto SetProperty = [&](const nsVariant& newValue)
+  {
     auto& op = out_diff.ExpandAndGetRef();
     op.m_Node = pObject->GetGuid();
     op.m_Operation = nsAbstractGraphDiffOperation::Op::PropertyChanged;

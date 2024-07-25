@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <GuiFoundation/GuiFoundationPCH.h>
 
 #include <GuiFoundation/Widgets/InlinedGroupBox.moc.h>
@@ -43,9 +38,9 @@ nsQtInlinedGroupBox::nsQtInlinedGroupBox(QWidget* pParent)
   installEventFilter(this);
 }
 
-void nsQtInlinedGroupBox::SetTitle(const char* szTitle)
+void nsQtInlinedGroupBox::SetTitle(nsStringView sTitle)
 {
-  nsQtGroupBoxBase::SetTitle(szTitle);
+  nsQtGroupBoxBase::SetTitle(sTitle);
   update();
 }
 

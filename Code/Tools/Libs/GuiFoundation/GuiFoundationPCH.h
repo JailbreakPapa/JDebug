@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <GuiFoundation/GuiFoundationDLL.h>
 
 #include <Foundation/Basics/Platform/Win/IncludeWindows.h>
@@ -12,12 +7,15 @@
 
 #include <QAction>
 #include <QBoxLayout>
+#include <QCheckBox>
 #include <QClipboard>
 #include <QDragEnterEvent>
+#include <QEvent>
 #include <QFont>
 #include <QHBoxLayout>
 #include <QInputDialog>
 #include <QLabel>
+#include <QLayout>
 #include <QMenu>
 #include <QMimeData>
 #include <QPainter>
@@ -25,8 +23,8 @@
 #include <QScrollArea>
 #include <QSlider>
 #include <QStringBuilder>
+#include <QSyntaxHighlighter>
 #include <QToolButton>
 #include <QWidget>
 #include <QWidgetAction>
 #include <QtWidgets>
-#include <qevent.h>

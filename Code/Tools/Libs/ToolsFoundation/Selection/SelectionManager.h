@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #pragma once
 
 #include <ToolsFoundation/Object/DocumentObjectBase.h>
@@ -24,6 +19,12 @@ struct nsSelectionManagerEvent
   Type m_Type;
   const nsDocument* m_pDocument;
   const nsDocumentObject* m_pObject;
+};
+
+struct nsSelectionEntry
+{
+  const nsDocumentObject* m_pObject;
+  nsUInt32 m_uiSelectionOrder = 0; // the index at which this item was in the selection
 };
 
 /// \brief Selection Manager stores a set of selected document objects.
@@ -61,11 +62,17 @@ public:
 
   bool IsSelectionEmpty() const { return m_pSelectionStorage->m_SelectionList.IsEmpty(); }
 
-  /// \brief Returns the subset of selected items which have no parent selected. I.e. if an object is selected and one of its ancestors is selected, it is culled from the list. Items are returned in the order of appearance in an expanded scene tree.
-  const nsDeque<const nsDocumentObject*> GetTopLevelSelection() const;
+
+
+  /// \brief Returns the subset of selected items which have no parent selected.
+  ///
+  /// I.e. if an object is selected and one of its ancestors is selected, it is culled from the list.
+  /// Items are returned in the order of appearance in an expanded scene tree.
+  /// Their order in the selection is returned through nsSelectionEntry.
+  void GetTopLevelSelection(nsDynamicArray<nsSelectionEntry>& out_entries) const;
 
   /// \brief Same as GetTopLevelSelection() but additionally requires that all objects are derived from type pBase.
-  const nsDeque<const nsDocumentObject*> GetTopLevelSelection(const nsRTTI* pBase) const;
+  void GetTopLevelSelectionOfType(const nsRTTI* pBase, nsDynamicArray<nsSelectionEntry>& out_entries) const;
 
   bool IsSelected(const nsDocumentObject* pObject) const;
   bool IsParentSelected(const nsDocumentObject* pObject) const;

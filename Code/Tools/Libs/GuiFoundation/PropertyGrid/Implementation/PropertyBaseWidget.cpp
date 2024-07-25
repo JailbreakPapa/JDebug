@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <GuiFoundation/GuiFoundationPCH.h>
 
 #include <Foundation/IO/MemoryStream.h>
@@ -22,6 +17,7 @@
 #include <ToolsFoundation/Command/TreeCommands.h>
 #include <ToolsFoundation/Object/ObjectAccessorBase.h>
 
+#include <GuiFoundation/GuiFoundationDLL.h>
 #include <QClipboard>
 #include <QDragEnterEvent>
 #include <QLabel>
@@ -56,8 +52,7 @@ nsQtPropertyWidget::nsQtPropertyWidget()
 
 nsQtPropertyWidget::~nsQtPropertyWidget() = default;
 
-void nsQtPropertyWidget::Init(
-  nsQtPropertyGridWidget* pGrid, nsObjectAccessorBase* pObjectAccessor, const nsRTTI* pType, const nsAbstractProperty* pProp)
+void nsQtPropertyWidget::Init(nsQtPropertyGridWidget* pGrid, nsObjectAccessorBase* pObjectAccessor, const nsRTTI* pType, const nsAbstractProperty* pProp)
 {
   m_pGrid = pGrid;
   m_pObjectAccessor = pObjectAccessor;
@@ -66,7 +61,9 @@ void nsQtPropertyWidget::Init(
   NS_ASSERT_DEBUG(m_pGrid && m_pObjectAccessor && m_pType && m_pProp, "");
 
   if (pProp->GetAttributeByType<nsReadOnlyAttribute>() != nullptr || pProp->GetFlags().IsSet(nsPropertyFlags::ReadOnly))
-    setEnabled(false);
+  {
+    SetReadOnly();
+  }
 
   OnInit();
 }
@@ -236,21 +233,21 @@ void nsQtPropertyWidget::ExtendContextMenu(QMenu& m)
       {
         pPaste->setEnabled(false);
         nsStringBuilder sTemp;
-        sTemp.Format("Cannot convert clipboard and property content between arrays and members.");
+        sTemp.SetFormat("Cannot convert clipboard and property content between arrays and members.");
         pPaste->setToolTip(sTemp.GetData());
       }
-      else if (bEnumerationMissmatch || !content.m_Value.CanConvertTo(m_pProp->GetSpecificType()->GetVariantType()) && content.m_Type != m_pProp->GetSpecificType()->GetTypeName())
+      else if (bEnumerationMissmatch || (!content.m_Value.CanConvertTo(m_pProp->GetSpecificType()->GetVariantType()) && content.m_Type != m_pProp->GetSpecificType()->GetTypeName()))
       {
         pPaste->setEnabled(false);
         nsStringBuilder sTemp;
-        sTemp.Format("Cannot convert clipboard of type '{}' to property of type '{}'", content.m_Type, m_pProp->GetSpecificType()->GetTypeName());
+        sTemp.SetFormat("Cannot convert clipboard of type '{}' to property of type '{}'", content.m_Type, m_pProp->GetSpecificType()->GetTypeName());
         pPaste->setToolTip(sTemp.GetData());
       }
       else if (clamped.Failed())
       {
         pPaste->setEnabled(false);
         nsStringBuilder sTemp;
-        sTemp.Format("The member property '{}' has an nsClampValueAttribute but nsReflectionUtils::ClampValue failed.", m_pProp->GetPropertyName());
+        sTemp.SetFormat("The member property '{}' has an nsClampValueAttribute but nsReflectionUtils::ClampValue failed.", m_pProp->GetPropertyName());
       }
 
       connect(pPaste, &QAction::triggered, this, [this, content]()
@@ -410,7 +407,7 @@ nsVariant nsQtPropertyWidget::GetCommonValue(const nsHybridArray<nsPropertySelec
     {
       if (!value.IsValid())
       {
-        m_pObjectAccessor->GetValue(item.m_pObject, pProperty, value, item.m_Index).AssertSuccess();
+        m_pObjectAccessor->GetValue(item.m_pObject, pProperty, value, item.m_Index).IgnoreResult();
       }
       else
       {
@@ -436,6 +433,10 @@ void nsQtPropertyWidget::PrepareToDie()
   DoPrepareToDie();
 }
 
+void nsQtPropertyWidget::SetReadOnly(bool bReadOnly /*= true*/)
+{
+  setDisabled(bReadOnly);
+}
 
 void nsQtPropertyWidget::OnCustomContextMenu(const QPoint& pt)
 {
@@ -467,7 +468,7 @@ void nsQtPropertyWidget::PropertyChangedHandler(const nsPropertyEvent& ed)
     case nsPropertyEvent::Type::SingleValueChanged:
     {
       nsStringBuilder sTemp;
-      sTemp.Format("Change Property '{0}'", nsTranslate(ed.m_pProperty->GetPropertyName()));
+      sTemp.SetFormat("Change Property '{0}'", nsTranslate(ed.m_pProperty->GetPropertyName()));
       m_pObjectAccessor->StartTransaction(sTemp);
 
       nsStatus res;
@@ -490,7 +491,7 @@ void nsQtPropertyWidget::PropertyChangedHandler(const nsPropertyEvent& ed)
     case nsPropertyEvent::Type::BeginTemporary:
     {
       nsStringBuilder sTemp;
-      sTemp.Format("Change Property '{0}'", nsTranslate(ed.m_pProperty->GetPropertyName()));
+      sTemp.SetFormat("Change Property '{0}'", nsTranslate(ed.m_pProperty->GetPropertyName()));
       m_pObjectAccessor->BeginTemporaryCommands(sTemp);
     }
     break;
@@ -877,7 +878,7 @@ void nsQtEmbeddedClassPropertyWidget::FlushQueuedChanges()
 nsQtPropertyTypeWidget::nsQtPropertyTypeWidget(bool bAddCollapsibleGroup)
   : nsQtPropertyWidget()
 {
-  m_pLayout = new QHBoxLayout(this);
+  m_pLayout = new QVBoxLayout(this);
   m_pLayout->setContentsMargins(0, 0, 0, 0);
   setLayout(m_pLayout);
   m_pGroup = nullptr;
@@ -886,7 +887,7 @@ nsQtPropertyTypeWidget::nsQtPropertyTypeWidget(bool bAddCollapsibleGroup)
   if (bAddCollapsibleGroup)
   {
     m_pGroup = new nsQtCollapsibleGroupBox(this);
-    m_pGroupLayout = new QHBoxLayout(nullptr);
+    m_pGroupLayout = new QVBoxLayout(nullptr);
     m_pGroupLayout->setSpacing(1);
     m_pGroupLayout->setContentsMargins(5, 0, 0, 0);
     m_pGroup->GetContent()->setLayout(m_pGroupLayout);
@@ -914,7 +915,7 @@ void nsQtPropertyTypeWidget::SetSelection(const nsHybridArray<nsPropertySelectio
 
   nsQtPropertyWidget::SetSelection(items);
 
-  QHBoxLayout* pLayout = m_pGroup != nullptr ? m_pGroupLayout : m_pLayout;
+  QVBoxLayout* pLayout = m_pGroup != nullptr ? m_pGroupLayout : m_pLayout;
   QWidget* pOwner = m_pGroup != nullptr ? m_pGroup->GetContent() : this;
   if (m_pTypeWidget)
   {
@@ -1270,7 +1271,7 @@ nsQtPropertyContainerWidget::Element& nsQtPropertyContainerWidget::AddElement(ns
     connect(pDeleteButton, &QToolButton::clicked, this, &nsQtPropertyContainerWidget::OnElementButtonClicked);
   }
 
-  m_Elements.Insert(Element(pSubGroup, pNewWidget, pHelpButton), index);
+  m_Elements.InsertAt(index, Element(pSubGroup, pNewWidget, pHelpButton));
   return m_Elements[index];
 }
 
@@ -1399,7 +1400,7 @@ void nsQtPropertyContainerWidget::UpdatePropertyMetaState()
     if (element.m_pWidget)
     {
       element.m_pWidget->setVisible(state != nsPropertyUiState::Invisible);
-      element.m_pSubGroup->setEnabled(!bReadOnly && state != nsPropertyUiState::Disabled);
+      element.m_pWidget->SetReadOnly(bReadOnly || state == nsPropertyUiState::Disabled);
       element.m_pWidget->SetIsDefault(bIsDefault);
     }
   }
@@ -1570,9 +1571,9 @@ void nsQtPropertyStandardTypeContainerWidget::UpdateElement(nsUInt32 index)
 
   nsStringBuilder sTitle;
   if (m_pProp->GetCategory() == nsPropertyCategory::Map)
-    sTitle.Format("{0}", m_Keys[index].ConvertTo<nsString>());
+    sTitle.SetFormat("{0}", m_Keys[index].ConvertTo<nsString>());
   else
-    sTitle.Format("[{0}]", m_Keys[index].ConvertTo<nsString>());
+    sTitle.SetFormat("[{0}]", m_Keys[index].ConvertTo<nsString>());
 
   elem.m_pSubGroup->SetTitle(sTitle);
   m_pGrid->SetCollapseState(elem.m_pSubGroup);
@@ -1634,7 +1635,7 @@ void nsQtPropertyTypeContainerWidget::UpdateElement(nsUInt32 index)
     // Label
     {
       nsStringBuilder sTitle, tmp;
-      sTitle.Format("[{0}] - {1}", m_Keys[index].ConvertTo<nsString>(), nsTranslate(pCommonType->GetTypeName().GetData(tmp)));
+      sTitle.SetFormat("[{0}] - {1}", m_Keys[index].ConvertTo<nsString>(), nsTranslate(pCommonType->GetTypeName().GetData(tmp)));
 
       if (auto pInDev = pCommonType->GetAttributeByType<nsInDevelopmentAttribute>())
       {
@@ -1672,7 +1673,7 @@ void nsQtPropertyTypeContainerWidget::UpdateElement(nsUInt32 index)
     // help URL
     {
       nsStringBuilder tmp;
-      QString url = nsTranslateHelpURL(pCommonType->GetTypeName().GetData(tmp));
+      QString url = nsMakeQString(nsTranslateHelpURL(pCommonType->GetTypeName().GetData(tmp)));
 
       if (!url.isEmpty())
       {
@@ -1754,6 +1755,7 @@ nsQtVariantPropertyWidget::nsQtVariantPropertyWidget()
   setLayout(m_pLayout);
 
   m_pTypeList = new QComboBox(this);
+  m_pTypeList->installEventFilter(this);
   m_pTypeList->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
   m_pLayout->addWidget(m_pTypeList);
 }
@@ -1768,12 +1770,13 @@ void nsQtVariantPropertyWidget::OnInit()
     auto type = static_cast<nsVariantType::Enum>(i);
     if (GetVariantTypeDisplayName(type, sName).Succeeded())
     {
-      m_pTypeList->addItem(nsTranslate(sName), i);
+      m_pTypeList->addItem(nsMakeQString(nsTranslate(sName)), i);
     }
   }
 
   connect(m_pTypeList, &QComboBox::currentIndexChanged,
-    [this](int iIndex) {
+    [this](int iIndex)
+    {
       ChangeVariantType(static_cast<nsVariantType::Enum>(m_pTypeList->itemData(iIndex).toInt()));
     });
 }

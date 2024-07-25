@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #pragma once
 
 #include <Foundation/Communication/Event.h>
@@ -89,7 +84,7 @@ public:
   bool IsSubDocument() const { return m_pHostDocument != this; }
   /// \brief In case this is a sub-document, returns the main document this belongs to. Otherwise 'this' is returned.
   const nsDocument* GetMainDocument() const { return m_pHostDocument; }
-  /// @brief At any given time, only the active sub-document can be edited. This returns the active sub-document which can also be this document itself. Changes to the active sub-document are generally triggered by nsDocumentObjectStructureEvent::Type::AfterReset.
+  /// \brief At any given time, only the active sub-document can be edited. This returns the active sub-document which can also be this document itself. Changes to the active sub-document are generally triggered by nsDocumentObjectStructureEvent::Type::AfterReset.
   const nsDocument* GetActiveSubDocument() const { return m_pActiveSubDocument; }
   nsDocument* GetMainDocument() { return m_pHostDocument; }
   nsDocument* GetActiveSubDocument() { return m_pActiveSubDocument; }
@@ -230,10 +225,10 @@ public:
   virtual void UpdatePrefabs();
 
   /// \brief Resets the given objects to their template prefab state, if they have local modifications.
-  void RevertPrefabs(const nsDeque<const nsDocumentObject*>& selection);
+  void RevertPrefabs(nsArrayPtr<const nsDocumentObject*> selection);
 
   /// \brief Removes the link between a prefab instance and its template, turning the instance into a regular object.
-  virtual void UnlinkPrefabs(const nsDeque<const nsDocumentObject*>& selection);
+  virtual void UnlinkPrefabs(nsArrayPtr<const nsDocumentObject*> selection);
 
   virtual nsStatus CreatePrefabDocumentFromSelection(nsStringView sFile, const nsRTTI* pRootType, nsDelegate<void(nsAbstractObjectNode*)> adjustGraphNodeCB = {}, nsDelegate<void(nsDocumentObject*)> adjustNewNodesCB = {}, nsDelegate<void(nsAbstractObjectGraph& graph, nsDynamicArray<nsAbstractObjectNode*>& graphRootNodes)> finalizeGraphCB = {});
   virtual nsStatus CreatePrefabDocument(nsStringView sFile, nsArrayPtr<const nsDocumentObject*> rootObjects, const nsUuid& invPrefabSeed, nsUuid& out_newDocumentGuid, nsDelegate<void(nsAbstractObjectNode*)> adjustGraphNodeCB = {}, bool bKeepOpen = false, nsDelegate<void(nsAbstractObjectGraph& graph, nsDynamicArray<nsAbstractObjectNode*>& graphRootNodes)> finalizeGraphCB = {});

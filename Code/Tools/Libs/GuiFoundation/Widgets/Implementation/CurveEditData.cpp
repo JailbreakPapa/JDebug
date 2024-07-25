@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <GuiFoundation/GuiFoundationPCH.h>
 
 #include <Foundation/Math/Math.h>
@@ -11,7 +6,7 @@
 
 // clang-format off
 NS_BEGIN_STATIC_REFLECTED_ENUM(nsCurveTangentMode, 1)
-NS_ENUM_CONSTANTS(nsCurveTangentMode::Bezier, nsCurveTangentMode::FixedLength, nsCurveTangentMode::Linear, nsCurveTangentMode::Auto)
+NS_ENUM_CONSTANTS(nsCurveTangentMode::Bnsier, nsCurveTangentMode::FixedLength, nsCurveTangentMode::Linear, nsCurveTangentMode::Auto)
 NS_END_STATIC_REFLECTED_ENUM;
 
 NS_BEGIN_DYNAMIC_REFLECTED_TYPE(nsCurveControlPointData, 5, nsRTTIDefaultAllocator<nsCurveControlPointData>)
@@ -166,7 +161,7 @@ double nsSingleCurveData::Evaluate(nsInt64 iTick) const
   if (rrhs)
     ConvertControlPoint(*rrhs, temp);
 
-  //#TODO: This is rather slow as we eval lots of points but only need one
+  // #TODO: This is rather slow as we eval lots of points but only need one
   temp.CreateLinearApproximation();
   return temp.Evaluate(iTick / 4800.0);
 }
@@ -180,8 +175,8 @@ void nsCurveGroupData::ConvertToRuntimeData(nsUInt32 uiCurveIdx, nsCurve1D& out_
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
-#include <Foundation/Serialization/GraphPatch.h>
 #include <Foundation/Serialization/AbstractObjectGraph.h>
+#include <Foundation/Serialization/GraphPatch.h>
 
 class nsCurve1DControlPoint_2_3 : public nsGraphPatch
 {
@@ -199,8 +194,8 @@ public:
       nsVec2 pt = pPoint->m_Value.Get<nsVec2>();
       pNode->AddProperty("Time", (double)nsMath::Max(0.0f, pt.x));
       pNode->AddProperty("Value", (double)pt.y);
-      pNode->AddProperty("LeftTangentMode", (nsUInt32)nsCurveTangentMode::Bezier);
-      pNode->AddProperty("RightTangentMode", (nsUInt32)nsCurveTangentMode::Bezier);
+      pNode->AddProperty("LeftTangentMode", (nsUInt32)nsCurveTangentMode::Bnsier);
+      pNode->AddProperty("RightTangentMode", (nsUInt32)nsCurveTangentMode::Bnsier);
     }
   }
 };

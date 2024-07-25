@@ -1,14 +1,11 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #pragma once
 
 #include <Foundation/Basics.h>
 #include <Foundation/Math/Color8UNorm.h>
+#include <Foundation/Strings/String.h>
 #include <Foundation/Types/Uuid.h>
 #include <QColor>
+#include <QDataStream>
 #include <QMetaType>
 #include <ToolsFoundation/ToolsFoundationDLL.h>
 
@@ -64,7 +61,57 @@ NS_ALWAYS_INLINE nsColorGammaUB qtToNsColor(const QColor& c)
   return nsColorGammaUB(c.red(), c.green(), c.blue(), c.alpha());
 }
 
+NS_ALWAYS_INLINE nsString qtToNsString(const QString& sString)
+{
+  QByteArray data = sString.toUtf8();
+  return nsString(nsStringView(data.data(), static_cast<nsUInt32>(data.size())));
+}
+
 NS_ALWAYS_INLINE QString nsMakeQString(nsStringView sString)
 {
   return QString::fromUtf8(sString.GetStartPointer(), sString.GetElementCount());
+}
+
+template <typename T>
+void operator>>(QDataStream& inout_stream, T*& rhs)
+{
+  void* p = nullptr;
+  uint len = sizeof(void*);
+  inout_stream.readRawData((char*)&p, len);
+  rhs = (T*)p;
+}
+
+
+template <typename T>
+void operator<<(QDataStream& inout_stream, T* rhs)
+{
+  inout_stream.writeRawData((const char*)&rhs, sizeof(void*));
+}
+
+template <typename T>
+void operator>>(QDataStream& inout_stream, nsDynamicArray<T>& rhs)
+{
+  nsUInt32 uiIndices = 0;
+  inout_stream >> uiIndices;
+  rhs.Clear();
+  rhs.Reserve(uiIndices);
+
+  for (int i = 0; i < uiIndices; ++i)
+  {
+    T obj = {};
+    inout_stream >> obj;
+    rhs.PushBack(obj);
+  }
+}
+
+template <typename T>
+void operator<<(QDataStream& inout_stream, nsDynamicArray<T>& rhs)
+{
+  nsUInt32 iIndices = rhs.GetCount();
+  inout_stream << iIndices;
+
+  for (nsUInt32 i = 0; i < iIndices; ++i)
+  {
+    inout_stream << rhs[i];
+  }
 }

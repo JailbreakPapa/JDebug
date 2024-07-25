@@ -8,7 +8,7 @@ endif()
 include("${CMAKE_CURRENT_SOURCE_DIR}/nsCMakeConfig.cmake")
 get_property(NS_CMAKE_RELPATH GLOBAL PROPERTY NS_CMAKE_RELPATH)
 get_property(NS_CMAKE_RELPATH_CODE GLOBAL PROPERTY NS_CMAKE_RELPATH_CODE)
-message("SOURCE DIR: ${CMAKE_SOURCE_DIR}")
+
 # Required to find cmake modules like 'FindDirectX.cmake'
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/${NS_CMAKE_RELPATH}")
 

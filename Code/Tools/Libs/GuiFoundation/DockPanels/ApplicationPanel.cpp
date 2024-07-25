@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <GuiFoundation/GuiFoundationPCH.h>
 
 #include <Foundation/Strings/TranslationLookup.h>
@@ -24,8 +19,8 @@ nsQtApplicationPanel::nsQtApplicationPanel(const char* szPanelName)
 {
   nsStringBuilder sPanel("AppPanel_", szPanelName);
 
-  setObjectName(QString::fromUtf8(sPanel.GetData()));
-  setWindowTitle(QString::fromUtf8(nsTranslate(szPanelName)));
+  setObjectName(nsMakeQString(sPanel));
+  setWindowTitle(nsMakeQString(nsTranslate(szPanelName)));
 
   s_AllApplicationPanels.PushBack(this);
 
@@ -78,13 +73,13 @@ void nsQtApplicationPanel::ToolsProjectEventHandler(const nsToolsProjectEvent& e
   }
 }
 
-bool nsQtApplicationPanel::event(QEvent* event)
+bool nsQtApplicationPanel::event(QEvent* pEvent)
 {
-  if (event->type() == QEvent::ShortcutOverride)
+  if (pEvent->type() == QEvent::ShortcutOverride || pEvent->type() == QEvent::KeyPress)
   {
-    QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
-    if (nsQtProxy::TriggerDocumentAction(nullptr, keyEvent))
+    QKeyEvent* keyEvent = static_cast<QKeyEvent*>(pEvent);
+    if (nsQtProxy::TriggerDocumentAction(nullptr, keyEvent, pEvent->type() == QEvent::ShortcutOverride))
       return true;
   }
-  return ads::CDockWidget::event(event);
+  return ads::CDockWidget::event(pEvent);
 }

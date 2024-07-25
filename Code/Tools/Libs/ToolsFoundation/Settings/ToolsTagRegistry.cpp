@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <ToolsFoundation/ToolsFoundationPCH.h>
 
 #include <Foundation/Configuration/Startup.h>
@@ -162,7 +157,8 @@ void nsToolsTagRegistry::GetTagsByCategory(const nsArrayPtr<nsStringView>& categ
   out_tags.Clear();
   for (auto it = s_NameToTags.GetIterator(); it.IsValid(); ++it)
   {
-    if (std::any_of(cbegin(categories), cend(categories), [&it](const nsStringView& sCat) { return it.Value().m_sCategory == sCat; }))
+    if (std::any_of(cbegin(categories), cend(categories), [&it](const nsStringView& sCat)
+          { return it.Value().m_sCategory == sCat; }))
     {
       out_tags.PushBack(&it.Value());
     }

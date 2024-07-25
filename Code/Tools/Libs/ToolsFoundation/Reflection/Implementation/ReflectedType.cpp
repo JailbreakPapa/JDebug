@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <ToolsFoundation/ToolsFoundationPCH.h>
 
 #include <Foundation/Reflection/ReflectionUtils.h>
@@ -73,7 +68,7 @@ void nsAttributeHolder::SetValue(nsUInt32 uiIndex, const nsPropertyAttribute* va
 
 void nsAttributeHolder::Insert(nsUInt32 uiIndex, const nsPropertyAttribute* value)
 {
-  m_Attributes.Insert(value, uiIndex);
+  m_Attributes.InsertAt(uiIndex, value);
 }
 
 void nsAttributeHolder::Remove(nsUInt32 uiIndex)

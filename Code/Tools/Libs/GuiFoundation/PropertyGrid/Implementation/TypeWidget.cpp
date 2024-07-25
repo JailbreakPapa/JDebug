@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <GuiFoundation/GuiFoundationPCH.h>
 
 #include <Foundation/Reflection/Implementation/PropertyAttributes.h>
@@ -201,12 +196,14 @@ void nsQtTypeWidget::BuildUI(const nsRTTI* pType, const char* szIncludePropertie
   PropertyGroup* pCurrentGroup = nullptr;
   float fOrder = -1.0f;
 
-  auto AddProperty = [&](const nsAbstractProperty* pProp) {
+  auto AddProperty = [&](const nsAbstractProperty* pProp)
+  {
     const nsGroupAttribute* pGroup = pProp->GetAttributeByType<nsGroupAttribute>();
     if (pGroup != nullptr)
     {
       nsUniquePtr<PropertyGroup>* pFound =
-        std::find_if(begin(groups), end(groups), [&](const nsUniquePtr<PropertyGroup>& g) { return g->m_sGroup == pGroup->GetGroup(); });
+        std::find_if(begin(groups), end(groups), [&](const nsUniquePtr<PropertyGroup>& g)
+          { return g->m_sGroup == pGroup->GetGroup(); });
       if (pFound != end(groups))
       {
         pCurrentGroup = pFound->Borrow();
@@ -222,7 +219,8 @@ void nsQtTypeWidget::BuildUI(const nsRTTI* pType, const char* szIncludePropertie
     if (pCurrentGroup == nullptr)
     {
       nsUniquePtr<PropertyGroup>* pFound =
-        std::find_if(begin(groups), end(groups), [&](const nsUniquePtr<PropertyGroup>& g) { return g->m_sGroup.IsEmpty(); });
+        std::find_if(begin(groups), end(groups), [&](const nsUniquePtr<PropertyGroup>& g)
+          { return g->m_sGroup.IsEmpty(); });
       if (pFound != end(groups))
       {
         pCurrentGroup = pFound->Borrow();
@@ -307,7 +305,8 @@ void nsQtTypeWidget::BuildUI(const nsRTTI* pType, const char* szIncludePropertie
     pCurrentGroup = nullptr;
   }
 
-  groups.Sort([](const nsUniquePtr<PropertyGroup>& lhs, const nsUniquePtr<PropertyGroup>& rhs) -> bool { return lhs->m_fOrder < rhs->m_fOrder; });
+  groups.Sort([](const nsUniquePtr<PropertyGroup>& lhs, const nsUniquePtr<PropertyGroup>& rhs) -> bool
+    { return lhs->m_fOrder < rhs->m_fOrder; });
 
   BuildUI(pType, manipulatorMap, groups, szIncludeProperties, szExcludeProperties);
 }
@@ -370,7 +369,8 @@ void nsQtTypeWidget::ManipulatorManagerEventHandler(const nsManipulatorManagerEv
 
 void nsQtTypeWidget::UpdateProperty(const nsDocumentObject* pObject, const nsString& sProperty)
 {
-  if (std::none_of(cbegin(m_Items), cend(m_Items), [=](const nsPropertySelection& sel) { return pObject == sel.m_pObject; }))
+  if (std::none_of(cbegin(m_Items), cend(m_Items), [=](const nsPropertySelection& sel)
+        { return pObject == sel.m_pObject; }))
     return;
 
 
@@ -438,8 +438,8 @@ void nsQtTypeWidget::UpdatePropertyMetaState()
       if (itData.IsValid() && !itData.Value().m_sNewLabelText.IsEmpty())
       {
         const char* szLabelText = itData.Value().m_sNewLabelText;
-        it.Value().m_pLabel->setText(QString::fromUtf8(nsTranslate(szLabelText)));
-        it.Value().m_pLabel->setToolTip(QString::fromUtf8(nsTranslateTooltip(szLabelText)));
+        it.Value().m_pLabel->setText(nsMakeQString(nsTranslate(szLabelText)));
+        it.Value().m_pLabel->setToolTip(nsMakeQString(nsTranslateTooltip(szLabelText)));
       }
       else
       {
@@ -448,18 +448,18 @@ void nsQtTypeWidget::UpdatePropertyMetaState()
 
         // unless there is a specific override, we want to show the exact property name
         // also we don't want to force people to add translations for each and every property name
-        it.Value().m_pLabel->setText(QString::fromUtf8(nsTranslate(it.Value().m_sOriginalLabelText)));
+        it.Value().m_pLabel->setText(nsMakeQString(nsTranslate(it.Value().m_sOriginalLabelText)));
 
         // though do try to get a tooltip for the property
         // this will not log an error message, if the string is not translated
-        it.Value().m_pLabel->setToolTip(QString::fromUtf8(nsTranslateTooltip(it.Value().m_sOriginalLabelText)));
+        it.Value().m_pLabel->setToolTip(nsMakeQString(nsTranslateTooltip(it.Value().m_sOriginalLabelText)));
 
         nsTranslatorLogMissing::s_bActive = temp;
       }
     }
 
     it.Value().m_pWidget->setVisible(state != nsPropertyUiState::Invisible);
-    it.Value().m_pWidget->setEnabled(!bReadOnly && state != nsPropertyUiState::Disabled);
+    it.Value().m_pWidget->SetReadOnly(bReadOnly || state == nsPropertyUiState::Disabled);
     it.Value().m_pWidget->SetIsDefault(bIsDefaultValue);
   }
 }

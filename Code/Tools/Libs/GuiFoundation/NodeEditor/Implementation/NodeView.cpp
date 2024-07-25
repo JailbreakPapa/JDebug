@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <GuiFoundation/GuiFoundationPCH.h>
 
 #include <GuiFoundation/NodeEditor/NodeScene.moc.h>
@@ -141,9 +136,64 @@ void nsQtNodeView::resizeEvent(QResizeEvent* event)
   UpdateView();
 }
 
+void nsQtNodeView::drawBackground(QPainter* painter, const QRectF& r)
+{
+  QGraphicsView::drawBackground(painter, r);
+
+  if (m_ViewScale.manhattanLength() > 1.0)
+  {
+    QPen pfine(nsToQtColor(nsColorScheme::GetColor(nsColorScheme::Gray, 0)), 1.0);
+
+    painter->setPen(pfine);
+    DrawGrid(painter, 15);
+  }
+
+  if (m_ViewScale.manhattanLength() > 0.1)
+  {
+    double scale = m_ViewScale.manhattanLength() < 0.25 ? 150.0 : 300.0;
+
+    QPen p(nsToQtColor(nsColorScheme::GetColor(nsColorScheme::Gray, 1)), 1.0);
+
+    painter->setPen(p);
+    DrawGrid(painter, scale);
+  }
+
+  // Only force constant redraws when doing the debug animation.
+  if (GetScene()->GetConnectionDecorationFlags().IsSet(nsQtNodeScene::ConnectionDecorationFlags::DrawDebugging))
+  {
+    UpdateView();
+  }
+}
+
 void nsQtNodeView::UpdateView()
 {
   QRectF sceneRect(m_ViewPos.x(), m_ViewPos.y(), width() / m_ViewScale.x(), height() / m_ViewScale.y());
   setSceneRect(sceneRect);
   fitInView(sceneRect, Qt::KeepAspectRatio);
+}
+
+void nsQtNodeView::DrawGrid(QPainter* painter, const double gridStep)
+{
+  const QRectF sceneRect(m_ViewPos.x(), m_ViewPos.y(), width() / m_ViewScale.x(), height() / m_ViewScale.y());
+  const QPointF topLeft = sceneRect.topLeft();
+  const QPointF bottomRight = sceneRect.bottomRight();
+
+  const double left = nsMath::Floor(topLeft.x() / gridStep - 0.5);
+  const double right = nsMath::Floor(bottomRight.x() / gridStep + 1.0);
+  const double bottom = nsMath::Floor(topLeft.y() / gridStep - 0.5);
+  const double top = nsMath::Floor(bottomRight.y() / gridStep + 1.0);
+
+  // vertical lines
+  for (int xi = static_cast<int>(left); xi <= static_cast<int>(right); ++xi)
+  {
+    QLineF line(xi * gridStep, bottom * gridStep, xi * gridStep, top * gridStep);
+    painter->drawLine(line);
+  }
+
+  // horizontal lines
+  for (int yi = static_cast<int>(bottom); yi <= static_cast<int>(top); ++yi)
+  {
+    QLineF line(left * gridStep, yi * gridStep, right * gridStep, yi * gridStep);
+    painter->drawLine(line);
+  }
 }

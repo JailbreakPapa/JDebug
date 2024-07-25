@@ -1,18 +1,9 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <GuiFoundation/GuiFoundationPCH.h>
 
 #include <GuiFoundation/PropertyGrid/Implementation/TagSetPropertyWidget.moc.h>
 #include <GuiFoundation/PropertyGrid/PropertyGridWidget.moc.h>
 #include <GuiFoundation/UIServices/UIServices.moc.h>
-#include <QCheckBox>
-#include <QHBoxLayout>
-#include <QMenu>
-#include <QPushButton>
-#include <QWidgetAction>
+
 #include <ToolsFoundation/Command/TreeCommands.h>
 #include <ToolsFoundation/Object/ObjectAccessorBase.h>
 #include <ToolsFoundation/Settings/ToolsTagRegistry.h>

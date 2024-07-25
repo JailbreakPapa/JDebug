@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <ToolsFoundation/ToolsFoundationPCH.h>
 
 #include <Foundation/Configuration/Plugin.h>
@@ -100,7 +95,8 @@ void nsDocumentManager::UpdatedAfterLoadingPlugins()
   bool bChanges = false;
 
   nsRTTI::ForEachDerivedType<nsDocumentManager>(
-    [&](const nsRTTI* pRtti) {
+    [&](const nsRTTI* pRtti)
+    {
       // add the ones that we don't know yet
       if (!s_KnownManagers.Find(pRtti).IsValid())
       {

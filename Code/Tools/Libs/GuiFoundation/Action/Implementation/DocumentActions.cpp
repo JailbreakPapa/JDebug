@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <GuiFoundation/GuiFoundationPCH.h>
 
 #include <Foundation/IO/OSFile.h>
@@ -31,6 +26,8 @@ nsActionDescriptorHandle nsDocumentActions::s_hSave;
 nsActionDescriptorHandle nsDocumentActions::s_hSaveAs;
 nsActionDescriptorHandle nsDocumentActions::s_hSaveAll;
 nsActionDescriptorHandle nsDocumentActions::s_hClose;
+nsActionDescriptorHandle nsDocumentActions::s_hCloseAll;
+nsActionDescriptorHandle nsDocumentActions::s_hCloseAllButThis;
 nsActionDescriptorHandle nsDocumentActions::s_hOpenContainingFolder;
 nsActionDescriptorHandle nsDocumentActions::s_hCopyAssetGuid;
 nsActionDescriptorHandle nsDocumentActions::s_hUpdatePrefabs;
@@ -42,6 +39,8 @@ void nsDocumentActions::RegisterActions()
   s_hSaveAll = NS_REGISTER_ACTION_1("Document.SaveAll", nsActionScope::Document, "Document", "Ctrl+Shift+S", nsDocumentAction, nsDocumentAction::ButtonType::SaveAll);
   s_hSaveAs = NS_REGISTER_ACTION_1("Document.SaveAs", nsActionScope::Document, "Document", "", nsDocumentAction, nsDocumentAction::ButtonType::SaveAs);
   s_hClose = NS_REGISTER_ACTION_1("Document.Close", nsActionScope::Document, "Document", "Ctrl+W", nsDocumentAction, nsDocumentAction::ButtonType::Close);
+  s_hCloseAll = NS_REGISTER_ACTION_1("Document.CloseAll", nsActionScope::Document, "Document", "Ctrl+Shift+W", nsDocumentAction, nsDocumentAction::ButtonType::CloseAll);
+  s_hCloseAllButThis = NS_REGISTER_ACTION_1("Document.CloseAllButThis", nsActionScope::Document, "Document", "Shift+Alt+W", nsDocumentAction, nsDocumentAction::ButtonType::CloseAllButThis);
   s_hOpenContainingFolder = NS_REGISTER_ACTION_1("Document.OpenContainingFolder", nsActionScope::Document, "Document", "", nsDocumentAction, nsDocumentAction::ButtonType::OpenContainingFolder);
   s_hCopyAssetGuid = NS_REGISTER_ACTION_1("Document.CopyAssetGuid", nsActionScope::Document, "Document", "", nsDocumentAction, nsDocumentAction::ButtonType::CopyAssetGuid);
   s_hUpdatePrefabs = NS_REGISTER_ACTION_1("Prefabs.UpdateAll", nsActionScope::Document, "Scene", "Ctrl+Shift+P", nsDocumentAction, nsDocumentAction::ButtonType::UpdatePrefabs);
@@ -54,6 +53,8 @@ void nsDocumentActions::UnregisterActions()
   nsActionManager::UnregisterAction(s_hSaveAs);
   nsActionManager::UnregisterAction(s_hSaveAll);
   nsActionManager::UnregisterAction(s_hClose);
+  nsActionManager::UnregisterAction(s_hCloseAll);
+  nsActionManager::UnregisterAction(s_hCloseAllButThis);
   nsActionManager::UnregisterAction(s_hOpenContainingFolder);
   nsActionManager::UnregisterAction(s_hCopyAssetGuid);
   nsActionManager::UnregisterAction(s_hUpdatePrefabs);
@@ -68,9 +69,11 @@ void nsDocumentActions::MapMenuActions(nsStringView sMapping, nsStringView sTarg
   pMap->MapAction(s_hSaveAs, sTargetMenu, 6.0f);
   pMap->MapAction(s_hSaveAll, sTargetMenu, 7.0f);
   pMap->MapAction(s_hClose, sTargetMenu, 8.0f);
-  pMap->MapAction(s_hOpenContainingFolder, sTargetMenu, 10.0f);
+  pMap->MapAction(s_hCloseAll, sTargetMenu, 9.0f);
+  pMap->MapAction(s_hCloseAllButThis, sTargetMenu, 10.0f);
+  pMap->MapAction(s_hOpenContainingFolder, sTargetMenu, 11.0f);
 
-  pMap->MapAction(s_hCopyAssetGuid, sTargetMenu, 11.0f);
+  pMap->MapAction(s_hCopyAssetGuid, sTargetMenu, 12.0f);
 }
 
 void nsDocumentActions::MapToolbarActions(nsStringView sMapping)
@@ -115,6 +118,12 @@ nsDocumentAction::nsDocumentAction(const nsActionContext& context, const char* s
       SetIconPath(":/GuiFoundation/Icons/SaveAll.svg");
       break;
     case nsDocumentAction::ButtonType::Close:
+      SetIconPath("");
+      break;
+    case nsDocumentAction::ButtonType::CloseAll:
+      SetIconPath("");
+      break;
+    case nsDocumentAction::ButtonType::CloseAllButThis:
       SetIconPath("");
       break;
     case nsDocumentAction::ButtonType::OpenContainingFolder:
@@ -208,7 +217,7 @@ void nsDocumentAction::Execute(const nsVariant& value)
           if (res.Failed())
           {
             nsStringBuilder s;
-            s.Format("Failed to save document: \n'{0}'", sFile);
+            s.SetFormat("Failed to save document: \n'{0}'", sFile);
             nsQtUiServices::MessageBoxStatus(res, s);
           }
           else
@@ -233,12 +242,48 @@ void nsDocumentAction::Execute(const nsVariant& value)
 
     case nsDocumentAction::ButtonType::Close:
     {
-      nsQtDocumentWindow* pWnd = nsQtDocumentWindow::FindWindowByDocument(m_Context.m_pDocument);
+      nsQtDocumentWindow* pWindow = nsQtDocumentWindow::FindWindowByDocument(m_Context.m_pDocument);
 
-      if (!pWnd->CanCloseWindow())
+      if (!pWindow->CanCloseWindow())
         return;
 
-      pWnd->CloseDocumentWindow();
+      pWindow->CloseDocumentWindow();
+    }
+    break;
+
+    case nsDocumentAction::ButtonType::CloseAll:
+    {
+      auto& documentWindows = nsQtDocumentWindow::GetAllDocumentWindows();
+      for (nsQtDocumentWindow* pWindow : documentWindows)
+      {
+        if (!pWindow->CanCloseWindow())
+          continue;
+
+        // Prevent closing the document root window.
+        if (nsStringUtils::Compare(pWindow->GetUniqueName(), "Settings") == 0)
+          continue;
+
+        pWindow->CloseDocumentWindow();
+      }
+    }
+    break;
+
+    case nsDocumentAction::ButtonType::CloseAllButThis:
+    {
+      nsQtDocumentWindow* pThisWindow = nsQtDocumentWindow::FindWindowByDocument(m_Context.m_pDocument);
+
+      auto& documentWindows = nsQtDocumentWindow::GetAllDocumentWindows();
+      for (nsQtDocumentWindow* pWindow : documentWindows)
+      {
+        if (!pWindow->CanCloseWindow() || pWindow == pThisWindow)
+          continue;
+
+        // Prevent closing the document root window.
+        if (nsStringUtils::Compare(pWindow->GetUniqueName(), "Settings") == 0)
+          continue;
+
+        pWindow->CloseDocumentWindow();
+      }
     }
     break;
 

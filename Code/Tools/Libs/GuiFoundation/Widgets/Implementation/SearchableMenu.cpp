@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <GuiFoundation/GuiFoundationPCH.h>
 
 #include <GuiFoundation/Models/TreeSearchFilterModel.moc.h>
@@ -155,7 +150,7 @@ bool nsQtSearchableMenu::eventFilter(QObject* pObject, QEvent* event)
   return false;
 }
 
-void nsQtSearchableMenu::AddItem(const char* szDisplayName, const char* szInternalPath, const QVariant& variant, QIcon icon)
+void nsQtSearchableMenu::AddItem(nsStringView sDisplayName, const char* szInternalPath, const QVariant& variant, QIcon icon)
 {
   QStandardItem* pParent = m_pItemModel->invisibleRootItem();
 
@@ -167,7 +162,7 @@ void nsQtSearchableMenu::AddItem(const char* szDisplayName, const char* szIntern
     pParent = CreateCategoryMenu(sCategory);
   }
 
-  QStandardItem* pThisItem = new QStandardItem(szDisplayName);
+  QStandardItem* pThisItem = new QStandardItem(nsMakeQString(sDisplayName));
   pThisItem->setFlags(Qt::ItemFlag::ItemIsEnabled | Qt::ItemFlag::ItemIsSelectable);
   pThisItem->setData(szInternalPath, InternalPathRole);
   pThisItem->setData(variant, VariantRole);

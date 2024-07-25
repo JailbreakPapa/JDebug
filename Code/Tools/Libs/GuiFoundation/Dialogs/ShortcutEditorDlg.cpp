@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <GuiFoundation/GuiFoundationPCH.h>
 
 #include <Foundation/Strings/TranslationLookup.h>
@@ -77,7 +72,7 @@ nsQtShortcutEditorDlg::nsQtShortcutEditorDlg(QWidget* pParent)
         pItem->setData(0, Qt::DisplayRole, item->m_sActionName.GetData());
         pItem->setData(1, Qt::DisplayRole, sTemp.GetData());
         pItem->setData(2, Qt::DisplayRole, item->m_sShortcut.GetData());
-        pItem->setData(3, Qt::DisplayRole, nsTranslateTooltip(item->m_sActionName));
+        pItem->setData(3, Qt::DisplayRole, nsMakeQString(nsTranslateTooltip(item->m_sActionName)));
 
         if (item->m_sShortcut == item->m_sDefaultShortcut)
           pItem->setBackground(2, QBrush());

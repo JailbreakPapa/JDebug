@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #pragma once
 
 #include <Foundation/Serialization/AbstractObjectGraph.h>
@@ -104,6 +99,44 @@ private:
   const nsDocumentObject* m_pParent = nullptr;
 };
 
+//////////////////////////////////////////////////////////////////////////
+
+struct nsNodePropertyValue
+{
+  nsHashedString m_sPropertyName;
+  nsVariant m_Value;
+};
+
+/// \brief Describes a template that will be used to create new nodes. In most cases this only contains the type
+/// but it can also contain properties that are pre-filled when the node is created.
+///
+/// For example in visual script this allows us to have one generic node type for setting reflected properties
+/// but we can expose all relevant reflected properties in the node creation menu so the user does not need to fill out the property name manually.
+struct nsNodeCreationTemplate
+{
+  const nsRTTI* m_pType = nullptr;
+  nsStringView m_sTypeName;
+  nsHashedString m_sCategory;
+  nsArrayPtr<const nsNodePropertyValue> m_PropertyValues;
+};
+
+//////////////////////////////////////////////////////////////////////////
+
+/// \brief Base class for all node connections. Derive from this class and overwrite nsDocumentNodeManager::GetConnectionType
+/// if you need custom properties for connections.
+class NS_TOOLSFOUNDATION_DLL nsDocumentObject_ConnectionBase : public nsReflectedClass
+{
+  NS_ADD_DYNAMIC_REFLECTION(nsDocumentObject_ConnectionBase, nsReflectedClass);
+
+public:
+  nsUuid m_Source;
+  nsUuid m_Target;
+  nsString m_SourcePin;
+  nsString m_TargetPin;
+};
+
+//////////////////////////////////////////////////////////////////////////
+
 class NS_TOOLSFOUNDATION_DLL nsDocumentNodeManager : public nsDocumentObjectManager
 {
 public:
@@ -112,10 +145,16 @@ public:
   nsDocumentNodeManager();
   virtual ~nsDocumentNodeManager();
 
+  /// \brief For node documents this function is called instead of GetCreateableTypes to get a list for the node creation menu.
+  ///
+  /// \see nsNodeCreationTemplate
+  virtual void GetNodeCreationTemplates(nsDynamicArray<nsNodeCreationTemplate>& out_templates) const;
+
   virtual const nsRTTI* GetConnectionType() const;
 
   nsVec2 GetNodePos(const nsDocumentObject* pObject) const;
   const nsConnection& GetConnection(const nsDocumentObject* pObject) const;
+  const nsConnection* GetConnectionIfExists(const nsDocumentObject* pObject) const;
 
   const nsPin* GetInputPinByName(const nsDocumentObject* pObject, nsStringView sName) const;
   const nsPin* GetOutputPinByName(const nsDocumentObject* pObject, nsStringView sName) const;
@@ -162,7 +201,9 @@ protected:
   /// \brief Returns true if adding a connection between the two pins would create a circular graph
   bool WouldConnectionCreateCircle(const nsPin& source, const nsPin& target) const;
 
-  void GetDynamicPinNames(const nsDocumentObject* pObject, nsStringView sPropertyName, nsStringView sPinName, nsDynamicArray<nsString>& out_Names) const;
+  nsResult ResolveConnection(const nsUuid& sourceObject, const nsUuid& targetObject, nsStringView sourcePin, nsStringView targetPin, const nsPin*& out_pSourcePin, const nsPin*& out_pTargetPin) const;
+
+  virtual void GetDynamicPinNames(const nsDocumentObject* pObject, nsStringView sPropertyName, nsStringView sPinName, nsDynamicArray<nsString>& out_Names) const;
   virtual bool TryRecreatePins(const nsDocumentObject* pObject);
 
   struct NodeInternal
@@ -185,7 +226,7 @@ private:
   void StructureEventHandler(const nsDocumentObjectStructureEvent& e);
   void PropertyEventsHandler(const nsDocumentObjectPropertyEvent& e);
 
-  void RestoreOldMetaDataAfterLoading(const nsAbstractObjectGraph& graph, const nsAbstractObjectNode::Property& connectionsProperty, const nsDocumentObject* pSourceObject);
+  void HandlePotentialDynamicPinPropertyChanged(const nsDocumentObject* pObject, nsStringView sPropertyName);
 
 private:
   nsHashTable<nsUuid, NodeInternal> m_ObjectToNode;

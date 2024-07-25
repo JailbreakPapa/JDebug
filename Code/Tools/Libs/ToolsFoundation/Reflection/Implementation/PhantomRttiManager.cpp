@@ -1,12 +1,7 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <ToolsFoundation/ToolsFoundationPCH.h>
 
 #include <Foundation/Configuration/Startup.h>
-#include <Foundation/Memory/Allocator.h>
+#include <Foundation/Memory/AllocatorWithPolicy.h>
 #include <Foundation/Profiling/Profiling.h>
 #include <Foundation/Reflection/Reflection.h>
 #include <ToolsFoundation/Reflection/PhantomRtti.h>

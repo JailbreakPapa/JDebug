@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #pragma once
 #include <ToolsFoundation/Object/ObjectCommandAccessor.h>
 
@@ -12,16 +7,17 @@ public:
   nsNodeCommandAccessor(nsCommandHistory* pHistory);
   ~nsNodeCommandAccessor();
 
-  virtual nsStatus SetValue(
-    const nsDocumentObject* pObject, const nsAbstractProperty* pProp, const nsVariant& newValue, nsVariant index = nsVariant()) override;
+  virtual nsStatus SetValue(const nsDocumentObject* pObject, const nsAbstractProperty* pProp, const nsVariant& newValue, nsVariant index = nsVariant()) override;
 
-  virtual nsStatus InsertValue(
-    const nsDocumentObject* pObject, const nsAbstractProperty* pProp, const nsVariant& newValue, nsVariant index = nsVariant()) override;
+  virtual nsStatus InsertValue(const nsDocumentObject* pObject, const nsAbstractProperty* pProp, const nsVariant& newValue, nsVariant index = nsVariant()) override;
   virtual nsStatus RemoveValue(const nsDocumentObject* pObject, const nsAbstractProperty* pProp, nsVariant index = nsVariant()) override;
-  virtual nsStatus MoveValue(
-    const nsDocumentObject* pObject, const nsAbstractProperty* pProp, const nsVariant& oldIndex, const nsVariant& newIndex) override;
+  virtual nsStatus MoveValue(const nsDocumentObject* pObject, const nsAbstractProperty* pProp, const nsVariant& oldIndex, const nsVariant& newIndex) override;
+
+  virtual nsStatus AddObject(const nsDocumentObject* pParent, const nsAbstractProperty* pParentProp, const nsVariant& index, const nsRTTI* pType, nsUuid& inout_objectGuid) override;
+  virtual nsStatus RemoveObject(const nsDocumentObject* pObject) override;
 
 private:
+  bool IsNode(const nsDocumentObject* pObject) const;
   bool IsDynamicPinProperty(const nsDocumentObject* pObject, const nsAbstractProperty* pProp) const;
 
   struct ConnectionInfo

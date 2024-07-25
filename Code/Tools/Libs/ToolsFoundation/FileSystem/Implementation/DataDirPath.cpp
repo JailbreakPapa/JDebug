@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <ToolsFoundation/ToolsFoundationDLL.h>
 
 #include <ToolsFoundation/FileSystem/DataDirPath.h>
@@ -16,10 +11,10 @@ bool nsDataDirPath::UpdateDataDirInfos(nsArrayPtr<nsString> dataDirRoots, nsUInt
     NS_ASSERT_DEBUG(!dataDirRoots[uiCurrentIndex].EndsWith_NoCase("/"), "");
     if (m_sAbsolutePath.StartsWith_NoCase(dataDirRoots[uiCurrentIndex]) && !dataDirRoots[uiCurrentIndex].IsEmpty())
     {
-      m_uiDataDirIndex = uiCurrentIndex;
+      m_uiDataDirIndex = static_cast<nsUInt8>(uiCurrentIndex);
       const char* szParentFolder = nsPathUtils::FindPreviousSeparator(m_sAbsolutePath.GetData(), m_sAbsolutePath.GetData() + dataDirRoots[uiCurrentIndex].GetElementCount());
-      m_uiDataDirParent = szParentFolder - m_sAbsolutePath.GetData();
-      m_uiDataDirLength = dataDirRoots[uiCurrentIndex].GetElementCount() - m_uiDataDirParent;
+      m_uiDataDirParent = static_cast<nsUInt16>(szParentFolder - m_sAbsolutePath.GetData());
+      m_uiDataDirLength = static_cast<nsUInt8>(dataDirRoots[uiCurrentIndex].GetElementCount() - m_uiDataDirParent);
       return true;
     }
   }

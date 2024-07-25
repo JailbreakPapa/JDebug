@@ -1,8 +1,3 @@
-/*
- *   Copyright (c) 2023-present WD Studios L.L.C.
- *   All rights reserved.
- *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
- */
 #include <GuiFoundation/GuiFoundationPCH.h>
 
 #include <Foundation/Configuration/Startup.h>
@@ -93,9 +88,10 @@ NS_BEGIN_SUBSYSTEM_DECLARATION(GuiFoundation, QtProxies)
 NS_END_SUBSYSTEM_DECLARATION;
 // clang-format on
 
-bool nsQtProxy::TriggerDocumentAction(nsDocument* pDocument, QKeyEvent* pEvent)
+bool nsQtProxy::TriggerDocumentAction(nsDocument* pDocument, QKeyEvent* pEvent, bool bTestOnly)
 {
-  auto CheckActions = [](QKeyEvent* pEvent, nsMap<nsActionDescriptorHandle, QWeakPointer<nsQtProxy>>& ref_actions) -> bool {
+  auto CheckActions = [&](QKeyEvent* pEvent, nsMap<nsActionDescriptorHandle, QWeakPointer<nsQtProxy>>& ref_actions) -> bool
+  {
     for (auto weakActionProxy : ref_actions)
     {
       if (auto pProxy = weakActionProxy.Value().toStrongRef())
@@ -115,7 +111,10 @@ bool nsQtProxy::TriggerDocumentAction(nsDocument* pDocument, QKeyEvent* pEvent)
           QKeySequence ks = pQAction->shortcut();
           if (pQAction->isEnabled() && QKeySequence(pEvent->key() | pEvent->modifiers()) == ks)
           {
-            pQAction->trigger();
+            if (!bTestOnly)
+            {
+              pQAction->trigger();
+            }
             pEvent->accept();
             return true;
           }
@@ -201,7 +200,8 @@ QSharedPointer<nsQtProxy> nsQtProxy::GetProxy(nsActionContext& ref_context, nsAc
       auto it = s_WindowActions.FindOrAdd(ref_context.m_pWindow, &bExisted);
       if (!bExisted)
       {
-        s_pSignalProxy->connect(ref_context.m_pWindow, &QObject::destroyed, s_pSignalProxy, [ref_context]() { s_WindowActions.Remove(ref_context.m_pWindow); });
+        s_pSignalProxy->connect(ref_context.m_pWindow, &QObject::destroyed, s_pSignalProxy, [ref_context]()
+          { s_WindowActions.Remove(ref_context.m_pWindow); });
       }
       QWeakPointer<nsQtProxy> pTemp = it.Value()[hDesc];
       if (pTemp.isNull())
@@ -267,7 +267,7 @@ void nsQtMenuProxy::Update()
   auto pMenu = static_cast<nsMenuAction*>(m_pAction);
 
   m_pMenu->setIcon(nsQtUiServices::GetCachedIconResource(pMenu->GetIconPath()));
-  m_pMenu->setTitle(QString::fromUtf8(nsTranslate(pMenu->GetName())));
+  m_pMenu->setTitle(nsMakeQString(nsTranslate(pMenu->GetName())));
 }
 
 void nsQtMenuProxy::SetAction(nsAction* pAction)
@@ -316,7 +316,7 @@ void nsQtButtonProxy::Update()
   m_pQtAction->setShortcut(QKeySequence(QString::fromUtf8(pDesc->m_sShortcut.GetData())));
 
   const QString sDisplayShortcut = m_pQtAction->shortcut().toString(QKeySequence::NativeText);
-  QString sTooltip = nsTranslateTooltip(pButton->GetName());
+  QString sTooltip = nsMakeQString(nsTranslateTooltip(pButton->GetName()));
 
   nsStringBuilder sDisplay = nsTranslate(pButton->GetName());
 
@@ -516,7 +516,7 @@ void nsQtDynamicActionAndMenuProxy::Update()
     sDisplay.Append(" '", pButton->GetAdditionalDisplayString(), "'"); // TODO: translate this as well?
 
   const QString sDisplayShortcut = m_pQtAction->shortcut().toString(QKeySequence::NativeText);
-  QString sTooltip = nsTranslateTooltip(pButton->GetName());
+  QString sTooltip = nsMakeQString(nsTranslateTooltip(pButton->GetName()));
 
   if (sTooltip.isEmpty())
   {
@@ -703,8 +703,8 @@ void nsQtSliderProxy::Update()
   pSliderAction->setMinimum(minVal);
   pSliderAction->setMaximum(maxVal);
   pSliderAction->setValue(pAction->GetValue());
-  pSliderAction->setText(nsTranslate(pAction->GetName()));
-  pSliderAction->setToolTip(nsTranslateTooltip(pAction->GetName()));
+  pSliderAction->setText(nsMakeQString(nsTranslate(pAction->GetName())));
+  pSliderAction->setToolTip(nsMakeQString(nsTranslateTooltip(pAction->GetName())));
   pSliderAction->setEnabled(pAction->IsEnabled());
   pSliderAction->setVisible(pAction->IsVisible());
 }

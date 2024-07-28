@@ -1,0 +1,16 @@
+{
+  "Registrations": [
+    {
+      "component": {
+        "type": "git",
+        "git": {
+          "Name": "imgui",
+          "repositoryUrl": "https://github.com/ocornut/imgui",
+          "commitHash": "c6e0284ac58b3f205c95365478888f7b53b077e2"
+        },
+		"version": "1.89.9"
+      }
+    }
+  ],
+  "$schema": "https://json.schemastore.org/component-detection-manifest.json"
+}

@@ -60,5 +60,6 @@
     <file>Icons/vscode.svg</file>
     <file>Icons/Warning.svg</file>
     <file>Icons/Error.svg</file>
+	<file>Icons/LogoSmallJolt.svg</file>
   </qresource>
 </RCC>

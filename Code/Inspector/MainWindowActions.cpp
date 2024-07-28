@@ -1,7 +1,6 @@
 #include <Inspector/InspectorPCH.h>
 
 #include <Foundation/Communication/Telemetry.h>
-#include <Inspector/CVarsWidget.moc.h>
 #include <Inspector/DataTransferWidget.moc.h>
 #include <Inspector/FileWidget.moc.h>
 #include <Inspector/GlobalEventsWidget.moc.h>
@@ -41,8 +40,7 @@ void nsQtMainWindow::on_ActionShowWindowInput_triggered()
 
 void nsQtMainWindow::on_ActionShowWindowCVar_triggered()
 {
-  nsQtCVarsWidget::s_pWidget->toggleView(ActionShowWindowCVar->isChecked());
-  nsQtCVarsWidget::s_pWidget->raise();
+ //
 }
 
 void nsQtMainWindow::on_ActionShowWindowReflection_triggered()

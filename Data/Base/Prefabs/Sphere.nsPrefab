@@ -1,0 +1,1449 @@
+HeaderV2
+{
+o
+{
+	Uuid %id{u4{5697229966826873357,5299780223228843891}}
+	s %t{"nsExposedParameters"}
+	u3 %v{3}
+	p
+	{
+		VarArray %Parameters{}
+	}
+}
+o
+{
+	Uuid %id{u4{18244993842488090760,5465890411451931965}}
+	s %t{"nsAssetDocumentInfo"}
+	u3 %v{2}
+	s %n{"Header"}
+	p
+	{
+		s %AssetType{"Prefab"}
+		VarArray %Dependencies{}
+		Uuid %DocumentID{u4{18244993842488090760,5465890411451931965}}
+		u4 %Hash{8854342393349779964}
+		VarArray %MetaInfo
+		{
+			Uuid{u4{5697229966826873357,5299780223228843891}}
+		}
+		VarArray %Outputs{}
+		VarArray %PackageDeps
+		{
+			s{"{ 3283e65f-79e2-ec9d-3f50-f14c56bac25f }"}
+			s{"{ 618ee743-ed04-4fac-bf5f-572939db2f1d }"}
+		}
+		VarArray %References
+		{
+			s{"{ 3283e65f-79e2-ec9d-3f50-f14c56bac25f }"}
+			s{"{ 618ee743-ed04-4fac-bf5f-572939db2f1d }"}
+		}
+	}
+}
+}
+Objects
+{
+o
+{
+	Uuid %id{u4{11448426864515631286,4718526577294585726}}
+	s %t{"nsJoltShapeSphereComponent"}
+	u3 %v{1}
+	p
+	{
+		b %Active{1}
+		f %Radius{0xD7A3F03E}
+	}
+}
+o
+{
+	Uuid %id{u4{14202751603624500140,5078281055510091918}}
+	s %t{"nsJoltDynamicActorComponent"}
+	u3 %v{3}
+	p
+	{
+		b %Active{1}
+		f %AngularDamping{0xCDCC4C3E}
+		Vec3 %CenterOfMass{f{0,0,0}}
+		u1 %CollisionLayer{0}
+		b %ContinuousCollisionDetection{0}
+		b %CustomCenterOfMass{0}
+		f %Density{0x0000C842}
+		f %GravityFactor{0x0000803F}
+		b %Kinematic{0}
+		f %LinearDamping{0xCDCC4C3E}
+		f %Mass{0xA4700542}
+		s %OnContact{""}
+		b %StartAsleep{0}
+		s %Surface{""}
+	}
+}
+o
+{
+	Uuid %id{u4{7202841292630950076,5085336067047384715}}
+	s %t{"nsGameObject"}
+	u3 %v{1}
+	p
+	{
+		b %Active{1}
+		VarArray %Children{}
+		VarArray %Components
+		{
+			Uuid{u4{9998572217319314826,5118374387357359972}}
+			Uuid{u4{14202751603624500140,5078281055510091918}}
+			Uuid{u4{11448426864515631286,4718526577294585726}}
+		}
+		s %GlobalKey{""}
+		Vec3 %LocalPosition{f{0,0,0}}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		Vec3 %LocalScaling{f{0x0000803F,0x0000803F,0x0000803F}}
+		f %LocalUniformScaling{0x0000803F}
+		s %Mode{"nsObjectMode::Automatic"}
+		s %Name{""}
+		VarArray %Tags
+		{
+			s{"CastShadow"}
+			s{"AutoColMesh"}
+		}
+	}
+}
+o
+{
+	Uuid %id{u4{1668480228519690643,5103232242018410495}}
+	s %t{"nsPrefabDocumentSettings"}
+	u3 %v{1}
+	p
+	{
+		VarArray %ExposedProperties{}
+	}
+}
+o
+{
+	Uuid %id{u4{9998572217319314826,5118374387357359972}}
+	s %t{"nsMeshComponent"}
+	u3 %v{3}
+	p
+	{
+		b %Active{1}
+		Color %Color{f{0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		VarArray %Materials
+		{
+			s{"{ 3283e65f-79e2-ec9d-3f50-f14c56bac25f }"}
+		}
+		s %Mesh{"{ 618ee743-ed04-4fac-bf5f-572939db2f1d }"}
+		f %SortingDepthOffset{0}
+	}
+}
+o
+{
+	Uuid %id{u4{18096612296587978288,6449934965513159559}}
+	s %t{"nsSceneDocumentRoot"}
+	u3 %v{2}
+	s %n{"ObjectTree"}
+	p
+	{
+		VarArray %Children
+		{
+			Uuid{u4{7202841292630950076,5085336067047384715}}
+		}
+		Uuid %Settings{u4{1668480228519690643,5103232242018410495}}
+	}
+}
+}
+Types
+{
+o
+{
+	Uuid %id{u4{11986142139821839553,48907982079210033}}
+	s %t{"nsReflectedPropertyDescriptor"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		s %Category{"nsPropertyCategory::Constant"}
+		u3 %ConstantValue{2}
+		s %Flags{"nsPropertyFlags::StandardType|nsPropertyFlags::ReadOnly"}
+		s %Name{"nsOnJoltContact::ImpactReactions"}
+		s %Type{"nsUInt32"}
+	}
+}
+o
+{
+	Uuid %id{u4{16936926184733935150,591548627310922877}}
+	s %t{"nsSuffixAttribute"}
+	u3 %v{1}
+	p
+	{
+		s %Suffix{" kg"}
+	}
+}
+o
+{
+	Uuid %id{u4{8537108205842041786,882909743055489592}}
+	s %t{"nsReflectedPropertyDescriptor"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		s %Category{"nsPropertyCategory::Constant"}
+		u3 %ConstantValue{8}
+		s %Flags{"nsPropertyFlags::StandardType|nsPropertyFlags::ReadOnly"}
+		s %Name{"nsOnJoltContact::RollXReactions"}
+		s %Type{"nsUInt32"}
+	}
+}
+o
+{
+	Uuid %id{u4{13372238791997724969,1128503599592746795}}
+	s %t{"nsDefaultValueAttribute"}
+	u3 %v{1}
+	p
+	{
+		f %Value{0x0000003F}
+	}
+}
+o
+{
+	Uuid %id{u4{8863059797143258838,1172309671850316595}}
+	s %t{"nsDynamicEnumAttribute"}
+	u3 %v{1}
+	p
+	{
+		s %DynamicEnum{"PhysicsCollisionLayer"}
+	}
+}
+o
+{
+	Uuid %id{u4{3319759097361382635,1210622055425817969}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsVisualizerAttribute"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsSphereVisualizerAttribute"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{15631664620572852910,1900860560504303828}}
+	s %t{"nsReflectedPropertyDescriptor"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes
+		{
+			Uuid{u4{8417560403176300215,15407700752204490758}}
+		}
+		s %Category{"nsPropertyCategory::Member"}
+		Invalid %ConstantValue{}
+		s %Flags{"nsPropertyFlags::StandardType|nsPropertyFlags::Phantom"}
+		s %Name{"GravityFactor"}
+		s %Type{"float"}
+	}
+}
+o
+{
+	Uuid %id{u4{14754766016649822951,2761964985864336141}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsGameObject"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{15332257216725571541,3193059655556547184}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Abstract|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsReflectedClass"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsComponent"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{15035147006110143605,3256533625166546643}}
+	s %t{"nsReflectedFunctionDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Arguments{}
+		VarArray %Attributes
+		{
+			Uuid{u4{17454711653441598606,6097223853289138074}}
+		}
+		s %Flags{"nsPropertyFlags::Const|nsPropertyFlags::Phantom"}
+		s %Name{"GetObjectFilterID"}
+		Uuid %ReturnValue{u4{6052037302218023238,6382059278580053449}}
+		s %Type{"nsFunctionType::Member"}
+	}
+}
+o
+{
+	Uuid %id{u4{2405794908815911895,3673027990696003282}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes
+		{
+			Uuid{u4{3235345688725164882,9239987517668660464}}
+		}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Abstract|nsTypeFlags::Phantom"}
+		VarArray %Functions
+		{
+			Uuid{u4{15035147006110143605,3256533625166546643}}
+		}
+		s %ParentTypeName{"nsComponent"}
+		s %PluginName{"nsJoltPlugin"}
+		VarArray %Properties
+		{
+			Uuid{u4{12637178825810836477,13071638991385841734}}
+		}
+		s %TypeName{"nsJoltActorComponent"}
+		u3 %TypeVersion{2}
+	}
+}
+o
+{
+	Uuid %id{u4{18276611668764695039,3891827902715806692}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsReflectedClass"}
+		s %PluginName{"nsEditorPluginScene"}
+		VarArray %Properties{}
+		s %TypeName{"nsExposedSceneProperty"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{14350192322223677442,4205416033170340389}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::IsEnum|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsEnumBase"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsObjectMode"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{13629297895834498388,4412565531377467250}}
+	s %t{"nsFunctionArgumentDescriptor"}
+	u3 %v{1}
+	p
+	{
+		s %Flags{""}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{13936863874708037173,4416207831136974623}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsPropertyAttribute"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsManipulatorAttribute"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{3116883909862670905,4610690655845190411}}
+	s %t{"nsReflectedPropertyDescriptor"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes
+		{
+			Uuid{u4{1071811285310834955,5422495974345680452}}
+		}
+		s %Category{"nsPropertyCategory::Member"}
+		Invalid %ConstantValue{}
+		s %Flags{"nsPropertyFlags::StandardType|nsPropertyFlags::Phantom"}
+		s %Name{"LinearDamping"}
+		s %Type{"float"}
+	}
+}
+o
+{
+	Uuid %id{u4{12174197202731507573,4669119958734370884}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Bitflags|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsBitflagsBase"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsVisualizerAnchor"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{17844231444639700453,4731428515257951459}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes
+		{
+			Uuid{u4{13114290461197269598,14374504968946449635}}
+		}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Abstract|nsTypeFlags::Phantom"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsComponent"}
+		s %PluginName{"nsJoltPlugin"}
+		VarArray %Properties{}
+		s %TypeName{"nsJoltShapeComponent"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{15939914060113079112,5026133042024251900}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsReflectedClass"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsPropertyAttribute"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{1071811285310834955,5422495974345680452}}
+	s %t{"nsDefaultValueAttribute"}
+	u3 %v{1}
+	p
+	{
+		f %Value{0xCDCC4C3E}
+	}
+}
+o
+{
+	Uuid %id{u4{10013661856154232301,6007558149075374742}}
+	s %t{"nsReflectedFunctionDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Arguments
+		{
+			Uuid{u4{15254319140128297328,6863399559729264714}}
+		}
+		VarArray %Attributes
+		{
+			Uuid{u4{17598519334995751975,17710423319285739147}}
+		}
+		s %Flags{"nsPropertyFlags::Phantom"}
+		s %Name{"AddLinearImpulse"}
+		Uuid %ReturnValue{u4{13629297895834498388,4412565531377467250}}
+		s %Type{"nsFunctionType::Member"}
+	}
+}
+o
+{
+	Uuid %id{u4{17454711653441598606,6097223853289138074}}
+	s %t{"nsScriptableFunctionAttribute"}
+	u3 %v{1}
+	p
+	{
+		VarArray %ArgNames{}
+		VarArray %ArgTypes{}
+	}
+}
+o
+{
+	Uuid %id{u4{6364841343377690095,6360669235362306809}}
+	s %t{"nsReflectedPropertyDescriptor"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes
+		{
+			Uuid{u4{16936926184733935150,591548627310922877}}
+			Uuid{u4{39744032219633108,17023803007966478816}}
+		}
+		s %Category{"nsPropertyCategory::Member"}
+		Invalid %ConstantValue{}
+		s %Flags{"nsPropertyFlags::StandardType|nsPropertyFlags::Phantom"}
+		s %Name{"Mass"}
+		s %Type{"float"}
+	}
+}
+o
+{
+	Uuid %id{u4{6052037302218023238,6382059278580053449}}
+	s %t{"nsFunctionArgumentDescriptor"}
+	u3 %v{1}
+	p
+	{
+		s %Flags{"nsPropertyFlags::StandardType"}
+		s %Type{"nsUInt32"}
+	}
+}
+o
+{
+	Uuid %id{u4{13567877287072147272,6688172218628088584}}
+	s %t{"nsReflectedFunctionDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Arguments
+		{
+			Uuid{u4{17981679966098754,16968187412215882266}}
+		}
+		VarArray %Attributes
+		{
+			Uuid{u4{12245808935750561770,11907389183634582487}}
+		}
+		s %Flags{"nsPropertyFlags::Phantom"}
+		s %Name{"AddAngularForce"}
+		Uuid %ReturnValue{u4{7465583879499522648,10739944196005760753}}
+		s %Type{"nsFunctionType::Member"}
+	}
+}
+o
+{
+	Uuid %id{u4{15254319140128297328,6863399559729264714}}
+	s %t{"nsFunctionArgumentDescriptor"}
+	u3 %v{1}
+	p
+	{
+		s %Flags{"nsPropertyFlags::StandardType|nsPropertyFlags::Const|nsPropertyFlags::Reference"}
+		s %Type{"nsVec3"}
+	}
+}
+o
+{
+	Uuid %id{u4{8439343622631882311,7112474123368818527}}
+	s %t{"nsReflectedPropertyDescriptor"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		s %Category{"nsPropertyCategory::Constant"}
+		u3 %ConstantValue{32}
+		s %Flags{"nsPropertyFlags::StandardType|nsPropertyFlags::ReadOnly"}
+		s %Name{"nsOnJoltContact::RollZReactions"}
+		s %Type{"nsUInt32"}
+	}
+}
+o
+{
+	Uuid %id{u4{11745679212649138653,7143042783045800780}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsMeshComponentBase"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsMeshComponent"}
+		u3 %TypeVersion{3}
+	}
+}
+o
+{
+	Uuid %id{u4{15970767566097435908,7187480987591214335}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes
+		{
+			Uuid{u4{11089659703876913334,15503618764078352725}}
+			Uuid{u4{5870720378077946289,14812562736379619915}}
+		}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Phantom"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsJoltShapeComponent"}
+		s %PluginName{"nsJoltPlugin"}
+		VarArray %Properties
+		{
+			Uuid{u4{10664248783862592214,8969073346404658560}}
+		}
+		s %TypeName{"nsJoltShapeSphereComponent"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{6356382886340883537,8187711835693078808}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsManipulatorAttribute"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsTransformManipulatorAttribute"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{8312131213955494790,8321245514541279357}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsBitflagsBase"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{5823255354133589486,8668675022575846062}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsReflectedClass"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{5697347426325332760,8725706584790730537}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsPropertyAttribute"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsCategoryAttribute"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{10664248783862592214,8969073346404658560}}
+	s %t{"nsReflectedPropertyDescriptor"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes
+		{
+			Uuid{u4{13372238791997724969,1128503599592746795}}
+			Uuid{u4{8409228020207930416,17159518996079463401}}
+		}
+		s %Category{"nsPropertyCategory::Member"}
+		Invalid %ConstantValue{}
+		s %Flags{"nsPropertyFlags::StandardType|nsPropertyFlags::Phantom"}
+		s %Name{"Radius"}
+		s %Type{"float"}
+	}
+}
+o
+{
+	Uuid %id{u4{3235345688725164882,9239987517668660464}}
+	s %t{"nsCategoryAttribute"}
+	u3 %v{1}
+	p
+	{
+		s %Category{"Physics/Jolt/Actors"}
+	}
+}
+o
+{
+	Uuid %id{u4{5257848166004840729,9537958325227344980}}
+	s %t{"nsReflectedFunctionDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Arguments
+		{
+			Uuid{u4{12227212509190473978,17342793140370721112}}
+		}
+		VarArray %Attributes
+		{
+			Uuid{u4{1154173349139516585,15672179216076095026}}
+		}
+		s %Flags{"nsPropertyFlags::Phantom"}
+		s %Name{"AddLinearForce"}
+		Uuid %ReturnValue{u4{17695045485750721141,13608633776717391940}}
+		s %Type{"nsFunctionType::Member"}
+	}
+}
+o
+{
+	Uuid %id{u4{6517540576746128534,9918583003866840368}}
+	s %t{"nsReflectedPropertyDescriptor"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		s %Category{"nsPropertyCategory::Constant"}
+		u3 %ConstantValue{4}
+		s %Flags{"nsPropertyFlags::StandardType|nsPropertyFlags::ReadOnly"}
+		s %Name{"nsOnJoltContact::SlideReactions"}
+		s %Type{"nsUInt32"}
+	}
+}
+o
+{
+	Uuid %id{u4{17590459249857125066,10702845131093806782}}
+	s %t{"nsDefaultValueAttribute"}
+	u3 %v{1}
+	p
+	{
+		f %Value{0xCDCC4C3E}
+	}
+}
+o
+{
+	Uuid %id{u4{7465583879499522648,10739944196005760753}}
+	s %t{"nsFunctionArgumentDescriptor"}
+	u3 %v{1}
+	p
+	{
+		s %Flags{""}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{10643042966991232223,10927020937162091726}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsReflectedClass"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsDocumentRoot"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{3881865677107682769,11014133457370634011}}
+	s %t{"nsReflectedPropertyDescriptor"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		s %Category{"nsPropertyCategory::Member"}
+		Invalid %ConstantValue{}
+		s %Flags{"nsPropertyFlags::StandardType|nsPropertyFlags::Phantom"}
+		s %Name{"CustomCenterOfMass"}
+		s %Type{"bool"}
+	}
+}
+o
+{
+	Uuid %id{u4{17187784022370768836,11553247297834944357}}
+	s %t{"nsScriptableFunctionAttribute"}
+	u3 %v{1}
+	p
+	{
+		VarArray %ArgNames
+		{
+			s{"vImpulse"}
+		}
+		VarArray %ArgTypes
+		{
+			u1{0}
+		}
+	}
+}
+o
+{
+	Uuid %id{u4{5446394831685332906,11873946682015125551}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsManipulatorAttribute"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsSphereManipulatorAttribute"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{12245808935750561770,11907389183634582487}}
+	s %t{"nsScriptableFunctionAttribute"}
+	u3 %v{1}
+	p
+	{
+		VarArray %ArgNames
+		{
+			s{"vForce"}
+		}
+		VarArray %ArgTypes
+		{
+			u1{0}
+		}
+	}
+}
+o
+{
+	Uuid %id{u4{2455855734190102983,12136224547404205166}}
+	s %t{"nsReflectedPropertyDescriptor"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		s %Category{"nsPropertyCategory::Member"}
+		Invalid %ConstantValue{}
+		s %Flags{"nsPropertyFlags::Bitflags|nsPropertyFlags::Phantom"}
+		s %Name{"OnContact"}
+		s %Type{"nsOnJoltContact"}
+	}
+}
+o
+{
+	Uuid %id{u4{12878727456601289985,12488671622026371449}}
+	s %t{"nsFunctionArgumentDescriptor"}
+	u3 %v{1}
+	p
+	{
+		s %Flags{"nsPropertyFlags::StandardType|nsPropertyFlags::Const|nsPropertyFlags::Reference"}
+		s %Type{"nsVec3"}
+	}
+}
+o
+{
+	Uuid %id{u4{1787752596206538513,12795691341903773312}}
+	s %t{"nsTransformManipulatorAttribute"}
+	u3 %v{1}
+	p
+	{
+		s %Property1{"CenterOfMass"}
+		s %Property2{""}
+		s %Property3{""}
+		s %Property4{""}
+		s %Property5{""}
+		s %Property6{""}
+	}
+}
+o
+{
+	Uuid %id{u4{11232145617264360462,12802523101932010280}}
+	s %t{"nsAssetBrowserAttribute"}
+	u3 %v{1}
+	p
+	{
+		s %DependencyFlags{"nsDependencyFlags::Package"}
+		s %Filter{";CompatibleAsset_Surface;"}
+	}
+}
+o
+{
+	Uuid %id{u4{1923774773484445068,12936726820323262355}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsReflectedClass"}
+		s %PluginName{"nsEditorPluginScene"}
+		VarArray %Properties{}
+		s %TypeName{"nsSceneDocumentSettingsBase"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{16657045575562208917,12969935781074273400}}
+	s %t{"nsReflectedPropertyDescriptor"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		s %Category{"nsPropertyCategory::Member"}
+		Invalid %ConstantValue{}
+		s %Flags{"nsPropertyFlags::StandardType|nsPropertyFlags::Phantom"}
+		s %Name{"CenterOfMass"}
+		s %Type{"nsVec3"}
+	}
+}
+o
+{
+	Uuid %id{u4{17303035482089667232,12994943439221190095}}
+	s %t{"nsReflectedPropertyDescriptor"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes
+		{
+			Uuid{u4{6854939654180644375,15060294856558575363}}
+			Uuid{u4{9135958742075070290,13107351349172633382}}
+		}
+		s %Category{"nsPropertyCategory::Member"}
+		Invalid %ConstantValue{}
+		s %Flags{"nsPropertyFlags::StandardType|nsPropertyFlags::Phantom"}
+		s %Name{"Density"}
+		s %Type{"float"}
+	}
+}
+o
+{
+	Uuid %id{u4{3572148594981062452,13063983464694370447}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsEnumBase"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{12637178825810836477,13071638991385841734}}
+	s %t{"nsReflectedPropertyDescriptor"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes
+		{
+			Uuid{u4{8863059797143258838,1172309671850316595}}
+		}
+		s %Category{"nsPropertyCategory::Member"}
+		Invalid %ConstantValue{}
+		s %Flags{"nsPropertyFlags::StandardType|nsPropertyFlags::Phantom"}
+		s %Name{"CollisionLayer"}
+		s %Type{"nsUInt8"}
+	}
+}
+o
+{
+	Uuid %id{u4{9135958742075070290,13107351349172633382}}
+	s %t{"nsSuffixAttribute"}
+	u3 %v{1}
+	p
+	{
+		s %Suffix{" kg/m^3"}
+	}
+}
+o
+{
+	Uuid %id{u4{6187475070881813425,13358613803462880079}}
+	s %t{"nsReflectedPropertyDescriptor"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes
+		{
+			Uuid{u4{11232145617264360462,12802523101932010280}}
+		}
+		s %Category{"nsPropertyCategory::Member"}
+		Invalid %ConstantValue{}
+		s %Flags{"nsPropertyFlags::StandardType|nsPropertyFlags::Const|nsPropertyFlags::Phantom"}
+		s %Name{"Surface"}
+		s %Type{"nsConstCharPtr"}
+	}
+}
+o
+{
+	Uuid %id{u4{1546488081571423917,13511067233158337850}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsDocumentRoot"}
+		s %PluginName{"nsEditorPluginScene"}
+		VarArray %Properties{}
+		s %TypeName{"nsSceneDocumentRoot"}
+		u3 %TypeVersion{2}
+	}
+}
+o
+{
+	Uuid %id{u4{17695045485750721141,13608633776717391940}}
+	s %t{"nsFunctionArgumentDescriptor"}
+	u3 %v{1}
+	p
+	{
+		s %Flags{""}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{5019397542452024336,13662802729071684552}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Bitflags|nsTypeFlags::Phantom"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsBitflagsBase"}
+		s %PluginName{"nsJoltPlugin"}
+		VarArray %Properties
+		{
+			Uuid{u4{4402974269688196568,16926552071375781587}}
+			Uuid{u4{11986142139821839553,48907982079210033}}
+			Uuid{u4{6517540576746128534,9918583003866840368}}
+			Uuid{u4{8537108205842041786,882909743055489592}}
+			Uuid{u4{1368682636215683728,17011124293896614353}}
+			Uuid{u4{8439343622631882311,7112474123368818527}}
+		}
+		s %TypeName{"nsOnJoltContact"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{17085989293528464618,14027325772455644157}}
+	s %t{"nsReflectedPropertyDescriptor"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		s %Category{"nsPropertyCategory::Member"}
+		Invalid %ConstantValue{}
+		s %Flags{"nsPropertyFlags::StandardType|nsPropertyFlags::Phantom"}
+		s %Name{"ContinuousCollisionDetection"}
+		s %Type{"bool"}
+	}
+}
+o
+{
+	Uuid %id{u4{13114290461197269598,14374504968946449635}}
+	s %t{"nsCategoryAttribute"}
+	u3 %v{1}
+	p
+	{
+		s %Category{"Physics/Jolt/Shapes"}
+	}
+}
+o
+{
+	Uuid %id{u4{615326352166304313,14411855620404306785}}
+	s %t{"nsReflectedPropertyDescriptor"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		s %Category{"nsPropertyCategory::Member"}
+		Invalid %ConstantValue{}
+		s %Flags{"nsPropertyFlags::StandardType|nsPropertyFlags::Phantom"}
+		s %Name{"Kinematic"}
+		s %Type{"bool"}
+	}
+}
+o
+{
+	Uuid %id{u4{5870720378077946289,14812562736379619915}}
+	s %t{"nsSphereVisualizerAttribute"}
+	u3 %v{1}
+	p
+	{
+		s %Anchor{""}
+		Color %Color{f{0x71941A3F,0x782DE03D,0x70944E3F,0x0000803F}}
+		Vec3 %OffsetOrScale{f{0,0,0}}
+		s %Property1{"Radius"}
+		s %Property2{""}
+		s %Property3{""}
+		s %Property4{""}
+		s %Property5{""}
+	}
+}
+o
+{
+	Uuid %id{u4{16837368429040093869,15027253708388508607}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsSceneDocumentSettingsBase"}
+		s %PluginName{"nsEditorPluginScene"}
+		VarArray %Properties{}
+		s %TypeName{"nsPrefabDocumentSettings"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{6854939654180644375,15060294856558575363}}
+	s %t{"nsDefaultValueAttribute"}
+	u3 %v{1}
+	p
+	{
+		f %Value{0x0000C842}
+	}
+}
+o
+{
+	Uuid %id{u4{12367495493148347571,15321989956249891167}}
+	s %t{"nsReflectedPropertyDescriptor"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		s %Category{"nsPropertyCategory::Member"}
+		Invalid %ConstantValue{}
+		s %Flags{"nsPropertyFlags::StandardType|nsPropertyFlags::Phantom"}
+		s %Name{"StartAsleep"}
+		s %Type{"bool"}
+	}
+}
+o
+{
+	Uuid %id{u4{8417560403176300215,15407700752204490758}}
+	s %t{"nsDefaultValueAttribute"}
+	u3 %v{1}
+	p
+	{
+		f %Value{0x0000803F}
+	}
+}
+o
+{
+	Uuid %id{u4{15594197507414479215,15418064457758444278}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Abstract|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsComponent"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsRenderComponent"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{11089659703876913334,15503618764078352725}}
+	s %t{"nsSphereManipulatorAttribute"}
+	u3 %v{1}
+	p
+	{
+		s %Property1{"Radius"}
+		s %Property2{""}
+		s %Property3{""}
+		s %Property4{""}
+		s %Property5{""}
+		s %Property6{""}
+	}
+}
+o
+{
+	Uuid %id{u4{9023984101950965722,15539358069704169926}}
+	s %t{"nsReflectedPropertyDescriptor"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes
+		{
+			Uuid{u4{17590459249857125066,10702845131093806782}}
+		}
+		s %Category{"nsPropertyCategory::Member"}
+		Invalid %ConstantValue{}
+		s %Flags{"nsPropertyFlags::StandardType|nsPropertyFlags::Phantom"}
+		s %Name{"AngularDamping"}
+		s %Type{"float"}
+	}
+}
+o
+{
+	Uuid %id{u4{1154173349139516585,15672179216076095026}}
+	s %t{"nsScriptableFunctionAttribute"}
+	u3 %v{1}
+	p
+	{
+		VarArray %ArgNames
+		{
+			s{"vForce"}
+		}
+		VarArray %ArgTypes
+		{
+			u1{0}
+		}
+	}
+}
+o
+{
+	Uuid %id{u4{4402974269688196568,16926552071375781587}}
+	s %t{"nsReflectedPropertyDescriptor"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		s %Category{"nsPropertyCategory::Constant"}
+		u3 %ConstantValue{0}
+		s %Flags{"nsPropertyFlags::StandardType|nsPropertyFlags::ReadOnly"}
+		s %Name{"nsOnJoltContact::Default"}
+		s %Type{"nsUInt32"}
+	}
+}
+o
+{
+	Uuid %id{u4{17981679966098754,16968187412215882266}}
+	s %t{"nsFunctionArgumentDescriptor"}
+	u3 %v{1}
+	p
+	{
+		s %Flags{"nsPropertyFlags::StandardType|nsPropertyFlags::Const|nsPropertyFlags::Reference"}
+		s %Type{"nsVec3"}
+	}
+}
+o
+{
+	Uuid %id{u4{1368682636215683728,17011124293896614353}}
+	s %t{"nsReflectedPropertyDescriptor"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		s %Category{"nsPropertyCategory::Constant"}
+		u3 %ConstantValue{16}
+		s %Flags{"nsPropertyFlags::StandardType|nsPropertyFlags::ReadOnly"}
+		s %Name{"nsOnJoltContact::RollYReactions"}
+		s %Type{"nsUInt32"}
+	}
+}
+o
+{
+	Uuid %id{u4{39744032219633108,17023803007966478816}}
+	s %t{"nsClampValueAttribute"}
+	u3 %v{1}
+	p
+	{
+		Invalid %Max{}
+		f %Min{0}
+	}
+}
+o
+{
+	Uuid %id{u4{2289698223967238656,17026492281945154326}}
+	s %t{"nsReflectedFunctionDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Arguments
+		{
+			Uuid{u4{12878727456601289985,12488671622026371449}}
+		}
+		VarArray %Attributes
+		{
+			Uuid{u4{17187784022370768836,11553247297834944357}}
+		}
+		s %Flags{"nsPropertyFlags::Phantom"}
+		s %Name{"AddAngularImpulse"}
+		Uuid %ReturnValue{u4{5799806287014345430,17812058360435887097}}
+		s %Type{"nsFunctionType::Member"}
+	}
+}
+o
+{
+	Uuid %id{u4{16353310314481999058,17077153525622240102}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Abstract|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsRenderComponent"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsMeshComponentBase"}
+		u3 %TypeVersion{3}
+	}
+}
+o
+{
+	Uuid %id{u4{10386012074561302521,17138128246400557254}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsPropertyAttribute"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsVisualizerAttribute"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{8409228020207930416,17159518996079463401}}
+	s %t{"nsClampValueAttribute"}
+	u3 %v{1}
+	p
+	{
+		Invalid %Max{}
+		f %Min{0}
+	}
+}
+o
+{
+	Uuid %id{u4{2442887554306759209,17267072066927171134}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes
+		{
+			Uuid{u4{1787752596206538513,12795691341903773312}}
+		}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Phantom"}
+		VarArray %Functions
+		{
+			Uuid{u4{5257848166004840729,9537958325227344980}}
+			Uuid{u4{10013661856154232301,6007558149075374742}}
+			Uuid{u4{13567877287072147272,6688172218628088584}}
+			Uuid{u4{2289698223967238656,17026492281945154326}}
+		}
+		s %ParentTypeName{"nsJoltActorComponent"}
+		s %PluginName{"nsJoltPlugin"}
+		VarArray %Properties
+		{
+			Uuid{u4{615326352166304313,14411855620404306785}}
+			Uuid{u4{12367495493148347571,15321989956249891167}}
+			Uuid{u4{6364841343377690095,6360669235362306809}}
+			Uuid{u4{17303035482089667232,12994943439221190095}}
+			Uuid{u4{6187475070881813425,13358613803462880079}}
+			Uuid{u4{15631664620572852910,1900860560504303828}}
+			Uuid{u4{3116883909862670905,4610690655845190411}}
+			Uuid{u4{9023984101950965722,15539358069704169926}}
+			Uuid{u4{17085989293528464618,14027325772455644157}}
+			Uuid{u4{2455855734190102983,12136224547404205166}}
+			Uuid{u4{3881865677107682769,11014133457370634011}}
+			Uuid{u4{16657045575562208917,12969935781074273400}}
+		}
+		s %TypeName{"nsJoltDynamicActorComponent"}
+		u3 %TypeVersion{3}
+	}
+}
+o
+{
+	Uuid %id{u4{12227212509190473978,17342793140370721112}}
+	s %t{"nsFunctionArgumentDescriptor"}
+	u3 %v{1}
+	p
+	{
+		s %Flags{"nsPropertyFlags::StandardType|nsPropertyFlags::Const|nsPropertyFlags::Reference"}
+		s %Type{"nsVec3"}
+	}
+}
+o
+{
+	Uuid %id{u4{17598519334995751975,17710423319285739147}}
+	s %t{"nsScriptableFunctionAttribute"}
+	u3 %v{1}
+	p
+	{
+		VarArray %ArgNames
+		{
+			s{"vImpulse"}
+		}
+		VarArray %ArgTypes
+		{
+			u1{0}
+		}
+	}
+}
+o
+{
+	Uuid %id{u4{5799806287014345430,17812058360435887097}}
+	s %t{"nsFunctionArgumentDescriptor"}
+	u3 %v{1}
+	p
+	{
+		s %Flags{""}
+		s %Type{""}
+	}
+}
+}

@@ -1,0 +1,42 @@
+[PLATFORMS]
+ALL
+
+
+[PERMUTATIONS]
+SHADING_QUALITY = SHADING_QUALITY_NORMAL
+BRDF_SHADING_MODEL = BRDF_SHADING_MODEL_OLD
+BRDF_DIFFUSE = BRDF_DIFFUSE_LAMBERT
+
+[COMPUTESHADER]
+#include <Shaders/Common/Common.h>
+#include <Shaders/Common/GlobalConstants.h>
+#include <Shaders/Common/Lighting.h>
+#include <Shaders/Common/Tonemapping.h>
+
+#include "TAAConstants.h"
+
+Texture2D HistoryTexture;
+Texture2D InputTexture;
+Texture2D VelocityTexture;
+Texture2D PreviousVelocityTexture;
+RWTexture2D<float4> OutputTexture;
+
+#define g_resolution_render             ViewportSize.xy
+#define g_resolution_rt                 ViewportSize.xy
+
+#define tex                             HistoryTexture
+#define tex2                            InputTexture
+#define tex_out_rgb                     OutputTexture
+#define tex_velocity                    VelocityTexture
+#define tex_velocity_previous           PreviousVelocityTexture
+
+#define sampler_bilinear_clamp          LinearClampSampler
+
+#define get_linear_depth                SampleSceneDepth
+#define luminance                       GetLuminance
+#define reinhard                        ToneMapping_Reinhard
+#define reinhard_inverse                ToneMapping_Reinhard_Inverse
+
+#define is_taa_upsampling_enabled()     UpsampleEnabled
+
+#include <Shaders/ThirdParty/TAA.h>

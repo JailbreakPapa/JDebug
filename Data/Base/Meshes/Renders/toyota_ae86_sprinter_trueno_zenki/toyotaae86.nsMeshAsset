@@ -1,0 +1,531 @@
+HeaderV2
+{
+o
+{
+	Uuid %id{u4{9069624819320742075,4620732499453109972}}
+	s %t{"nsAssetDocumentInfo"}
+	u3 %v{2}
+	s %n{"Header"}
+	p
+	{
+		s %AssetType{"Mesh"}
+		VarArray %Dependencies
+		{
+			s{"Meshes/Renders/toyota_ae86_sprinter_trueno_zenki/scene.gltf"}
+		}
+		Uuid %DocumentID{u4{9069624819320742075,4620732499453109972}}
+		u4 %Hash{17411062081612126069}
+		VarArray %MetaInfo{}
+		VarArray %Outputs{}
+		VarArray %PackageDeps
+		{
+			s{"{ 07cc5c58-4614-4550-b213-98fea1303e69 }"}
+			s{"{ 0daa0667-0bfc-436a-9d4f-741ff975f7b1 }"}
+			s{"{ 0e78fcf6-1ad9-4e2b-ae9f-2c9b6e646b11 }"}
+			s{"{ 24f5c311-16da-4d00-82b9-c37adb21f5e1 }"}
+			s{"{ 2806d24a-d8ae-4f2a-b77a-39c1df02ef27 }"}
+			s{"{ 2a98c646-a99d-4862-9bd7-dc893812797b }"}
+			s{"{ 2f81b81f-29ec-4b77-8343-1c2c9fa536cd }"}
+			s{"{ 330621cb-57b6-4e56-a470-097d042b2da4 }"}
+			s{"{ 40efaad7-4837-471b-830b-69f549daee46 }"}
+			s{"{ 445c3adf-901c-4ea9-b729-dccc36165a02 }"}
+			s{"{ 52a784ca-b64b-4131-9aef-1f98af37eafe }"}
+			s{"{ 598fe748-2d3d-4417-b1cc-e7c5fd568713 }"}
+			s{"{ 5a5ce084-629b-4d73-81d7-e2910ca1eccf }"}
+			s{"{ 61fd7a89-3130-4acf-a399-68f2c3a1c0e1 }"}
+			s{"{ 6af652f7-e01b-4e57-b391-b71176d20dcf }"}
+			s{"{ 7369b538-f25a-4660-9994-ad0a205086b0 }"}
+			s{"{ 9e28e056-7413-4a67-b1ff-cc8fe1778b91 }"}
+			s{"{ a6c67545-63f4-4ceb-9bd4-bc724f8c684e }"}
+			s{"{ ae6ab047-f713-4935-9fcf-c730698158f3 }"}
+			s{"{ d89c8917-4108-43b4-a9b3-f64a48b3c624 }"}
+			s{"{ fd5f4d50-bcca-4244-9030-3649cb4cfd54 }"}
+		}
+		VarArray %References
+		{
+			s{"Meshes/Renders/toyota_ae86_sprinter_trueno_zenki/scene.gltf"}
+			s{"{ 07cc5c58-4614-4550-b213-98fea1303e69 }"}
+			s{"{ 0daa0667-0bfc-436a-9d4f-741ff975f7b1 }"}
+			s{"{ 0e78fcf6-1ad9-4e2b-ae9f-2c9b6e646b11 }"}
+			s{"{ 24f5c311-16da-4d00-82b9-c37adb21f5e1 }"}
+			s{"{ 2806d24a-d8ae-4f2a-b77a-39c1df02ef27 }"}
+			s{"{ 2a98c646-a99d-4862-9bd7-dc893812797b }"}
+			s{"{ 2f81b81f-29ec-4b77-8343-1c2c9fa536cd }"}
+			s{"{ 330621cb-57b6-4e56-a470-097d042b2da4 }"}
+			s{"{ 40efaad7-4837-471b-830b-69f549daee46 }"}
+			s{"{ 445c3adf-901c-4ea9-b729-dccc36165a02 }"}
+			s{"{ 52a784ca-b64b-4131-9aef-1f98af37eafe }"}
+			s{"{ 598fe748-2d3d-4417-b1cc-e7c5fd568713 }"}
+			s{"{ 5a5ce084-629b-4d73-81d7-e2910ca1eccf }"}
+			s{"{ 61fd7a89-3130-4acf-a399-68f2c3a1c0e1 }"}
+			s{"{ 6af652f7-e01b-4e57-b391-b71176d20dcf }"}
+			s{"{ 7369b538-f25a-4660-9994-ad0a205086b0 }"}
+			s{"{ 9e28e056-7413-4a67-b1ff-cc8fe1778b91 }"}
+			s{"{ a6c67545-63f4-4ceb-9bd4-bc724f8c684e }"}
+			s{"{ ae6ab047-f713-4935-9fcf-c730698158f3 }"}
+			s{"{ d89c8917-4108-43b4-a9b3-f64a48b3c624 }"}
+			s{"{ fd5f4d50-bcca-4244-9030-3649cb4cfd54 }"}
+		}
+	}
+}
+}
+Objects
+{
+o
+{
+	Uuid %id{u4{12834865476455057325,4694472726802149560}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"LampCovers"}
+		s %Resource{"{ ae6ab047-f713-4935-9fcf-c730698158f3 }"}
+	}
+}
+o
+{
+	Uuid %id{u4{852469570828279726,4733081315722534271}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"TireMaterial"}
+		s %Resource{"{ 7369b538-f25a-4660-9994-ad0a205086b0 }"}
+	}
+}
+o
+{
+	Uuid %id{u4{8117948916142605502,4762204622528925107}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"TailightFrame"}
+		s %Resource{"{ fd5f4d50-bcca-4244-9030-3649cb4cfd54 }"}
+	}
+}
+o
+{
+	Uuid %id{u4{6591227778392676275,4797499089021685190}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"Brake_Disc"}
+		s %Resource{"{ 61fd7a89-3130-4acf-a399-68f2c3a1c0e1 }"}
+	}
+}
+o
+{
+	Uuid %id{u4{3698987627297309355,4810406886013822351}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"SteeringWheel"}
+		s %Resource{"{ 330621cb-57b6-4e56-a470-097d042b2da4 }"}
+	}
+}
+o
+{
+	Uuid %id{u4{4397111113947204532,4851447006859089287}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"RimMaterial"}
+		s %Resource{"{ d89c8917-4108-43b4-a9b3-f64a48b3c624 }"}
+	}
+}
+o
+{
+	Uuid %id{u4{8669960658411696009,4857503741953076411}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"Primary"}
+		s %Resource{"{ 2806d24a-d8ae-4f2a-b77a-39c1df02ef27 }"}
+	}
+}
+o
+{
+	Uuid %id{u4{5477556254137934522,4875798427852656420}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"Trueno"}
+		s %Resource{"{ 6af652f7-e01b-4e57-b391-b71176d20dcf }"}
+	}
+}
+o
+{
+	Uuid %id{u4{6398495968681295769,4909561750448486653}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"Trim2"}
+		s %Resource{"{ 445c3adf-901c-4ea9-b729-dccc36165a02 }"}
+	}
+}
+o
+{
+	Uuid %id{u4{11025902571722795649,5026298404276035366}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"Secondary"}
+		s %Resource{"{ a6c67545-63f4-4ceb-9bd4-bc724f8c684e }"}
+	}
+}
+o
+{
+	Uuid %id{u4{7813664824029253276,5086904506046739855}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"Interior"}
+		s %Resource{"{ 598fe748-2d3d-4417-b1cc-e7c5fd568713 }"}
+	}
+}
+o
+{
+	Uuid %id{u4{1667908364454579083,5195918868801723804}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"Mirror"}
+		s %Resource{"{ 0e78fcf6-1ad9-4e2b-ae9f-2c9b6e646b11 }"}
+	}
+}
+o
+{
+	Uuid %id{u4{13822961614773535915,5239603624906467375}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"Reflector"}
+		s %Resource{"{ 24f5c311-16da-4d00-82b9-c37adb21f5e1 }"}
+	}
+}
+o
+{
+	Uuid %id{u4{14468148367598057356,5276271400769048729}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"Windows"}
+		s %Resource{"{ 07cc5c58-4614-4550-b213-98fea1303e69 }"}
+	}
+}
+o
+{
+	Uuid %id{u4{4227671029137904301,5303194754055534513}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"Seatbelt"}
+		s %Resource{"{ 0daa0667-0bfc-436a-9d4f-741ff975f7b1 }"}
+	}
+}
+o
+{
+	Uuid %id{u4{14829791567014108586,5406610952694806859}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"BrakeCaliper"}
+		s %Resource{"{ 9e28e056-7413-4a67-b1ff-cc8fe1778b91 }"}
+	}
+}
+o
+{
+	Uuid %id{u4{2371809283650907551,5416531195973825408}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"Shadow"}
+		s %Resource{"{ 52a784ca-b64b-4131-9aef-1f98af37eafe }"}
+	}
+}
+o
+{
+	Uuid %id{u4{9428727189549610421,5469878469098098302}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"InteriorPlastic2"}
+		s %Resource{"{ 2f81b81f-29ec-4b77-8343-1c2c9fa536cd }"}
+	}
+}
+o
+{
+	Uuid %id{u4{12196788936093575043,5483582696304173048}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"LicensePlate"}
+		s %Resource{"{ 40efaad7-4837-471b-830b-69f549daee46 }"}
+	}
+}
+o
+{
+	Uuid %id{u4{12303444859642885544,5507002157877847058}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"Trim1"}
+		s %Resource{"{ 5a5ce084-629b-4d73-81d7-e2910ca1eccf }"}
+	}
+}
+o
+{
+	Uuid %id{u4{16121601352897226161,5706384030608198251}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"InteriorPlastic"}
+		s %Resource{"{ 2a98c646-a99d-4862-9bd7-dc893812797b }"}
+	}
+}
+o
+{
+	Uuid %id{u4{16763560476278402747,5740919122527978056}}
+	s %t{"nsMeshAssetProperties"}
+	u3 %v{3}
+	p
+	{
+		b %AggressiveSimplification{1}
+		Angle %Angle{f{0xDB0FC940}}
+		b %Cap{1}
+		b %Cap2{1}
+		u2 %Detail{0}
+		u2 %Detail2{0}
+		b %FlipForwardDir{0}
+		f %Height{0x0000803F}
+		b %ImportMaterials{1}
+		VarArray %Materials
+		{
+			Uuid{u4{4227671029137904301,5303194754055534513}}
+			Uuid{u4{9428727189549610421,5469878469098098302}}
+			Uuid{u4{16121601352897226161,5706384030608198251}}
+			Uuid{u4{7813664824029253276,5086904506046739855}}
+			Uuid{u4{3698987627297309355,4810406886013822351}}
+			Uuid{u4{6398495968681295769,4909561750448486653}}
+			Uuid{u4{12834865476455057325,4694472726802149560}}
+			Uuid{u4{8117948916142605502,4762204622528925107}}
+			Uuid{u4{13822961614773535915,5239603624906467375}}
+			Uuid{u4{14468148367598057356,5276271400769048729}}
+			Uuid{u4{8669960658411696009,4857503741953076411}}
+			Uuid{u4{11025902571722795649,5026298404276035366}}
+			Uuid{u4{12303444859642885544,5507002157877847058}}
+			Uuid{u4{5477556254137934522,4875798427852656420}}
+			Uuid{u4{1667908364454579083,5195918868801723804}}
+			Uuid{u4{2371809283650907551,5416531195973825408}}
+			Uuid{u4{12196788936093575043,5483582696304173048}}
+			Uuid{u4{6591227778392676275,4797499089021685190}}
+			Uuid{u4{852469570828279726,4733081315722534271}}
+			Uuid{u4{4397111113947204532,4851447006859089287}}
+			Uuid{u4{14829791567014108586,5406610952694806859}}
+		}
+		u1 %MaxSimplificationError{41}
+		s %MeshFile{"Meshes/Renders/toyota_ae86_sprinter_trueno_zenki/scene.gltf"}
+		u1 %MeshSimplification{46}
+		s %NormalPrecision{"nsMeshNormalPrecision::_10Bit"}
+		s %PrimitiveType{"nsMeshPrimitive::File"}
+		f %Radius{0x0000003F}
+		f %Radius2{0x0000003F}
+		b %RecalculateNormals{0}
+		b %RecalculateTangents{1}
+		s %RightDir{"nsBasisAxis::PositiveX"}
+		b %SimplifyMesh{0}
+		s %TexCoordPrecision{"nsMeshTexCoordPrecision::_16Bit"}
+		f %UniformScaling{0x0AD7233C}
+		s %UpDir{"nsBasisAxis::PositiveY"}
+	}
+}
+o
+{
+	Uuid %id{u4{18096612296587978288,6449934965513159559}}
+	s %t{"nsDocumentRoot"}
+	u3 %v{1}
+	s %n{"ObjectTree"}
+	p
+	{
+		VarArray %Children
+		{
+			Uuid{u4{16763560476278402747,5740919122527978056}}
+		}
+	}
+}
+}
+Types
+{
+o
+{
+	Uuid %id{u4{2154599630895853827,5079330505632637074}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"nsEditorPluginAssets"}
+		VarArray %Properties{}
+		s %TypeName{"nsMaterialResourceSlot"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{2963794430012858357,6246305939496339995}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::IsEnum|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsEnumBase"}
+		s %PluginName{"nsEditorPluginAssets"}
+		VarArray %Properties{}
+		s %TypeName{"nsMeshPrimitive"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{9850980186067030274,6511446987263891381}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsReflectedClass"}
+		s %PluginName{"nsEditorPluginAssets"}
+		VarArray %Properties{}
+		s %TypeName{"nsMeshAssetProperties"}
+		u3 %TypeVersion{3}
+	}
+}
+o
+{
+	Uuid %id{u4{5823255354133589486,8668675022575846062}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsReflectedClass"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{10643042966991232223,10927020937162091726}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsReflectedClass"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsDocumentRoot"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{3572148594981062452,13063983464694370447}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsEnumBase"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{18110348905002939181,15495420624491644530}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::IsEnum|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsEnumBase"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsBasisAxis"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{14515773288946984258,16878279581230100531}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::IsEnum|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsEnumBase"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsMeshTexCoordPrecision"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{15920679986929927410,18180246663827993788}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::IsEnum|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsEnumBase"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsMeshNormalPrecision"}
+		u3 %TypeVersion{1}
+	}
+}
+}

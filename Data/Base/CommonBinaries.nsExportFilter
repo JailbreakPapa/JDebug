@@ -1,0 +1,36 @@
+[EXCLUDE]
+
+*.exe
+*.dll
+*.pdb
+*.loaded
+*.nsPluginBundle
+*/iconengines/*
+*/imageformats/*
+*/platforms/*
+
+// failed shader compilatioNS
+*/_Failed_*
+
+
+[INCLUDE]
+
+#if PLATFORM_PROFILE_PC
+/Player.exe
+/NSFoundation.dll
+/NSCore.dll
+/NSGameEngine.dll
+/NSRendererCore.dll
+/NSRendererDX11.dll
+/NSRendererFoundation.dll
+/NSShaderCompilerHLSL.dll
+/NSTexture.dll
+/NSUtilities.dll
+/Imgui.dll
+/Lua.dll
+/ozz.dll
+/zstd.dll
+/Duktape.dll
+/stb_image.dll
+/enet.dll
+#endif

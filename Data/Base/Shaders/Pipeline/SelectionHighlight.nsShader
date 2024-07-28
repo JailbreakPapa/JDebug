@@ -1,0 +1,121 @@
+[PLATFORMS]
+ALL
+
+[PERMUTATIONS]
+
+MSAA
+CAMERA_MODE
+VERTEX_SHADER_RENDER_TARGET_ARRAY_INDEX
+
+[RENDERSTATE]
+
+DepthTest = false
+DepthWrite = false
+CullMode = CullMode_None
+
+BlendingEnabled0 = true
+BlendOp0 = BlendOp_Add
+DestBlend0 = Blend_InvSrcAlpha
+SourceBlend0 = Blend_SrcAlpha
+DestBlendAlpha0 = Blend_InvSrcAlpha
+
+[VERTEXSHADER]
+
+#include <Shaders/Pipeline/FullscreenTriangleVertexShader.h>
+
+[GEOMETRYSHADER]
+
+#include <Shaders/Pipeline/FullscreenTriangleStereoGeometryShader.h>
+
+[PIXELSHADER]
+
+#include <Shaders/Common/Common.h>
+#include <Shaders/Common/GlobalConstants.h>
+#include "SelectionHighlightConstants.h"
+
+struct PS_IN
+{
+  float4 Position : SV_Position;
+  float2 TexCoord0 : TEXCOORD0;
+
+  #if MSAA
+    uint SampleIndex : SV_SampleIndex;
+  #endif
+};
+
+#if MSAA
+  Texture2DMSArray<float> SelectionDepthTexture;
+  Texture2DMSArray<float> SceneDepthTexture;
+
+  #define SampleDepth(texture, coords, input) texture.Load(int3(coords.xy, 0), input.SampleIndex).r
+
+#else
+  Texture2DArray SelectionDepthTexture;
+  Texture2DArray SceneDepthTexture;
+
+  #define SampleDepth(texture, coords, input) texture.Load(int4(coords.xy, 0, 0)).r
+
+#endif
+
+float4 main(PS_IN Input) : SV_Target
+{
+#if CAMERA_MODE == CAMERA_MODE_STEREO
+  s_ActiveCameraEyeIndex = Input.RenderTargetArrayIndex;
+#endif
+
+  int2 coords = Input.Position.xy;
+  float depth = SampleDepth(SelectionDepthTexture, int3(coords, s_ActiveCameraEyeIndex), Input);
+
+  if (depth == 1.0f)
+  {
+    float avgEdgeDistance = 0.0f;
+    float validSampleCount = 0.0f;
+
+    [unroll]
+    for (int y = -3; y <= 3; y++)
+    {
+      if (y == 0)
+        continue;
+
+      [unroll]
+      for (int x = -3; x <= 3; x++)
+      {
+        if (x == 0)
+          continue;
+
+        int edgeDistanceSqr = x*x + y*y;
+        if (edgeDistanceSqr > 9)
+          continue;
+
+        int2 currentCoords = coords + int2(x, y);
+        float currentDepth = SampleDepth(SelectionDepthTexture, int3(currentCoords, s_ActiveCameraEyeIndex), Input);
+
+        if (currentDepth > 0.0f && currentDepth < 1.0f)
+        {
+          avgEdgeDistance += sqrt((float)edgeDistanceSqr);
+          validSampleCount += 1.0f;
+        }
+      }
+    }
+
+    if (validSampleCount == 0.0f)
+    {
+      discard;
+    }
+
+    float x = (avgEdgeDistance / validSampleCount) - 2.0f;
+
+    float edgeOpacity = saturate((x * x) * -1.0f + 1.0f);
+    return float4(HighlightColor.rgb, edgeOpacity);
+  }
+  else
+  {
+    float sceneDepth = SampleDepth(SceneDepthTexture, int3(coords, s_ActiveCameraEyeIndex), Input);
+    if (sceneDepth < depth)
+    {
+      discard;
+    }
+
+    return float4(HighlightColor.rgb, OverlayOpacity);
+  }
+}

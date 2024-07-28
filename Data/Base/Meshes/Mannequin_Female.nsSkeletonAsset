@@ -1,0 +1,3406 @@
+HeaderV2
+{
+o
+{
+	Uuid %id{u4{9155408531365881542,353918281349539950}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"clavicle_l"}
+			s %Parent{"zero_joint_hand_l"}
+			Transform %Transform{f{0x6F8F0640,0x40E8C641,0x908E853F,0xA62D07BC,0xB52F493D,0xEBA84ABF,0x71E41B3F,0x0000803F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"clavicle_l"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{13290780623934056355,449670883704514906}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"f_main3_r"}
+			s %Parent{"f_main2_r"}
+			Transform %Transform{f{0x00008F39,0xA07492C0,0x00E04E3A,0,0,0,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"f_main3_r"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{14543780372775882463,531705308740226722}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"foot_r"}
+			s %Parent{"calf_r"}
+			Transform %Transform{f{0x00007838,0x848724C2,0x00C0A53A,0x91CB7E3F,0x544D8B3D,0xA08F4DBD,0x9116423D,0x0000803F,0xFFFF7F3F,0x0000803F}}
+		}
+		s %Name{"foot_r"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{8597361989094999250,783021132281931151}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"neck"}
+			s %Parent{"chest"}
+			Transform %Transform{f{0x000076B8,0x5859E941,0x008058BA,0xC3162BBD,0x01623439,0xC1F70EB9,0xCEC67F3F,0xFFFF7F3F,0xFFFF7F3F,0xFFFF7F3F}}
+		}
+		s %Name{"neck"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{5422628804767417058,1050987747289858680}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"<root-transform>"}
+			s %Parent{""}
+			Transform %Transform{f{0,0,0,0x0000003F,0x0000003F,0x0000003F,0x0000003F,0x0000803F,0x0000803F,0x000080BF}}
+		}
+		s %Name{"<root-transform>"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{9694945430852841323,1136291528907038193}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"f_big1_r"}
+			s %Parent{"hand_r"}
+			Transform %Transform{f{0x609EEFBF,0x60CA64C0,0xDBB996C0,0xA2AFDD3E,0xADD9913E,0x6CED623E,0x7F74533F,0x0000803F,0xFFFF7F3F,0xFFFF7F3F}}
+		}
+		s %Name{"f_big1_r"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{13339553575548846101,1156387345179961305}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"calf_r"}
+			s %Parent{"thigh_r"}
+			Transform %Transform{f{0x000012B9,0xCC5444C2,0x00807E3B,0x3220CF3D,0xDA6D2DBD,0x55F7953B,0x36747E3F,0x0000803F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"calf_r"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{8187670952435040375,1496990580776147471}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"forearm_twist_l"}
+			s %Parent{"forearm_l"}
+			Transform %Transform{f{0x0080E13A,0xD81C3F41,0x00002039,0x5BFE83BC,0x1D8D503E,0x16EDD33B,0x57987A3F,0x0000803F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"forearm_twist_l"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{15270945312994634380,1501497720797779627}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"f_main1_l"}
+			s %Parent{"hand_l"}
+			Transform %Transform{f{0xA05CC23F,0xD0213341,0xDEC0B6BF,0xF69F9BBA,0xC40414BE,0x55C39FBE,0xDC62703F,0x0000803F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"f_main1_l"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{16458273667028542089,1539847666833885737}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"forearm_twist_r"}
+			s %Parent{"forearm_r"}
+			Transform %Transform{f{0x000030BA,0x581D3FC1,0x00807ABA,0x87CBB7BC,0xF5E9893E,0x36E09EB9,0x9278763F,0x0000803F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"forearm_twist_r"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{14722625657724740166,1746966712816581947}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"back_l"}
+			s %Parent{"zero_joint_pelvis_l"}
+			Transform %Transform{f{0x57031741,0x40D1ADC0,0x74E804C1,0xF79AEEBC,0x6AF007BE,0x6ECE31BF,0x28DC343F,0x0000803F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"back_l"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{4107207946634834177,1753720958702429107}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"f_big2_l"}
+			s %Parent{"f_big1_l"}
+			Transform %Transform{f{0x000018B9,0xB8848240,0x00402E3A,0x76FB3F3D,0xE145AA3D,0x3D632C3C,0x2ED17E3F,0x0000803F,0x0000803F,0xFFFF7F3F}}
+		}
+		s %Name{"f_big2_l"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{11698394273288607078,1804095965158736092}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"chest_r"}
+			s %Parent{"zero_joint_hand_r"}
+			Transform %Transform{f{0x651E0DC1,0x80570EC1,0x40478BC1,0xCAE99736,0xB298C4B5,0x26FA8EB6,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"chest_r"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{1086816953923379133,1853580321895540870}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"chest_l"}
+			s %Parent{"zero_joint_hand_l"}
+			Transform %Transform{f{0x841E0D41,0xA0570E41,0x3B478B41,0xCCE99736,0x30DAA0B5,0xCCE997B6,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"chest_l"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{7000797947277356196,2197526543097859069}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"hand_l"}
+			s %Parent{"forearm_l"}
+			Transform %Transform{f{0x0080ACBA,0xA8DEC441,0x00001FBA,0xC16AE039,0xBD805E3E,0x45DE16B7,0x2DE2793F,0x0000803F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"hand_l"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{13623283168998086904,2325951550444923849}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"f_main2_l"}
+			s %Parent{"f_main1_l"}
+			Transform %Transform{f{0x006C81BA,0xA0AB9A40,0x000064B8,0xB579463D,0xF3AE633D,0x24F1DC3D,0x09CE7D3F,0x0000803F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"f_main2_l"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{17750300123446941889,2559922293205059477}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"thigh_twist_l"}
+			s %Parent{"thigh_l"}
+			Transform %Transform{f{0x00003838,0x74EC9141,0x00001EB9,0,0,0,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"thigh_twist_l"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{15910547766818308411,3310365301908942654}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"chest"}
+			s %Parent{"stomach"}
+			Transform %Transform{f{0x0097803C,0x9C1B8E41,0x0000D439,0xA3E7083D,0xCC59243B,0xCD0CA4B8,0x2DDB7F3F,0x0000803F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"chest"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{16325245185968009632,3611225243721146317}}
+	s %t{"nsExposedParameters"}
+	u3 %v{3}
+	p
+	{
+		VarArray %Parameters
+		{
+			Uuid{u4{5422628804767417058,1050987747289858680}}
+			Uuid{u4{656173764226858622,11584276472983535308}}
+			Uuid{u4{12225823638301249395,12859960374081763315}}
+			Uuid{u4{10997425412993791877,16017252461905728871}}
+			Uuid{u4{6051941891989752296,3735559104495694315}}
+			Uuid{u4{13929128064461668229,8117733411993754770}}
+			Uuid{u4{12516271473518863961,18035856504641553809}}
+			Uuid{u4{2427630808553401969,13207132033018675320}}
+			Uuid{u4{11021727951253416842,7058766128078269812}}
+			Uuid{u4{4301903418648844845,5433111487588943721}}
+			Uuid{u4{10420232770645712122,7703650458991055521}}
+			Uuid{u4{13339553575548846101,1156387345179961305}}
+			Uuid{u4{14543780372775882463,531705308740226722}}
+			Uuid{u4{2286285457741874105,7880672471212882101}}
+			Uuid{u4{8303523755124240501,13777344743669627193}}
+			Uuid{u4{14722625657724740166,1746966712816581947}}
+			Uuid{u4{10257541095653116577,9994654112757565090}}
+			Uuid{u4{17750300123446941889,2559922293205059477}}
+			Uuid{u4{4907085139068020867,8736905973300102296}}
+			Uuid{u4{3928608567730242577,10305451517379524894}}
+			Uuid{u4{9172848383563886239,11552836034843968426}}
+			Uuid{u4{15969400988482630419,9159890016224521115}}
+			Uuid{u4{15910547766818308411,3310365301908942654}}
+			Uuid{u4{41539841426408007,4708172132899098907}}
+			Uuid{u4{11698394273288607078,1804095965158736092}}
+			Uuid{u4{16677130657156230229,13620763306570588493}}
+			Uuid{u4{4957081064371944674,5159919740067370220}}
+			Uuid{u4{10794726738226387373,14412190140951797637}}
+			Uuid{u4{7695049950046268671,15411907043580008041}}
+			Uuid{u4{7064387389117729692,14199842380499572614}}
+			Uuid{u4{17507212550033125454,15189665950509000493}}
+			Uuid{u4{9323839426111237773,4628358995644113193}}
+			Uuid{u4{4774944877590302591,6135082860273884767}}
+			Uuid{u4{2509176433632407856,12020980065157538016}}
+			Uuid{u4{14560976400410028911,5576173791950447789}}
+			Uuid{u4{11592710714320353167,5761855827265441967}}
+			Uuid{u4{16482172362248129012,10951715010694497349}}
+			Uuid{u4{13290780623934056355,449670883704514906}}
+			Uuid{u4{9694945430852841323,1136291528907038193}}
+			Uuid{u4{12872950074081081685,4997523812991897762}}
+			Uuid{u4{1518382208740866629,10006308840833160460}}
+			Uuid{u4{16458273667028542089,1539847666833885737}}
+			Uuid{u4{13868680019645107080,5571238086143024368}}
+			Uuid{u4{1086816953923379133,1853580321895540870}}
+			Uuid{u4{9155408531365881542,353918281349539950}}
+			Uuid{u4{7998033894714018761,14601301669175996115}}
+			Uuid{u4{11234403307230399315,11460138765270700867}}
+			Uuid{u4{11941109498043271949,5221246823279110506}}
+			Uuid{u4{17147196014328930606,10093745764781983860}}
+			Uuid{u4{7000797947277356196,2197526543097859069}}
+			Uuid{u4{1107544207100362737,17970534165076564479}}
+			Uuid{u4{8982836866243659925,12979133962152256066}}
+			Uuid{u4{12971367404671649600,8105924743731431121}}
+			Uuid{u4{15833740747732006426,17907505717767522344}}
+			Uuid{u4{15270945312994634380,1501497720797779627}}
+			Uuid{u4{13623283168998086904,2325951550444923849}}
+			Uuid{u4{8300230801941390596,7947653103266896092}}
+			Uuid{u4{7547352677094896981,14896898967718068960}}
+			Uuid{u4{4107207946634834177,1753720958702429107}}
+			Uuid{u4{14050952304696608006,11459789909513981901}}
+			Uuid{u4{8187670952435040375,1496990580776147471}}
+			Uuid{u4{8597361989094999250,783021132281931151}}
+			Uuid{u4{4622649707962672158,11762500101347029401}}
+			Uuid{u4{16598503275393420001,18169301496026544852}}
+			Uuid{u4{8839218302295881225,17046687973456792607}}
+		}
+	}
+}
+o
+{
+	Uuid %id{u4{6051941891989752296,3735559104495694315}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"head__01_f"}
+			s %Parent{"RootNode"}
+			Transform %Transform{f{0,0,0,0,0,0,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"head__01_f"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{9323839426111237773,4628358995644113193}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"weapon_r"}
+			s %Parent{"hand_r"}
+			Transform %Transform{f{0x42EE7BC0,0x800C06C1,0x408267BF,0xA4812FBE,0x6A85043E,0xD806273F,0x480D3A3F,0x0000803F,0xFEFF7F3F,0xFFFF7F3F}}
+		}
+		s %Name{"weapon_r"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{41539841426408007,4708172132899098907}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"zero_joint_hand_r"}
+			s %Parent{"chest"}
+			Transform %Transform{f{0,0,0,0x0000803F,0x7421A233,0x5E21A2B3,0x2D4474B5,0x0000803F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"zero_joint_hand_r"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{12872950074081081685,4997523812991897762}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"f_big2_r"}
+			s %Parent{"f_big1_r"}
+			Transform %Transform{f{0x008031BB,0xB08782C0,0x00002CB8,0xDFF93F3D,0x8D45AA3D,0x5D752C3C,0x2FD17E3F,0x0000803F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"f_big2_r"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{4957081064371944674,5159919740067370220}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"scapular_r"}
+			s %Parent{"clavicle_r"}
+			Transform %Transform{f{0xE02CDB40,0x6F9E66C1,0x6D8B633F,0x5335FAB5,0xE6E99736,0x715668B6,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"scapular_r"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{11941109498043271949,5221246823279110506}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"biceps_twist_l"}
+			s %Parent{"arm_l"}
+			Transform %Transform{f{0x000060B9,0x50B55E41,0x0000E8B9,0xB600D535,0xF07F8E36,0xF17FA236,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"biceps_twist_l"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{4301903418648844845,5433111487588943721}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"thigh_r"}
+			s %Parent{"zero_joint_pelvis_r"}
+			Transform %Transform{f{0x1ED511C1,0x00019EBE,0x10FDA8BF,0x91D67D3F,0x6B69A83D,0xB0B5CCBD,0x54ED03BC,0xFFFF7F3F,0x0000803F,0xFFFF7F3F}}
+		}
+		s %Name{"thigh_r"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{13868680019645107080,5571238086143024368}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"zero_joint_hand_l"}
+			s %Parent{"chest"}
+			Transform %Transform{f{0,0,0,0,0,0,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"zero_joint_hand_l"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{14560976400410028911,5576173791950447789}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"f_pointer3_r"}
+			s %Parent{"f_pointer2_r"}
+			Transform %Transform{f{0x000037BA,0x40BC5EC0,0x0000F638,0,0,0,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"f_pointer3_r"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{160183515496325012,5744010849671206239}}
+	s %t{"nsAssetDocumentInfo"}
+	u3 %v{2}
+	s %n{"Header"}
+	p
+	{
+		s %AssetType{"Skeleton"}
+		VarArray %Dependencies
+		{
+			s{"Meshes/Mannequin_Female.fbx"}
+		}
+		Uuid %DocumentID{u4{160183515496325012,5744010849671206239}}
+		u4 %Hash{4974663199826546336}
+		VarArray %MetaInfo
+		{
+			Uuid{u4{16325245185968009632,3611225243721146317}}
+		}
+		VarArray %Outputs{}
+		VarArray %PackageDeps{}
+		VarArray %References
+		{
+			s{"Meshes/Mannequin_Female.fbx"}
+		}
+	}
+}
+o
+{
+	Uuid %id{u4{11592710714320353167,5761855827265441967}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"f_main1_r"}
+			s %Parent{"hand_r"}
+			Transform %Transform{f{0xA07DC2BF,0x282333C1,0x18C4B63F,0x502A9CBA,0x430414BE,0xD0C39FBE,0xCC62703F,0x0000803F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"f_main1_r"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{4774944877590302591,6135082860273884767}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"f_pointer1_r"}
+			s %Parent{"hand_r"}
+			Transform %Transform{f{0x404D7BBF,0x283836C1,0x789D76C0,0xBEFD39BD,0xDB2C8DBD,0xAEB029BE,0x1A937B3F,0xFFFF7F3F,0xFFFF7F3F,0x0000803F}}
+		}
+		s %Name{"f_pointer1_r"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{11021727951253416842,7058766128078269812}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"back_r"}
+			s %Parent{"zero_joint_pelvis_r"}
+			Transform %Transform{f{0x470317C1,0xF0CEAD40,0xECE80441,0x2A9CEEBC,0x9DF007BE,0x6DCE31BF,0x27DC343F,0xFFFF7F3F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"back_r"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{10420232770645712122,7703650458991055521}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"thigh_twist_r"}
+			s %Parent{"thigh_r"}
+			Transform %Transform{f{0x00000038,0xC8EC91C1,0x00804439,0,0,0,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"thigh_twist_r"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{2286285457741874105,7880672471212882101}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"toe_r"}
+			s %Parent{"foot_r"}
+			Transform %Transform{f{0xD0539EBF,0x64DB2141,0xECF68FC1,0x32C29EB9,0xD9283EB9,0xCF2418B8,0xFFFF7F3F,0x0000803F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"toe_r"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{8300230801941390596,7947653103266896092}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"f_main3_l"}
+			s %Parent{"f_main2_l"}
+			Transform %Transform{f{0x00006037,0x307F9240,0x000078B8,0,0,0,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"f_main3_l"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{12971367404671649600,8105924743731431121}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"f_pointer2_l"}
+			s %Parent{"f_pointer1_l"}
+			Transform %Transform{f{0x00007039,0x10BD9140,0x00801FB9,0x9167923B,0x32B3B9BC,0x514A82BD,0xB7697F3F,0xFFFF7F3F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"f_pointer2_l"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{13929128064461668229,8117733411993754770}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"Armature"}
+			s %Parent{"RootNode"}
+			Transform %Transform{f{0,0,0,0,0,0,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"Armature"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{4907085139068020867,8736905973300102296}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"calf_l"}
+			s %Parent{"thigh_l"}
+			Transform %Transform{f{0x00800D3A,0x2C544442,0x008027BB,0x4E630B3E,0xE2B22CBD,0x13903F3B,0xE6627D3F,0xFFFF7F3F,0xFFFF7F3F,0xFFFF7F3F}}
+		}
+		s %Name{"calf_l"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{15969400988482630419,9159890016224521115}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"stomach"}
+			s %Parent{"pelvis"}
+			Transform %Transform{f{0x00548839,0x78933041,0x00E093BA,0xA160853D,0x7902143B,0x3AD7AB3A,0xA6747F3F,0x0000803F,0x0000803F,0xFFFF7F3F}}
+		}
+		s %Name{"stomach"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{10257541095653116577,9994654112757565090}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"thigh_l"}
+			s %Parent{"zero_joint_pelvis_l"}
+			Transform %Transform{f{0x85D51141,0x00ED9D3E,0xBC02A93F,0x12DE7D3F,0xE513A43D,0xA807CEBD,0x365AEC3B,0x0000803F,0xFFFF7F3F,0x0000803F}}
+		}
+		s %Name{"thigh_l"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{1518382208740866629,10006308840833160460}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"f_big3_r"}
+			s %Parent{"f_big2_r"}
+			Transform %Transform{f{0x0000203A,0x60DC91C0,0x008095B9,0,0,0,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"f_big3_r"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{17147196014328930606,10093745764781983860}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"forearm_l"}
+			s %Parent{"arm_l"}
+			Transform %Transform{f{0x00005EB9,0xD4BCE741,0x0000C038,0xC65BE43E,0x4B0E31BE,0xDEADB43D,0x5BAC5F3F,0x0000803F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"forearm_l"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{3928608567730242577,10305451517379524894}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"foot_l"}
+			s %Parent{"calf_l"}
+			Transform %Transform{f{0x008009BA,0x14872442,0x007C0FBB,0x0EA37E3F,0xC6876F3D,0x6D6847BD,0xE2578E3D,0xFFFF7F3F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"foot_l"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{16482172362248129012,10951715010694497349}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"f_main2_r"}
+			s %Parent{"f_main1_r"}
+			Transform %Transform{f{0x005017BA,0x00B39AC0,0x0040F038,0xF67C463D,0xF5AA633D,0xE6EFDC3D,0x0ECE7D3F,0x0000803F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"f_main2_r"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{14050952304696608006,11459789909513981901}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"f_big3_l"}
+			s %Parent{"f_big2_l"}
+			Transform %Transform{f{0x0000E038,0x38D99140,0x00C8D2BA,0x90B8B235,0xB4D9A0B5,0x78D9A0B6,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"f_big3_l"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{11234403307230399315,11460138765270700867}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"arm_l"}
+			s %Parent{"clavicle_l"}
+			Transform %Transform{f{0x00008039,0x23CA9341,0x0000A0B8,0xAA84EC3D,0x02DBC43E,0xABB6D0BE,0xFCF5513F,0x0000803F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"arm_l"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{9172848383563886239,11552836034843968426}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"toe_l"}
+			s %Parent{"foot_l"}
+			Transform %Transform{f{0xA0579E3F,0x40DC21C1,0x82F58F41,0xFE32AE36,0x65B358B8,0x5FCE03B8,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"toe_l"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{656173764226858622,11584276472983535308}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"RootNode"}
+			s %Parent{""}
+			Transform %Transform{f{0,0,0,0,0,0,0x0000803F,0x0AD7233C,0x0AD7233C,0x0AD7233C}}
+		}
+		s %Name{"RootNode"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{4622649707962672158,11762500101347029401}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"head"}
+			s %Parent{"neck"}
+			Transform %Transform{f{0x00588039,0x80415B41,0x00C0C7B9,0x0B6413BE,0xBE5C83B9,0xB1BD5C3A,0x8B557D3F,0x0000803F,0x0000803F,0xFFFF7F3F}}
+		}
+		s %Name{"head"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{2509176433632407856,12020980065157538016}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"f_pointer2_r"}
+			s %Parent{"f_pointer1_r"}
+			Transform %Transform{f{0x00006A3A,0x00C391C0,0x00E01A3A,0xBA81923B,0x1FB6B9BC,0x224A82BD,0xB7697F3F,0xFFFF7F3F,0xFFFF7F3F,0xFFFF7F3F}}
+		}
+		s %Name{"f_pointer2_r"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{12225823638301249395,12859960374081763315}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"hair__06_f__tie"}
+			s %Parent{"RootNode"}
+			Transform %Transform{f{0,0,0,0,0,0,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"hair__06_f__tie"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{8982836866243659925,12979133962152256066}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"f_pointer1_l"}
+			s %Parent{"hand_l"}
+			Transform %Transform{f{0x80047B3F,0x283A3641,0x5A937640,0x6DF839BD,0x0B2C8DBD,0x65AE29BE,0x39937B3F,0x0000803F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"f_pointer1_l"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{2427630808553401969,13207132033018675320}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"zero_joint_pelvis_r"}
+			s %Parent{"pelvis"}
+			Transform %Transform{f{0,0,0,0x0000803F,0x4888A834,0x6C88A834,0x1822EAB5,0x0000803F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"zero_joint_pelvis_r"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{16677130657156230229,13620763306570588493}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"clavicle_r"}
+			s %Parent{"zero_joint_hand_r"}
+			Transform %Transform{f{0x1A9006C0,0x90E9C6C1,0xE09185BF,0x886A16BC,0x1CD54D3D,0x2A964ABF,0xE0F51B3F,0x0000803F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"clavicle_r"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{8303523755124240501,13777344743669627193}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"zero_joint_pelvis_l"}
+			s %Parent{"pelvis"}
+			Transform %Transform{f{0,0,0,0,0,0,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"zero_joint_pelvis_l"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{7064387389117729692,14199842380499572614}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"forearm_r"}
+			s %Parent{"arm_r"}
+			Transform %Transform{f{0x00007839,0xC8BCE7C1,0x00005039,0x7CE5CB3E,0x23B035BE,0xB153A13D,0x6481653F,0x0000803F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"forearm_r"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{10794726738226387373,14412190140951797637}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"arm_r"}
+			s %Parent{"clavicle_r"}
+			Transform %Transform{f{0x000098B9,0x8FCA93C1,0x00004E39,0x6F2BF23D,0xE2D6B83E,0xEA59D1BE,0xED6A543F,0x0000803F,0xFEFF7F3F,0xFFFF7F3F}}
+		}
+		s %Name{"arm_r"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{7998033894714018761,14601301669175996115}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"scapular_l"}
+			s %Parent{"clavicle_l"}
+			Transform %Transform{f{0x4031DBC0,0x119E6641,0xC87D63BF,0,0,0,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"scapular_l"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{7547352677094896981,14896898967718068960}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"f_big1_l"}
+			s %Parent{"hand_l"}
+			Transform %Transform{f{0x609EEF3F,0xA0D86440,0xD3B59640,0x2CAFDD3E,0x88D9913E,0xFDEE623E,0x8974533F,0x0000803F,0xFFFF7F3F,0x0000803F}}
+		}
+		s %Name{"f_big1_l"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{17507212550033125454,15189665950509000493}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"hand_r"}
+			s %Parent{"forearm_r"}
+			Transform %Transform{f{0x00400C3B,0x64DEC4C1,0x0080713A,0x7FE6263A,0x6455703E,0x81B776BA,0x62D9783F,0x0000803F,0xFFFF7F3F,0xFFFF7F3F}}
+		}
+		s %Name{"hand_r"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{7695049950046268671,15411907043580008041}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"biceps_twist_r"}
+			s %Parent{"arm_r"}
+			Transform %Transform{f{0x0000CC38,0xE8B25EC1,0x000020B8,0,0,0,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"biceps_twist_r"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{10997425412993791877,16017252461905728871}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"hair__06_f"}
+			s %Parent{"RootNode"}
+			Transform %Transform{f{0,0,0,0,0,0,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"hair__06_f"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{8839218302295881225,17046687973456792607}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"arm__prc_03_f__body"}
+			s %Parent{"RootNode"}
+			Transform %Transform{f{0,0,0,0,0,0,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"arm__prc_03_f__body"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{15833740747732006426,17907505717767522344}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"f_pointer3_l"}
+			s %Parent{"f_pointer2_l"}
+			Transform %Transform{f{0x00008C39,0x40BB5E40,0x0000A037,0,0,0,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"f_pointer3_l"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{1107544207100362737,17970534165076564479}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"weapon_l"}
+			s %Parent{"hand_l"}
+			Transform %Transform{f{0x821F7B40,0xF83A0641,0xFC27403F,0xD0A923BE,0x4452113E,0x99A6273F,0x3A91393F,0x0000803F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"weapon_l"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{12516271473518863961,18035856504641553809}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"pelvis"}
+			s %Parent{"Armature"}
+			Transform %Transform{f{0x8C5D7A3F,0xBF0ECA42,0xF0F4FEC0,0xC9F04DBD,0xEE2FEFB9,0x644864BB,0xB5AC7F3F,0x0000803F,0xFFFF7F3F,0x0000803F}}
+		}
+		s %Name{"pelvis"}
+		s %Type{""}
+	}
+}
+o
+{
+	Uuid %id{u4{16598503275393420001,18169301496026544852}}
+	s %t{"nsExposedParameter"}
+	u3 %v{2}
+	p
+	{
+		VarArray %Attributes{}
+		nsExposedBone %DefaultValue
+		{
+			s %Name{"hair"}
+			s %Parent{"head"}
+			Transform %Transform{f{0x3E8A0437,0xADC07641,0x8103FFB6,0,0,0,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		}
+		s %Name{"hair"}
+		s %Type{""}
+	}
+}
+}
+Objects
+{
+o
+{
+	Uuid %id{u4{4053570698821493664,4616493887104281198}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children
+		{
+			Uuid{u4{11304815308163249548,5455672543657223264}}
+			Uuid{u4{2738598862382079651,5735108597396430718}}
+		}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{101}
+		Quat %GizmoOffsetRotationRO{f{0x41DA063F,0xBB35053F,0x6AE4F2BE,0xD0C6F3BE}}
+		Vec3 %GizmoOffsetTranslationRO{f{0xF0A0503D,0x80AD05BC,0x5EA8C53F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"clavicle_r"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x1A9006C0,0x90E9C6C1,0xE09185BF,0x886A16BC,0x1CD54D3D,0x2A964ABF,0xE0F51B3F,0x0000803F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{6219263377354197426,4619779286967309290}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children
+		{
+			Uuid{u4{12120903610387904439,5276607680260292811}}
+		}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{146}
+		Quat %GizmoOffsetRotationRO{f{0x2CE916BD,0x78A0213F,0xD7502B3F,0x36BFC7BE}}
+		Vec3 %GizmoOffsetTranslationRO{f{0x007D0DBB,0x0EA6B1BE,0x0A346D3F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"f_main1_r"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0xA07DC2BF,0x282333C1,0x18C4B63F,0x502A9CBA,0x430414BE,0xD0C39FBE,0xCC62703F,0x0000803F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{17785077576953249154,4630851430512888301}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children
+		{
+			Uuid{u4{2834526023254265494,4745179432029688314}}
+		}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{250}
+		Quat %GizmoOffsetRotationRO{f{0x7E9651BE,0x152A1E3F,0x51EA303F,0x1AF1A0BE}}
+		Vec3 %GizmoOffsetTranslationRO{f{0x10F932BD,0x0C579CBE,0x29A1643F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"f_pointer2_r"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x00006A3A,0x00C391C0,0x00E01A3A,0xBA81923B,0x1FB6B9BC,0x224A82BD,0xB7697F3F,0xFFFF7F3F,0xFFFF7F3F,0xFFFF7F3F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{3251952950866112130,4666804638980018088}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children{}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{165}
+		Quat %GizmoOffsetRotationRO{f{0x0000003F,0x0000003F,0x0000003F,0x0000003F}}
+		Vec3 %GizmoOffsetTranslationRO{f{0,0,0}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"hair__06_f__tie"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0,0,0,0,0,0,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{10744170525435249843,4691722292633774403}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children
+		{
+			Uuid{u4{12217134498086916535,5760817472417398061}}
+		}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{26}
+		Quat %GizmoOffsetRotationRO{f{0x8D0E32BF,0x728DCD3E,0xF84CE0BC,0x4961183F}}
+		Vec3 %GizmoOffsetTranslationRO{f{0x80B7BF3A,0x8808943E,0xA7D4813F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"f_big1_l"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x609EEF3F,0xA0D86440,0xD3B59640,0x2CAFDD3E,0x88D9913E,0xFDEE623E,0x8974533F,0x0000803F,0xFFFF7F3F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{9335880969055404426,4695158936062783168}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children
+		{
+			Uuid{u4{3298642226764657297,5716704035994658141}}
+			Uuid{u4{2828798185845101218,5734547449923715103}}
+		}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{0}
+		Quat %GizmoOffsetRotationRO{f{0xCAC4053F,0xF8C6063F,0x4707F23E,0x0C94F33E}}
+		Vec3 %GizmoOffsetTranslationRO{f{0x90AA883D,0xB0B8CE3D,0x7CCC813F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"thigh_l"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x85D51141,0x00ED9D3E,0xBC02A93F,0x12DE7D3F,0xE513A43D,0xA807CEBD,0x365AEC3B,0x0000803F,0xFFFF7F3F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{2834526023254265494,4745179432029688314}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children{}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{106}
+		Quat %GizmoOffsetRotationRO{f{0xC1FA83BE,0x60DA173F,0xF825353F,0xD1B391BE}}
+		Vec3 %GizmoOffsetTranslationRO{f{0x40C440BD,0xCCF199BE,0xDCD75B3F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"f_pointer3_r"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x000037BA,0x40BC5EC0,0x0000F638,0,0,0,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{5401205712659188408,4750168612589368055}}
+	s %t{"nsEditableSkeleton"}
+	u3 %v{1}
+	p
+	{
+		s %BoneDirection{"nsBasisAxis::PositiveY"}
+		VarArray %Children
+		{
+			Uuid{u4{9306057794672284570,5538539931673470588}}
+		}
+		u1 %CollisionLayer{0}
+		s %File{"Meshes/Mannequin_Female.fbx"}
+		b %FlipForwardDir{0}
+		f %MaxImpulse{0x0000C842}
+		s %PreviewMesh{"{ 35b00ec4-547e-4a54-bdee-29638e5b481b }"}
+		s %RightDir{"nsBasisAxis::PositiveX"}
+		s %Surface{""}
+		f %UniformScaling{0x0000803F}
+		s %UpDir{"nsBasisAxis::PositiveY"}
+	}
+}
+o
+{
+	Uuid %id{u4{13755347220226678411,4842883877725638595}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children{}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{0}
+		Quat %GizmoOffsetRotationRO{f{0x46F80C3F,0x9D24E33E,0x3371E33E,0xFBD30C3F}}
+		Vec3 %GizmoOffsetTranslationRO{f{0x440FB2BD,0x595D843E,0x884BD33C}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"toe_l"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0xA0579E3F,0x40DC21C1,0x82F58F41,0xFE32AE36,0x65B358B8,0x5FCE03B8,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{5406374951956839071,4892319976906752174}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children
+		{
+			Uuid{u4{3188522682296566666,5725952917744089977}}
+		}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{216}
+		Quat %GizmoOffsetRotationRO{f{0x45F5D83E,0x8CD61B3F,0x18DEF83E,0x90A2EC3E}}
+		Vec3 %GizmoOffsetTranslationRO{f{0xE8390C3D,0xE2EC27BE,0x9158083F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"calf_r"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x000012B9,0xCC5444C2,0x00807E3B,0x3220CF3D,0xDA6D2DBD,0x55F7953B,0x36747E3F,0x0000803F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{13093781236604405633,4893342794303357758}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children{}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{18}
+		Quat %GizmoOffsetRotationRO{f{0xD2EF3CBF,0xC6B7923E,0x383579BE,0x58710F3F}}
+		Vec3 %GizmoOffsetTranslationRO{f{0x00566ABD,0x6427953E,0xFB295F3F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"f_pointer3_l"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x00008C39,0x40BB5E40,0x0000A037,0,0,0,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{16132351209368810631,4960596607610800060}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children{}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{210}
+		Quat %GizmoOffsetRotationRO{f{0x8D0E32BF,0x728DCD3E,0xF84CE0BC,0x4961183F}}
+		Vec3 %GizmoOffsetTranslationRO{f{0xF03C2B3C,0x04ED9E3E,0x39F0733F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"weapon_l"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x821F7B40,0xF83A0641,0xFC27403F,0xD0A923BE,0x4452113E,0x99A6273F,0x3A91393F,0x0000803F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{12085815263980680834,5022505079994643717}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children
+		{
+			Uuid{u4{11892232716820197296,5081382172773327736}}
+			Uuid{u4{4034896607601531264,5251346449781654467}}
+			Uuid{u4{6219263377354197426,4619779286967309290}}
+			Uuid{u4{15929036856972489101,5691146709325535746}}
+		}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{0}
+		Quat %GizmoOffsetRotationRO{f{0xC626453E,0x29CA05BF,0xAE1E24BF,0x412C073F}}
+		Vec3 %GizmoOffsetTranslationRO{f{0x8075063D,0xAC47AABE,0xED59843F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"hand_r"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x00400C3B,0x64DEC4C1,0x0080713A,0x7FE6263A,0x6455703E,0x81B776BA,0x62D9783F,0x0000803F,0xFFFF7F3F,0xFFFF7F3F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{13346576175258624131,5036245092422280707}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children
+		{
+			Uuid{u4{14193012758448767625,5682657367331795170}}
+		}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{82}
+		Quat %GizmoOffsetRotationRO{f{0x8D0E32BF,0x728DCD3E,0xF84CE0BC,0x4961183F}}
+		Vec3 %GizmoOffsetTranslationRO{f{0x10E328BD,0xA2819B3E,0xF406733F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"f_pointer1_l"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x80047B3F,0x283A3641,0x5A937640,0x6DF839BD,0x0B2C8DBD,0x65AE29BE,0x39937B3F,0x0000803F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{2206060230182864782,5057108324524149239}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children{}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{184}
+		Quat %GizmoOffsetRotationRO{f{0x0C16E4BE,0xA29D0CBF,0x9FAE0C3F,0x72BCE33E}}
+		Vec3 %GizmoOffsetTranslationRO{f{0xDE78B2BD,0x62FF83BE,0x0E45D33C}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"toe_r"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0xD0539EBF,0x64DB2141,0xECF68FC1,0x32C29EB9,0xD9283EB9,0xCF2418B8,0xFFFF7F3F,0x0000803F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{11892232716820197296,5081382172773327736}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children{}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{226}
+		Quat %GizmoOffsetRotationRO{f{0x2CE916BD,0x78A0213F,0xD7502B3F,0x36BFC7BE}}
+		Vec3 %GizmoOffsetTranslationRO{f{0x00887B3C,0xFC659FBE,0x4FF5713F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"weapon_r"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x42EE7BC0,0x800C06C1,0x408267BF,0xA4812FBE,0x6A85043E,0xD806273F,0x480D3A3F,0x0000803F,0xFEFF7F3F,0xFFFF7F3F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{16975197027679987611,5098207452962726052}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children{}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{10}
+		Quat %GizmoOffsetRotationRO{f{0xC626453E,0x29CA05BF,0xAE1E24BF,0x412C073F}}
+		Vec3 %GizmoOffsetTranslationRO{f{0xF09DBE3D,0x4487A3BE,0x4982923F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"forearm_twist_r"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x000030BA,0x581D3FC1,0x00807ABA,0x87CBB7BC,0xF5E9893E,0x36E09EB9,0x9278763F,0x0000803F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{10860674387554212284,5117717076020551515}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children{}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{194}
+		Quat %GizmoOffsetRotationRO{f{0x4625483F,0xD54DA1BE,0x657D4E3E,0x0D68FFBE}}
+		Vec3 %GizmoOffsetTranslationRO{f{0xD070D6BC,0xCCCE9E3E,0x7EF2583F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"f_main3_l"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x00006037,0x307F9240,0x000078B8,0,0,0,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{101217178586952109,5122393460722137527}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children{}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{64}
+		Quat %GizmoOffsetRotationRO{f{0x41DA063F,0xBB35053F,0x6AE4F2BE,0xD0C6F3BE}}
+		Vec3 %GizmoOffsetTranslationRO{f{0xE0E5C6BD,0x104999BD,0x7A54AF3F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"chest_r"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x651E0DC1,0x80570EC1,0x40478BC1,0xCAE99736,0xB298C4B5,0x26FA8EB6,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{7794885449407001755,5127250366774201865}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children{}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{66}
+		Quat %GizmoOffsetRotationRO{f{0x97DF9EBE,0x14674D3F,0xCF7EE23E,0xF8C681BE}}
+		Vec3 %GizmoOffsetTranslationRO{f{0xD8AADE3D,0x40407ABE,0xE890B03F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"biceps_twist_r"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x0000CC38,0xE8B25EC1,0x000020B8,0,0,0,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{13137153751333448616,5152866646834669086}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children{}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{58}
+		Quat %GizmoOffsetRotationRO{f{0x0F69E3BE,0xBFC36C3E,0xC66CA1BE,0x025F4E3F}}
+		Vec3 %GizmoOffsetTranslationRO{f{0x20C4EC3D,0x3042893E,0xCF69B03F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"biceps_twist_l"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x000060B9,0x50B55E41,0x0000E8B9,0xB600D535,0xF07F8E36,0xF17FA236,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{11839344067290986115,5161878765752894298}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children
+		{
+			Uuid{u4{12085815263980680834,5022505079994643717}}
+			Uuid{u4{16975197027679987611,5098207452962726052}}
+		}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{108}
+		Quat %GizmoOffsetRotationRO{f{0x97DF9EBE,0x14674D3F,0xCF7EE23E,0xF8C681BE}}
+		Vec3 %GizmoOffsetTranslationRO{f{0x0882193E,0x8C2E9DBE,0xC9DC9F3F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"forearm_r"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x00007839,0xC8BCE7C1,0x00005039,0x7CE5CB3E,0x23B035BE,0xB153A13D,0x6481653F,0x0000803F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{11168155768316342424,5166918408249701711}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children{}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{136}
+		Quat %GizmoOffsetRotationRO{f{0x1F94F3BE,0x6F07F2BE,0xEAC6063F,0xBCC4053F}}
+		Vec3 %GizmoOffsetTranslationRO{f{0x4AC1203E,0x20F2ADBD,0xBED4723F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"back_r"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x470317C1,0xF0CEAD40,0xECE80441,0x2A9CEEBC,0x9DF007BE,0x6DCE31BF,0x27DC343F,0xFFFF7F3F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{4092685729479025035,5167354327721904461}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children
+		{
+			Uuid{u4{13755347220226678411,4842883877725638595}}
+		}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{208}
+		Quat %GizmoOffsetRotationRO{f{0x40C114BF,0x7BC3F4BE,0x0DEDB33E,0xEC9B0E3F}}
+		Vec3 %GizmoOffsetTranslationRO{f{0x3DBAB03D,0xF338553E,0xA8F8013E}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"foot_l"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x008009BA,0x14872442,0x007C0FBB,0x0EA37E3F,0xC6876F3D,0x6D6847BD,0xE2578E3D,0xFFFF7F3F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{14235491110153504955,5181953282164569670}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children
+		{
+			Uuid{u4{13137153751333448616,5152866646834669086}}
+			Uuid{u4{16338723301662463409,5652828806843868943}}
+		}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{138}
+		Quat %GizmoOffsetRotationRO{f{0xCA2F64BD,0x21EC243F,0xD17F02BE,0x5E88403F}}
+		Vec3 %GizmoOffsetTranslationRO{f{0x8868963D,0xD08D583E,0xF0C4BF3F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"arm_l"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x00008039,0x23CA9341,0x0000A0B8,0xAA84EC3D,0x02DBC43E,0xABB6D0BE,0xFCF5513F,0x0000803F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{17975952457188264337,5187713098103074330}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children{}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{170}
+		Quat %GizmoOffsetRotationRO{f{0xDFC6F33E,0x7DE4F23E,0xB435053F,0x3ADA063F}}
+		Vec3 %GizmoOffsetTranslationRO{f{0x90E0C3BD,0x90F6CF3D,0xB23BAF3F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"chest_l"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x841E0D41,0xA0570E41,0x3B478B41,0xCCE99736,0x30DAA0B5,0xCCE997B6,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{10389719385997812353,5209918165936866921}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children
+		{
+			Uuid{u4{16477342292118119324,5570873304573378515}}
+		}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{34}
+		Quat %GizmoOffsetRotationRO{f{0xDFC6F33E,0x7DE4F23E,0xB435053F,0x3ADA063F}}
+		Vec3 %GizmoOffsetTranslationRO{f{0x20EB6A3D,0x8001553C,0x5E42CB3F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"neck"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x000076B8,0x5859E941,0x008058BA,0xC3162BBD,0x01623439,0xC1F70EB9,0xCEC67F3F,0xFFFF7F3F,0xFFFF7F3F,0xFFFF7F3F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{4034896607601531264,5251346449781654467}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children
+		{
+			Uuid{u4{17785077576953249154,4630851430512888301}}
+		}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{98}
+		Quat %GizmoOffsetRotationRO{f{0x2CE916BD,0x78A0213F,0xD7502B3F,0x36BFC7BE}}
+		Vec3 %GizmoOffsetTranslationRO{f{0xD01611BD,0x423E9DBE,0x7116703F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"f_pointer1_r"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x404D7BBF,0x283836C1,0x789D76C0,0xBEFD39BD,0xDB2C8DBD,0xAEB029BE,0x1A937B3F,0xFFFF7F3F,0xFFFF7F3F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{2697585302642163857,5252091646154102826}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children
+		{
+			Uuid{u4{10203060070794631558,5575475957379978070}}
+		}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{170}
+		Quat %GizmoOffsetRotationRO{f{0xEC24F03E,0x0BBCB33E,0x9E0A403F,0x3C019DBE}}
+		Vec3 %GizmoOffsetTranslationRO{f{0x20EAECBC,0x523187BE,0xEC7D7E3F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"f_big2_r"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x008031BB,0xB08782C0,0x00002CB8,0xDFF93F3D,0x8D45AA3D,0x5D752C3C,0x2FD17E3F,0x0000803F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{12120903610387904439,5276607680260292811}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children
+		{
+			Uuid{u4{8707374936857342132,5411189719740571590}}
+		}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{146}
+		Quat %GizmoOffsetRotationRO{f{0x9E58A8BE,0xE697063F,0xB7793E3F,0x2BB47EBE}}
+		Vec3 %GizmoOffsetTranslationRO{f{0x007C5ABB,0x3CA4A9BE,0x267F613F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"f_main2_r"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x005017BA,0x00B39AC0,0x0040F038,0xF67C463D,0xF5AA633D,0xE6EFDC3D,0x0ECE7D3F,0x0000803F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{568534084003462795,5336941236144151420}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children
+		{
+			Uuid{u4{13107267514333364413,5401223579708742227}}
+		}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{90}
+		Quat %GizmoOffsetRotationRO{f{0x8D0E32BF,0x728DCD3E,0xF84CE0BC,0x4961183F}}
+		Vec3 %GizmoOffsetTranslationRO{f{0x20D918BC,0xC8A3AF3E,0x70EC6E3F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"f_main1_l"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0xA05CC23F,0xD0213341,0xDEC0B6BF,0xF69F9BBA,0xC40414BE,0x55C39FBE,0xDC62703F,0x0000803F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{9252720308181048988,5344595858509300135}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children
+		{
+			Uuid{u4{17975952457188264337,5187713098103074330}}
+			Uuid{u4{16262672524827281067,5749321122634181232}}
+		}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{218}
+		Quat %GizmoOffsetRotationRO{f{0xDFC6F33E,0x7DE4F23E,0xB435053F,0x3ADA063F}}
+		Vec3 %GizmoOffsetTranslationRO{f{0x7810AF3D,0x80C03C3C,0x0F19A63F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"zero_joint_hand_l"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0,0,0,0,0,0,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{13843204148835594638,5397397631753020338}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children{}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{10}
+		Quat %GizmoOffsetRotationRO{f{0xBEFC373F,0x087292BE,0x3F640FBF,0xB8D097BE}}
+		Vec3 %GizmoOffsetTranslationRO{f{0x109084BD,0x988B703E,0x656C803F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"f_big3_l"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x0000E038,0x38D99140,0x00C8D2BA,0x90B8B235,0xB4D9A0B5,0x78D9A0B6,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{13107267514333364413,5401223579708742227}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children
+		{
+			Uuid{u4{10860674387554212284,5117717076020551515}}
+		}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{2}
+		Quat %GizmoOffsetRotationRO{f{0xA012463F,0xBBDC7BBE,0xF7FA9F3E,0x1A82FCBE}}
+		Vec3 %GizmoOffsetTranslationRO{f{0x004B52BC,0xC4EDA53E,0xEF93633F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"f_main2_l"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x006C81BA,0xA0AB9A40,0x000064B8,0xB579463D,0xF3AE633D,0x24F1DC3D,0x09CE7D3F,0x0000803F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{8707374936857342132,5411189719740571590}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children{}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{122}
+		Quat %GizmoOffsetRotationRO{f{0xD0085DBE,0x2FD4083F,0x7A2C413F,0x668DA0BE}}
+		Vec3 %GizmoOffsetTranslationRO{f{0x80686CBC,0x8E35A4BE,0x8375563F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"f_main3_r"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x00008F39,0xA07492C0,0x00E04E3A,0,0,0,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{18422162182272553384,5421727442119071174}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children{}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{82}
+		Quat %GizmoOffsetRotationRO{f{0x0000003F,0x0000003F,0x0000003F,0x0000003F}}
+		Vec3 %GizmoOffsetTranslationRO{f{0,0,0}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"arm__prc_03_f__body"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0,0,0,0,0,0,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{5894171972588102309,5441999552561460240}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children{}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{108}
+		Quat %GizmoOffsetRotationRO{f{0x45F5D83E,0x8CD61B3F,0x18DEF83E,0x90A2EC3E}}
+		Vec3 %GizmoOffsetTranslationRO{f{0x3083603D,0x587EE5BD,0x04FF553F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"thigh_twist_r"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x00000038,0xC8EC91C1,0x00804439,0,0,0,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{11304815308163249548,5455672543657223264}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children{}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{66}
+		Quat %GizmoOffsetRotationRO{f{0x7ADDF33D,0x66E140BF,0x0F8467BD,0x5CE8243F}}
+		Vec3 %GizmoOffsetTranslationRO{f{0xB0D1853D,0xB0E427BE,0x90D5C93F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"scapular_r"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0xE02CDB40,0x6F9E66C1,0x6D8B633F,0x5335FAB5,0xE6E99736,0x715668B6,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{18426760118040343452,5477546215385395347}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children{}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{50}
+		Quat %GizmoOffsetRotationRO{f{0xA1362C3F,0xFB6D05BF,0xF74B363E,0x8EF7FCBE}}
+		Vec3 %GizmoOffsetTranslationRO{f{0xA09EC93D,0xDE81AA3E,0x7DCF923F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"forearm_twist_l"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x0080E13A,0xD81C3F41,0x00002039,0x5BFE83BC,0x1D8D503E,0x16EDD33B,0x57987A3F,0x0000803F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{5960305107306203796,5479510806457650285}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children
+		{
+			Uuid{u4{11168155768316342424,5166918408249701711}}
+			Uuid{u4{14954540486587771057,5719989824288882222}}
+		}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{114}
+		Quat %GizmoOffsetRotationRO{f{0xCAC4053F,0xF8C6063F,0x4707F23E,0x0C94F33E}}
+		Vec3 %GizmoOffsetTranslationRO{f{0x1C2CA33D,0x003C203C,0x1E51813F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"zero_joint_pelvis_r"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0,0,0,0x0000803F,0x4888A834,0x6C88A834,0x1822EAB5,0x0000803F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{14871276789419911862,5489826059573970150}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children{}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{244}
+		Quat %GizmoOffsetRotationRO{f{0x0000003F,0x0000003F,0x0000003F,0x0000003F}}
+		Vec3 %GizmoOffsetTranslationRO{f{0,0,0}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"head__01_f"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0,0,0,0,0,0,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{8450782615387700613,5497887372832298582}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children
+		{
+			Uuid{u4{5960305107306203796,5479510806457650285}}
+			Uuid{u4{3371610089623002251,5682793308564667867}}
+			Uuid{u4{10435501742192513937,5734606184588906129}}
+		}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{46}
+		Quat %GizmoOffsetRotationRO{f{0x0000003F,0x0000003F,0x0000003F,0x0000003F}}
+		Vec3 %GizmoOffsetTranslationRO{f{0x1C2CA33D,0x003C203C,0x1E51813F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"pelvis"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x8C5D7A3F,0xBF0ECA42,0xF0F4FEC0,0xC9F04DBD,0xEE2FEFB9,0x644864BB,0xB5AC7F3F,0x0000803F,0xFFFF7F3F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{13014583540853713556,5534297600208500785}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children
+		{
+			Uuid{u4{8450782615387700613,5497887372832298582}}
+		}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{21}
+		Quat %GizmoOffsetRotationRO{f{0x0000003F,0x0000003F,0x0000003F,0x0000003F}}
+		Vec3 %GizmoOffsetTranslationRO{f{0,0,0}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"Armature"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0,0,0,0,0,0,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{1534584812052396979,5538004301051700999}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children
+		{
+			Uuid{u4{6585926786045942197,5646358865820891559}}
+			Uuid{u4{9252720308181048988,5344595858509300135}}
+			Uuid{u4{10389719385997812353,5209918165936866921}}
+		}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{110}
+		Quat %GizmoOffsetRotationRO{f{0x5D01FC3E,0x7351FC3E,0x5464013F,0x4063023F}}
+		Vec3 %GizmoOffsetTranslationRO{f{0x7810AF3D,0x80C03C3C,0x0F19A63F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"chest"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x0097803C,0x9C1B8E41,0x0000D439,0xA3E7083D,0xCC59243B,0xCD0CA4B8,0x2DDB7F3F,0x0000803F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{9306057794672284570,5538539931673470588}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children
+		{
+			Uuid{u4{3251952950866112130,4666804638980018088}}
+			Uuid{u4{1845529639602410405,5725738995619772893}}
+			Uuid{u4{14871276789419911862,5489826059573970150}}
+			Uuid{u4{13014583540853713556,5534297600208500785}}
+			Uuid{u4{18422162182272553384,5421727442119071174}}
+		}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{192}
+		Quat %GizmoOffsetRotationRO{f{0x0000003F,0x0000003F,0x0000003F,0x0000003F}}
+		Vec3 %GizmoOffsetTranslationRO{f{0,0,0}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"RootNode"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0,0,0,0,0,0,0x0000803F,0x0AD7233C,0x0AD7233C,0x0AD7233C}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{16477342292118119324,5570873304573378515}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children
+		{
+			Uuid{u4{2840118977009418901,5761639972489208054}}
+		}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{58}
+		Quat %GizmoOffsetRotationRO{f{0x9FD7FE3E,0xB1CBFD3E,0x78F6FF3E,0xBCAE013F}}
+		Vec3 %GizmoOffsetTranslationRO{f{0x909C633D,0x80805F3C,0x4CCCDC3F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"head"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x00588039,0x80415B41,0x00C0C7B9,0x0B6413BE,0xBE5C83B9,0xB1BD5C3A,0x8B557D3F,0x0000803F,0x0000803F,0xFFFF7F3F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{6010382819321546935,5574162300856818294}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children
+		{
+			Uuid{u4{16132351209368810631,4960596607610800060}}
+			Uuid{u4{13346576175258624131,5036245092422280707}}
+			Uuid{u4{568534084003462795,5336941236144151420}}
+			Uuid{u4{10744170525435249843,4691722292633774403}}
+		}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{34}
+		Quat %GizmoOffsetRotationRO{f{0xA1362C3F,0xFB6D05BF,0xF74B363E,0x8EF7FCBE}}
+		Vec3 %GizmoOffsetTranslationRO{f{0x60B6023D,0x6491AC3E,0x0507853F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"hand_l"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x0080ACBA,0xA8DEC441,0x00001FBA,0xC16AE039,0xBD805E3E,0x45DE16B7,0x2DE2793F,0x0000803F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{10203060070794631558,5575475957379978070}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children{}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{194}
+		Quat %GizmoOffsetRotationRO{f{0xE91B0C3F,0x996DAB3E,0x958E383F,0xA61F86BE}}
+		Vec3 %GizmoOffsetTranslationRO{f{0x40B380BD,0x2C9470BE,0xC8347C3F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"f_big3_r"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x0000203A,0x60DC91C0,0x008095B9,0,0,0,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{11433836147300057243,5616394539727838895}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children{}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{0}
+		Quat %GizmoOffsetRotationRO{f{0xCAC4053F,0xF8C6063F,0x4707F23E,0x0C94F33E}}
+		Vec3 %GizmoOffsetTranslationRO{f{0x6A82203E,0x30A3D43D,0x0A7F723F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"back_l"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x57031741,0x40D1ADC0,0x74E804C1,0xF79AEEBC,0x6AF007BE,0x6ECE31BF,0x28DC343F,0x0000803F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{6585926786045942197,5646358865820891559}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children
+		{
+			Uuid{u4{101217178586952109,5122393460722137527}}
+			Uuid{u4{4053570698821493664,4616493887104281198}}
+		}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{54}
+		Quat %GizmoOffsetRotationRO{f{0xDFC6F33E,0x7DE4F23E,0xB435053F,0x3ADA063F}}
+		Vec3 %GizmoOffsetTranslationRO{f{0x7810AF3D,0x80C03C3C,0x0F19A63F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"zero_joint_hand_r"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0,0,0,0x0000803F,0x7421A233,0x5E21A2B3,0x2D4474B5,0x0000803F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{16338723301662463409,5652828806843868943}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children
+		{
+			Uuid{u4{6010382819321546935,5574162300856818294}}
+			Uuid{u4{18426760118040343452,5477546215385395347}}
+		}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{242}
+		Quat %GizmoOffsetRotationRO{f{0x0F69E3BE,0xBFC36C3E,0xC66CA1BE,0x025F4E3F}}
+		Vec3 %GizmoOffsetTranslationRO{f{0xE20E253E,0x2096A83E,0xBECF9F3F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"forearm_l"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x00005EB9,0xD4BCE741,0x0000C038,0xC65BE43E,0x4B0E31BE,0xDEADB43D,0x5BAC5F3F,0x0000803F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{14193012758448767625,5682657367331795170}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children
+		{
+			Uuid{u4{13093781236604405633,4893342794303357758}}
+		}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{122}
+		Quat %GizmoOffsetRotationRO{f{0xA39B38BF,0x745CA33E,0x455044BE,0x9D95153F}}
+		Vec3 %GizmoOffsetTranslationRO{f{0xE0EC54BD,0xC0DB983E,0x74C6673F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"f_pointer2_l"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x00007039,0x10BD9140,0x00801FB9,0x9167923B,0x32B3B9BC,0x514A82BD,0xB7697F3F,0xFFFF7F3F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{3371610089623002251,5682793308564667867}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children
+		{
+			Uuid{u4{11433836147300057243,5616394539727838895}}
+			Uuid{u4{9335880969055404426,4695158936062783168}}
+		}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{250}
+		Quat %GizmoOffsetRotationRO{f{0xCAC4053F,0xF8C6063F,0x4707F23E,0x0C94F33E}}
+		Vec3 %GizmoOffsetTranslationRO{f{0x1C2CA33D,0x003C203C,0x1E51813F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"zero_joint_pelvis_l"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0,0,0,0,0,0,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{15929036856972489101,5691146709325535746}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children
+		{
+			Uuid{u4{2697585302642163857,5252091646154102826}}
+		}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{130}
+		Quat %GizmoOffsetRotationRO{f{0x2CE916BD,0x78A0213F,0xD7502B3F,0x36BFC7BE}}
+		Vec3 %GizmoOffsetTranslationRO{f{0x0038563B,0x180193BE,0x417F803F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"f_big1_r"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x609EEFBF,0x60CA64C0,0xDBB996C0,0xA2AFDD3E,0xADD9913E,0x6CED623E,0x7F74533F,0x0000803F,0xFFFF7F3F,0xFFFF7F3F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{3298642226764657297,5716704035994658141}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children{}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{4}
+		Quat %GizmoOffsetRotationRO{f{0xB358F7BE,0x0AABE6BE,0xD71DDF3E,0x37811C3F}}
+		Vec3 %GizmoOffsetTranslationRO{f{0xC076483D,0x1805043E,0x23AE553F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"thigh_twist_l"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x00003838,0x74EC9141,0x00001EB9,0,0,0,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{14954540486587771057,5719989824288882222}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children
+		{
+			Uuid{u4{5894171972588102309,5441999552561460240}}
+			Uuid{u4{5406374951956839071,4892319976906752174}}
+		}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{0}
+		Quat %GizmoOffsetRotationRO{f{0x1F94F3BE,0x6F07F2BE,0xEAC6063F,0xBCC4053F}}
+		Vec3 %GizmoOffsetTranslationRO{f{0x2024893D,0x489AA6BD,0xD0F5813F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"thigh_r"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x1ED511C1,0x00019EBE,0x10FDA8BF,0x91D67D3F,0x6B69A83D,0xB0B5CCBD,0x54ED03BC,0xFFFF7F3F,0x0000803F,0xFFFF7F3F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{1845529639602410405,5725738995619772893}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children{}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{192}
+		Quat %GizmoOffsetRotationRO{f{0x0000003F,0x0000003F,0x0000003F,0x0000003F}}
+		Vec3 %GizmoOffsetTranslationRO{f{0,0,0}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"hair__06_f"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0,0,0,0,0,0,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{3188522682296566666,5725952917744089977}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children
+		{
+			Uuid{u4{2206060230182864782,5057108324524149239}}
+		}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{46}
+		Quat %GizmoOffsetRotationRO{f{0xCD9AB63E,0x51D3123F,0xE493103F,0xFCCFF23E}}
+		Vec3 %GizmoOffsetTranslationRO{f{0x7CB3B03D,0xD64A55BE,0x5A0B023E}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"foot_r"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x00007838,0x848724C2,0x00C0A53A,0x91CB7E3F,0x544D8B3D,0xA08F4DBD,0x9116423D,0x0000803F,0xFFFF7F3F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{2828798185845101218,5734547449923715103}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children
+		{
+			Uuid{u4{4092685729479025035,5167354327721904461}}
+		}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{97}
+		Quat %GizmoOffsetRotationRO{f{0xB358F7BE,0x0AABE6BE,0xD71DDF3E,0x37811C3F}}
+		Vec3 %GizmoOffsetTranslationRO{f{0x68589A3C,0x947C343E,0xC70A083F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"calf_l"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x00800D3A,0x2C544442,0x008027BB,0x4E630B3E,0xE2B22CBD,0x13903F3B,0xE6627D3F,0xFFFF7F3F,0xFFFF7F3F,0xFFFF7F3F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{10435501742192513937,5734606184588906129}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children
+		{
+			Uuid{u4{1534584812052396979,5538004301051700999}}
+		}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{0}
+		Quat %GizmoOffsetRotationRO{f{0xCAC4053F,0xF8C6063F,0x4707F23E,0x0C94F33E}}
+		Vec3 %GizmoOffsetTranslationRO{f{0xB8E4B93D,0x80F02C3C,0xFC5E8F3F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"stomach"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x00548839,0x78933041,0x00E093BA,0xA160853D,0x7902143B,0x3AD7AB3A,0xA6747F3F,0x0000803F,0x0000803F,0xFFFF7F3F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{2738598862382079651,5735108597396430718}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children
+		{
+			Uuid{u4{7794885449407001755,5127250366774201865}}
+			Uuid{u4{11839344067290986115,5161878765752894298}}
+		}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{108}
+		Quat %GizmoOffsetRotationRO{f{0x7ADDF33D,0x66E140BF,0x0F8467BD,0x5CE8243F}}
+		Vec3 %GizmoOffsetTranslationRO{f{0xA0A7903D,0x20F43EBE,0x0804C03F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"arm_r"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x000098B9,0x8FCA93C1,0x00004E39,0x6F2BF23D,0xE2D6B83E,0xEA59D1BE,0xED6A543F,0x0000803F,0xFEFF7F3F,0xFFFF7F3F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{16262672524827281067,5749321122634181232}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children
+		{
+			Uuid{u4{141805469565948595,5751381043900308526}}
+			Uuid{u4{14235491110153504955,5181953282164569670}}
+		}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{66}
+		Quat %GizmoOffsetRotationRO{f{0xDFC6F33E,0x7DE4F23E,0xB435053F,0x3ADA063F}}
+		Vec3 %GizmoOffsetTranslationRO{f{0xC013523D,0xC0CF0A3D,0x40A2C53F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"clavicle_l"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x6F8F0640,0x40E8C641,0x908E853F,0xA62D07BC,0xB52F493D,0xEBA84ABF,0x71E41B3F,0x0000803F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{141805469565948595,5751381043900308526}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children{}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{242}
+		Quat %GizmoOffsetRotationRO{f{0xCA2F64BD,0x21EC243F,0xD17F02BE,0x5E88403F}}
+		Vec3 %GizmoOffsetTranslationRO{f{0xE00B8B3D,0x1856423E,0xC29DC93F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"scapular_l"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x4031DBC0,0x119E6641,0xC87D63BF,0,0,0,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{12217134498086916535,5760817472417398061}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children
+		{
+			Uuid{u4{13843204148835594638,5397397631753020338}}
+		}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{218}
+		Quat %GizmoOffsetRotationRO{f{0x7E45403F,0xF9F5A7BE,0x2367F6BE,0xEE339FBE}}
+		Vec3 %GizmoOffsetTranslationRO{f{0xF0A3FCBC,0x40AE873E,0x870A813F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"f_big2_l"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x000018B9,0xB8848240,0x00402E3A,0x76FB3F3D,0xE145AA3D,0x3D632C3C,0x2ED17E3F,0x0000803F,0x0000803F,0xFFFF7F3F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{2840118977009418901,5761639972489208054}}
+	s %t{"nsEditableSkeletonJoint"}
+	u3 %v{2}
+	p
+	{
+		VarArray %BoneShapes{}
+		VarArray %Children{}
+		VarArray %Colliders{}
+		u1 %CollisionLayer{186}
+		Quat %GizmoOffsetRotationRO{f{0xC7D5103F,0x39EC0F3F,0x930CD93E,0x3CB4DB3E}}
+		Vec3 %GizmoOffsetTranslationRO{f{0x10D1C73D,0x8086603C,0xCCCAEF3F}}
+		s %JointType{"nsSkeletonJointType::None"}
+		Quat %LocalRotation{f{0,0,0,0x0000803F}}
+		s %Name{"hair"}
+		b %OverrideCollisionLayer{0}
+		b %OverrideSurface{0}
+		f %Stiffness{0}
+		s %Surface{""}
+		Angle %SwingLimitY{f{0}}
+		Angle %SwingLimitZ{f{0}}
+		Transform %Transform{f{0x3E8A0437,0xADC07641,0x8103FFB6,0,0,0,0x0000803F,0x0000803F,0x0000803F,0x0000803F}}
+		Angle %TwistLimitCenterAngle{f{0}}
+		Angle %TwistLimitHalfAngle{f{0}}
+	}
+}
+o
+{
+	Uuid %id{u4{18096612296587978288,6449934965513159559}}
+	s %t{"nsDocumentRoot"}
+	u3 %v{1}
+	s %n{"ObjectTree"}
+	p
+	{
+		VarArray %Children
+		{
+			Uuid{u4{5401205712659188408,4750168612589368055}}
+		}
+	}
+}
+}
+Types
+{
+o
+{
+	Uuid %id{u4{3452138651780957105,1866873605734874882}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsReflectedClass"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsEditableSkeleton"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{13936863874708037173,4416207831136974623}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsPropertyAttribute"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsManipulatorAttribute"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{15939914060113079112,5026133042024251900}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsReflectedClass"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsPropertyAttribute"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{12248570928355210362,6634068974736405762}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsReflectedClass"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsEditableSkeletonBoneCollider"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{6356382886340883537,8187711835693078808}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsManipulatorAttribute"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsTransformManipulatorAttribute"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{12933394784456489269,8205330397567314293}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsReflectedClass"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsEditableSkeletonBoneShape"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{5823255354133589486,8668675022575846062}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsReflectedClass"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{10643042966991232223,10927020937162091726}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsReflectedClass"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsDocumentRoot"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{13184929354217129851,12330095187455531453}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsReflectedClass"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsEditableSkeletonJoint"}
+		u3 %TypeVersion{2}
+	}
+}
+o
+{
+	Uuid %id{u4{3572148594981062452,13063983464694370447}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsEnumBase"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{13393140561034252180,14361299209898660432}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::IsEnum|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsEnumBase"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsSkeletonJointGeometryType"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{18110348905002939181,15495420624491644530}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::IsEnum|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsEnumBase"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsBasisAxis"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{11617815168070820030,16124278177333955992}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::IsEnum|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsEnumBase"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsSkeletonJointType"}
+		u3 %TypeVersion{1}
+	}
+}
+}

@@ -1,0 +1,643 @@
+HeaderV2
+{
+o
+{
+	Uuid %id{u4{18423193833188957331,4868539391744831527}}
+	s %t{"nsAssetDocumentInfo"}
+	u3 %v{2}
+	s %n{"Header"}
+	p
+	{
+		s %AssetType{"Mesh"}
+		VarArray %Dependencies
+		{
+			s{"Meshes/Renders/acura_nsx_gt3/scene.gltf"}
+		}
+		Uuid %DocumentID{u4{18423193833188957331,4868539391744831527}}
+		u4 %Hash{3545510487677074757}
+		VarArray %MetaInfo{}
+		VarArray %Outputs{}
+		VarArray %PackageDeps
+		{
+			s{"{ 017a6da7-f638-4f39-a4a9-eee815408d7b }"}
+			s{"{ 0330d88b-bde6-4ec7-b5ff-fa8db1aa24e6 }"}
+			s{"{ 0483b3a1-dfd6-43fb-9762-858094bad02c }"}
+			s{"{ 25a62c5c-c227-4f8d-a6d7-7c2cbdb59b46 }"}
+			s{"{ 27eae33a-5545-4e0a-ba27-416b44f05f87 }"}
+			s{"{ 2cc0aa8f-6af9-4537-ab68-eb18644e1795 }"}
+			s{"{ 2fe19d25-22dc-4285-a066-2a0093833293 }"}
+			s{"{ 3e2825ae-e724-49a2-847a-99cdc3836c94 }"}
+			s{"{ 41144cc3-b2ff-4abc-be2b-41c6c14f3369 }"}
+			s{"{ 417e59a8-09a7-4986-bb14-1e3092dbf0a9 }"}
+			s{"{ 42e753c7-65fa-425e-be46-dcf0c6c1bfcf }"}
+			s{"{ 68530578-deb1-481c-9c60-6e3751956d5e }"}
+			s{"{ 746d0098-bf1b-4a74-8616-7a60e0b25e82 }"}
+			s{"{ 817b07f8-b78e-4d0f-a88b-132a97b8b78f }"}
+			s{"{ 84ecc5e1-11df-42e8-998e-a19f61d2035d }"}
+			s{"{ 8b0ef1ac-e675-493b-8078-2558baabdf1a }"}
+			s{"{ 91c70afa-41b6-4a33-8719-3b4ef9fdc4b3 }"}
+			s{"{ 9f47c526-e3a7-4d01-be61-4570d06e7f87 }"}
+			s{"{ a1895a70-6b56-4910-ac6a-e6281dbc4817 }"}
+			s{"{ a783ca0a-42ef-4a5d-b566-ec8a4a5ded9a }"}
+			s{"{ a95c2ef6-bf38-413d-88e7-fdbe7c271af8 }"}
+			s{"{ a9cfd179-5c00-4839-9350-9754054ef6bc }"}
+			s{"{ bce2aeae-f125-4006-b229-33180999b728 }"}
+			s{"{ bf5ba5dd-b91c-47b5-926f-e8829dc9cf27 }"}
+			s{"{ cf14ced3-ee35-493f-b9c8-d42ef75fc888 }"}
+			s{"{ e654ca59-4036-4bc6-a25d-d509fc432ad9 }"}
+			s{"{ eac097ec-aace-43e4-9b60-b7d5c6253592 }"}
+			s{"{ eed84aa4-fcd6-4e98-9a62-afae07882a16 }"}
+			s{"{ ef07e48b-dfce-4df7-8b2f-03835673cd94 }"}
+		}
+		VarArray %References
+		{
+			s{"Meshes/Renders/acura_nsx_gt3/scene.gltf"}
+			s{"{ 017a6da7-f638-4f39-a4a9-eee815408d7b }"}
+			s{"{ 0330d88b-bde6-4ec7-b5ff-fa8db1aa24e6 }"}
+			s{"{ 0483b3a1-dfd6-43fb-9762-858094bad02c }"}
+			s{"{ 25a62c5c-c227-4f8d-a6d7-7c2cbdb59b46 }"}
+			s{"{ 27eae33a-5545-4e0a-ba27-416b44f05f87 }"}
+			s{"{ 2cc0aa8f-6af9-4537-ab68-eb18644e1795 }"}
+			s{"{ 2fe19d25-22dc-4285-a066-2a0093833293 }"}
+			s{"{ 3e2825ae-e724-49a2-847a-99cdc3836c94 }"}
+			s{"{ 41144cc3-b2ff-4abc-be2b-41c6c14f3369 }"}
+			s{"{ 417e59a8-09a7-4986-bb14-1e3092dbf0a9 }"}
+			s{"{ 42e753c7-65fa-425e-be46-dcf0c6c1bfcf }"}
+			s{"{ 68530578-deb1-481c-9c60-6e3751956d5e }"}
+			s{"{ 746d0098-bf1b-4a74-8616-7a60e0b25e82 }"}
+			s{"{ 817b07f8-b78e-4d0f-a88b-132a97b8b78f }"}
+			s{"{ 84ecc5e1-11df-42e8-998e-a19f61d2035d }"}
+			s{"{ 8b0ef1ac-e675-493b-8078-2558baabdf1a }"}
+			s{"{ 91c70afa-41b6-4a33-8719-3b4ef9fdc4b3 }"}
+			s{"{ 9f47c526-e3a7-4d01-be61-4570d06e7f87 }"}
+			s{"{ a1895a70-6b56-4910-ac6a-e6281dbc4817 }"}
+			s{"{ a783ca0a-42ef-4a5d-b566-ec8a4a5ded9a }"}
+			s{"{ a95c2ef6-bf38-413d-88e7-fdbe7c271af8 }"}
+			s{"{ a9cfd179-5c00-4839-9350-9754054ef6bc }"}
+			s{"{ bce2aeae-f125-4006-b229-33180999b728 }"}
+			s{"{ bf5ba5dd-b91c-47b5-926f-e8829dc9cf27 }"}
+			s{"{ cf14ced3-ee35-493f-b9c8-d42ef75fc888 }"}
+			s{"{ e654ca59-4036-4bc6-a25d-d509fc432ad9 }"}
+			s{"{ eac097ec-aace-43e4-9b60-b7d5c6253592 }"}
+			s{"{ eed84aa4-fcd6-4e98-9a62-afae07882a16 }"}
+			s{"{ ef07e48b-dfce-4df7-8b2f-03835673cd94 }"}
+		}
+	}
+}
+}
+Objects
+{
+o
+{
+	Uuid %id{u4{14977226641198242200,4638776189695873309}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"Caliper_Label"}
+		s %Resource{"{ 017a6da7-f638-4f39-a4a9-eee815408d7b }"}
+	}
+}
+o
+{
+	Uuid %id{u4{8886257963298120326,4652265490968941154}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"Brake"}
+		s %Resource{"{ 0483b3a1-dfd6-43fb-9762-858094bad02c }"}
+	}
+}
+o
+{
+	Uuid %id{u4{15117410945517552003,4691896050041612015}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"Belt_2"}
+		s %Resource{"{ a783ca0a-42ef-4a5d-b566-ec8a4a5ded9a }"}
+	}
+}
+o
+{
+	Uuid %id{u4{15538998329244734883,4695961652814123777}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"CarboFiber"}
+		s %Resource{"{ ef07e48b-dfce-4df7-8b2f-03835673cd94 }"}
+	}
+}
+o
+{
+	Uuid %id{u4{18287714267349808556,4841834408050990663}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"Black_Matte"}
+		s %Resource{"{ 91c70afa-41b6-4a33-8719-3b4ef9fdc4b3 }"}
+	}
+}
+o
+{
+	Uuid %id{u4{5601338934315249792,4844679606387428721}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"Emissive_White"}
+		s %Resource{"{ e654ca59-4036-4bc6-a25d-d509fc432ad9 }"}
+	}
+}
+o
+{
+	Uuid %id{u4{13044997032149378464,4903988682687885066}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"Aluminum"}
+		s %Resource{"{ 2fe19d25-22dc-4285-a066-2a0093833293 }"}
+	}
+}
+o
+{
+	Uuid %id{u4{17418164724263636148,4927251688110176976}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"Tyre"}
+		s %Resource{"{ 3e2825ae-e724-49a2-847a-99cdc3836c94 }"}
+	}
+}
+o
+{
+	Uuid %id{u4{14021474698824754074,4928958896179386648}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"Decals"}
+		s %Resource{"{ bf5ba5dd-b91c-47b5-926f-e8829dc9cf27 }"}
+	}
+}
+o
+{
+	Uuid %id{u4{2253729720327946122,4954769896116387517}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"Dark_Plastic"}
+		s %Resource{"{ a9cfd179-5c00-4839-9350-9754054ef6bc }"}
+	}
+}
+o
+{
+	Uuid %id{u4{9807826113768039854,4965952245614872231}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"Emssive_-_Red"}
+		s %Resource{"{ 68530578-deb1-481c-9c60-6e3751956d5e }"}
+	}
+}
+o
+{
+	Uuid %id{u4{11810638274682547612,5014198486611941289}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"Dark_Metal_2"}
+		s %Resource{"{ a1895a70-6b56-4910-ac6a-e6281dbc4817 }"}
+	}
+}
+o
+{
+	Uuid %id{u4{14815321857672787116,5091223846738622440}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"Vehicle_-_Body_-_Paint"}
+		s %Resource{"{ 8b0ef1ac-e675-493b-8078-2558baabdf1a }"}
+	}
+}
+o
+{
+	Uuid %id{u4{2188989914077602209,5140720642492102749}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"Mirror"}
+		s %Resource{"{ a95c2ef6-bf38-413d-88e7-fdbe7c271af8 }"}
+	}
+}
+o
+{
+	Uuid %id{u4{14966539293945702048,5149382895867543674}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"Glass_EEVEE"}
+		s %Resource{"{ 25a62c5c-c227-4f8d-a6d7-7c2cbdb59b46 }"}
+	}
+}
+o
+{
+	Uuid %id{u4{13525993352202060477,5235162895494106210}}
+	s %t{"nsMeshAssetProperties"}
+	u3 %v{3}
+	p
+	{
+		b %AggressiveSimplification{0}
+		Angle %Angle{f{0xDB0FC940}}
+		b %Cap{1}
+		b %Cap2{1}
+		u2 %Detail{0}
+		u2 %Detail2{0}
+		b %FlipForwardDir{0}
+		f %Height{0x0000803F}
+		b %ImportMaterials{1}
+		VarArray %Materials
+		{
+			Uuid{u4{14815321857672787116,5091223846738622440}}
+			Uuid{u4{14966539293945702048,5149382895867543674}}
+			Uuid{u4{18287714267349808556,4841834408050990663}}
+			Uuid{u4{15712923723716799874,5708135051816996902}}
+			Uuid{u4{15538998329244734883,4695961652814123777}}
+			Uuid{u4{2253729720327946122,4954769896116387517}}
+			Uuid{u4{2914889847723662225,5486675752032617504}}
+			Uuid{u4{2188989914077602209,5140720642492102749}}
+			Uuid{u4{5601338934315249792,4844679606387428721}}
+			Uuid{u4{6238084582402444203,5547334271499076518}}
+			Uuid{u4{5869592801223350675,5482996218447038776}}
+			Uuid{u4{9830824363114012854,5557147645224733804}}
+			Uuid{u4{9807826113768039854,4965952245614872231}}
+			Uuid{u4{17418164724263636148,4927251688110176976}}
+			Uuid{u4{13044997032149378464,4903988682687885066}}
+			Uuid{u4{11810638274682547612,5014198486611941289}}
+			Uuid{u4{16318868859132922775,5501881959158951760}}
+			Uuid{u4{3994032624905656468,5681422144075976236}}
+			Uuid{u4{2531074458524027028,5369928617795346341}}
+			Uuid{u4{14181639394733066638,5424595595743965341}}
+			Uuid{u4{6066013745604068268,5565928157862434735}}
+			Uuid{u4{15117410945517552003,4691896050041612015}}
+			Uuid{u4{8886257963298120326,4652265490968941154}}
+			Uuid{u4{14977226641198242200,4638776189695873309}}
+			Uuid{u4{7555866848966609580,5501143779272907999}}
+			Uuid{u4{9884892766135731122,5703989079903944260}}
+			Uuid{u4{5352070449299251109,5304758006098264215}}
+			Uuid{u4{14021474698824754074,4928958896179386648}}
+			Uuid{u4{4404873687068874168,5377963065560704974}}
+		}
+		u1 %MaxSimplificationError{5}
+		s %MeshFile{"Meshes/Renders/acura_nsx_gt3/scene.gltf"}
+		u1 %MeshSimplification{50}
+		s %NormalPrecision{"nsMeshNormalPrecision::_10Bit"}
+		s %PrimitiveType{"nsMeshPrimitive::File"}
+		f %Radius{0x0000003F}
+		f %Radius2{0x0000003F}
+		b %RecalculateNormals{0}
+		b %RecalculateTangents{1}
+		s %RightDir{"nsBasisAxis::PositiveX"}
+		b %SimplifyMesh{0}
+		s %TexCoordPrecision{"nsMeshTexCoordPrecision::_16Bit"}
+		f %UniformScaling{0x0000803F}
+		s %UpDir{"nsBasisAxis::PositiveY"}
+	}
+}
+o
+{
+	Uuid %id{u4{5352070449299251109,5304758006098264215}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"Labels_and_Details_-_Solid"}
+		s %Resource{"{ 84ecc5e1-11df-42e8-998e-a19f61d2035d }"}
+	}
+}
+o
+{
+	Uuid %id{u4{2531074458524027028,5369928617795346341}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"Labels_and_Details"}
+		s %Resource{"{ 27eae33a-5545-4e0a-ba27-416b44f05f87 }"}
+	}
+}
+o
+{
+	Uuid %id{u4{4404873687068874168,5377963065560704974}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"Red_Metal"}
+		s %Resource{"{ 0330d88b-bde6-4ec7-b5ff-fa8db1aa24e6 }"}
+	}
+}
+o
+{
+	Uuid %id{u4{14181639394733066638,5424595595743965341}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"Fabric"}
+		s %Resource{"{ 42e753c7-65fa-425e-be46-dcf0c6c1bfcf }"}
+	}
+}
+o
+{
+	Uuid %id{u4{5869592801223350675,5482996218447038776}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"Glass_EEVEE-Orange"}
+		s %Resource{"{ 746d0098-bf1b-4a74-8616-7a60e0b25e82 }"}
+	}
+}
+o
+{
+	Uuid %id{u4{2914889847723662225,5486675752032617504}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"Glossy_Black"}
+		s %Resource{"{ bce2aeae-f125-4006-b229-33180999b728 }"}
+	}
+}
+o
+{
+	Uuid %id{u4{7555866848966609580,5501143779272907999}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"Emissive_-_Yellow"}
+		s %Resource{"{ 41144cc3-b2ff-4abc-be2b-41c6c14f3369 }"}
+	}
+}
+o
+{
+	Uuid %id{u4{16318868859132922775,5501881959158951760}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"Rubber"}
+		s %Resource{"{ 2cc0aa8f-6af9-4537-ab68-eb18644e1795 }"}
+	}
+}
+o
+{
+	Uuid %id{u4{6238084582402444203,5547334271499076518}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"Grid"}
+		s %Resource{"{ 817b07f8-b78e-4d0f-a88b-132a97b8b78f }"}
+	}
+}
+o
+{
+	Uuid %id{u4{9830824363114012854,5557147645224733804}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"Red_Plastic"}
+		s %Resource{"{ 9f47c526-e3a7-4d01-be61-4570d06e7f87 }"}
+	}
+}
+o
+{
+	Uuid %id{u4{6066013745604068268,5565928157862434735}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"Fabric_-_Black"}
+		s %Resource{"{ 417e59a8-09a7-4986-bb14-1e3092dbf0a9 }"}
+	}
+}
+o
+{
+	Uuid %id{u4{3994032624905656468,5681422144075976236}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"Belt"}
+		s %Resource{"{ cf14ced3-ee35-493f-b9c8-d42ef75fc888 }"}
+	}
+}
+o
+{
+	Uuid %id{u4{9884892766135731122,5703989079903944260}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"Logo"}
+		s %Resource{"{ eed84aa4-fcd6-4e98-9a62-afae07882a16 }"}
+	}
+}
+o
+{
+	Uuid %id{u4{15712923723716799874,5708135051816996902}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"Dark_Metal"}
+		s %Resource{"{ eac097ec-aace-43e4-9b60-b7d5c6253592 }"}
+	}
+}
+o
+{
+	Uuid %id{u4{18096612296587978288,6449934965513159559}}
+	s %t{"nsDocumentRoot"}
+	u3 %v{1}
+	s %n{"ObjectTree"}
+	p
+	{
+		VarArray %Children
+		{
+			Uuid{u4{13525993352202060477,5235162895494106210}}
+		}
+	}
+}
+}
+Types
+{
+o
+{
+	Uuid %id{u4{2154599630895853827,5079330505632637074}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"nsEditorPluginAssets"}
+		VarArray %Properties{}
+		s %TypeName{"nsMaterialResourceSlot"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{2963794430012858357,6246305939496339995}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::IsEnum|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsEnumBase"}
+		s %PluginName{"nsEditorPluginAssets"}
+		VarArray %Properties{}
+		s %TypeName{"nsMeshPrimitive"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{9850980186067030274,6511446987263891381}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsReflectedClass"}
+		s %PluginName{"nsEditorPluginAssets"}
+		VarArray %Properties{}
+		s %TypeName{"nsMeshAssetProperties"}
+		u3 %TypeVersion{3}
+	}
+}
+o
+{
+	Uuid %id{u4{5823255354133589486,8668675022575846062}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsReflectedClass"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{10643042966991232223,10927020937162091726}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsReflectedClass"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsDocumentRoot"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{3572148594981062452,13063983464694370447}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsEnumBase"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{18110348905002939181,15495420624491644530}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::IsEnum|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsEnumBase"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsBasisAxis"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{14515773288946984258,16878279581230100531}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::IsEnum|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsEnumBase"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsMeshTexCoordPrecision"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{15920679986929927410,18180246663827993788}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::IsEnum|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsEnumBase"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsMeshNormalPrecision"}
+		u3 %TypeVersion{1}
+	}
+}
+}

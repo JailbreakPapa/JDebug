@@ -1,0 +1,7 @@
+# File produced by Open Asset Import Library (http://www.assimp.sf.net)
+# (assimp v3.1.128981410)
+
+newmtl Sphere
+kd 1 0 0
+illum 1
+

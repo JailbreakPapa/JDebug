@@ -1,0 +1,236 @@
+HeaderV2
+{
+o
+{
+	Uuid %id{u4{9353763846263938986,4899608498785074196}}
+	s %t{"nsAssetDocumentInfo"}
+	u3 %v{2}
+	s %n{"Header"}
+	p
+	{
+		s %AssetType{"Animated Mesh"}
+		VarArray %Dependencies
+		{
+			s{"Meshes/Mannequin/SK_Mannequin_Female_LOD0.fbx"}
+		}
+		Uuid %DocumentID{u4{9353763846263938986,4899608498785074196}}
+		u4 %Hash{9534901851945293025}
+		VarArray %MetaInfo{}
+		VarArray %Outputs{}
+		VarArray %PackageDeps
+		{
+			s{"{ 6b793724-bc54-470a-a6d4-4f770621dda2 }"}
+			s{"{ 9cdc1b2c-e1dd-4539-b9de-554567c0b436 }"}
+			s{"{ af27f7c4-f953-4d33-99ff-72d622c9a052 }"}
+		}
+		VarArray %References
+		{
+			s{"Meshes/Mannequin/SK_Mannequin_Female_LOD0.fbx"}
+			s{"{ 6b793724-bc54-470a-a6d4-4f770621dda2 }"}
+			s{"{ 9cdc1b2c-e1dd-4539-b9de-554567c0b436 }"}
+			s{"{ af27f7c4-f953-4d33-99ff-72d622c9a052 }"}
+		}
+	}
+}
+}
+Objects
+{
+o
+{
+	Uuid %id{u4{8259928184571525532,5033409063207778857}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"M_UE4Man_ChestLogo.001"}
+		s %Resource{"{ af27f7c4-f953-4d33-99ff-72d622c9a052 }"}
+	}
+}
+o
+{
+	Uuid %id{u4{17512291790319193021,5261124594257657081}}
+	s %t{"nsAnimatedMeshAssetProperties"}
+	u3 %v{2}
+	p
+	{
+		s %BoneWeightPrecision{"nsMeshBoneWeigthPrecision::_8Bit"}
+		s %DefaultSkeleton{"{ 6b793724-bc54-470a-a6d4-4f770621dda2 }"}
+		b %ImportMaterials{1}
+		VarArray %Materials
+		{
+			Uuid{u4{14947616778579228544,5561195896615519143}}
+			Uuid{u4{8259928184571525532,5033409063207778857}}
+		}
+		s %MeshFile{"Meshes/Mannequin/SK_Mannequin_Female_LOD0.fbx"}
+		s %NormalPrecision{"nsMeshNormalPrecision::_10Bit"}
+		b %NormalizeWeights{1}
+		b %RecalculateNormals{0}
+		b %RecalculateTangents{1}
+		s %TexCoordPrecision{"nsMeshTexCoordPrecision::_16Bit"}
+	}
+}
+o
+{
+	Uuid %id{u4{14947616778579228544,5561195896615519143}}
+	s %t{"nsMaterialResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		s %Label{"MI_Female_Body"}
+		s %Resource{"{ 9cdc1b2c-e1dd-4539-b9de-554567c0b436 }"}
+	}
+}
+o
+{
+	Uuid %id{u4{18096612296587978288,6449934965513159559}}
+	s %t{"nsDocumentRoot"}
+	u3 %v{1}
+	s %n{"ObjectTree"}
+	p
+	{
+		VarArray %Children
+		{
+			Uuid{u4{17512291790319193021,5261124594257657081}}
+		}
+	}
+}
+}
+Types
+{
+o
+{
+	Uuid %id{u4{14962055165502256497,3350440285180170541}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::IsEnum|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsEnumBase"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsMeshBoneWeigthPrecision"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{2154599630895853827,5079330505632637074}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"nsEditorPluginAssets"}
+		VarArray %Properties{}
+		s %TypeName{"nsMaterialResourceSlot"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{5823255354133589486,8668675022575846062}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsReflectedClass"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{10643042966991232223,10927020937162091726}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsReflectedClass"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsDocumentRoot"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{3572148594981062452,13063983464694370447}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsEnumBase"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{14515773288946984258,16878279581230100531}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::IsEnum|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsEnumBase"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsMeshTexCoordPrecision"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{17945352621366938458,17828562723543394801}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsReflectedClass"}
+		s %PluginName{"nsEditorPluginAssets"}
+		VarArray %Properties{}
+		s %TypeName{"nsAnimatedMeshAssetProperties"}
+		u3 %TypeVersion{2}
+	}
+}
+o
+{
+	Uuid %id{u4{15920679986929927410,18180246663827993788}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::IsEnum|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsEnumBase"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsMeshNormalPrecision"}
+		u3 %TypeVersion{1}
+	}
+}
+}

@@ -1,6 +1,6 @@
 #include <Inspector/InspectorPCH.h>
 
-#include <Inspector/CVarsWidget.moc.h>
+
 #include <Inspector/DataTransferWidget.moc.h>
 #include <Inspector/FileWidget.moc.h>
 #include <Inspector/GlobalEventsWidget.moc.h>
@@ -50,7 +50,7 @@ nsQtMainWindow::nsQtMainWindow()
   nsQtMemoryWidget* pMemoryWidget = new nsQtMemoryWidget();
   nsQtTimeWidget* pTimeWidget = new nsQtTimeWidget();
   nsQtInputWidget* pInputWidget = new nsQtInputWidget();
-  nsQtCVarsWidget* pCVarsWidget = new nsQtCVarsWidget();
+  //nsQtCVarsWidget* pCVarsWidget = new nsQtCVarsWidget();
   nsQtSubsystemsWidget* pSubsystemsWidget = new nsQtSubsystemsWidget();
   nsQtFileWidget* pFileWidget = new nsQtFileWidget();
   nsQtPluginsWidget* pPluginsWidget = new nsQtPluginsWidget();
@@ -64,7 +64,6 @@ nsQtMainWindow::nsQtMainWindow()
   NS_VERIFY(nullptr != QWidget::connect(pTimeWidget, &ads::CDockWidget::viewToggled, this, &nsQtMainWindow::DockWidgetVisibilityChanged), "");
   NS_VERIFY(nullptr != QWidget::connect(pMemoryWidget, &ads::CDockWidget::viewToggled, this, &nsQtMainWindow::DockWidgetVisibilityChanged), "");
   NS_VERIFY(nullptr != QWidget::connect(pInputWidget, &ads::CDockWidget::viewToggled, this, &nsQtMainWindow::DockWidgetVisibilityChanged), "");
-  NS_VERIFY(nullptr != QWidget::connect(pCVarsWidget, &ads::CDockWidget::viewToggled, this, &nsQtMainWindow::DockWidgetVisibilityChanged), "");
   NS_VERIFY(nullptr != QWidget::connect(pReflectionWidget, &ads::CDockWidget::viewToggled, this, &nsQtMainWindow::DockWidgetVisibilityChanged), "");
   NS_VERIFY(nullptr != QWidget::connect(pSubsystemsWidget, &ads::CDockWidget::viewToggled, this, &nsQtMainWindow::DockWidgetVisibilityChanged), "");
   NS_VERIFY(nullptr != QWidget::connect(pFileWidget, &ads::CDockWidget::viewToggled, this, &nsQtMainWindow::DockWidgetVisibilityChanged), "");
@@ -109,7 +108,6 @@ nsQtMainWindow::nsQtMainWindow()
   m_DockManager->addDockWidget(ads::LeftDockWidgetArea, pMainWidget);
   m_DockManager->addDockWidget(ads::CenterDockWidgetArea, pLogWidget);
 
-  m_DockManager->addDockWidget(ads::RightDockWidgetArea, pCVarsWidget);
   m_DockManager->addDockWidgetTab(ads::RightDockWidgetArea, pGlobalEventesWidget);
   m_DockManager->addDockWidgetTab(ads::RightDockWidgetArea, pDataWidget);
   m_DockManager->addDockWidgetTab(ads::RightDockWidgetArea, pInputWidget);
@@ -124,7 +122,6 @@ nsQtMainWindow::nsQtMainWindow()
 
 
   pLogWidget->raise();
-  pCVarsWidget->raise();
 
   if (bRestoreDockingState)
   {
@@ -262,7 +259,6 @@ void nsQtMainWindow::UpdateNetwork()
     nsQtMemoryWidget::s_pWidget->ResetStats();
     nsQtTimeWidget::s_pWidget->ResetStats();
     nsQtInputWidget::s_pWidget->ResetStats();
-    nsQtCVarsWidget::s_pWidget->ResetStats();
     nsQtReflectionWidget::s_pWidget->ResetStats();
     nsQtFileWidget::s_pWidget->ResetStats();
     nsQtPluginsWidget::s_pWidget->ResetStats();
@@ -297,7 +293,6 @@ void nsQtMainWindow::DockWidgetVisibilityChanged(bool bVisible)
   ActionShowWindowMemory->setChecked(!nsQtMemoryWidget::s_pWidget->isClosed());
   ActionShowWindowTime->setChecked(!nsQtTimeWidget::s_pWidget->isClosed());
   ActionShowWindowInput->setChecked(!nsQtInputWidget::s_pWidget->isClosed());
-  ActionShowWindowCVar->setChecked(!nsQtCVarsWidget::s_pWidget->isClosed());
   ActionShowWindowReflection->setChecked(!nsQtReflectionWidget::s_pWidget->isClosed());
   ActionShowWindowSubsystems->setChecked(!nsQtSubsystemsWidget::s_pWidget->isClosed());
   ActionShowWindowFile->setChecked(!nsQtFileWidget::s_pWidget->isClosed());

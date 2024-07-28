@@ -1,0 +1,13 @@
+ns_cmake_init()
+
+
+
+ns_requires(NS_3RDPARTY_IMGUI_SUPPORT)
+
+# Get the name of this folder as the project name
+get_filename_component(PROJECT_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME_WE)
+
+ns_create_target(LIBRARY ${PROJECT_NAME} NO_NS_PREFIX)
+
+target_compile_definitions(${PROJECT_NAME} PUBLIC BUILDSYSTEM_ENABLE_IMGUI_SUPPORT)
+

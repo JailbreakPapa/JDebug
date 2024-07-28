@@ -2,7 +2,6 @@
 
 #include <Foundation/Application/Application.h>
 #include <Foundation/Communication/Telemetry.h>
-#include <Inspector/CVarsWidget.moc.h>
 #include <Inspector/DataTransferWidget.moc.h>
 #include <Inspector/FileWidget.moc.h>
 #include <Inspector/GlobalEventsWidget.moc.h>
@@ -81,17 +80,13 @@ public:
     char** cArgs = (char**)GetArgumentsArray();
 
     QApplication app(iArgs, cArgs);
-    QCoreApplication::setOrganizationDomain("www.nsengine.net");
-    QCoreApplication::setOrganizationName("nsEngine Project");
-    QCoreApplication::setApplicationName("nsInspector");
+    QCoreApplication::setOrganizationName("JailbreakPapa (Mikael K. Aboagye)");
+    QCoreApplication::setApplicationName("JDebug");
     QCoreApplication::setApplicationVersion("1.0.0");
 
     SetStyleSheet();
 
     nsQtMainWindow MainWindow;
-
-    nsTelemetry::AcceptMessagesForSystem('CVAR', true, nsQtCVarsWidget::ProcessTelemetry, nullptr);
-    nsTelemetry::AcceptMessagesForSystem('CMD', true, nsQtCVarsWidget::ProcessTelemetryConsole, nullptr);
     nsTelemetry::AcceptMessagesForSystem(' LOG', true, nsQtLogDockWidget::ProcessTelemetry, nullptr);
     nsTelemetry::AcceptMessagesForSystem(' MEM', true, nsQtMemoryWidget::ProcessTelemetry, nullptr);
     nsTelemetry::AcceptMessagesForSystem('TIME', true, nsQtTimeWidget::ProcessTelemetry, nullptr);

@@ -1,0 +1,186 @@
+HeaderV2
+{
+o
+{
+	Uuid %id{u4{3365133818732679842,5527284288600285689}}
+	s %t{"nsAssetDocumentInfo"}
+	u3 %v{2}
+	s %n{"Header"}
+	p
+	{
+		s %AssetType{"Substance Package"}
+		VarArray %Dependencies{}
+		Uuid %DocumentID{u4{3365133818732679842,5527284288600285689}}
+		u4 %Hash{16176900311429360992}
+		VarArray %MetaInfo
+		{
+			Uuid{u4{10642307088394879980,9952355451589489704}}
+		}
+		VarArray %Outputs{}
+		VarArray %PackageDeps{}
+		VarArray %References{}
+	}
+}
+o
+{
+	Uuid %id{u4{10642307088394879980,9952355451589489704}}
+	s %t{"nsSubstancePackageAssetMetaData"}
+	u3 %v{1}
+	p
+	{
+		VarArray %OutputNames{}
+		VarArray %OutputUuids{}
+	}
+}
+}
+Objects
+{
+o
+{
+	Uuid %id{u4{14214340845800335248,4769715837582751098}}
+	s %t{"nsSubstancePackageAssetProperties"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Graphs{}
+		s %OutputPattern{"$(graph)_$(label)"}
+		s %SubstanceFile{""}
+	}
+}
+o
+{
+	Uuid %id{u4{18096612296587978288,6449934965513159559}}
+	s %t{"nsDocumentRoot"}
+	u3 %v{1}
+	s %n{"ObjectTree"}
+	p
+	{
+		VarArray %Children
+		{
+			Uuid{u4{14214340845800335248,4769715837582751098}}
+		}
+	}
+}
+}
+Types
+{
+o
+{
+	Uuid %id{u4{8504745359220950907,869167925781800247}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsReflectedClass"}
+		s %PluginName{"nsEditorPluginSubstance"}
+		VarArray %Properties{}
+		s %TypeName{"nsSubstancePackageAssetProperties"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{5823255354133589486,8668675022575846062}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsReflectedClass"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{13562851046504962118,9866768459102658990}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"nsEditorPluginSubstance"}
+		VarArray %Properties{}
+		s %TypeName{"nsSubstanceGraph"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{873283846609747637,10903590716766463505}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"nsEditorPluginSubstance"}
+		VarArray %Properties{}
+		s %TypeName{"nsSubstanceGraphOutput"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{10643042966991232223,10927020937162091726}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsReflectedClass"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsDocumentRoot"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{3572148594981062452,13063983464694370447}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsEnumBase"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{7929255411419367349,13175548972275447750}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::IsEnum|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsEnumBase"}
+		s %PluginName{"nsEditorPluginSubstance"}
+		VarArray %Properties{}
+		s %TypeName{"nsSubstanceUsage"}
+		u3 %TypeVersion{1}
+	}
+}
+}

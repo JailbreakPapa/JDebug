@@ -36,5 +36,6 @@
     <file>Icons/Function.svg</file>
     <file>Icons/Member.svg</file>
     <file>Icons/Type.svg</file>
+	<file>Icons/LogoSmallJolt.svg</file>
   </qresource>
 </RCC>

@@ -1,0 +1,11 @@
+Model Information:
+* title:	Color and Lighting Checker
+* source:	https://sketchfab.com/3d-models/color-and-lighting-checker-b4e72a3b568d4d33b52e6f0bfe47e176
+* author:	Ertugrul Oral (https://sketchfab.com/ertugrul.orl)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Color and Lighting Checker" (https://sketchfab.com/3d-models/color-and-lighting-checker-b4e72a3b568d4d33b52e6f0bfe47e176) by Ertugrul Oral (https://sketchfab.com/ertugrul.orl) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

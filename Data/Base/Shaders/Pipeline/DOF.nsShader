@@ -1,0 +1,224 @@
+[PLATFORMS]
+ALL
+
+
+[PERMUTATIONS]
+DOF_PASS_MODE
+
+
+[COMPUTESHADER]
+
+#include <Shaders/Common/Common.h>
+#include <Shaders/Common/GlobalConstants.h>
+
+#include "DepthOfFieldConstants.h"
+
+Texture2D InputTexture;
+Texture2D DepthTexture;
+RWTexture2D<float4> Output;
+
+static const uint SampleCount  = 22;
+
+// From https://github.com/Unity-Technologies/PostProcessing/
+// blob/v2/PostProcessing/Shaders/Builtins/DiskKernels.hlsl
+static const float2 Samples[22] =
+{
+    float2(0, 0),
+    float2(0.53333336, 0),
+    float2(0.3325279, 0.4169768),
+    float2(-0.11867785, 0.5199616),
+    float2(-0.48051673, 0.2314047),
+    float2(-0.48051673, -0.23140468),
+    float2(-0.11867763, -0.51996166),
+    float2(0.33252785, -0.4169769),
+    float2(1, 0),
+    float2(0.90096885, 0.43388376),
+    float2(0.6234898, 0.7818315),
+    float2(0.22252098, 0.9749279),
+    float2(-0.22252095, 0.9749279),
+    float2(-0.62349, 0.7818314),
+    float2(-0.90096885, 0.43388382),
+    float2(-1, 0),
+    float2(-0.90096885, -0.43388376),
+    float2(-0.6234896, -0.7818316),
+    float2(-0.22252055, -0.974928),
+    float2(0.2225215, -0.9749278),
+    float2(0.6234897, -0.7818316),
+    float2(0.90096885, -0.43388376),
+};
+
+float get_depth(uint2 position)
+{
+  // out of bounds check
+  position = clamp(position, uint2(0, 0), uint2(ViewportSize.xy) - uint2(1, 1));
+  return DepthTexture[position].r;
+}
+
+float get_depth(float2 uv)
+{
+  // effects like screen space shadows, can get artefacts if a point sampler is used
+  return DepthTexture.SampleLevel(LinearClampSampler, uv, 0).r;
+}
+
+float get_linear_depth(float z, float near, float far)
+{
+  float z_b = z;
+  float z_n = 2.0f * z_b - 1.0f;
+  return 2.0f * far * near / (near + far - z_n * (near - far));
+}
+
+float get_linear_depth(float z)
+{
+  return get_linear_depth(z, ClipPlanes.x, ClipPlanes.y);
+}
+
+float get_linear_depth(uint2 pos)
+{
+  return get_linear_depth(get_depth(pos));
+}
+
+float get_linear_depth(float2 uv)
+{
+  return get_linear_depth(get_depth(uv));
+}
+
+// Returns the average depth in a cross pattern neighborhood
+float get_focal_depth()
+{
+    const float2 uv         = float2(0.5f, 0.5f); // center
+    const float2 texel_size = float2(1.0f / ViewportSize.x, 1.0f / ViewportSize.y);
+    const float radius      = 10.0f;
+    const float4 o          = texel_size.xyxy * float2(-radius, radius).xxyy;
+
+    float s1 = get_linear_depth(uv + o.xy);
+    float s2 = get_linear_depth(uv + o.zy);
+    float s3 = get_linear_depth(uv + o.xw);
+    float s4 = get_linear_depth(uv + o.zw);
+    float s5 = get_linear_depth(uv);
+
+    return (s1 + s2 + s3 + s4 + s5) * 0.2f;
+}
+
+float circle_of_confusion(float2 uv, float focus_distance)
+{
+    float depth       = get_linear_depth(uv);
+    float focus_range = Aperture * 0.4f;
+    float coc         = ((depth - focus_distance) / (focus_range + FLT_MIN)) * Radius;
+
+    return coc;
+}
+
+#if DOF_PASS_MODE == DOF_PASS_MODE_COC
+[numthreads(THREAD_GROUP_COUNT_X, THREAD_GROUP_COUNT_Y, 1)]
+void main(uint3 threadId : SV_DispatchThreadID)
+{
+    // Out of bounds check
+    if (any(int2(threadId.xy) >= ViewportSize.xy))
+        return;
+
+    const float2 uv = (threadId.xy + 0.5f) * TexelSize;
+
+    // Coc
+    const float4 o          = TexelSize.xyxy * float2(-0.5, 0.5).xxyy;
+    const float focal_depth = get_focal_depth();
+    float coc1              = circle_of_confusion(uv + o.xy, focal_depth);
+    float coc2              = circle_of_confusion(uv + o.zy, focal_depth);
+    float coc3              = circle_of_confusion(uv + o.xw, focal_depth);
+    float coc4              = circle_of_confusion(uv + o.zw, focal_depth);
+    float coc_min           = min4(coc1, coc2, coc3, coc4);
+    float coc_max           = max4(coc1, coc2, coc3, coc4);
+    float coc               = coc_max >= -coc_min ? coc_max : coc_min;
+
+    // Color
+    float3 color = InputTexture.SampleLevel(LinearClampSampler, uv, 0).rgb;
+
+    Output[threadId.xy] = float4(color, coc);
+}
+#endif
+
+#if DOF_PASS_MODE == DOF_PASS_MODE_BOKEH
+[numthreads(THREAD_GROUP_COUNT_X, THREAD_GROUP_COUNT_Y, 1)]
+void main(uint3 threadId : SV_DispatchThreadID)
+{
+  // Out of bounds check
+  if (any(int2(threadId.xy) >= ViewportSize.xy))
+    return;
+
+  const float2 uv = (threadId.xy + 0.5f) * TexelSize;
+
+  // Sample color
+  float3 color = 0.0f;
+  float weight = 0.0f;
+
+  [unroll]
+  for (uint i = 0; i < SampleCount; i++)
+  {
+    float2 radius = Samples[i] * Radius;
+    float4 s = InputTexture.SampleLevel(LinearClampSampler, uv + radius * TexelSize, 0);
+
+    // If the sample's CoC is at least as large as the kernel radius, use it.
+    if (abs(s.a) >= length(radius))
+    {
+      color  += s.rgb;
+      weight += 1.0f;
+    }
+  }
+  color /= weight;
+
+  Output[threadId.xy] = float4(color, InputTexture[threadId.xy].a);
+}
+#endif
+
+#if DOF_PASS_MODE == DOF_PASS_MODE_TENT
+[numthreads(THREAD_GROUP_COUNT_X, THREAD_GROUP_COUNT_Y, 1)]
+void main(uint3 threadId : SV_DispatchThreadID)
+{
+  // Out of bounds check
+  if (any(int2(threadId.xy) >= ViewportSize.xy))
+    return;
+
+  const float2 uv = (threadId.xy + 0.5f) * TexelSize;
+  const float4 o  = TexelSize.xyxy * float2(-0.5, 0.5).xxyy;
+
+  float3 s1 = InputTexture.SampleLevel(LinearClampSampler, uv + o.xy, 0).rgb;
+  float3 s2 = InputTexture.SampleLevel(LinearClampSampler, uv + o.zy, 0).rgb;
+  float3 s3 = InputTexture.SampleLevel(LinearClampSampler, uv + o.xw, 0).rgb;
+  float3 s4 = InputTexture.SampleLevel(LinearClampSampler, uv + o.zw, 0).rgb;
+
+  float coc = InputTexture[threadId.xy].a;
+
+  Output[threadId.xy] = float4((s1 + s2 + s3 + s4) * 0.25f, coc);
+}
+#endif
+
+#if DOF_PASS_MODE == DOF_PASS_MODE_UPSCALE_BLEND
+
+Texture2D BokehTexture;
+
+[numthreads(THREAD_GROUP_COUNT_X, THREAD_GROUP_COUNT_Y, 1)]
+void main(uint3 threadId : SV_DispatchThreadID)
+{
+  // Out of bounds check
+  if (any(int2(threadId.xy) >= ViewportSize.xy))
+    return;
+
+  const float2 uv = (threadId.xy + 0.5f) * TexelSize;
+
+  // Get dof and coc
+  float4 bokeh = BokehTexture.SampleLevel(LinearClampSampler, uv, 0);
+  float3 dof   = bokeh.rgb;
+  float coc    = bokeh.a;
+
+  // prevent blurry background from bleeding onto sharp foreground
+  float focal_depth = get_focal_depth();
+  if (get_linear_depth(uv) > focal_depth)
+  {
+    //coc = 0.0f;
+  }
+
+  // Compute final color
+  float4 base = InputTexture[threadId.xy];
+  float blend = smoothstep(0.0f, 1.0f, abs(coc));
+  Output[threadId.xy] = lerp(base, float4(dof, base.a), blend);
+}
+#endif

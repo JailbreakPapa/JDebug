@@ -1,8 +1,8 @@
 # #####################################
 # ## Vulkan support
 # #####################################
-
-set(NS_BUILD_EXPERIMENTAL_VULKAN OFF CACHE BOOL "Whether to enable experimental / work-in-progress Vulkan code")
+# NOTE: Forcing Vulkan on since JDebug Must be Cross-Platform.
+set(NS_BUILD_EXPERIMENTAL_VULKAN ON CACHE BOOL "Whether to enable experimental / work-in-progress Vulkan code")
 
 # #####################################
 # ## ns_requires_vulkan()

@@ -1,0 +1,111 @@
+[PLATFORMS]
+ALL
+
+
+[ PERMUTATIONS]
+MOTION_BLUR_MODE
+
+
+[COMPUTESHADER]
+#include <Shaders/Common/Common.h>
+#include <Shaders/Common/GlobalConstants.h>
+
+#include "MotionBlurConstants.h"
+
+static const uint k_MotionBlurSamples = 16;
+
+#if MOTION_BLUR_MODE == MOTION_BLUR_MODE_OBJECT_BASED
+Texture2D VelocityTexture;
+
+float2 GetMaxVelocity(float2 uv)
+{
+    float2 maxVelocity = 0.0f;
+    float maxLength = 0.0f;
+
+  [unroll]
+    for (int y = -1; y <= 1; ++y)
+    {
+    [unroll]
+        for (int x = -1; x <= 1; ++x)
+        {
+            float2 offset = float2(x, y) * TexelSize;
+            float2 velocity = VelocityTexture.SampleLevel(PointClampSampler, uv + offset, 0).xy;
+            float l = dot(velocity, velocity);
+
+            if (l > maxLength)
+            {
+                maxVelocity = velocity;
+                maxLength = l;
+            }
+        }
+    }
+
+    return maxVelocity;
+}
+#elif MOTION_BLUR_MODE == MOTION_BLUR_MODE_SCREEN_BASED
+Texture2D DepthTexture;
+#endif
+
+Texture2D ColorTexture;
+
+RWTexture2D<float4> MotionBlurOutput;
+
+[numthreads(THREAD_GROUP_COUNT_X, THREAD_GROUP_COUNT_Y, 1)]
+void main(uint3 threadId : SV_DispatchThreadID)
+{
+  // Out of bounds check
+    if (any(int2(threadId.xy) >= ViewportSize.xy))
+        return;
+
+    const float2 uv = (threadId.xy + 0.5f) * TexelSize;
+    float4 color = ColorTexture[threadId.xy];
+    uint samplesCount = 1;
+    float2 velocity = 0.0f;
+
+  // Compute motion blur strength from camera's shutter time
+    float motionBlurStrength = saturate(ShutterSpeed * MotionBlurStrength);
+
+  // Scale with delta time
+    motionBlurStrength /= DeltaTime + FLT_MIN;
+
+#if MOTION_BLUR_MODE == MOTION_BLUR_MODE_OBJECT_BASED
+    velocity = GetMaxVelocity(uv);
+#elif MOTION_BLUR_MODE == MOTION_BLUR_MODE_SCREEN_BASED
+  float depth = DepthTexture.SampleLevel(PointClampSampler, uv, 0).r;
+
+  float4 currentPosition = float4(unpack(uv), depth, 1.0);
+  currentPosition = mul(GetScreenToWorldMatrix(), currentPosition);
+  currentPosition /= currentPosition.w;
+
+  float4 previousPosition = mul(GetLastWorldToScreenMatrix(), currentPosition);
+  previousPosition /= previousPosition.w;
+  previousPosition.xy = pack(previousPosition.xy);
+
+  velocity = (previousPosition.xy - uv);
+#endif
+
+  // Scale velocity
+    velocity *= motionBlurStrength;
+
+  // Early exit
+    if (abs(velocity.x) + abs(velocity.y) < FLT_MIN)
+    {
+        MotionBlurOutput[threadId.xy] = color;
+        return;
+    }
+
+    float speed = length(velocity / TexelSize);
+    samplesCount = uint(clamp(speed, 1.0f, k_MotionBlurSamples));
+
+  [unroll]
+    for (uint i = 1; i < k_MotionBlurSamples; ++i)
+    {
+        if (i >= samplesCount)
+            break;
+
+        float2 offset = velocity * (float(i) / float(samplesCount - 1.0f) - 0.5f);
+        color.rgb += ColorTexture.SampleLevel(LinearClampSampler, uv + offset, 0).rgb;
+    }
+
+    MotionBlurOutput[threadId.xy] = float4(color.rgb / float(samplesCount), 1.0f);
+}

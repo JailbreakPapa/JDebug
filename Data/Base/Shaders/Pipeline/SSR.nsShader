@@ -1,0 +1,267 @@
+[PLATFORMS]
+ALL
+
+[PERMUTATIONS]
+
+CAMERA_MODE
+VERTEX_SHADER_RENDER_TARGET_ARRAY_INDEX
+
+[RENDERSTATE]
+
+DepthTest = false
+DepthWrite = false
+CullMode = CullMode_None
+
+[VERTEXSHADER]
+
+#include <Shaders/Pipeline/FullscreenTriangleVertexShader.h>
+
+[GEOMETRYSHADER]
+
+#include <Shaders/Pipeline/FullscreenTriangleStereoGeometryShader.h>
+
+[COMPUTESHADER]
+
+#include <Shaders/Pipeline/FullscreenTriangleInterpolator.h>
+#include <Shaders/Common/Common.h>
+#include <Shaders/Pipeline/ReflectionUtilities.h>
+#include <Shaders/Pipeline/Utils.h>
+#include "SSRConstants.h"
+
+Texture2D ColorTexture;
+Texture2D DepthTexture;
+
+SamplerState ColorSampler;
+SamplerState DepthSampler;
+
+#define NUM_REFLECTION_SAMPLES Steps
+#define MAX_REFLECTION_DISTANCE MaxDistance
+//https://github.com/chris-wyman/GettingStartedWithRTXRayTracing/blob/master/05-AmbientOcclusion/Data/Tutorial05/hlslUtils.hlsli
+// Generates a seed for a random number generator from 2 inputs plus a backoff
+uint InitRand(uint val0, uint val1, uint backoff = 16)
+{
+    uint v0 = val0, v1 = val1, s0 = 0;
+
+	[unroll]
+    for (uint n = 0; n < backoff; n++)
+    {
+        s0 += 0x9e3779b9;
+        v0 += ((v1 << 4) + 0xa341316c) ^ (v1 + s0) ^ ((v1 >> 5) + 0xc8013ea4);
+        v1 += ((v0 << 4) + 0xad90777d) ^ (v0 + s0) ^ ((v0 >> 5) + 0x7e95761e);
+    }
+    return v0;
+}
+// Takes our seed, updates it, and returns a pseudorandom float in [0..1]
+float NextRand(inout uint s)
+{
+    s = (1664525u * s + 1013904223u);
+    return float(s & 0x00FFFFFF) / float(0x01000000);
+}
+
+/*
+ * From Nathan Reed's blog at:
+ * http://www.reedbeta.com/blog/quick-and-easy-gpu-random-numbers-in-d3d11/
+*/
+
+uint WangHash(uint seed)
+{
+    seed = (seed ^ 61) ^ (seed >> 16);
+    seed *= 9;
+    seed = seed ^ (seed >> 4);
+    seed *= 0x27d4eb2d;
+    seed = seed ^ (seed >> 15);
+    return seed;
+}
+
+uint Xorshift(uint seed)
+{
+	// Xorshift algorithm from George Marsaglia's paper
+    seed ^= (seed << 13);
+    seed ^= (seed >> 17);
+    seed ^= (seed << 5);
+    return seed;
+}
+
+float GetRandomNumber(inout uint seed)
+{
+    seed = WangHash(seed);
+    return float(Xorshift(seed)) * (1.f / 4294967296.f);
+}
+
+float SampleDepth(float2 texCoords)
+{
+    return DepthTexture.SampleLevel(DepthSampler, texCoords, 0).r;
+}
+float SampleRoughness(float2 texCoords)
+{
+    return ColorTexture.SampleLevel(ColorSampler, texCoords, 0).a;
+}
+float3 ReconstructScreenSpacePosition(float2 normalizedCoords, float linearDepth)
+{
+    return float3(normalizedCoords * linearDepth, linearDepth);
+}
+
+float3 ReconstructNormal(float2 texCoords, float centerDepth)
+{
+    float2 texelSize = ViewportSize.zw;
+
+    float leftDepth = SampleDepth(texCoords - float2(texelSize.x, 0));
+    float topDepth = SampleDepth(texCoords - float2(0, texelSize.y));
+    float rightDepth = SampleDepth(texCoords + float2(texelSize.x, 0));
+    float bottomDepth = SampleDepth(texCoords + float2(0, texelSize.y));
+    float2 normalizedCoords = texCoords * 2.0f - 1.0f;
+    return ReconstructViewSpaceNormal(normalizedCoords, centerDepth, leftDepth, rightDepth, topDepth, bottomDepth);
+}
+
+float CalculateDepthBufferThickness(float3 cameraPos, float3 viewSpaceNormal)
+{
+    float nearPlane = GetCameraNearPlane();
+    float farPlane = GetCameraFarPlane();
+    float fov = GetCameraFOV();
+    float aspectRatio = GetCameraAspectRatio();
+    float depthRange = farPlane - nearPlane;
+    float tanHalfFov = tan(fov * 0.5);
+    float depthBufferThickness = 2.0f * cameraPos.z * tanHalfFov / (aspectRatio * viewSpaceNormal.z * depthRange);
+
+    return depthBufferThickness;
+}
+/// https://github.com/mateeeeeee/Adria-DX12
+bool NeedReflection(float roughness, float roughness_cutoff)
+{
+    return roughness < roughness_cutoff;
+}
+
+bool InsideScreen(in float2 coords)
+{
+    return !(coords.x < 0 || coords.x > 1 || coords.y < 0 || coords.y > 1);
+}
+
+float4 SSRBSearch(Texture2D<float> Depth, float3 viewDirection, inout float3 viewHitCoords)
+{
+    float FDepth;
+    [unroll]
+    for(int i = 0; i < BINARY_SEARCH_STEPS; i++)
+    {
+        float4 project = mul(float4(viewHitCoords, 1.0f), GetCameraToWorldMatrix());
+        /// Normalize
+        project.xy /= project.w;
+        project.xy = project.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f);
+        /// Clamp within projected cords.
+        FDepth = Depth.SampleLevel(DepthSampler, project.xy, 0);
+        float3 fPositionVS = GetViewPosition(project.xy, FDepth);
+        float fDepthDiff = viewHitCoords.z - fPositionVS.z;
+
+        if (fDepthDiff <= 0.0f)
+            viewHitCoords += viewDirection;
+
+        viewDirection *= 0.5f;
+        viewHitCoords -= viewDirection;
+    }
+    float4 projectedCoords = mul(float4(viewHitCoords, 1.0f), GetCameraToWorldMatrix());
+    projectedCoords.xy /= projectedCoords.w;
+    projectedCoords.xy = projectedCoords.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f);
+
+    FDepth = Depth.SampleLevel(DepthSampler, projectedCoords.xy, 0);
+    float3 viewPosition = GetViewPosition(projectedCoords.xy, FDepth);
+    float depthDiff = viewHitCoords.z - viewPosition.z;
+
+    return float4(projectedCoords.xy, FDepth, abs(depthDiff) < SSRRayHitThreshold ? 1.0f : 0.0f);
+}
+float4 SSRRayMarch(Texture2D<float> depthTx, float3 viewDirection, inout float3 viewHitCoords)
+{
+    float depth;
+    for (int i = 0; i < MAX_STEPS; i++)
+    {
+        viewHitCoords += viewDirection;
+        float4 projectedCoords = mul(float4(viewHitCoords, 1.0f), GetCameraToWorldMatrix());
+        projectedCoords.xy /= projectedCoords.w;
+        projectedCoords.xy = projectedCoords.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f);
+        depth = depthTx.SampleLevel(DepthSampler, projectedCoords.xy, 0);
+        float3 viewPosition = GetViewPosition(projectedCoords.xy, depth);
+        float depthDiff = viewHitCoords.z - viewPosition.z;
+		[branch]
+        if (depthDiff > 0.0f)
+        {
+            return SSRBSearch(depthTx, viewDirection, viewHitCoords);
+        }
+        viewDirection *= SSRRayStep;
+    }
+    return 0.0f;
+}
+struct CSInput
+{
+    uint3 GroupId : SV_GroupID;
+    uint3 GroupThreadId : SV_GroupThreadID;
+    uint3 DispatchThreadId : SV_DispatchThreadID;
+    uint GroupIndex : SV_GroupIndex;
+};
+
+RWTexture2D<float4> Output;
+void convertFloat4ToFloat(Texture2D<float4> tex, SamplerState ssampler, float2 uv, const Texture2D<float> outTexture)
+{
+    uint2 textureSize;
+    tex.GetDimensions(uv.x, uv.y);
+
+    for (uint x = 0; x < textureSize.x; x++)
+    {
+        for (uint y = 0; y < textureSize.y; y++)
+        {
+            float singleValue = tex[uint2(x, y)].r;
+            outTexture[uint2(x, y)] = singleValue;
+        }
+    }
+}
+[numthreads(THREAD_GROUP_COUNT_X, THREAD_GROUP_COUNT_Y, 1)]
+void main(CSInput input)
+{
+    /// Get vars setup to calulate normals, depth and position.
+    float2 uv = ((float2) input.DispatchThreadId.xy + 0.5f) * 1.0f / 100.0f;
+    float centerDepth = SampleDepth(uv);
+    float linearCenterDepth = LinearizeZBufferDepth(centerDepth);
+    float2 normalizedCoords = uv * 2.0f - 1.0f;
+    float3 viewSpaceNormal = ReconstructNormal(uv, centerDepth);
+    //Texture2D NormalTexture = float4(viewSpaceNormal, 1.0f);
+    //NormalTexture.rgb = viewSpaceNormal;
+    
+    float4 viewNormalMetallic = float4(viewSpaceNormal, 1.0f);
+    float3 viewNormal = viewNormalMetallic.rgb;
+    viewNormal = 2.0f * viewNormal - 1.0f;
+    viewNormal = normalize(viewNormal);
+
+    float roughness = ColorTexture.Sample(ColorSampler, uv).a;
+    float4 sceneColor = ColorTexture.SampleLevel(ColorSampler, uv, 0);
+
+    if (roughness >= ROUGHNESS_CUTOFF)
+    {
+        Output[input.DispatchThreadId.xy] = sceneColor;
+        return;
+    }
+
+    uint randSeed = InitRand(input.DispatchThreadId.x + input.DispatchThreadId.y * BLOCK_SIZE, 0, 16);
+    float2 rand = float2(NextRand(randSeed), NextRand(randSeed));
+
+    float4 depth = DepthTexture.Sample(DepthSampler, float3(uv, 1.0f));
+    float3 viewPosition = GetViewPosition(uv, depth.x);
+#if USE_GGX
+    float3 reflectDir = normalize(ReflectionDir_GGX(viewPosition, viewNormal, roughness, rand).xyz);
+#else 
+    float3 reflectDir = normalize(reflect(viewPosition, viewNormal));
+#endif
+    float3 HitPos = viewPosition;
+    Texture2D <float> sDepthTexture;
+    convertFloat4ToFloat(DepthTexture, DepthSampler, uv, sDepthTexture);
+    float4 coords = SSRRayMarch(sDepthTexture, reflectDir, viewPosition);
+    float2 coordsEdgeFactors = float2(1, 1) - pow(saturate(abs(coords.xy - float2(0.5f, 0.5f)) * 2), 8);
+    float screenEdgeFactor = saturate(min(coordsEdgeFactors.x, coordsEdgeFactors.y));
+    float4 fresnel = clamp(pow(1 - dot(normalize(viewPosition), viewNormal), 1), 0, 1);
+
+    float reflectionIntensity =
+		saturate(
+			screenEdgeFactor *
+			saturate(reflectDir.z)
+			* (coords.w)
+			);
+    
+    float4 reflectionColor = fresnel * reflectionIntensity * float4(ColorTexture.SampleLevel(ColorSampler, coords.xy, 0).rgb, 1.0f);
+    Output[input.DispatchThreadId.xy] = sceneColor + max(0, reflectionColor);
+}

@@ -1,0 +1,49 @@
+# Blender 4.1.0 Alpha MTL File: 'None'
+# www.blender.org
+
+newmtl Skin
+Kd 0.040000 0.000223 0.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+Pm 0.000000
+Ps 0.000000
+Pc 0.000000
+Pcr 0.030000
+aniso 0.000000
+anisor 0.000000
+map_Pr C:/skin-1_smooth.jpg
+
+newmtl rollershutter_window_03
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+Ps 0.000000
+Pc 0.000000
+Pcr 0.030000
+aniso 0.000000
+anisor 0.000000
+map_Kd C:/rollershutter_window_03_diff_8k.jpg
+map_Pm C:/rollershutter_window_03_metal_8k.exr
+map_Pr C:/rollershutter_window_03_rough_8k.exr
+map_Bump -bm 1.000000 C:/rollershutter_window_03_nor_gl_8k.exr
+
+newmtl rollershutter_window_03_graffiti
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+Ps 0.000000
+Pc 0.000000
+Pcr 0.030000
+aniso 0.000000
+anisor 0.000000
+map_Kd C:/rollershutter_window_03_graffiti_diff_8k.jpg
+map_Pm C:/rollershutter_window_03_metal_8k.exr
+map_Pr C:/rollershutter_window_03_rough_8k.exr
+map_Bump -bm 1.000000 C:/rollershutter_window_03_nor_gl_8k.exr

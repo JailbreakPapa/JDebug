@@ -1,0 +1,209 @@
+HeaderV2
+{
+o
+{
+	Uuid %id{u4{9367743093239323312,5470371619033332578}}
+	s %t{"nsAssetDocumentInfo"}
+	u3 %v{2}
+	s %n{"Header"}
+	p
+	{
+		s %AssetType{"Jolt_Colmesh_Triangle"}
+		VarArray %Dependencies
+		{
+			s{"Meshes/Helpers/ColorChecker/scene.gltf"}
+		}
+		Uuid %DocumentID{u4{9367743093239323312,5470371619033332578}}
+		u4 %Hash{5542886351153852885}
+		VarArray %MetaInfo{}
+		VarArray %Outputs{}
+		VarArray %PackageDeps{}
+		VarArray %References
+		{
+			s{"Meshes/Helpers/ColorChecker/scene.gltf"}
+		}
+		s %Tags{""}
+	}
+}
+}
+Objects
+{
+o
+{
+	Uuid %id{u4{10832462874621791886,4902674510519886041}}
+	s %t{"nsJoltSurfaceResourceSlot"}
+	u3 %v{1}
+	p
+	{
+		b %Exclude{0}
+		s %Label{"Material_25"}
+		s %Resource{""}
+	}
+}
+o
+{
+	Uuid %id{u4{17883591945100803753,5579400896971372026}}
+	s %t{"nsJoltCollisionMeshAssetProperties"}
+	u3 %v{1}
+	p
+	{
+		b %AggressiveSimplification{0}
+		s %ConvexMeshType{"nsJoltConvexCollisionMeshType::ConvexHull"}
+		u1 %Detail{1}
+		b %FlipForwardDir{0}
+		f %Height{0x0000803F}
+		b %IsConvexMesh{0}
+		u2 %MaxConvexPieces{5}
+		u1 %MaxSimplificationError{20}
+		s %MeshFile{"Meshes/Helpers/ColorChecker/scene.gltf"}
+		u1 %MeshSimplification{50}
+		f %Radius{0x0000003F}
+		f %Radius2{0x0000003F}
+		s %RightDir{"nsBasisAxis::PositiveX"}
+		b %SimplifyMesh{1}
+		s %Surface{""}
+		VarArray %Surfaces
+		{
+			Uuid{u4{10832462874621791886,4902674510519886041}}
+		}
+		f %UniformScaling{0x0000803F}
+		s %UpDir{"nsBasisAxis::PositiveY"}
+	}
+}
+o
+{
+	Uuid %id{u4{18096612296587978288,6449934965513159559}}
+	s %t{"nsDocumentRoot"}
+	u3 %v{1}
+	s %n{"ObjectTree"}
+	p
+	{
+		VarArray %Children
+		{
+			Uuid{u4{17883591945100803753,5579400896971372026}}
+		}
+	}
+}
+}
+Types
+{
+o
+{
+	Uuid %id{u4{323489047642926342,3736562824220863647}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsReflectedClass"}
+		s %PluginName{"nsEditorPluginJolt"}
+		VarArray %Properties{}
+		s %TypeName{"nsJoltCollisionMeshAssetProperties"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{5823255354133589486,8668675022575846062}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsReflectedClass"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{1201897777986794688,9663371525964477565}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"nsEditorPluginJolt"}
+		VarArray %Properties{}
+		s %TypeName{"nsJoltSurfaceResourceSlot"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{10643042966991232223,10927020937162091726}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsReflectedClass"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsDocumentRoot"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{3572148594981062452,13063983464694370447}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::Class|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{""}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsEnumBase"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{18110348905002939181,15495420624491644530}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::IsEnum|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsEnumBase"}
+		s %PluginName{"Static"}
+		VarArray %Properties{}
+		s %TypeName{"nsBasisAxis"}
+		u3 %TypeVersion{1}
+	}
+}
+o
+{
+	Uuid %id{u4{6673899569734590412,18289922695882211433}}
+	s %t{"nsReflectedTypeDescriptor"}
+	u3 %v{1}
+	p
+	{
+		VarArray %Attributes{}
+		s %Flags{"nsTypeFlags::IsEnum|nsTypeFlags::Minimal"}
+		VarArray %Functions{}
+		s %ParentTypeName{"nsEnumBase"}
+		s %PluginName{"nsEditorPluginJolt"}
+		VarArray %Properties{}
+		s %TypeName{"nsJoltConvexCollisionMeshType"}
+		u3 %TypeVersion{1}
+	}
+}
+}

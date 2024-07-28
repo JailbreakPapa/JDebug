@@ -1,0 +1,229 @@
+{
+  "asset": {
+    "copyright": "Valve Corporation",
+    "generator": "Source 2 - Copyright (C) Valve Corporation.",
+    "version": "2.0"
+  },
+  "accessors": [
+    {
+      "bufferView": 0,
+      "componentType": 5126,
+      "count": 562,
+      "max": [
+        5,
+        49.999996185302734,
+        25
+      ],
+      "min": [
+        -5,
+        -49.999996185302734,
+        -1.1920999440917512E-06
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 562,
+      "max": [
+        1,
+        0.9998700022697449,
+        0.9987523555755615
+      ],
+      "min": [
+        -1,
+        -1,
+        -0.999462902545929
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 562,
+      "max": [
+        0.5773502588272095,
+        0.9998700022697449,
+        1,
+        1
+      ],
+      "min": [
+        -0.022513162344694138,
+        -0.9987523555755615,
+        -1,
+        -1
+      ],
+      "type": "VEC4"
+    },
+    {
+      "bufferView": 3,
+      "componentType": 5126,
+      "count": 562,
+      "max": [
+        1,
+        1
+      ],
+      "min": [
+        0,
+        0
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 4,
+      "componentType": 5125,
+      "count": 1548,
+      "type": "SCALAR"
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 6744,
+      "byteOffset": 8992,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 6744,
+      "byteOffset": 15736,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 8992,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 4496,
+      "byteOffset": 28672,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 6192,
+      "byteOffset": 22480,
+      "target": 34963
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 33168,
+      "uri": "error.bin"
+    }
+  ],
+  "images": [
+    {
+      "name": "default_normal_tga_7652cb.vtex",
+      "uri": "default_normal_tga_7652cb.png"
+    },
+    {
+      "name": "materialforerrormodel_vmat_g_tcolor_a00ef19e.vtex",
+      "uri": "materialforerrormodel_vmat_g_tcolor_a00ef19e.png"
+    },
+    {
+      "name": "default_normal_tga_b3f4ec4c_orm_3598707198.png",
+      "uri": "default_normal_tga_b3f4ec4c_orm_3598707198.png"
+    }
+  ],
+  "materials": [
+    {
+      "extras": {
+        "baseColorTexture": {
+          "index": 1
+        }
+      },
+      "name": "materialforerrormodel",
+      "normalTexture": {
+        "index": 0
+      },
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.752941,
+          0.25098,
+          0,
+          1
+        ],
+        "baseColorTexture": {
+          "index": 1
+        },
+        "metallicRoughnessTexture": {
+          "index": 2
+        }
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "name": "error",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 0,
+            "NORMAL": 1,
+            "TANGENT": 2,
+            "TEXCOORD_0": 3
+          },
+          "indices": 4,
+          "material": 0
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "name": "error",
+      "matrix": [
+        3.027916E-09,
+        0,
+        0.025399996,
+        0,
+        0.025399996,
+        3.027916E-09,
+        0,
+        0,
+        0,
+        0.025399996,
+        3.027916E-09,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "mesh": 0
+    }
+  ],
+  "samplers": [
+    {
+      "magFilter": 9729,
+      "minFilter": 9987
+    }
+  ],
+  "scenes": [
+    {
+      "name": "error.vmdl_c",
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "textures": [
+    {
+      "name": "default_normal_tga_7652cb.vtex",
+      "sampler": 0,
+      "source": 0
+    },
+    {
+      "name": "materialforerrormodel_vmat_g_tcolor_a00ef19e.vtex",
+      "sampler": 0,
+      "source": 1
+    },
+    {
+      "name": "default_normal_tga_b3f4ec4c_orm_3598707198.png",
+      "sampler": 0,
+      "source": 2
+    }
+  ]
+}

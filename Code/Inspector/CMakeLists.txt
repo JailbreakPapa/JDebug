@@ -6,7 +6,7 @@ ns_requires_qt()
 ns_requires(NS_3RDPARTY_ADS_SUPPORT)
 
 # Get the name of this folder as the project name
-get_filename_component(PROJECT_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME_WE)
+get_filename_component(PROJECT_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME_WE NO_NS_PREFIX)
 
 ns_create_target(APPLICATION ${PROJECT_NAME})
 
@@ -22,3 +22,4 @@ target_link_libraries(${PROJECT_NAME}
   GuiFoundation
   ads
 )
+
